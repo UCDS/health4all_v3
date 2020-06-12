@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'YouSee Regular';
+    src: url('../fonts/yousee-webfont.eot');
+    src: url('../fonts/yousee-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/yousee-webfont.woff2') format('woff2'),
+         url('../fonts/yousee-webfont.woff') format('woff'),
+         url('../fonts/yousee-webfont.ttf') format('truetype'),
+         url('../fonts/yousee-webfont.svg#youseeregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+.logo{
+  position:relative;
+  display: inline-block;
+  font-family: 'Yousee Regular';
+  font-style: normal;
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color:black;  
+}
+.logo-yousee:before{
+	content : "a";
+}
+	

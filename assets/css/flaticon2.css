@@ -1,0 +1,36 @@
+	/*
+  	Flaticon icon font: Flaticon
+  	Creation date: 26/07/2017 17:50
+  	*/
+
+@font-face {
+  font-family: "Flaticon";
+  src: url("./flaticon2.eot");
+  src: url("./flaticon2.eot?#iefix") format("embedded-opentype"),
+       url("./flaticon2.woff") format("woff"),
+       url("./flaticon2.ttf") format("truetype"),
+       url("./flaticon2.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./flaticon2.svg#Flaticon") format("svg");
+  }
+}
+
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
+  font-family: Flaticon;
+        font-size: 20px;
+font-style: normal;
+margin-left: 20px;
+}
+
+.flaticon-telephone-line-24-hours-service:before { content: "\f100"; }
+.flaticon-call-center-worker-with-headset:before { content: "\f101"; }
+.flaticon-telephone-of-old-design:before { content: "\f102"; }
+.flaticon-old-telephone-ringing:before { content: "\f103"; }
+.flaticon-map-localization:before { content: "\f104"; }

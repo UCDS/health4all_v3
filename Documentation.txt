@@ -1,0 +1,9 @@
+Configurations
+********************************
+
+File : application/config/config.php
+------------------------------------
+
+$config['base_url'] = 'Path to your application folder here';
+
+date_default_timezone_set("Timezone of your preference here");

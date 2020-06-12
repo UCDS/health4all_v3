@@ -1,0 +1,232 @@
+/* Reset all the css settings to maintain cross browser compatibility */
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+    font-family: "Trebuchet MS","Sans Serif", Serif;
+
+}
+sup {
+	font-size:small; 
+	vertical-align:top;
+}
+body {
+    line-height:1.5;
+}
+
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section { 
+    display:block;
+}
+
+nav ul {
+    list-style:none;
+}
+
+blockquote, q {
+    quotes:none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content:'';
+    content:none;
+}
+
+a {
+    margin:0;
+    padding:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+/* change colours to suit your needs */
+ins {
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
+}
+
+/* change colours to suit your needs */
+mark {
+    background-color:#ff9;
+    color:#000; 
+    font-style:italic;
+    font-weight:bold;
+}
+
+del {
+    text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+    border-bottom:1px dotted;
+    cursor:help;
+}
+
+table {
+    border-collapse:collapse;
+    border-spacing:0;
+}
+
+/* change border colour to suit your needs */
+hr {
+    display:block;
+    height:1px;
+    border:0;   
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
+}
+
+
+/* Defined styles */
+html{
+    font-size:0.8em;
+	width:100%;
+	height:100%;
+}
+
+input, select, textarea {
+    vertical-align:middle;
+    margin:5px;
+}
+body{
+	margin-left:auto;
+	margin-right:auto;
+	
+}
+#wrapper{
+	max-width:100%;
+	color:#333;
+}
+nav{
+	background-color:#BD0000;
+	text-align:center;
+}
+nav ul#top{
+	padding:20px 0px;
+	color:white;
+	display:inline-block;
+}
+nav ul#top li { 
+	margin:20px;
+	display:inline;
+	
+}
+nav ul#top a{
+	color:white;
+	text-decoration:none;
+	font-weight:bold;
+}
+nav ul#top a:hover{
+	color:#ccc;
+}
+nav ul#left{
+	padding:2px 2px;
+	width:200px;
+	position:relative;
+	float:left;
+}
+nav ul#left li{
+	margin:5px;
+	border:1px solid #aaa;
+	padding:2px;
+	transition: all 0.2s;
+}
+nav ul#left li:hover{
+	background-color:#ccc;
+	padding-left:5px;
+	font-weight:bold;
+}
+nav ul#left a{
+	text-decoration:none;
+	color:#333;
+}
+footer{
+	background-color:#BD0000;
+	color:white;
+	min-width:1024px;
+	width:100%;
+	padding:10px 0px;
+	text-align:right;
+}
+section#main{
+	margin:20px;
+	padding:10px;
+	border:1px solid #ccc;
+	border-radius:0.2em;
+}
+section#right{
+	margin:20px;
+	margin-left:200px;
+	padding:10px;
+	border:1px solid #ccc;
+	border-radius:0.2em;
+	position:relaitve;
+	min-height:300px;
+}
+#header{
+height:70px;
+background:#eee;
+}
+#footer{
+height:70px;
+background:#eee;
+padding:20px;
+}
+.table-2{
+	padding:5px;
+	margin:5px;
+	border:1px solid #ccc;
+	border-radius:0.2em;
+}
+.table-2 tr:nth-child(even){
+	background:#eee;
+}
+.table-2 td{
+	padding:5px 15px;
+	border:1px solid #ccc;
+}
+.table-2 th{
+	padding:5px 15px;
+	background:#ccc;
+	border:1px solid #eee;
+}
+.current{
+	background:#eee;
+	font-weight:bold;
+}
+#print_div{
+	width:100%;
+	height:100%;
+}
+
+#table-prescription{
+	width:100%;
+	position:relative;
+}
+#table-prescription td, th{
+	border:1px solid black;
+	padding:3px;
+}
+.borderless td, .borderless th {
+	border : none;
+}
