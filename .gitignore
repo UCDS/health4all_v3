@@ -1,5 +1,6 @@
 .DS_Store
-/assets/captcha
+assets/captcha
+system
 /application/config/
 application/cache/*
 !application/cache/index.html
