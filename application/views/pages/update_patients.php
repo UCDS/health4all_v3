@@ -21,6 +21,22 @@
         border: 1px solid black;
         height: 55px;
     }
+    .prescription_table_heading_icons{
+    	width: 15px;
+    	height: 15px;
+    	margin-right: 5px;
+    	margin-left: 5px;
+    }
+    .border_bottom_dashed{
+    	border-bottom: 1px dashed black;
+    }
+    .prescription textarea{
+        resize: none;
+    	width: 100%;
+    	margin-top: 10px;
+        height: 28px;
+        overflow: hidden;
+    }
 </style>
 <style>
 	.row{
@@ -1816,24 +1832,24 @@ pri.print();
 					<table class="table table-striped table-bordered" id="prescription_table">
 					<thead>
 						<tr>
-						<th rowspan="3" class="text-center">Drug</th>
-						<th rowspan="3" class="text-center">Duration (in Days)</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" /></th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration (in Days)</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
-						<th colspan="6" class="text-center">Timings</th>
+						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
 					<!--	<th rowspan="3" class="text-center">Issued Quantity</th> -->
 						</tr>
 						<tr>
-							<th colspan="2" class="text-center">Morning</th>
-							<th colspan="2" class="text-center">Afternoon</th>
-							<th colspan="2" class="text-center">Evening</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/morning.jpg" class="prescription_table_heading_icons" />Morning</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/afternoon.jpg" class="prescription_table_heading_icons" />Afternoon</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th>BB</th>
-							<th>AB</th>
-							<th>BL</th>
-							<th>AL</th>
-							<th>BD</th>
-							<th>AD</th>
+							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
+							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
+							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
+							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
+							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
+							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -1854,7 +1870,7 @@ pri.print();
 								?>
 								</select>
 								<i class="glyphicon glyphicon-pencil"></i>
-								<textarea name="note_0" cols="30" rows="10" hidden></textarea>
+								<textarea name="note_0" rows="5" hidden></textarea>
 							</td>
 							<td>
 								<input type="text" name="duration_0" placeholder="in Days" style="width:100px" class="form-control" />
@@ -1903,24 +1919,24 @@ pri.print();
 					<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-						<th rowspan="3" class="text-center">Drug</th>
-						<th rowspan="3" class="text-center">Duration</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" /></th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
-						<th colspan="6" class="text-center">Timings</th>
+						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
 					<!--	<th rowspan="3" class="text-center">Quantity</th> -->
 						</tr>
 						<tr>
-							<th colspan="2" class="text-center">Morning</th>
-							<th colspan="2" class="text-center">Afternoon</th>
-							<th colspan="2" class="text-center">Evening</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/morning.jpg" class="prescription_table_heading_icons" />Morning</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/afternoon.jpg" class="prescription_table_heading_icons" />Afternoon</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th>BB</th>
-							<th>AB</th>
-							<th>BL</th>
-							<th>AL</th>
-							<th>BD</th>
-							<th>AD</th>
+							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
+							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
+							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
+							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
+							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
+							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -2315,7 +2331,7 @@ pri.print();
 			<?php foreach($previous_prescription as $prev) { ?>
 				$row += '<tr class="prescription">'+
 						'	<td>'+
-								'<select name="drug_'+$i+'" class="form-control">'+
+								'<select name="drug_'+$i+'" style="width:150px;" class="form-control">'+
 								'<option value="">--Select--</option>'+
 								"<?php 
 									foreach($drugs as $drug){ 
@@ -2375,7 +2391,7 @@ pri.print();
 		$("#prescription_add").click(function(){
 			$row = '<tr class="prescription">'+
 						'	<td>'+
-								'<select name="drug_'+$i+'" class="form-control">'+
+								'<select name="drug_'+$i+'" style="width:150px;" class="form-control">'+
 								'<option value="">--Select--</option>'+
 								"<?php 
 									foreach($drugs as $drug){ 
@@ -2459,10 +2475,39 @@ pri.print();
         });
 	}
 	});
+
 	$(document).ready(function(){
+		var textareaResizeHeight = function(e){
+			var $this = e.target;
+			$($this).css("height", "28px");
+			$($this).css("overflow", 'hidden');
+			if($($this).get(0).scrollHeight > 104){
+				$($this).css("height", '104px');
+				$($this).css("overflow", 'scroll');
+			} else if($($this).get(0).scrollHeight > 0){
+				$($this).css("height", $($this).get(0).scrollHeight+'px');
+			}
+		}
+
+		var textareaResizeHeightDelayed = function(e){
+			setTimeout(textareaResizeHeight(e), 0);
+		}
+
+		$(document).on('cut', '.prescription textarea', textareaResizeHeightDelayed);
+		$(document).on('paste', '.prescription textarea', textareaResizeHeightDelayed);
+		$(document).on('keydown', '.prescription textarea', textareaResizeHeightDelayed);
+		$(document).on('keyup', '.prescription textarea', textareaResizeHeightDelayed);
+
+
 		$('#prescription_table').click(function(event){
 			if($(event.target).hasClass('glyphicon-pencil')){
-				$(event.target).next().removeAttr("hidden");
+				if($(event.target).hasClass('active')){
+					$(event.target).removeClass('active')
+					$(event.target).next().attr("hidden", "");
+				} else {
+					$(event.target).addClass('active')
+					$(event.target).next().removeAttr("hidden");
+				}
 			}			
 		});
 		// Goto line no 2144
