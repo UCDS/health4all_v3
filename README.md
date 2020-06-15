@@ -2,6 +2,8 @@
 
 Softwares to be installed
     - WAMP / XAMPP Server
+    - SQLYog Community IDE [Instead of phpmyadmin]
+
 
 Steps to be followed : 
     1. Create a Github account .
@@ -19,3 +21,12 @@ Steps to be followed :
 Note :  To hide the errors  , change environment from 'development' to 'production' health4all_v3/index.php line number 20 
     
  
+
+DB Migration,
+    - After taking code pull, run all the files after the version mentioned in the table db_version
+    - To add new migration, create new version file & at the end of the sql file add db_version update query, rever 1.0.2.sql for reference.
+    - NOTE: DO NOT ADD DATABASE IN THE QUERIES.
+
+
+TODOs,
+    - DB Migration needs to be automated --> https://www.youtube.com/watch?v=i07XXM37VFk
