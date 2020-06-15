@@ -21,7 +21,7 @@
         border: 1px solid black;
         height: 55px;
     }
-    .prescription_table_heading_icons{
+    .prescription_table_heading_icons, .prescription_table_heading_info_icons{
     	width: 15px;
     	height: 15px;
     	margin-right: 5px;
@@ -36,6 +36,12 @@
     	margin-top: 10px;
         height: 28px;
         overflow: hidden;
+    }
+    .prescription .note_tooltip, .prescription .glyphicon-pencil{
+    	cursor: pointer;
+    	-webkit-user-select: none; /* Safari */
+	  	-ms-user-select: none; /* IE 10+ and Edge */
+		user-select: none; /* Standard syntax */
     }
 </style>
 <style>
@@ -194,6 +200,11 @@ pri.print();
 		$("#to_area").chained("#to_department");
 });
 </script>
+
+<?php
+	$patient = $patients[0];
+?>
+
 <?php 
 	function drug_available($drug, $drugs_available){
 		foreach($drugs_available as $drg){
@@ -309,7 +320,7 @@ pri.print();
                        
                 <?php 
 			foreach($functions as $f){ 
-				if($f->user_function == "obg" && ($f->add==1 || $f->edit==1)) { ?>
+				if($f->user_function == "obg" && ($f->add==1 || $f->edit==1) && $patient->gender != 'M') { ?>
 					<li role="presentation"><a href="#obg" aria-controls="obg" role="tab" data-toggle="tab"><i class="fa fa-stethoscope"></i>OBG</a></li>
 				<?php 
 				break;
@@ -372,7 +383,6 @@ pri.print();
 		?>
 	  </ul>
           <?php
-				$patient = $patients[0];
 				$age="";
 				if($patient->age_years!=0) $age.=$patient->age_years."Y ";
 				if($patient->age_months!=0) $age.=$patient->age_months."M ";
@@ -1833,7 +1843,7 @@ pri.print();
 					<thead>
 						<tr>
 						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" /></th>
-						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration (in Days)</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration <br /> (in Days)</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
 						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
 					<!--	<th rowspan="3" class="text-center">Issued Quantity</th> -->
@@ -1844,19 +1854,24 @@ pri.print();
 							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
-							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
-							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
-							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
-							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
-							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
+							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							
+							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr class="prescription">
 							<td>
 								<select name="drug_0" style="width:150px;" class="form-control" >
-								<option value="">--Select--</option>
+								<option value="">-Select Drug-</option>
 								<?php 
 								foreach($drugs as $drug){
 									$available = $drug->generic_name.' - '.$drug->item_form;
@@ -1870,10 +1885,11 @@ pri.print();
 								?>
 								</select>
 								<i class="glyphicon glyphicon-pencil"></i>
+								<span class="note_tooltip">[Click to Add Note]</span>
 								<textarea name="note_0" rows="5" hidden></textarea>
 							</td>
 							<td>
-								<input type="text" name="duration_0" placeholder="in Days" style="width:100px" class="form-control" />
+								<input type="text" name="duration_0" placeholder="Days" style="width:100px" class="form-control" />
 							</td>
 						<!--	<td>
 								<select name="frequency_0" class="form-control" >
@@ -1912,6 +1928,7 @@ pri.print();
 						</tr>
 					</tbody>
 				</table>
+				<div style="text-align: center;margin-bottom: 20px;font-size: 12px;"><span>Please enter Numbers of Days and select Timings for prescribed medicines where applicable</span></div>
 			</div>
 			</div>
 			<div class="row alt">
@@ -1920,7 +1937,7 @@ pri.print();
 					<thead>
 						<tr>
 						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" /></th>
-						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration<br /> (in Days)</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
 						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
 					<!--	<th rowspan="3" class="text-center">Quantity</th> -->
@@ -1931,12 +1948,17 @@ pri.print();
 							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
-							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
-							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
-							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
-							<th title="Before Food"><span class="border_bottom_dashed">BF</span></th>
-							<th title="After Food"><span class="border_bottom_dashed">AF</span></th>
+							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -2345,12 +2367,12 @@ pri.print();
 									if($prev->generic_item_id == $drug->generic_item_id) echo " selected ";									
 									echo ' '.$style.'>'.$drug->generic_name.$available.'</option>';
 								}?>" +
-								'</select>'+'<i class="glyphicon glyphicon-pencil"></i>'+'<textarea name="note_'+$i+'" cols="30" rows="10"';
+								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10"';
 							<?php if(trim($prev->note) == "") { ?> $row += " hidden "; <?php } ?>
 							$row += '><?php echo $prev->note;?></textarea>'+
 							'</td>'+
 							'<td>'+
-								'<input type="text" name="duration_'+$i+'" placeholder="in Days" value="<?php echo $prev->duration;?>" style="width:100px" class="form-control" />'+
+								'<input type="text" name="duration_'+$i+'" placeholder="Days" value="<?php echo $prev->duration;?>" style="width:100px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
 								'<select name="frequency_'+$i+'" class="form-control">'+
@@ -2403,10 +2425,10 @@ pri.print();
 									}
 									echo '<option value=\"'.$drug->generic_item_id.'\"'.' '.$style.'>'.$drug->generic_name.$available.'</option>';
 								}?>" +
-								'</select>'+'<i class="glyphicon glyphicon-pencil"></i>'+'<textarea name="note_'+$i+'" cols="30" rows="10" hidden></textarea>'+
+								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" hidden></textarea>'+
 							'</td>'+
 							'<td>'+
-								'<input type="text" name="duration_'+$i+'" placeholder="in Days" style="width:100px" class="form-control" />'+
+								'<input type="text" name="duration_'+$i+'" placeholder="Days" style="width:100px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
 								'<select name="frequency_'+$i+'" class="form-control">'+
@@ -2477,6 +2499,8 @@ pri.print();
 	});
 
 	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+
 		var textareaResizeHeight = function(e){
 			var $this = e.target;
 			$($this).css("height", "28px");
@@ -2500,14 +2524,23 @@ pri.print();
 
 
 		$('#prescription_table').click(function(event){
-			if($(event.target).hasClass('glyphicon-pencil')){
-				if($(event.target).hasClass('active')){
-					$(event.target).removeClass('active')
-					$(event.target).next().attr("hidden", "");
+			var noteToggleFunction = function(target){
+				if($(target).hasClass('active')){
+					$(target).removeClass('active')
+					$(target).parents('td').find('textarea').attr("hidden", "");
+					$(target).parents('td').find('.note_tooltip').html('[Click to Add Note]');
 				} else {
-					$(event.target).addClass('active')
-					$(event.target).next().removeAttr("hidden");
+					$(target).addClass('active')
+					$(target).parents('td').find('textarea').removeAttr("hidden");
+					$(target).parents('td').find('.note_tooltip').html('[Click to Delete Note]');
+					$(target).parents('td').find('textarea').val("");
 				}
+			}
+			if($(event.target).hasClass('note_tooltip')){
+				noteToggleFunction($(event.target).prev().get(0))
+			}
+			if($(event.target).hasClass('glyphicon-pencil')){
+				noteToggleFunction(event.target)
 			}			
 		});
 		// Goto line no 2144
