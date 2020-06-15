@@ -2228,7 +2228,7 @@ pri.print();
 		<input type="text" name="visit_id" class="sr-only" value="<?php echo $patient->visit_id;?>" hidden readonly />
 		<input type="text" name="patient_id" class="sr-only" value="<?php echo $patient->patient_id;?>" hidden readonly />
 		<input type="text" name="patient_number" class="sr-only" value="patient_number" hidden readonly />
-		<button class="btn btn-md btn-primary" value="Update" name="update_patient">Update</button>&emsp;
+		<button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit(event)">Update</button>&emsp;
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div')">Print Summary</button>
 		<?php 
 			$visits = sizeof($patient_visits);
@@ -2498,6 +2498,31 @@ pri.print();
 	}
 	});
 
+	function onUpdatePatientSubmit(event){
+		var flag = true;
+		// prescription validation...
+		if($("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
+			// if any drug dropdown is selected then check for the duration & timings...
+			var prescriptionError = false;
+			
+			$("#prescription_table tbody tr.prescription").each(function(){
+				if($(this).find("[name^=drug_]").val()){
+					// check if duration is available...
+					if(!$(this).find("[name^=duration_]").val() || $(this).find("[type=checkbox]:checked").length == 0){
+						prescriptionError = true;
+					}
+				}
+			})
+
+			if(prescriptionError){
+				flag = confirm("Would you like to mention number of DAYS and/or TIMING for the Prescribed Medicine(s)?");
+			}
+		}
+		if(flag){
+			$('form#update_patients').submit();
+		}
+	}
+
 	$(document).ready(function(){
 		$('[data-toggle="tooltip"]').tooltip();
 
@@ -2543,6 +2568,7 @@ pri.print();
 				noteToggleFunction(event.target)
 			}			
 		});
+
 		// Goto line no 2144
 		$SBP = '';
 		$DBP = '';
