@@ -442,7 +442,7 @@ class Register_model extends CI_Model{
 					$prescription_data[] = array(
 						'visit_id'=>$this->input->post('visit_id'),
 						'item_id'=>$drug,
-						'duration'=>$duration,
+						'duration'=>empty($duration) ? NULL : $duration,
 						'frequency'=>$frequency,
 						'morning'=>$morning,
 						'afternoon'=>$afternoon,
@@ -869,7 +869,7 @@ class Register_model extends CI_Model{
 				$prescription_data[] = array(
 					'visit_id'=>$visit_id,
 					'item_id'=>$drug,
-					'duration'=>$duration,
+					'duration'=>empty($duration) ? NULL : $duration,
 					'frequency'=>$frequency,
 					'morning'=>$morning,
 					'afternoon'=>$afternoon,
