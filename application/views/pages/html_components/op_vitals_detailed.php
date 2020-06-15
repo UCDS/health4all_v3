@@ -1,5 +1,5 @@
 <div class="alert alert-info" id="ajax_notification" role="alert">OP Details Report: </div>
-<form class="form-inline" id="primary_filter" action="<?php echo base_url().'/generic_resport/json_data';?>" method="post">
+<form class="form-inline" id="primary_filter" action="<?php echo base_url().'generic_report/json_data';?>" method="post">
     <div class="form-group">
         <label for="from_date">From Date: </label>        
         <input class="form-control" type="date" value='' name="from_date" id="from_date" size="10" />
