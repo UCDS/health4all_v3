@@ -2531,7 +2531,7 @@ pri.print();
 				    },
 				    callback: function (result) {
 				        if(result){
-				        	$('form#update_patients').submit();
+				        	addPatientUpdateHiddenFieldAndSubmitForm();
 				        } else {
 				        	$('a[href="#prescription"]').click()
 				        }
@@ -2540,8 +2540,12 @@ pri.print();
 			}
 		}
 		if(flag){
-			$('form#update_patients').submit();
+			addPatientUpdateHiddenFieldAndSubmitForm();
 		}
+	}
+
+	function addPatientUpdateHiddenFieldAndSubmitForm(){
+		$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
 	}
 
 	$(document).ready(function(){
