@@ -9,6 +9,7 @@
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <style>
     .obstetric_history_table {  
         border-collapse: collapse; 
@@ -2515,7 +2516,27 @@ pri.print();
 			})
 
 			if(prescriptionError){
-				flag = confirm("Would you like to mention number of DAYS and/or TIMING for the Prescribed Medicine(s)?");
+				flag = false;
+				bootbox.confirm({
+				    message: "Would you like to mention number of DAYS and/or TIMING for the Prescribed Medicine(s)?",
+				    buttons: {
+				        confirm: {
+				            label: 'Ignore and proceed',
+				            className: 'btn-success'
+				        },
+				        cancel: {
+				            label: 'Go back and update',
+				            className: 'btn-warning'
+				        }
+				    },
+				    callback: function (result) {
+				        if(result){
+				        	$('form#update_patients').submit();
+				        } else {
+				        	$('a[href="#prescription"]').click()
+				        }
+				    }
+				});
 			}
 		}
 		if(flag){
