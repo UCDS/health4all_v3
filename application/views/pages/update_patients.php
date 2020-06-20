@@ -1473,33 +1473,33 @@ pri.print();
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						CVS
+						CVS<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Cardio Vascular System" data-toggle="tooltip"/>
 					</label>
-					<textarea name="cvs" cols="60" class="form-control" placeholder="CVS" <?php if($f->edit==1 && empty($patient->cvs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cvs;?></textarea>
+					<textarea name="cvs" cols="60" class="form-control" placeholder="Cardio Vascular System" <?php if($f->edit==1 && empty($patient->cvs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cvs;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						RS
+						RS<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Respiratory System" data-toggle="tooltip"/>
 					</label>
-					<textarea name="rs" cols="40" class="form-control" placeholder="RS" <?php if($f->edit==1  && empty($patient->rs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->rs;?></textarea>
+					<textarea name="rs" cols="40" class="form-control" placeholder="Respiratory System" <?php if($f->edit==1  && empty($patient->rs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->rs;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						PA
+						PA<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Per Abdomen" data-toggle="tooltip"/>
 					</label>
-					<textarea name="pa" cols="60" class="form-control" placeholder="PA" <?php if($f->edit==1 && empty($patient->pa)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->pa;?></textarea>
+					<textarea name="pa" cols="60" class="form-control" placeholder="Per Abdomen" <?php if($f->edit==1 && empty($patient->pa)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->pa;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						CNS
+						CNS<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Central Nervous System" data-toggle="tooltip"/>
 					</label>
-					<textarea name="cns" cols="40" class="form-control" placeholder="CNS" <?php if($f->edit==1 && empty($patient->cns)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cns;?></textarea>
+					<textarea name="cns" cols="40" class="form-control" placeholder="Central Nervous System" <?php if($f->edit==1 && empty($patient->cns)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cns;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
