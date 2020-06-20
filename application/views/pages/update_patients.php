@@ -1540,16 +1540,11 @@ pri.print();
 								<tr>
 									<th colspan="4">Add Clinical Notes</th>
 								</tr>
-								<tr>
-								<th>Note</th>
-								<th>Date & Time</th>
-								<th></th>
-								</tr>
 							</thead>
 							<tbody class="daily_notes">
 								<tr>
 									<td><textarea rows="4" cols="60" name="clinical_note[]"  class="form-control"></textarea></td>
-									<td><input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
+									<td>Select Date and Time to save the note <br /> <input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
 									<td><button  type="button" class="btn btn-sm btn-primary" value="+" id="add_daily_note">+</button></td>
 								</tr>
 							</tbody>
@@ -1872,7 +1867,7 @@ pri.print();
 						<tr class="prescription">
 							<td>
 								<select name="drug_0" style="width:150px;" class="form-control" >
-								<option value="">-Select Drug-</option>
+								<option value="">-Enter Generic Drug Name-</option>
 								<?php 
 								foreach($drugs as $drug){
 									$available = $drug->generic_name.' - '.$drug->item_form;
