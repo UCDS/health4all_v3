@@ -76,7 +76,14 @@ $(function(){
 		  };
 			$("#table-sort").tablesorter(options);
 		  $('.print').click(function(){
-			$('#table-sort').trigger('printTable');
+			// $('#table-sort').trigger('printTable');
+			var content = document.getElementById('myTableDiv');
+			var pri = document.getElementById("ifmcontentstoprint").contentWindow;
+			pri.document.open();
+			pri.document.write(content.innerHTML);
+			pri.document.close();
+			pri.focus();
+			pri.print();
 		  });
 
   }); 
@@ -180,16 +187,19 @@ $(function(){
 		<tbody></tbody>
 	</table>
 
-    <table class="table table-bordered table-striped" id="myTable" hidden>
-		<thead>
-			<tr>
-				<th style="text-align:center">S. No.</th>
-				<th style="text-align:center">Drug Category</th>
-				<th style="text-align:center">Drug Name</th>
-				<th style="text-align:center">Drug Form</th>
-				<th style="text-align:center">Available</th>
-			</tr>
-		</thead>
-		<tbody></tbody>
-	</table>
+	<div id="myTableDiv" style="display: none;">
+	    <table class="table table-bordered table-striped" id="myTable">
+			<thead>
+				<tr>
+					<th style="text-align:center">S. No.</th>
+					<th style="text-align:center">Drug Category</th>
+					<th style="text-align:center">Drug Name</th>
+					<th style="text-align:center">Drug Form</th>
+					<th style="text-align:center">Available</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
 </div>
+<iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
