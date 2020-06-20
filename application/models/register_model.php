@@ -392,10 +392,12 @@ class Register_model extends CI_Model{
 			$note_date = $this->input->post('note_date');
 			$clinical_data = array();
 			for($i=0;$i<count($clinical_note);$i++){
-				if(!!$note_date[$i]) { $note_date[$i]=date("Y-m-d H:i:s",strtotime($note_date[$i]));}
-				else $note_date[$i] = 0;
-				if($note_date[$i]!=0 && !!$clinical_note[$i])
+				if(!!$note_date[$i] && !!$clinical_note[$i])
+				// if(!!$note_date[$i]) { $note_date[$i]=date("Y-m-d H:i:s",strtotime($note_date[$i]));}
+				// else $note_date[$i] = 0;
+				// if($note_date[$i]!=0 && !!$clinical_note[$i])
 				{
+					$note_date[$i]=date("Y-m-d H:i:s",strtotime($note_date[$i]));
 					$clinical_data[]=array(
 						'clinical_note' => $clinical_note[$i],
 						'note_time' => $note_date[$i],

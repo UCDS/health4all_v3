@@ -1535,40 +1535,46 @@ pri.print();
 						<?php
 							}
 						?>
-						<table class="table table-bordered table-striped">
+						<table class="table table-bordered table-striped clinical-notes-table">
 							<thead>
 								<tr>
 									<th colspan="4">Add Clinical Notes</th>
 								</tr>
 							</thead>
-							<tbody class="daily_notes">
+							<tbody class="daily_notes dynamic-row">
 								<tr>
 									<td><textarea rows="4" cols="60" name="clinical_note[]"  class="form-control"></textarea></td>
 									<td>Select Date and Time to save the note <br /> <input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
-									<td><button  type="button" class="btn btn-sm btn-primary" value="+" id="add_daily_note">+</button></td>
+									<td>
+										<button  type="button" class="btn btn-sm btn-primary add_daily_note">Add</button>
+										<button  type="button" class="btn btn-sm btn-danger remove_daily_note">X</button>
+									</td>
 								</tr>
 							</tbody>
 						</table>
 				</div>
 				<script>
 					$(function(){
-						var i=2;
-		/*				$(".daily_notes_date").Zebra_DatePicker({
-							format:'d-M-Y g:iA'
-						}); */
-						$("#add_daily_note").click(function(){
-							var row = "<tr>"+
-									"<td><textarea rows=\"4\" cols=\"60\" name=\"clinical_note[]\"  class=\"form-control\"></textarea></td>"+
-									"<td><input type=\"text\" class=\"daily_notes_date form-control\" form-control\" name=\"note_date[]\" /> </td>"+
-									"<td></td>"+
-								"</tr>";
-							$('.daily_notes').append(row);
-				/*			$(".daily_notes_date").Zebra_DatePicker({
-								format:'d-M-Y g:iA'
-							}); */
-							i++;
-
+						var toggleAddRemoveButton = function(parent){
+							$(parent).find(".add_daily_note").hide();
+							$(parent).find(".add_daily_note:first").show();
+							$(parent).find(".remove_daily_note").show();
+							$(parent).find(".remove_daily_note:first").hide();
+						}
+						$(document).on('click', ".add_daily_note", function(){
+							var row = $(this).parents('tr:eq(0)').clone(false);
+							row.find('input,textarea').each(function(){
+								$(this).val('');
+							});
+							row.find('span.error').remove();
+							$(this).parents('tbody.daily_notes').append(row);
+							toggleAddRemoveButton($('tbody.daily_notes'));
 						});
+						$(document).on('click', ".remove_daily_note", function(){
+							$(this).parents('tr').remove();
+							toggleAddRemoveButton($('tbody.daily_notes'));
+						});
+						toggleAddRemoveButton($('tbody.daily_notes'));
 					});
 				</script>
 			</div>
@@ -2496,8 +2502,21 @@ pri.print();
 
 	function onUpdatePatientSubmit(event){
 		var flag = true;
+
+		// mandator fields check...
+		$(".clinical-notes-table tbody.daily_notes tr span.error").remove();
+		$(".clinical-notes-table tbody.daily_notes tr").each(function(){
+		    if(flag && $(this).find("[name^=clinical_note]").val() && !$(this).find("[name^=note_date]").val()){
+	        	flag = false;
+	            $('a[href="#clinical"]').click();
+	            $(this).find("[name^=note_date]").after('<span class="error" style="display: block;">This field is required</span>');
+	            $(this).find("[name^=note_date]").get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+	            $(".clinical-notes-table tbody.daily_notes").get(0).scrollTop -= 10;
+		    }
+		});
+
 		// prescription validation...
-		if($("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
+		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
 			// if any drug dropdown is selected then check for the duration & timings...
 			var prescriptionError = false;
 			
@@ -2534,6 +2553,7 @@ pri.print();
 				});
 			}
 		}
+
 		if(flag){
 			addPatientUpdateHiddenFieldAndSubmitForm();
 		}
