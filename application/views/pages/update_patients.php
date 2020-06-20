@@ -44,6 +44,10 @@
 	  	-ms-user-select: none; /* IE 10+ and Edge */
 		user-select: none; /* Standard syntax */
     }
+    .prescription .drug_available_class{
+    	background: #6DF48F;
+    	font-weight: bold;
+    }
 </style>
 <style>
 	.row{
@@ -1844,7 +1848,9 @@ pri.print();
 					<table class="table table-striped table-bordered" id="prescription_table">
 					<thead>
 						<tr>
-						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" /></th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" />
+						<a href="<?php echo base_url();?>reports/all_drugs_list_with_availability" style="display: block" target="_blank">[Click to view all the drugs]</a>
+						</th>
 						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration <br /> (in Days)</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
 						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
@@ -1871,20 +1877,9 @@ pri.print();
 					</thead>
 					<tbody>
 						<tr class="prescription">
-							<td>
-								<select name="drug_0" style="width:150px;" class="form-control" >
-								<option value="">-Enter Generic Drug Name-</option>
-								<?php 
-								foreach($drugs as $drug){
-									$available = $drug->generic_name.' - '.$drug->item_form;
-									$style = '';
-									if(drug_available($drug, $drugs_available)){
-										$available .= ' - Available';
-										$style = "style='background: #6DF48F;'";
-									}
-									echo "<option $style value='".$drug->generic_item_id."'>".$available."</option>";
-								}
-								?>
+							<td style="width:250px;">
+								<select name="drug_0" class="repositories" placeholder="-Enter Generic Drug Name-">
+									<option value="">-Enter Generic Drug Name-</option>
 								</select>
 								<i class="glyphicon glyphicon-pencil"></i>
 								<span class="note_tooltip">[Click to Add Note]</span>
@@ -2354,21 +2349,9 @@ pri.print();
 			$row = "";
 			<?php foreach($previous_prescription as $prev) { ?>
 				$row += '<tr class="prescription">'+
-						'	<td>'+
-								'<select name="drug_'+$i+'" style="width:150px;" class="form-control">'+
-								'<option value="">--Select--</option>'+
-								"<?php 
-									foreach($drugs as $drug){ 
-										$available = '';
-									$style = '';
-									if(drug_available($drug, $drugs_available)){
-										$available = '- Available';
-										$style = 'style=\"background: #ADFF2F; font-weight: bold;\"';
-									}
-									echo '<option value=\"'.$drug->generic_item_id.'\"';
-									if($prev->generic_item_id == $drug->generic_item_id) echo " selected ";									
-									echo ' '.$style.'>'.$drug->generic_name.$available.'</option>';
-								}?>" +
+						'	<td style="width:250px;">'+
+								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-">'+
+								'<option value="">-Enter Generic Drug Name-</option>'+
 								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10"';
 							<?php if(trim($prev->note) == "") { ?> $row += " hidden "; <?php } ?>
 							$row += '><?php echo $prev->note;?></textarea>'+
@@ -2411,22 +2394,13 @@ pri.print();
 				$i++;
 			<?php } ?>
 			$(".prescription").parent().prepend($row);
+			initPrescriptionDrugSelectize();
 		});
 		$("#prescription_add").click(function(){
 			$row = '<tr class="prescription">'+
-						'	<td>'+
-								'<select name="drug_'+$i+'" style="width:150px;" class="form-control">'+
-								'<option value="">--Select--</option>'+
-								"<?php 
-									foreach($drugs as $drug){ 
-										$available = '';
-									$style = '';
-									if(drug_available($drug, $drugs_available)){
-										$available = '- Available';
-										$style = 'style=\"background: #ADFF2F; font-weight: bold;\"';
-									}
-									echo '<option value=\"'.$drug->generic_item_id.'\"'.' '.$style.'>'.$drug->generic_name.$available.'</option>';
-								}?>" +
+						'	<td style="width:250px;">'+
+								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-">'+
+								'<option value="">-Enter Generic Drug Name-</option>'+
 								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" hidden></textarea>'+
 							'</td>'+
 							'<td>'+
@@ -2466,6 +2440,7 @@ pri.print();
 						'</tr>';
 			$i++;
 			$(".prescription").parent().append($row);
+			initPrescriptionDrugSelectize();
 		});
 	});
 	$('#icd_code').selectize({
@@ -2511,7 +2486,6 @@ pri.print();
 	            $('a[href="#clinical"]').click();
 	            $(this).find("[name^=note_date]").after('<span class="error" style="display: block;">This field is required</span>');
 	            $(this).find("[name^=note_date]").get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
-	            $(".clinical-notes-table tbody.daily_notes").get(0).scrollTop -= 10;
 		    }
 		});
 
@@ -2563,6 +2537,87 @@ pri.print();
 		$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
 	}
 
+	var prescriptionDrugs = null;
+	function initPrescriptionDrugSelectize(){
+		$('[name^=drug_]').each(function(){
+			if(!$(this).get(0).selectize){
+				$(this).selectize({
+				    valueField: 'generic_item_id',
+				    labelField: 'custom_name',
+				    searchField: 'custom_name',
+				    options: prescriptionDrugs,
+				    create: false,
+				    render: {
+				        option: function(item, escape) {
+				        	var drugsAvailableClass = "";
+				        	if(item.custom_name.indexOf(' - Available') > -1){
+				        		drugsAvailableClass = "drug_available_class";
+				        	}
+				            return '<div class="'+drugsAvailableClass+'">' +
+				                '<span class="title">' +
+				                    '<span class="prescription_drug_selectize_span">' + escape(item.custom_name) + '</span>' +
+				                '</span>' +
+				            '</div>';
+				        }
+				    },
+				    load: function(query, callback) {
+				        if (!query.length) return callback();
+				        /*if(prescriptionDrugs){
+				        	callback(prescriptionDrugs.slice(0, 10));
+				        	return;
+				        }
+						$.ajax({
+				            url: '<?php echo base_url();?>register/search_prescription_drugs',
+				            type: 'POST',
+							dataType : 'JSON',
+							data : {query:query},
+				            error: function(res) {
+				                callback();
+				            },
+				            success: function(res) {
+				            	// merge drugs_available into respective item in drugs...
+				            	var drugsAvailable = {};
+								res.drugs_available.forEach(function(da){
+								    drugsAvailable[da.generic_item_id] = da;
+								})
+
+								res.drugs.map(function(d){
+									d.custom_name = d.generic_name + ' - ' + d.item_form;
+								    if(drugsAvailable[d.generic_item_id]){
+								    	d.custom_name += ' - Available';
+								        d.drugs_available = drugsAvailable[d.generic_item_id];
+								    }
+								    return d;
+								});
+				            	prescriptionDrugs = res.drugs;
+				                callback(prescriptionDrugs.slice(0, 10));
+				            }
+				        });*/
+				        callback(prescriptionDrugs.slice(0, 10));
+					}
+				});
+			}
+		})
+	}
+
+	function mergeDrugsAvailableToDrugs(res){
+		var drugsAvailable = {};
+		res.drugs_available.forEach(function(da){
+		    drugsAvailable[da.generic_item_id] = da;
+		})
+
+		res.drugs.map(function(d){
+			d.custom_name = d.generic_name + ' - ' + d.item_form;
+		    if(drugsAvailable[d.generic_item_id]){
+		    	d.custom_name += ' - Available';
+		        d.drugs_available = drugsAvailable[d.generic_item_id];
+		    }
+		    return d;
+		});
+    	prescriptionDrugs = res.drugs;
+	}
+	mergeDrugsAvailableToDrugs({drugs: JSON.parse('<?php echo json_encode($drugs); ?>'), drugs_available: JSON.parse('<?php echo json_encode($drugs_available); ?>')});
+
 	$(document).ready(function(){
 		$('[data-toggle="tooltip"]').tooltip();
 
@@ -2609,6 +2664,9 @@ pri.print();
 			}			
 		});
 
+		// prescription dropdown selectize
+		initPrescriptionDrugSelectize();
+		
 		// Goto line no 2144
 		$SBP = '';
 		$DBP = '';

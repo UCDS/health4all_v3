@@ -356,6 +356,17 @@ class Register extends CI_Controller {
 		}
 		else return false;
 	}
+	function search_prescription_drugs(){
+		if($results = $this->masters_model->get_data("drugs")){
+			$list=array(
+				'drugs'=> $results,
+				'drugs_available'=> $this->hospital_model->get_drugs()
+			);
+			
+			echo json_encode($list);
+		}
+		else return false;
+	}
 	
 	function transport(){		
 		if($this->session->userdata('logged_in')){
