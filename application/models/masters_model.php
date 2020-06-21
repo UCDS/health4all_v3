@@ -609,6 +609,9 @@ class Masters_model extends CI_Model{
 			->join("(SELECT activity_id month_activity_done,date month_activity_date,time month_activity_time,score monthly_score,comments FROM activity_done JOIN facility_activity USING(activity_id) JOIN area_activity USING(area_activity_id) WHERE frequency_type='Monthly' AND MONTH(date)=MONTH('$week_start') AND YEAR(date)=YEAR('$week_start')) month_done",'facility_activity.activity_id=month_done.month_activity_done','left')
 			->where('area.area_id',$this->input->post('area'));
 		}
+		else if($type=="defaults"){
+			$this->db->select("*")->from("defaults");
+		}
 		
 		$query=$this->db->get();
 		return $query->result();

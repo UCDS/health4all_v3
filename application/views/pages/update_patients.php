@@ -4,13 +4,16 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+<!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/Chart.min.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
-<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css">
+<!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <style>
+	.error {
+    	color: red;
+  	}
     .obstetric_history_table {  
         border-collapse: collapse; 
     }
@@ -2358,6 +2361,14 @@ pri.print();
 	async function onUpdatePatientSubmit(event){
 		var flag = true;
 
+		$('.form-control.error').each(function(){
+			if(flag){
+				flag = false;
+				$('a[href="#'+$(this).parents('[role="tabpanel"]').attr('id')+'"]').click();
+				$(this).get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		})
+
 		// mandator fields check...
 		$(".clinical-notes-table tbody.daily_notes tr span.error").remove();
 		$(".clinical-notes-table tbody.daily_notes tr").each(function(){
@@ -2442,6 +2453,82 @@ pri.print();
 			$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
 		}
 
+	}
+
+	var defaultsConfigs = JSON.parse('<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>');
+
+	function initUpdatePatientValidations(){
+		if(!defaultsConfigs){
+			bootbox.alert("Defaults configurations are missing, Kindly contact admin regarding this.");
+			return;
+		}
+		var defaultsConfigsObj = {};
+		defaultsConfigs.map(function(dc){
+			defaultsConfigsObj[dc.default_id] = dc;
+		});
+
+		var validatiorRules = {
+            age_years: {
+                range: [0, 200],
+                digits: true
+            },
+            age_months: {
+                range: [0, 11],
+                digits: true
+            },
+            age_days: {
+                range: [0, 31],
+                digits: true
+            }
+        };
+
+        var validationConfigs = [
+        	{ field: 'sbp', target: 'SBP', range: true },
+        	{ field: 'dbp', target: 'DBP', range: true },
+        	{ field: 'admit_weight', target: 'WT', range: true, digits: false },
+        	{ field: 'pulse_rate', target: 'HR', range: true },
+        	{ field: 'temperature', target: 'TEMP', range: true },
+        	{ field: 'respiratory_rate', target: 'RR', range: true },
+        	{ field: 'blood_sugar', target: 'RBS', range: true },
+        	{ field: 'hb', target: 'HB', range: true },
+        	{ field: 'hb1ac', target: 'HBAIC', range: true },
+        ];
+
+        validationConfigs.map(function(vc){
+        	if(defaultsConfigsObj[vc.target]){
+        		if(vc.range){
+	        		validatiorRules[vc.field] = {
+	        			range: [defaultsConfigsObj[vc.target]['lower_range'], defaultsConfigsObj[vc.target]['upper_range']],
+	        			digits: true
+	        		}
+	        		if(!vc.digits){
+	        			delete validatiorRules[vc.field]['digits'];
+	        		}
+        		}
+        	}
+        });
+            
+
+		$('form[id="update_patients"]').validate({
+	        rules: validatiorRules,
+	        errorPlacement: function( label, element ) {
+				if( ["age_years", "age_months", "age_days", "sbp", "dbp"].indexOf(element.attr( "name" )) > -1 ) {
+					element.parent().append( label ); // this would append the label after all your checkboxes/labels (so the error-label will be the last element in <div class="controls"> )
+				} else {
+					label.insertAfter( element ); // standard behaviour
+				}
+			}
+	        /*ignore: ".date_custom",
+	        submitHandler: function (form) {
+	            form.submit();
+	        }*/
+	    });
+
+	    /*$.validator.addMethod("oneormorechecked", function(value, element) {
+		  return $('input[name="' + element.name + '"]:checked').length > 0;
+		}, "Atleast 1 must be selected");
+
+		$('.validate').validate();*/
 	}
 
 	var prescriptionDrugs = null;
@@ -2578,6 +2665,8 @@ pri.print();
 		// prescription dropdown selectize
 		mergeDrugsAvailableToDrugs({drugs: JSON.parse('<?php echo json_encode($drugs); ?>'), drugs_available: JSON.parse('<?php echo json_encode($drugs_available); ?>')});
 		initPrescriptionDrugSelectize();
+
+		initUpdatePatientValidations();
 
 		// Goto line no 2144
 		$SBP = '';
