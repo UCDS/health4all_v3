@@ -703,18 +703,7 @@ pri.print();
                         if($f->user_function == "patient_visit"){
                             ?>
                              <div role="tabpanel" class="tab-pane" id="patient_visit">
-                                 <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                                </div>
+                                 <div data-patient-quick-info></div>
                                  <div class="row alt">
                               <div class="col-md-4 col-xs-6">
 				<label class="control-label">Department<span class="mandatory" >*</span></label>
@@ -998,18 +987,7 @@ pri.print();
                     if($f->user_function== "Patient Transport"){
                         ?>
               <div role="tabpanel" class="tab-pane" id="patient_transport">
-                  <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                  </div>
+                  <div data-patient-quick-info></div>
                   <div class="row alt">
 					
 					 <!--Patient transfers-->
@@ -1072,18 +1050,7 @@ pri.print();
                     if($f->user_function== "mlc"){
                         ?>
               <div role="tabpanel" class="tab-pane" id="mlc">
-                  <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                  </div>
+                  <div data-patient-quick-info></div>
                   <div class="row alt">
                         <div class="col-md-4 col-xs-6">
 				<label class="control-label">MLC</label>
@@ -1178,18 +1145,7 @@ pri.print();
                     if($f->user_function== "obg"){
                         ?>
               <div role="tabpanel" class="tab-pane" id="obg">
-                  <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                  </div>
+                  <div data-patient-quick-info></div>
                   <div class="row alt">
                             <!--OBG-->
                                  <div class="col-md-12 col-xs-12">
@@ -1390,18 +1346,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Clinical" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="clinical">
-                    <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+                    <div data-patient-quick-info></div>
 			<div class="row alt">
 				<div class="col-md-4 col-xs-6">
 					<label class="control-label">Admit Weight</label>
@@ -1591,18 +1536,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "View Diagnostics") { ?>
 		<div role="tabpanel" class="tab-pane" id="diagnostics">
-			<div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                        </div>
+			<div data-patient-quick-info></div>
 			<?php 
 			if(isset($tests) && count($tests)>0){ ?>
 				<table class="table table-bordered table-striped table-hover" id="table-sort">
@@ -1677,18 +1611,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Procedures" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="procedures">
-                    <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+                    <div data-patient-quick-info></div>
 			<div class="row alt">
 				<div class="col-md-4">
 					<label class="control-label">Procedure</label>
@@ -1824,18 +1747,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Prescription" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="prescription">
-                    <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                                </div>
+                    <div data-patient-quick-info></div>
 			<div class="row alt">
 			<div class="col-md-12 alt">
 
@@ -1992,18 +1904,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Discharge" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="discharge">
-                    <div class="row">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+                    <div data-patient-quick-info></div>
 			<div class="row">
 			<div class="col-md-12 alt">
 				<div class="col-md-2">
@@ -2127,28 +2028,7 @@ pri.print();
 		}} ?>
 		<!-- Insert New Tab here -->
 		<div role="tabpanel" class="tab-pane  <?php if(count($previous_visits) > 1) echo "active"; ?>" id="vitals">
-		<div class="row">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?>, </b>
-                                    <b>
-										<?php 
-											echo $patient->first_name." ".$patient->last_name.", "; 
-											if($patient->age_years!=0){ echo $patient->age_years." Yrs "; } 
-											if($patient->age_months!=0){ echo $patient->age_months." Mths "; }
-											if($patient->age_days!=0){ echo $patient->age_days." Days "; }
-											if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
-											echo "/".$patient->gender; 
-										?> 
-									</b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+			<div data-patient-quick-info></div>
 			<div class="row">
 				<div class="col-md-4">
 					<canvas id="sbp_dbp" width="100" height="100"></canvas>
@@ -2643,9 +2523,13 @@ pri.print();
 		});
     	prescriptionDrugs = res.drugs;
 	}
-	mergeDrugsAvailableToDrugs({drugs: JSON.parse('<?php echo json_encode($drugs); ?>'), drugs_available: JSON.parse('<?php echo json_encode($drugs_available); ?>')});
 
+	function performTemplateReplacement(){
+		$("[data-patient-quick-info]").replaceWith($('#template-patient-quick-info').html());
+	}
 	$(document).ready(function(){
+		performTemplateReplacement();
+
 		$('[data-toggle="tooltip"]').tooltip();
 
 		var textareaResizeHeight = function(e){
@@ -2692,8 +2576,9 @@ pri.print();
 		});
 
 		// prescription dropdown selectize
+		mergeDrugsAvailableToDrugs({drugs: JSON.parse('<?php echo json_encode($drugs); ?>'), drugs_available: JSON.parse('<?php echo json_encode($drugs_available); ?>')});
 		initPrescriptionDrugSelectize();
-		
+
 		// Goto line no 2144
 		$SBP = '';
 		$DBP = '';
@@ -2782,3 +2667,28 @@ pri.print();
 <div class="sr-only" id="print-div-all" style="width:100%;height:100%;"> 
 			<?php $this->load->view('pages/print_layouts/patient_summary_all_visits');?>
 </div>
+
+<template id="template-patient-quick-info" type="text/html">
+    <div class="row alt">
+        <div class="col-md-4 col-xs-6">
+            <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
+            <b>
+                <?php 
+                    echo $patient->first_name." ".$patient->last_name.", "; 
+                    if($patient->age_years!=0){ echo $patient->age_years." Yrs "; } 
+                    if($patient->age_months!=0){ echo $patient->age_months." Mths "; }
+                    if($patient->age_days!=0){ echo $patient->age_days." Days "; }
+                    if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
+                    echo "/".$patient->gender; 
+                ?> 
+            </b>
+        </div>
+        <div class="col-md-4 col-xs-6">
+            <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
+        </div>
+        <div class="col-md-4 col-xs-6">
+            <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
+            <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
+        </div>
+    </div>
+</template>
