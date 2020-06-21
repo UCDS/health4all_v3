@@ -2475,7 +2475,7 @@ pri.print();
 	}
 	});
 
-	function onUpdatePatientSubmit(event){
+	async function onUpdatePatientSubmit(event){
 		var flag = true;
 
 		// mandator fields check...
@@ -2488,6 +2488,36 @@ pri.print();
 	            $(this).find("[name^=note_date]").get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
 		    }
 		});
+
+		// if prescription selected & any of the 12 notes fields is not mentioned. [CLINICAL TAB + discharge tab]
+		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
+			var optionalFlag = false;
+			$("[name=presenting_complaints],[name=past_history],[name=family_history],[name=clinical_findings],[name=cvs],[name=rs],[name=pa],[name=cns],[name=final_diagnosis],[name=decision],[name=advise],[name=icd_code]").each(function(){
+				if(!optionalFlag && $(this).val()){
+					optionalFlag = true;
+				}
+			});
+			if(!optionalFlag){
+				flag = false;
+				await new Promise((resolve) => {
+					bootbox.alert("Medicine prescription is not permitted without Symptoms or Clinical Notes or Diagnosis being mentioned.", function(){ 
+					    resolve(false);
+					});
+				})
+			}
+		}
+
+		
+		// signed consultation checkbox is mandatory if any prescription is given...
+		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0 && $('[name=signed_consultation]').length > 0 && $('[name=signed_consultation]:checked').length == 0){
+			flag = false;
+			await new Promise((resolve) => {
+				bootbox.alert("Medicine prescrition is not permitted without Doctor sign off. Please ensure treating Doctor signs off this consultation", function(){ 
+				    $('[name=signed_consultation]').get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+				    resolve(false);
+				});
+			})
+		}
 
 		// prescription validation...
 		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
@@ -2504,37 +2534,34 @@ pri.print();
 			})
 
 			if(prescriptionError){
-				flag = false;
-				bootbox.confirm({
-				    message: "Would you like to mention number of DAYS and/or TIMING for the Prescribed Medicine(s)?",
-				    buttons: {
-				        confirm: {
-				            label: 'Ignore and proceed',
-				            className: 'btn-success'
-				        },
-				        cancel: {
-				            label: 'Go back and update',
-				            className: 'btn-warning'
-				        }
-				    },
-				    callback: function (result) {
-				        if(result){
-				        	addPatientUpdateHiddenFieldAndSubmitForm();
-				        } else {
-				        	$('a[href="#prescription"]').click()
-				        }
-				    }
-				});
+				flag = await new Promise((resolve) => {
+					bootbox.confirm({
+					    message: "Would you like to mention number of DAYS and/or TIMING for the Prescribed Medicine(s)?",
+					    buttons: {
+					        confirm: {
+					            label: 'Ignore and proceed',
+					            className: 'btn-success'
+					        },
+					        cancel: {
+					            label: 'Go back and update',
+					            className: 'btn-warning'
+					        }
+					    },
+					    callback: function (result) {
+					        if(!result){
+					        	$('a[href="#prescription"]').click()
+					        }
+					        resolve(result)
+					    }
+					});
+		      	})
 			}
-		}
+		}	
 
 		if(flag){
-			addPatientUpdateHiddenFieldAndSubmitForm();
+			$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
 		}
-	}
 
-	function addPatientUpdateHiddenFieldAndSubmitForm(){
-		$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
 	}
 
 	var prescriptionDrugs = null;
