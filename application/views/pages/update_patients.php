@@ -1356,24 +1356,31 @@ pri.print();
 					<input type="text" name="admit_weight" class="form-control" value="<?php if(!!$patient->admit_weight) echo $patient->admit_weight;?>" <?php if($f->edit==1  && empty($patient->admit_weight)) echo ''; else echo ' readonly'; ?> />
 				</div>
 				<div class="col-md-4 col-xs-6">
+					<label class="control-label">Blood Pressure<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="SBP - Systolic Blood Pressure / DBP- Diastolic Blood Pressure" data-toggle="tooltip"/></label>
+					<input maxlength="3" size="3" type="text" placeholder="SBP" name="sbp" style="width:60px" class="form-control blood_pressure" value="<?php if(!!$patient->sbp) echo $patient->sbp;?>" <?php if($f->edit==1 && empty($patient->sbp)) echo ''; else echo ' readonly'; ?> />/
+					<input maxlength="3" size="3" type="text" placeholder="DBP" name="dbp"  style="width:60px" class="form-control blood_pressure" value="<?php if(!!$patient->dbp) echo $patient->dbp;?>" <?php if($f->edit==1 && empty($patient->dbp)) echo ''; else echo ' readonly'; ?> />
+				</div>
+
+				<div class="col-md-4 col-xs-6">
 					<label class="control-label">Pulse Rate</label>
 					<input type="text" name="pulse_rate" class="form-control pulse_rate" value="<?php if(!!$patient->pulse_rate)  echo $patient->pulse_rate;?>"  <?php if($f->edit==1  && empty($patient->pulse_rate)) echo ''; else echo ' readonly'; ?> />
-				</div>
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Temperature</label>
-					<input type="text" name="temperature" class="form-control" value="<?php if(!!$patient->temperature)  echo $patient->temperature;?>" <?php if($f->edit==1 && empty($patient->temperature)) echo ''; else echo ' readonly'; ?> />
 				</div>
 			</div>
 			<div class="row alt">
 				
 				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Blood Pressure</label>
-					<input maxlength="3" size="3" type="text" name="sbp" style="width:50px" class="form-control blood_pressure" value="<?php if(!!$patient->sbp) echo $patient->sbp;?>" <?php if($f->edit==1 && empty($patient->sbp)) echo ''; else echo ' readonly'; ?> />/
-					<input maxlength="3" size="3" type="text" name="dbp"  style="width:50px" class="form-control blood_pressure" value="<?php if(!!$patient->dbp) echo $patient->dbp;?>" <?php if($f->edit==1 && empty($patient->dbp)) echo ''; else echo ' readonly'; ?> />
+					<label class="control-label">SpO2<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Oxygen Saturation" data-toggle="tooltip"/></label>
+					<input maxlength="3" size="3" type="text" name="spo2"  style="width:50px" class="form-control spo2" value="<?php if(!!$patient->spo2) echo $patient->spo2;?>" <?php if($f->edit==1 && empty($patient->spo2)) echo ''; else echo ' readonly'; ?> />%
 				</div>
+				
 				<div class="col-md-4 col-xs-6">
 					<label class="control-label">Respiratory Rate</label>
 					<input type="text" name="respiratory_rate" class="form-control respiratory_rate" value="<?php if(!!$patient->respiratory_rate) echo $patient->respiratory_rate;?>" <?php if($f->edit==1  && empty($patient->respiratory_rate)) echo ''; else echo ' readonly'; ?> />
+				</div>
+
+				<div class="col-md-4 col-xs-6">
+					<label class="control-label">Temperature</label>
+					<input type="text" name="temperature" class="form-control" value="<?php if(!!$patient->temperature)  echo $patient->temperature;?>" <?php if($f->edit==1 && empty($patient->temperature)) echo ''; else echo ' readonly'; ?> />
 				</div>
 			</div>
 			<div class="row alt">
@@ -1382,11 +1389,11 @@ pri.print();
 					<input maxlength="3" size="3" type="text" name="blood_sugar"  style="width:50px" class="form-control blood_sugar" value="<?php if(!!$patient->blood_sugar) echo $patient->blood_sugar;?>" <?php if($f->edit==1 && empty($patient->blood_sugar)) echo ''; else echo ' readonly'; ?> /> mg/dL
 				</div>
 				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Hb</label>
+					<label class="control-label">Hb<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Haemoglobin" data-toggle="tooltip"/></label>
 					<input maxlength="4" size="4" type="text" name="hb"  style="width:50px" class="form-control hb" value="<?php if(!!$patient->hb) echo $patient->hb;?>" <?php if($f->edit==1 && empty($patient->hb)) echo ''; else echo ' readonly'; ?> /> g/dL
 				</div>
 				<div class="col-md-4 col-xs-6">
-					<label class="control-label">HbA1c</label>
+					<label class="control-label">HbA1c<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Glycated Haemoglobin" data-toggle="tooltip"/></label>
 					<input maxlength="3" size="3" type="text" name="hb1ac"  style="width:50px" class="form-control hb1ac" value="<?php if(!!$patient->hb1ac) echo $patient->hb1ac;?>" <?php if($f->edit==1 && empty($patient->hb1ac)) echo ''; else echo ' readonly'; ?> />%
 				</div>
 			</div>
@@ -1777,31 +1784,31 @@ pri.print();
 							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
 
-							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 
-							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
 
-							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 
-							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
 							
-							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr class="prescription">
-							<td style="width:250px;">
+							<td style="width:500px;">
 								<select name="drug_0" class="repositories" placeholder="-Enter Generic Drug Name-">
 									<option value="">-Enter Generic Drug Name-</option>
 								</select>
 								<i class="glyphicon glyphicon-pencil"></i>
 								<span class="note_tooltip">[Click to Add Note]</span>
-								<textarea name="note_0" rows="5" hidden></textarea>
+								<textarea name="note_0" rows="5" placeholder="Enter note here" style="border: 0px;background: transparent;" hidden></textarea>
 							</td>
-							<td>
-								<input type="text" name="duration_0" placeholder="Days" style="width:100px" class="form-control" />
+							<td class="text-center">
+								<input type="text" name="duration_0" placeholder="Days" style="width:60px" class="form-control" />
 							</td>
 						<!--	<td>
 								<select name="frequency_0" class="form-control" >
@@ -1811,22 +1818,22 @@ pri.print();
 									<?php } ?>
 								</select>
 							</td> -->
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="bb_0" value="1"  /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="ab_0" value="1"  /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="bl_0" value="1" /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="al_0" value="1" /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="bd_0" value="1" /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="ad_0" value="1" /></label>
 								<input type="text" name="prescription[]" class="sr-only" value="0"  />
 							</td>
@@ -1860,31 +1867,31 @@ pri.print();
 							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
 
-							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 
-							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
 
-							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 
-							<th><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
 
-							<th><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 						</tr>
 					</thead>
 					<tbody>
 					<?php foreach($prescription as $pres){ ?>						
 					<tr>
 						<td><?php echo $pres->item_name.' - '.$pres->item_form;?><br><?php if($pres->note!='') echo '-'.$pres->note;?></td>
-						<td><?php echo $pres->duration;?></td>
+						<td class="text-center"><?php echo $pres->duration;?></td>
 					<!--	<td><?php echo $pres->frequency;?></td> -->
-						<td><?php if($pres->morning == 1 || $pres->morning == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->morning == 2 || $pres->morning == 3) echo " <i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->afternoon == 1 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->afternoon == 2 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->evening == 1 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->evening == 2 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->morning == 1 || $pres->morning == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->morning == 2 || $pres->morning == 3) echo " <i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->afternoon == 1 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->afternoon == 2 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->evening == 1 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->evening == 2 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
 					<!--	<td><?php echo $pres->quantity;?> </td> -->
 					<!--	<td>
 							<?php echo form_open('register/update_patients',array('class'=>'form-custom'));?>
@@ -2232,15 +2239,15 @@ pri.print();
 			$row = "";
 			<?php foreach($previous_prescription as $prev) { ?>
 				$row += '<tr class="prescription">'+
-						'	<td style="width:250px;">'+
-								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-">'+
+						'	<td style="width:500px;">'+
+								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-" data-previous-value="<?php echo $prev->item_id;?>">'+
 								'<option value="">-Enter Generic Drug Name-</option>'+
-								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10"';
+								'</select>'+'<i class="glyphicon glyphicon-pencil active"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" placeholder="Enter note here" style="border: 0px;background: transparent;"';
 							<?php if(trim($prev->note) == "") { ?> $row += " hidden "; <?php } ?>
 							$row += '><?php echo $prev->note;?></textarea>'+
 							'</td>'+
-							'<td>'+
-								'<input type="text" name="duration_'+$i+'" placeholder="Days" value="<?php echo $prev->duration;?>" style="width:100px" class="form-control" />'+
+							'<td class="text-center">'+
+								'<input type="text" name="duration_'+$i+'" placeholder="Days" value="<?php echo $prev->duration;?>" style="width:60px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
 								'<select name="frequency_'+$i+'" class="form-control">'+
@@ -2249,22 +2256,22 @@ pri.print();
 								<?php } ?>
 								'</select>'+
 							'</td> -->'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bb_'+$i+'" <?php if($prev->morning == 1 || $prev->morning == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ab_'+$i+'" <?php if($prev->morning == 2 || $prev->morning == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bl_'+$i+'" <?php if($prev->afternoon == 1 || $prev->afternoon == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="al_'+$i+'" <?php if($prev->afternoon == 2 || $prev->afternoon == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bd_'+$i+'" <?php if($prev->evening == 1 || $prev->evening == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ad_'+$i+'" <?php if($prev->evening == 2 || $prev->evening == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
 							'<!--<td>'+
@@ -2278,16 +2285,25 @@ pri.print();
 			<?php } ?>
 			$(".prescription").parent().prepend($row);
 			initPrescriptionDrugSelectize();
+
+			// TODO: CHANGE PHP CODE TO JSON BASED UI RENDERING...
+			$('[name^=note_]').each(function(){
+				if($(this).attr('hidden')){
+					$(this).prev().prev().removeClass('active');
+				} else {
+					$(this).prev().html('[Click to Delete Note]');
+				}
+			})
 		});
 		$("#prescription_add").click(function(){
 			$row = '<tr class="prescription">'+
-						'	<td style="width:250px;">'+
+						'	<td style="width:500px;">'+
 								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-">'+
 								'<option value="">-Enter Generic Drug Name-</option>'+
-								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" hidden></textarea>'+
+								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" placeholder="Enter note here" style="border: 0px;background: transparent;" hidden></textarea>'+
 							'</td>'+
 							'<td>'+
-								'<input type="text" name="duration_'+$i+'" placeholder="Days" style="width:100px" class="form-control" />'+
+								'<input type="text" name="duration_'+$i+'" placeholder="Days" style="width:60px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
 								'<select name="frequency_'+$i+'" class="form-control">'+
@@ -2483,8 +2499,9 @@ pri.print();
         };
 
         var validationConfigs = [
-        	{ field: 'sbp', target: 'SBP', range: true },
+        	{ field: 'sbp', target: 'SBP', range: true,  },
         	{ field: 'dbp', target: 'DBP', range: true },
+        	{ field: 'spo2', target: 'SPO2', range: true },
         	{ field: 'admit_weight', target: 'WT', range: true, digits: false },
         	{ field: 'pulse_rate', target: 'HR', range: true },
         	{ field: 'temperature', target: 'TEMP', range: true },
@@ -2493,6 +2510,8 @@ pri.print();
         	{ field: 'hb', target: 'HB', range: true },
         	{ field: 'hb1ac', target: 'HBAIC', range: true },
         ];
+
+        var validationMessages = {};
 
         validationConfigs.map(function(vc){
         	if(defaultsConfigsObj[vc.target]){
@@ -2504,6 +2523,10 @@ pri.print();
 	        		if(!vc.digits){
 	        			delete validatiorRules[vc.field]['digits'];
 	        		}
+
+	        		validationMessages[vc.field] = {
+	                	range: "Please enter a valid value.&nbsp;"
+	            	}
         		}
         	}
         });
@@ -2511,6 +2534,7 @@ pri.print();
 
 		$('form[id="update_patients"]').validate({
 	        rules: validatiorRules,
+	        messages: validationMessages,
 	        errorPlacement: function( label, element ) {
 				if( ["age_years", "age_months", "age_days", "sbp", "dbp"].indexOf(element.attr( "name" )) > -1 ) {
 					element.parent().append( label ); // this would append the label after all your checkboxes/labels (so the error-label will be the last element in <div class="controls"> )
@@ -2535,7 +2559,7 @@ pri.print();
 	function initPrescriptionDrugSelectize(){
 		$('[name^=drug_]').each(function(){
 			if(!$(this).get(0).selectize){
-				$(this).selectize({
+				var selectize = $(this).selectize({
 				    valueField: 'generic_item_id',
 				    labelField: 'custom_name',
 				    searchField: 'custom_name',
@@ -2588,8 +2612,12 @@ pri.print();
 				            }
 				        });*/
 				        callback(prescriptionDrugs.slice(0, 10));
-					}
+					},
+
 				});
+				if($(this).attr("data-previous-value")){
+					selectize[0].selectize.setValue($(this).attr("data-previous-value"));
+				}
 			}
 		})
 	}
