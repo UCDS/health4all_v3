@@ -2,7 +2,7 @@
 
 Softwares to be installed
     - WAMP / XAMPP Server
-    - SQLYog Community IDE [Instead of phpmyadmin]
+    - Recommendation: SQLYog Community IDE [Instead of phpmyadmin if available and familiar for the programmer]
 
 
 Steps to be followed : 
