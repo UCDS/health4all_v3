@@ -13,7 +13,7 @@ $(document).ready(function(){
             .attr('value', query_strings)
             .appendTo('#primary_filter');
         $.ajax({
-            url: '/generic_report/json_data',     // url where to submit the request Local URL
+            url: $("#primary_filter").attr('action'),     // url where to submit the request Local URL
                                                                 // url: '/generic_report/json_data',     // url where to submit the request
             type : "POST",                                      // type of action POST || GET
             dataType : 'json',                                  // data type

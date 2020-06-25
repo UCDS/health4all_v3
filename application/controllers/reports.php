@@ -6,6 +6,8 @@ class Reports extends CI_Controller {
 		$this->load->model('reports_model');
 		$this->load->model('masters_model');
 		$this->load->model('staff_model');
+		$this->load->model('hospital_model');
+
 		if($this->session->userdata('logged_in')){
                     $userdata=$this->session->userdata('logged_in');        
                     $user_id=$userdata['user_id'];                          
@@ -875,6 +877,34 @@ class Reports extends CI_Controller {
         else{
             show_404();
         }
+    }
+
+
+	public function all_drugs_list_with_availability()
+	{
+        if($this->session->userdata('logged_in')){
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){
+                if($function->user_function=="Update Patients"){
+					$access=1;
+				}
+            }
+            if($access==1){
+				$this->data['drugs'] = $this->hospital_model->get_masters_drugs();
+            	$this->data['drugs_available'] = $this->hospital_model->get_drugs();
+
+                $this->data['title']="All Drugs Report";
+                $this->load->view('templates/header',$this->data);
+                $this->load->view('pages/all_drugs_list_with_availability', $this->data);
+                $this->load->view('templates/footer');
+            }
+            else{
+                show_404();
+            }
+        } else{
+        	show_404();
+    	}
     }
 	
 	

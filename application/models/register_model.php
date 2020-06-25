@@ -4,7 +4,7 @@ class Register_model extends CI_Model{
 		'hospital_id','admit_id','visit_type','visit_name_id','patient_id','hosp_file_no',
 		'admit_date','admit_time','department_id','unit','area','nurse','insurance_case',
 		'insurance_id','insurance_no','presenting_complaints','past_history','family_history','admit_weight',
-		'pulse_rate','respiratory_rate','temperature','sbp','dbp','blood_sugar','hb','hb1ac',
+		'pulse_rate','respiratory_rate','temperature','sbp','dbp','spo2', 'blood_sugar','hb','hb1ac',
 		'clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis',
 		'final_diagnosis','decision','advise','discharge_weight','outcome','outcome_date',
 		'outcome_time','ip_file_received','mlc','arrival_mode','refereal_hospital_id','insert_by_user_id',
@@ -81,6 +81,7 @@ class Register_model extends CI_Model{
 		if($this->input->post('pulse_rate')) $pulse_rate=$this->input->post('pulse_rate'); else $pulse_rate="";
 		if($this->input->post('respiratory_rate')) $respiratory_rate=$this->input->post('respiratory_rate'); else $respiratory_rate="";
 		if($this->input->post('temperature')) $temperature=$this->input->post('temperature'); else $temperature="";
+		if($this->input->post('spo2')) $spo2=$this->input->post('spo2'); else $spo2="";
 		if($this->input->post('admit_weight')) $admit_weight=$this->input->post('admit_weight'); else $admit_weight="";
 		if($this->input->post('discharge_weight')) $discharge_weight=$this->input->post('discharge_weight'); else $discharge_weight="";
 		$phone=$this->input->post('phone');
@@ -248,6 +249,7 @@ class Register_model extends CI_Model{
 			'pulse_rate'=>$pulse_rate,
 			'respiratory_rate'=>$respiratory_rate,
 			'temperature'=>$temperature,
+			'spo2'=>$spo2,
 			'admit_weight'=>$admit_weight,
 			'discharge_weight'=>$discharge_weight,
 			'visit_type'=>$form_type,
@@ -392,10 +394,12 @@ class Register_model extends CI_Model{
 			$note_date = $this->input->post('note_date');
 			$clinical_data = array();
 			for($i=0;$i<count($clinical_note);$i++){
-				if(!!$note_date[$i]) { $note_date[$i]=date("Y-m-d H:i:s",strtotime($note_date[$i]));}
-				else $note_date[$i] = 0;
-				if($note_date[$i]!=0 && !!$clinical_note[$i])
+				if(!!$note_date[$i] && !!$clinical_note[$i])
+				// if(!!$note_date[$i]) { $note_date[$i]=date("Y-m-d H:i:s",strtotime($note_date[$i]));}
+				// else $note_date[$i] = 0;
+				// if($note_date[$i]!=0 && !!$clinical_note[$i])
 				{
+					$note_date[$i]=date("Y-m-d H:i:s",strtotime($note_date[$i]));
 					$clinical_data[]=array(
 						'clinical_note' => $clinical_note[$i],
 						'note_time' => $note_date[$i],
@@ -442,7 +446,7 @@ class Register_model extends CI_Model{
 					$prescription_data[] = array(
 						'visit_id'=>$this->input->post('visit_id'),
 						'item_id'=>$drug,
-						'duration'=>$duration,
+						'duration'=>empty($duration) ? NULL : $duration,
 						'frequency'=>$frequency,
 						'morning'=>$morning,
 						'afternoon'=>$afternoon,
@@ -553,6 +557,7 @@ class Register_model extends CI_Model{
 		if($this->input->post('pulse_rate')) $pulse_rate=$this->input->post('pulse_rate'); else $pulse_rate="";
 		if($this->input->post('respiratory_rate')) $respiratory_rate=$this->input->post('respiratory_rate'); else $respiratory_rate="";
 		if($this->input->post('temperature')) $temperature=$this->input->post('temperature'); else $temperature="";
+		if($this->input->post('spo2')) $spo2=$this->input->post('spo2'); else $spo2="";
 		if($this->input->post('admit_weight')) $admit_weight=$this->input->post('admit_weight'); else $admit_weight="";
 		if($this->input->post('blood_sugar')) $blood_sugar=$this->input->post('blood_sugar'); else $blood_sugar="";
 		if($this->input->post('hb')) $hb=$this->input->post('hb'); else $hb="";
@@ -700,6 +705,7 @@ class Register_model extends CI_Model{
 			'pulse_rate'=>$pulse_rate,
 			'respiratory_rate'=>$respiratory_rate,
 			'temperature'=>$temperature,
+			'spo2'=>$spo2,
 			'admit_weight'=>$admit_weight,
 			'blood_sugar'=>$blood_sugar,
 			'hb'=>$hb,
@@ -869,7 +875,7 @@ class Register_model extends CI_Model{
 				$prescription_data[] = array(
 					'visit_id'=>$visit_id,
 					'item_id'=>$drug,
-					'duration'=>$duration,
+					'duration'=>empty($duration) ? NULL : $duration,
 					'frequency'=>$frequency,
 					'morning'=>$morning,
 					'afternoon'=>$afternoon,

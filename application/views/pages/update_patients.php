@@ -4,12 +4,16 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+<!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/Chart.min.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
-<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css">
+<!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <style>
+	.error {
+    	color: red;
+  	}
     .obstetric_history_table {  
         border-collapse: collapse; 
     }
@@ -20,6 +24,32 @@
         display: block; 
         border: 1px solid black;
         height: 55px;
+    }
+    .prescription_table_heading_icons, .prescription_table_heading_info_icons{
+    	width: 15px;
+    	height: 15px;
+    	margin-right: 5px;
+    	margin-left: 5px;
+    }
+    .border_bottom_dashed{
+    	border-bottom: 1px dashed black;
+    }
+    .prescription textarea{
+        resize: none;
+    	width: 100%;
+    	margin-top: 10px;
+        height: 28px;
+        overflow: hidden;
+    }
+    .prescription .note_tooltip, .prescription .glyphicon-pencil{
+    	cursor: pointer;
+    	-webkit-user-select: none; /* Safari */
+	  	-ms-user-select: none; /* IE 10+ and Edge */
+		user-select: none; /* Standard syntax */
+    }
+    .prescription .drug_available_class{
+    	background: #6DF48F;
+    	font-weight: bold;
     }
 </style>
 <style>
@@ -178,6 +208,11 @@ pri.print();
 		$("#to_area").chained("#to_department");
 });
 </script>
+
+<?php
+	$patient = $patients[0];
+?>
+
 <?php 
 	function drug_available($drug, $drugs_available){
 		foreach($drugs_available as $drg){
@@ -293,7 +328,7 @@ pri.print();
                        
                 <?php 
 			foreach($functions as $f){ 
-				if($f->user_function == "obg" && ($f->add==1 || $f->edit==1)) { ?>
+				if($f->user_function == "obg" && ($f->add==1 || $f->edit==1) && $patient->gender != 'M') { ?>
 					<li role="presentation"><a href="#obg" aria-controls="obg" role="tab" data-toggle="tab"><i class="fa fa-stethoscope"></i>OBG</a></li>
 				<?php 
 				break;
@@ -356,7 +391,6 @@ pri.print();
 		?>
 	  </ul>
           <?php
-				$patient = $patients[0];
 				$age="";
 				if($patient->age_years!=0) $age.=$patient->age_years."Y ";
 				if($patient->age_months!=0) $age.=$patient->age_months."M ";
@@ -672,18 +706,7 @@ pri.print();
                         if($f->user_function == "patient_visit"){
                             ?>
                              <div role="tabpanel" class="tab-pane" id="patient_visit">
-                                 <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                                </div>
+                                 <div data-patient-quick-info></div>
                                  <div class="row alt">
                               <div class="col-md-4 col-xs-6">
 				<label class="control-label">Department<span class="mandatory" >*</span></label>
@@ -967,18 +990,7 @@ pri.print();
                     if($f->user_function== "Patient Transport"){
                         ?>
               <div role="tabpanel" class="tab-pane" id="patient_transport">
-                  <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                  </div>
+                  <div data-patient-quick-info></div>
                   <div class="row alt">
 					
 					 <!--Patient transfers-->
@@ -1041,18 +1053,7 @@ pri.print();
                     if($f->user_function== "mlc"){
                         ?>
               <div role="tabpanel" class="tab-pane" id="mlc">
-                  <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                  </div>
+                  <div data-patient-quick-info></div>
                   <div class="row alt">
                         <div class="col-md-4 col-xs-6">
 				<label class="control-label">MLC</label>
@@ -1147,18 +1148,7 @@ pri.print();
                     if($f->user_function== "obg"){
                         ?>
               <div role="tabpanel" class="tab-pane" id="obg">
-                  <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                  </div>
+                  <div data-patient-quick-info></div>
                   <div class="row alt">
                             <!--OBG-->
                                  <div class="col-md-12 col-xs-12">
@@ -1359,42 +1349,38 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Clinical" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="clinical">
-                    <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+                    <div data-patient-quick-info></div>
 			<div class="row alt">
 				<div class="col-md-4 col-xs-6">
 					<label class="control-label">Admit Weight</label>
 					<input type="text" name="admit_weight" class="form-control" value="<?php if(!!$patient->admit_weight) echo $patient->admit_weight;?>" <?php if($f->edit==1  && empty($patient->admit_weight)) echo ''; else echo ' readonly'; ?> />
 				</div>
 				<div class="col-md-4 col-xs-6">
+					<label class="control-label">Blood Pressure<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="SBP - Systolic Blood Pressure / DBP- Diastolic Blood Pressure" data-toggle="tooltip"/></label>
+					<input maxlength="3" size="3" type="text" placeholder="SBP" name="sbp" style="width:60px" class="form-control blood_pressure" value="<?php if(!!$patient->sbp) echo $patient->sbp;?>" <?php if($f->edit==1 && empty($patient->sbp)) echo ''; else echo ' readonly'; ?> />/
+					<input maxlength="3" size="3" type="text" placeholder="DBP" name="dbp"  style="width:60px" class="form-control blood_pressure" value="<?php if(!!$patient->dbp) echo $patient->dbp;?>" <?php if($f->edit==1 && empty($patient->dbp)) echo ''; else echo ' readonly'; ?> />
+				</div>
+
+				<div class="col-md-4 col-xs-6">
 					<label class="control-label">Pulse Rate</label>
 					<input type="text" name="pulse_rate" class="form-control pulse_rate" value="<?php if(!!$patient->pulse_rate)  echo $patient->pulse_rate;?>"  <?php if($f->edit==1  && empty($patient->pulse_rate)) echo ''; else echo ' readonly'; ?> />
-				</div>
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Temperature</label>
-					<input type="text" name="temperature" class="form-control" value="<?php if(!!$patient->temperature)  echo $patient->temperature;?>" <?php if($f->edit==1 && empty($patient->temperature)) echo ''; else echo ' readonly'; ?> />
 				</div>
 			</div>
 			<div class="row alt">
 				
 				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Blood Pressure</label>
-					<input maxlength="3" size="3" type="text" name="sbp" style="width:50px" class="form-control blood_pressure" value="<?php if(!!$patient->sbp) echo $patient->sbp;?>" <?php if($f->edit==1 && empty($patient->sbp)) echo ''; else echo ' readonly'; ?> />/
-					<input maxlength="3" size="3" type="text" name="dbp"  style="width:50px" class="form-control blood_pressure" value="<?php if(!!$patient->dbp) echo $patient->dbp;?>" <?php if($f->edit==1 && empty($patient->dbp)) echo ''; else echo ' readonly'; ?> />
+					<label class="control-label">SpO2<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Oxygen Saturation" data-toggle="tooltip"/></label>
+					<input maxlength="3" size="3" type="text" name="spo2"  style="width:50px" class="form-control spo2" value="<?php if(!!$patient->spo2) echo $patient->spo2;?>" <?php if($f->edit==1 && empty($patient->spo2)) echo ''; else echo ' readonly'; ?> />%
 				</div>
+				
 				<div class="col-md-4 col-xs-6">
 					<label class="control-label">Respiratory Rate</label>
 					<input type="text" name="respiratory_rate" class="form-control respiratory_rate" value="<?php if(!!$patient->respiratory_rate) echo $patient->respiratory_rate;?>" <?php if($f->edit==1  && empty($patient->respiratory_rate)) echo ''; else echo ' readonly'; ?> />
+				</div>
+
+				<div class="col-md-4 col-xs-6">
+					<label class="control-label">Temperature</label>
+					<input type="text" name="temperature" class="form-control" value="<?php if(!!$patient->temperature)  echo $patient->temperature;?>" <?php if($f->edit==1 && empty($patient->temperature)) echo ''; else echo ' readonly'; ?> />
 				</div>
 			</div>
 			<div class="row alt">
@@ -1403,11 +1389,11 @@ pri.print();
 					<input maxlength="3" size="3" type="text" name="blood_sugar"  style="width:50px" class="form-control blood_sugar" value="<?php if(!!$patient->blood_sugar) echo $patient->blood_sugar;?>" <?php if($f->edit==1 && empty($patient->blood_sugar)) echo ''; else echo ' readonly'; ?> /> mg/dL
 				</div>
 				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Hb</label>
+					<label class="control-label">Hb<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Haemoglobin" data-toggle="tooltip"/></label>
 					<input maxlength="4" size="4" type="text" name="hb"  style="width:50px" class="form-control hb" value="<?php if(!!$patient->hb) echo $patient->hb;?>" <?php if($f->edit==1 && empty($patient->hb)) echo ''; else echo ' readonly'; ?> /> g/dL
 				</div>
 				<div class="col-md-4 col-xs-6">
-					<label class="control-label">HbA1c</label>
+					<label class="control-label">HbA1c<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Glycated Haemoglobin" data-toggle="tooltip"/></label>
 					<input maxlength="3" size="3" type="text" name="hb1ac"  style="width:50px" class="form-control hb1ac" value="<?php if(!!$patient->hb1ac) echo $patient->hb1ac;?>" <?php if($f->edit==1 && empty($patient->hb1ac)) echo ''; else echo ' readonly'; ?> />%
 				</div>
 			</div>
@@ -1446,33 +1432,33 @@ pri.print();
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						CVS
+						CVS<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Cardio Vascular System" data-toggle="tooltip"/>
 					</label>
-					<textarea name="cvs" cols="60" class="form-control" placeholder="CVS" <?php if($f->edit==1 && empty($patient->cvs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cvs;?></textarea>
+					<textarea name="cvs" cols="60" class="form-control" placeholder="Cardio Vascular System" <?php if($f->edit==1 && empty($patient->cvs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cvs;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						RS
+						RS<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Respiratory System" data-toggle="tooltip"/>
 					</label>
-					<textarea name="rs" cols="40" class="form-control" placeholder="RS" <?php if($f->edit==1  && empty($patient->rs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->rs;?></textarea>
+					<textarea name="rs" cols="40" class="form-control" placeholder="Respiratory System" <?php if($f->edit==1  && empty($patient->rs)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->rs;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						PA
+						PA<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Per Abdomen" data-toggle="tooltip"/>
 					</label>
-					<textarea name="pa" cols="60" class="form-control" placeholder="PA" <?php if($f->edit==1 && empty($patient->pa)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->pa;?></textarea>
+					<textarea name="pa" cols="60" class="form-control" placeholder="Per Abdomen" <?php if($f->edit==1 && empty($patient->pa)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->pa;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
-						CNS
+						CNS<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Central Nervous System" data-toggle="tooltip"/>
 					</label>
-					<textarea name="cns" cols="40" class="form-control" placeholder="CNS" <?php if($f->edit==1 && empty($patient->cns)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cns;?></textarea>
+					<textarea name="cns" cols="40" class="form-control" placeholder="Central Nervous System" <?php if($f->edit==1 && empty($patient->cns)) echo ''; else echo ' readonly'; ?> ><?php echo $patient->cns;?></textarea>
 				</div>
 			</div>
 			<div class="row alt">
@@ -1508,45 +1494,46 @@ pri.print();
 						<?php
 							}
 						?>
-						<table class="table table-bordered table-striped">
+						<table class="table table-bordered table-striped clinical-notes-table">
 							<thead>
 								<tr>
 									<th colspan="4">Add Clinical Notes</th>
 								</tr>
-								<tr>
-								<th>Note</th>
-								<th>Date & Time</th>
-								<th></th>
-								</tr>
 							</thead>
-							<tbody class="daily_notes">
+							<tbody class="daily_notes dynamic-row">
 								<tr>
 									<td><textarea rows="4" cols="60" name="clinical_note[]"  class="form-control"></textarea></td>
-									<td><input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
-									<td><button  type="button" class="btn btn-sm btn-primary" value="+" id="add_daily_note">+</button></td>
+									<td>Select Date and Time to save the note <br /> <input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
+									<td>
+										<button  type="button" class="btn btn-sm btn-primary add_daily_note">Add</button>
+										<button  type="button" class="btn btn-sm btn-danger remove_daily_note">X</button>
+									</td>
 								</tr>
 							</tbody>
 						</table>
 				</div>
 				<script>
 					$(function(){
-						var i=2;
-		/*				$(".daily_notes_date").Zebra_DatePicker({
-							format:'d-M-Y g:iA'
-						}); */
-						$("#add_daily_note").click(function(){
-							var row = "<tr>"+
-									"<td><textarea rows=\"4\" cols=\"60\" name=\"clinical_note[]\"  class=\"form-control\"></textarea></td>"+
-									"<td><input type=\"text\" class=\"daily_notes_date form-control\" form-control\" name=\"note_date[]\" /> </td>"+
-									"<td></td>"+
-								"</tr>";
-							$('.daily_notes').append(row);
-				/*			$(".daily_notes_date").Zebra_DatePicker({
-								format:'d-M-Y g:iA'
-							}); */
-							i++;
-
+						var toggleAddRemoveButton = function(parent){
+							$(parent).find(".add_daily_note").hide();
+							$(parent).find(".add_daily_note:first").show();
+							$(parent).find(".remove_daily_note").show();
+							$(parent).find(".remove_daily_note:first").hide();
+						}
+						$(document).on('click', ".add_daily_note", function(){
+							var row = $(this).parents('tr:eq(0)').clone(false);
+							row.find('input,textarea').each(function(){
+								$(this).val('');
+							});
+							row.find('span.error').remove();
+							$(this).parents('tbody.daily_notes').append(row);
+							toggleAddRemoveButton($('tbody.daily_notes'));
 						});
+						$(document).on('click', ".remove_daily_note", function(){
+							$(this).parents('tr').remove();
+							toggleAddRemoveButton($('tbody.daily_notes'));
+						});
+						toggleAddRemoveButton($('tbody.daily_notes'));
 					});
 				</script>
 			</div>
@@ -1559,18 +1546,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "View Diagnostics") { ?>
 		<div role="tabpanel" class="tab-pane" id="diagnostics">
-			<div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                        </div>
+			<div data-patient-quick-info></div>
 			<?php 
 			if(isset($tests) && count($tests)>0){ ?>
 				<table class="table table-bordered table-striped table-hover" id="table-sort">
@@ -1645,18 +1621,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Procedures" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="procedures">
-                    <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+                    <div data-patient-quick-info></div>
 			<div class="row alt">
 				<div class="col-md-4">
 					<label class="control-label">Procedure</label>
@@ -1792,18 +1757,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Prescription" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="prescription">
-                    <div class="row alt">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                                </div>
+                    <div data-patient-quick-info></div>
 			<div class="row alt">
 			<div class="col-md-12 alt">
 
@@ -1816,48 +1770,45 @@ pri.print();
 					<table class="table table-striped table-bordered" id="prescription_table">
 					<thead>
 						<tr>
-						<th rowspan="3" class="text-center">Drug</th>
-						<th rowspan="3" class="text-center">Duration (in Days)</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" />
+						<a href="<?php echo base_url();?>reports/all_drugs_list_with_availability" style="display: block" target="_blank">[Click to view all the drugs]</a>
+						</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration <br /> (in Days)</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
-						<th colspan="6" class="text-center">Timings</th>
+						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
 					<!--	<th rowspan="3" class="text-center">Issued Quantity</th> -->
 						</tr>
 						<tr>
-							<th colspan="2" class="text-center">Morning</th>
-							<th colspan="2" class="text-center">Afternoon</th>
-							<th colspan="2" class="text-center">Evening</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/morning.jpg" class="prescription_table_heading_icons" />Morning</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/afternoon.jpg" class="prescription_table_heading_icons" />Afternoon</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th>BB</th>
-							<th>AB</th>
-							<th>BL</th>
-							<th>AL</th>
-							<th>BD</th>
-							<th>AD</th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+							
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr class="prescription">
-							<td>
-								<select name="drug_0" style="width:150px;" class="form-control" >
-								<option value="">--Select--</option>
-								<?php 
-								foreach($drugs as $drug){
-									$available = $drug->generic_name.' - '.$drug->item_form;
-									$style = '';
-									if(drug_available($drug, $drugs_available)){
-										$available .= ' - Available';
-										$style = "style='background: #6DF48F;'";
-									}
-									echo "<option $style value='".$drug->generic_item_id."'>".$available."</option>";
-								}
-								?>
+							<td style="width:500px;">
+								<select name="drug_0" class="repositories" placeholder="-Enter Generic Drug Name-">
+									<option value="">-Enter Generic Drug Name-</option>
 								</select>
 								<i class="glyphicon glyphicon-pencil"></i>
-								<textarea name="note_0" cols="30" rows="10" hidden></textarea>
+								<span class="note_tooltip">[Click to Add Note]</span>
+								<textarea name="note_0" rows="5" placeholder="Enter note here" style="border: 0px;background: transparent;" hidden></textarea>
 							</td>
-							<td>
-								<input type="text" name="duration_0" placeholder="in Days" style="width:100px" class="form-control" />
+							<td class="text-center">
+								<input type="text" name="duration_0" placeholder="Days" style="width:60px" class="form-control" />
 							</td>
 						<!--	<td>
 								<select name="frequency_0" class="form-control" >
@@ -1867,22 +1818,22 @@ pri.print();
 									<?php } ?>
 								</select>
 							</td> -->
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="bb_0" value="1"  /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="ab_0" value="1"  /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="bl_0" value="1" /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="al_0" value="1" /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="bd_0" value="1" /></label>
 							</td>
-							<td>
+							<td class="text-center">
 								<label><input type="checkbox" name="ad_0" value="1" /></label>
 								<input type="text" name="prescription[]" class="sr-only" value="0"  />
 							</td>
@@ -1896,6 +1847,7 @@ pri.print();
 						</tr>
 					</tbody>
 				</table>
+				<div style="text-align: center;margin-bottom: 20px;font-size: 12px;"><span>Please enter Numbers of Days and select Timings for prescribed medicines where applicable</span></div>
 			</div>
 			</div>
 			<div class="row alt">
@@ -1903,38 +1855,43 @@ pri.print();
 					<table class="table table-bordered table-striped">
 					<thead>
 						<tr>
-						<th rowspan="3" class="text-center">Drug</th>
-						<th rowspan="3" class="text-center">Duration</th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/medicines.jpg" class="prescription_table_heading_icons" alt="" />Drug<img src="<?php echo base_url();?>assets/images/syrup.jpg" class="prescription_table_heading_icons" alt="" /></th>
+						<th rowspan="3" class="text-center"><img src="<?php echo base_url();?>assets/images/calendar.jpg" class="prescription_table_heading_icons" alt="Days" />Duration<br /> (in Days)</th>
 					<!--	<th rowspan="3" class="text-center">Frequency</th> -->
-						<th colspan="6" class="text-center">Timings</th>
+						<th colspan="6" class="text-center"><img src="<?php echo base_url();?>assets/images/timings.jpg" class="prescription_table_heading_icons"  alt="Timings" />Timings</th>
 					<!--	<th rowspan="3" class="text-center">Quantity</th> -->
 						</tr>
 						<tr>
-							<th colspan="2" class="text-center">Morning</th>
-							<th colspan="2" class="text-center">Afternoon</th>
-							<th colspan="2" class="text-center">Evening</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/morning.jpg" class="prescription_table_heading_icons" />Morning</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/afternoon.jpg" class="prescription_table_heading_icons" />Afternoon</th>
+							<th colspan="2" class="text-center"><img src="<?php echo base_url();?>assets/images/night.jpg" class="prescription_table_heading_icons" />Evening</th>
 						</tr>
 						<tr>
-							<th>BB</th>
-							<th>AB</th>
-							<th>BL</th>
-							<th>AL</th>
-							<th>BD</th>
-							<th>AD</th>
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>BF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Before Food" data-toggle="tooltip"/></th>
+
+							<th class="text-center"><span>AF</span><img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="After Food" data-toggle="tooltip"/></th>
 						</tr>
 					</thead>
 					<tbody>
 					<?php foreach($prescription as $pres){ ?>						
 					<tr>
 						<td><?php echo $pres->item_name.' - '.$pres->item_form;?><br><?php if($pres->note!='') echo '-'.$pres->note;?></td>
-						<td><?php echo $pres->duration;?></td>
+						<td class="text-center"><?php echo $pres->duration;?></td>
 					<!--	<td><?php echo $pres->frequency;?></td> -->
-						<td><?php if($pres->morning == 1 || $pres->morning == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->morning == 2 || $pres->morning == 3) echo " <i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->afternoon == 1 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->afternoon == 2 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->evening == 1 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
-						<td><?php if($pres->evening == 2 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->morning == 1 || $pres->morning == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->morning == 2 || $pres->morning == 3) echo " <i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->afternoon == 1 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->afternoon == 2 || $pres->afternoon == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->evening == 1 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
+						<td class="text-center"><?php if($pres->evening == 2 || $pres->evening == 3) echo "<i class='fa fa-check'></i>";?></td>
 					<!--	<td><?php echo $pres->quantity;?> </td> -->
 					<!--	<td>
 							<?php echo form_open('register/update_patients',array('class'=>'form-custom'));?>
@@ -1957,18 +1914,7 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Discharge" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="discharge">
-                    <div class="row">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+                    <div data-patient-quick-info></div>
 			<div class="row">
 			<div class="col-md-12 alt">
 				<div class="col-md-2">
@@ -2092,28 +2038,7 @@ pri.print();
 		}} ?>
 		<!-- Insert New Tab here -->
 		<div role="tabpanel" class="tab-pane  <?php if(count($previous_visits) > 1) echo "active"; ?>" id="vitals">
-		<div class="row">
-                                <div class="col-md-4 col-xs-6">
-                                    <b>Patient ID: <?php echo $patient->patient_id; ?>, </b>
-                                    <b>
-										<?php 
-											echo $patient->first_name." ".$patient->last_name.", "; 
-											if($patient->age_years!=0){ echo $patient->age_years." Yrs "; } 
-											if($patient->age_months!=0){ echo $patient->age_months." Mths "; }
-											if($patient->age_days!=0){ echo $patient->age_days." Days "; }
-											if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
-											echo "/".$patient->gender; 
-										?> 
-									</b>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
-                                </div>
-                                <div class="col-md-4 col-xs-6">
-                                    <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-                                    <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
-                                </div>
-                    </div>
+			<div data-patient-quick-info></div>
 			<div class="row">
 				<div class="col-md-4">
 					<canvas id="sbp_dbp" width="100" height="100"></canvas>
@@ -2190,7 +2115,7 @@ pri.print();
 		<input type="text" name="visit_id" class="sr-only" value="<?php echo $patient->visit_id;?>" hidden readonly />
 		<input type="text" name="patient_id" class="sr-only" value="<?php echo $patient->patient_id;?>" hidden readonly />
 		<input type="text" name="patient_number" class="sr-only" value="patient_number" hidden readonly />
-		<button class="btn btn-md btn-primary" value="Update" name="update_patient">Update</button>&emsp;
+		<button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit(event)">Update</button>&emsp;
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div')">Print Summary</button>
 		<?php 
 			$visits = sizeof($patient_visits);
@@ -2314,27 +2239,15 @@ pri.print();
 			$row = "";
 			<?php foreach($previous_prescription as $prev) { ?>
 				$row += '<tr class="prescription">'+
-						'	<td>'+
-								'<select name="drug_'+$i+'" class="form-control">'+
-								'<option value="">--Select--</option>'+
-								"<?php 
-									foreach($drugs as $drug){ 
-										$available = '';
-									$style = '';
-									if(drug_available($drug, $drugs_available)){
-										$available = '- Available';
-										$style = 'style=\"background: #ADFF2F; font-weight: bold;\"';
-									}
-									echo '<option value=\"'.$drug->generic_item_id.'\"';
-									if($prev->generic_item_id == $drug->generic_item_id) echo " selected ";									
-									echo ' '.$style.'>'.$drug->generic_name.$available.'</option>';
-								}?>" +
-								'</select>'+'<i class="glyphicon glyphicon-pencil"></i>'+'<textarea name="note_'+$i+'" cols="30" rows="10"';
+						'	<td style="width:500px;">'+
+								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-" data-previous-value="<?php echo $prev->item_id;?>">'+
+								'<option value="">-Enter Generic Drug Name-</option>'+
+								'</select>'+'<i class="glyphicon glyphicon-pencil active"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" placeholder="Enter note here" style="border: 0px;background: transparent;"';
 							<?php if(trim($prev->note) == "") { ?> $row += " hidden "; <?php } ?>
 							$row += '><?php echo $prev->note;?></textarea>'+
 							'</td>'+
-							'<td>'+
-								'<input type="text" name="duration_'+$i+'" placeholder="in Days" value="<?php echo $prev->duration;?>" style="width:100px" class="form-control" />'+
+							'<td class="text-center">'+
+								'<input type="text" name="duration_'+$i+'" placeholder="Days" value="<?php echo $prev->duration;?>" style="width:60px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
 								'<select name="frequency_'+$i+'" class="form-control">'+
@@ -2343,22 +2256,22 @@ pri.print();
 								<?php } ?>
 								'</select>'+
 							'</td> -->'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bb_'+$i+'" <?php if($prev->morning == 1 || $prev->morning == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ab_'+$i+'" <?php if($prev->morning == 2 || $prev->morning == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bl_'+$i+'" <?php if($prev->afternoon == 1 || $prev->afternoon == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="al_'+$i+'" <?php if($prev->afternoon == 2 || $prev->afternoon == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bd_'+$i+'" <?php if($prev->evening == 1 || $prev->evening == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ad_'+$i+'" <?php if($prev->evening == 2 || $prev->evening == 3) echo " checked ";?> value="1" /></label>'+
 							'</td>'+
 							'<!--<td>'+
@@ -2371,26 +2284,26 @@ pri.print();
 				$i++;
 			<?php } ?>
 			$(".prescription").parent().prepend($row);
+			initPrescriptionDrugSelectize();
+
+			// TODO: CHANGE PHP CODE TO JSON BASED UI RENDERING...
+			$('[name^=note_]').each(function(){
+				if($(this).attr('hidden')){
+					$(this).prev().prev().removeClass('active');
+				} else {
+					$(this).prev().html('[Click to Delete Note]');
+				}
+			})
 		});
 		$("#prescription_add").click(function(){
 			$row = '<tr class="prescription">'+
-						'	<td>'+
-								'<select name="drug_'+$i+'" class="form-control">'+
-								'<option value="">--Select--</option>'+
-								"<?php 
-									foreach($drugs as $drug){ 
-										$available = '';
-									$style = '';
-									if(drug_available($drug, $drugs_available)){
-										$available = '- Available';
-										$style = 'style=\"background: #ADFF2F; font-weight: bold;\"';
-									}
-									echo '<option value=\"'.$drug->generic_item_id.'\"'.' '.$style.'>'.$drug->generic_name.$available.'</option>';
-								}?>" +
-								'</select>'+'<i class="glyphicon glyphicon-pencil"></i>'+'<textarea name="note_'+$i+'" cols="30" rows="10" hidden></textarea>'+
+						'	<td style="width:500px;">'+
+								'<select name="drug_'+$i+'" class="repositories" placeholder="-Enter Generic Drug Name-">'+
+								'<option value="">-Enter Generic Drug Name-</option>'+
+								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" placeholder="Enter note here" style="border: 0px;background: transparent;" hidden></textarea>'+
 							'</td>'+
 							'<td>'+
-								'<input type="text" name="duration_'+$i+'" placeholder="in Days" style="width:100px" class="form-control" />'+
+								'<input type="text" name="duration_'+$i+'" placeholder="Days" style="width:60px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
 								'<select name="frequency_'+$i+'" class="form-control">'+
@@ -2426,6 +2339,7 @@ pri.print();
 						'</tr>';
 			$i++;
 			$(".prescription").parent().append($row);
+			initPrescriptionDrugSelectize();
 		});
 	});
 	$('#icd_code').selectize({
@@ -2459,12 +2373,329 @@ pri.print();
         });
 	}
 	});
+
+	async function onUpdatePatientSubmit(event){
+		var flag = true;
+
+		$('.form-control.error').each(function(){
+			if(flag){
+				flag = false;
+				$('a[href="#'+$(this).parents('[role="tabpanel"]').attr('id')+'"]').click();
+				$(this).get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		})
+
+		// mandator fields check...
+		$(".clinical-notes-table tbody.daily_notes tr span.error").remove();
+		$(".clinical-notes-table tbody.daily_notes tr").each(function(){
+		    if(flag && $(this).find("[name^=clinical_note]").val() && !$(this).find("[name^=note_date]").val()){
+	        	flag = false;
+	            $('a[href="#clinical"]').click();
+	            $(this).find("[name^=note_date]").after('<span class="error" style="display: block;">This field is required</span>');
+	            $(this).find("[name^=note_date]").get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+		    }
+		});
+
+		// if prescription selected & any of the 12 notes fields is not mentioned. [CLINICAL TAB + discharge tab]
+		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
+			var optionalFlag = false;
+			$("[name=presenting_complaints],[name=past_history],[name=family_history],[name=clinical_findings],[name=cvs],[name=rs],[name=pa],[name=cns],[name=final_diagnosis],[name=decision],[name=advise],[name=icd_code]").each(function(){
+				if(!optionalFlag && $(this).val()){
+					optionalFlag = true;
+				}
+			});
+			if(!optionalFlag){
+				flag = false;
+				await new Promise((resolve) => {
+					bootbox.alert("Medicine prescription is not permitted without Symptoms or Clinical Notes or Diagnosis being mentioned.", function(){ 
+					    resolve(false);
+					});
+				})
+			}
+		}
+
+		
+		// signed consultation checkbox is mandatory if any prescription is given...
+		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0 && $('[name=signed_consultation]').length > 0 && $('[name=signed_consultation]:checked').length == 0){
+			flag = false;
+			await new Promise((resolve) => {
+				bootbox.alert("Medicine prescrition is not permitted without Doctor sign off. Please ensure treating Doctor signs off this consultation", function(){ 
+				    $('[name=signed_consultation]').get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+				    resolve(false);
+				});
+			})
+		}
+
+		// prescription validation...
+		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
+			// if any drug dropdown is selected then check for the duration & timings...
+			var prescriptionError = false;
+			
+			$("#prescription_table tbody tr.prescription").each(function(){
+				if($(this).find("[name^=drug_]").val()){
+					// check if duration is available...
+					if(!$(this).find("[name^=duration_]").val() || $(this).find("[type=checkbox]:checked").length == 0){
+						prescriptionError = true;
+					}
+				}
+			})
+
+			if(prescriptionError){
+				flag = await new Promise((resolve) => {
+					bootbox.confirm({
+					    message: "Would you like to mention number of DAYS and/or TIMING for the Prescribed Medicine(s)?",
+					    buttons: {
+					        confirm: {
+					            label: 'Ignore and proceed',
+					            className: 'btn-success'
+					        },
+					        cancel: {
+					            label: 'Go back and update',
+					            className: 'btn-warning'
+					        }
+					    },
+					    callback: function (result) {
+					        if(!result){
+					        	$('a[href="#prescription"]').click()
+					        }
+					        resolve(result)
+					    }
+					});
+		      	})
+			}
+		}	
+
+		if(flag){
+			$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
+		}
+
+	}
+
+	var defaultsConfigs = JSON.parse('<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>');
+
+	function initUpdatePatientValidations(){
+		if(!defaultsConfigs){
+			bootbox.alert("Defaults configurations are missing, Kindly contact admin regarding this.");
+			return;
+		}
+		var defaultsConfigsObj = {};
+		defaultsConfigs.map(function(dc){
+			defaultsConfigsObj[dc.default_id] = dc;
+		});
+
+		var validatiorRules = {
+            age_years: {
+                range: [0, 200],
+                digits: true
+            },
+            age_months: {
+                range: [0, 11],
+                digits: true
+            },
+            age_days: {
+                range: [0, 31],
+                digits: true
+            }
+        };
+
+        var validationConfigs = [
+        	{ field: 'sbp', target: 'SBP', range: true,  },
+        	{ field: 'dbp', target: 'DBP', range: true },
+        	{ field: 'spo2', target: 'SPO2', range: true },
+        	{ field: 'admit_weight', target: 'WT', range: true, digits: false },
+        	{ field: 'pulse_rate', target: 'HR', range: true },
+        	{ field: 'temperature', target: 'TEMP', range: true },
+        	{ field: 'respiratory_rate', target: 'RR', range: true },
+        	{ field: 'blood_sugar', target: 'RBS', range: true },
+        	{ field: 'hb', target: 'HB', range: true },
+        	{ field: 'hb1ac', target: 'HBAIC', range: true },
+        ];
+
+        var validationMessages = {};
+
+        validationConfigs.map(function(vc){
+        	if(defaultsConfigsObj[vc.target]){
+        		if(vc.range){
+	        		validatiorRules[vc.field] = {
+	        			range: [defaultsConfigsObj[vc.target]['lower_range'], defaultsConfigsObj[vc.target]['upper_range']],
+	        			digits: true
+	        		}
+	        		if(!vc.digits){
+	        			delete validatiorRules[vc.field]['digits'];
+	        		}
+
+	        		validationMessages[vc.field] = {
+	                	range: "Please enter a valid value.&nbsp;"
+	            	}
+        		}
+        	}
+        });
+            
+
+		$('form[id="update_patients"]').validate({
+	        rules: validatiorRules,
+	        messages: validationMessages,
+	        errorPlacement: function( label, element ) {
+				if( ["age_years", "age_months", "age_days", "sbp", "dbp"].indexOf(element.attr( "name" )) > -1 ) {
+					element.parent().append( label ); // this would append the label after all your checkboxes/labels (so the error-label will be the last element in <div class="controls"> )
+				} else {
+					label.insertAfter( element ); // standard behaviour
+				}
+			}
+	        /*ignore: ".date_custom",
+	        submitHandler: function (form) {
+	            form.submit();
+	        }*/
+	    });
+
+	    /*$.validator.addMethod("oneormorechecked", function(value, element) {
+		  return $('input[name="' + element.name + '"]:checked').length > 0;
+		}, "Atleast 1 must be selected");
+
+		$('.validate').validate();*/
+	}
+
+	var prescriptionDrugs = null;
+	function initPrescriptionDrugSelectize(){
+		$('[name^=drug_]').each(function(){
+			if(!$(this).get(0).selectize){
+				var selectize = $(this).selectize({
+				    valueField: 'generic_item_id',
+				    labelField: 'custom_name',
+				    searchField: 'custom_name',
+				    options: prescriptionDrugs,
+				    create: false,
+				    render: {
+				        option: function(item, escape) {
+				        	var drugsAvailableClass = "";
+				        	if(item.custom_name.indexOf(' - Available') > -1){
+				        		drugsAvailableClass = "drug_available_class";
+				        	}
+				            return '<div class="'+drugsAvailableClass+'">' +
+				                '<span class="title">' +
+				                    '<span class="prescription_drug_selectize_span">' + escape(item.custom_name) + '</span>' +
+				                '</span>' +
+				            '</div>';
+				        }
+				    },
+				    load: function(query, callback) {
+				        if (!query.length) return callback();
+				        /*if(prescriptionDrugs){
+				        	callback(prescriptionDrugs.slice(0, 10));
+				        	return;
+				        }
+						$.ajax({
+				            url: '<?php echo base_url();?>register/search_prescription_drugs',
+				            type: 'POST',
+							dataType : 'JSON',
+							data : {query:query},
+				            error: function(res) {
+				                callback();
+				            },
+				            success: function(res) {
+				            	// merge drugs_available into respective item in drugs...
+				            	var drugsAvailable = {};
+								res.drugs_available.forEach(function(da){
+								    drugsAvailable[da.generic_item_id] = da;
+								})
+
+								res.drugs.map(function(d){
+									d.custom_name = d.generic_name + ' - ' + d.item_form;
+								    if(drugsAvailable[d.generic_item_id]){
+								    	d.custom_name += ' - Available';
+								        d.drugs_available = drugsAvailable[d.generic_item_id];
+								    }
+								    return d;
+								});
+				            	prescriptionDrugs = res.drugs;
+				                callback(prescriptionDrugs.slice(0, 10));
+				            }
+				        });*/
+				        callback(prescriptionDrugs.slice(0, 10));
+					},
+
+				});
+				if($(this).attr("data-previous-value")){
+					selectize[0].selectize.setValue($(this).attr("data-previous-value"));
+				}
+			}
+		})
+	}
+
+	function mergeDrugsAvailableToDrugs(res){
+		var drugsAvailable = {};
+		res.drugs_available.forEach(function(da){
+		    drugsAvailable[da.generic_item_id] = da;
+		})
+
+		res.drugs.map(function(d){
+			d.custom_name = d.generic_name + ' - ' + d.item_form;
+		    if(drugsAvailable[d.generic_item_id]){
+		    	d.custom_name += ' - Available';
+		        d.drugs_available = drugsAvailable[d.generic_item_id];
+		    }
+		    return d;
+		});
+    	prescriptionDrugs = res.drugs;
+	}
+
+	function performTemplateReplacement(){
+		$("[data-patient-quick-info]").replaceWith($('#template-patient-quick-info').html());
+	}
 	$(document).ready(function(){
+		performTemplateReplacement();
+
+		$('[data-toggle="tooltip"]').tooltip();
+
+		var textareaResizeHeight = function(e){
+			var $this = e.target;
+			$($this).css("height", "28px");
+			$($this).css("overflow", 'hidden');
+			if($($this).get(0).scrollHeight > 104){
+				$($this).css("height", '104px');
+				$($this).css("overflow", 'scroll');
+			} else if($($this).get(0).scrollHeight > 0){
+				$($this).css("height", $($this).get(0).scrollHeight+'px');
+			}
+		}
+
+		var textareaResizeHeightDelayed = function(e){
+			setTimeout(textareaResizeHeight(e), 0);
+		}
+
+		$(document).on('cut', '.prescription textarea', textareaResizeHeightDelayed);
+		$(document).on('paste', '.prescription textarea', textareaResizeHeightDelayed);
+		$(document).on('keydown', '.prescription textarea', textareaResizeHeightDelayed);
+		$(document).on('keyup', '.prescription textarea', textareaResizeHeightDelayed);
+
+
 		$('#prescription_table').click(function(event){
+			var noteToggleFunction = function(target){
+				if($(target).hasClass('active')){
+					$(target).removeClass('active')
+					$(target).parents('td').find('textarea').attr("hidden", "");
+					$(target).parents('td').find('.note_tooltip').html('[Click to Add Note]');
+				} else {
+					$(target).addClass('active')
+					$(target).parents('td').find('textarea').removeAttr("hidden");
+					$(target).parents('td').find('.note_tooltip').html('[Click to Delete Note]');
+					$(target).parents('td').find('textarea').val("");
+				}
+			}
+			if($(event.target).hasClass('note_tooltip')){
+				noteToggleFunction($(event.target).prev().get(0))
+			}
 			if($(event.target).hasClass('glyphicon-pencil')){
-				$(event.target).next().removeAttr("hidden");
+				noteToggleFunction(event.target)
 			}			
 		});
+
+		// prescription dropdown selectize
+		mergeDrugsAvailableToDrugs({drugs: JSON.parse('<?php echo json_encode($drugs); ?>'), drugs_available: JSON.parse('<?php echo json_encode($drugs_available); ?>')});
+		initPrescriptionDrugSelectize();
+
+		initUpdatePatientValidations();
+
 		// Goto line no 2144
 		$SBP = '';
 		$DBP = '';
@@ -2553,3 +2784,28 @@ pri.print();
 <div class="sr-only" id="print-div-all" style="width:100%;height:100%;"> 
 			<?php $this->load->view('pages/print_layouts/patient_summary_all_visits');?>
 </div>
+
+<template id="template-patient-quick-info" type="text/html">
+    <div class="row alt">
+        <div class="col-md-4 col-xs-6">
+            <b>Patient ID: <?php echo $patient->patient_id; ?> </b>
+            <b>
+                <?php 
+                    echo $patient->first_name." ".$patient->last_name.", "; 
+                    if($patient->age_years!=0){ echo $patient->age_years." Yrs "; } 
+                    if($patient->age_months!=0){ echo $patient->age_months." Mths "; }
+                    if($patient->age_days!=0){ echo $patient->age_days." Days "; }
+                    if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
+                    echo "/".$patient->gender; 
+                ?> 
+            </b>
+        </div>
+        <div class="col-md-4 col-xs-6">
+            <b><?php echo $patient->visit_type; ?> Number: </b><?php echo $patient->hosp_file_no;?>
+        </div>
+        <div class="col-md-4 col-xs-6">
+            <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
+            <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
+        </div>
+    </div>
+</template>

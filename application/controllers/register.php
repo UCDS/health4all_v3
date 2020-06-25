@@ -258,6 +258,7 @@ class Register extends CI_Controller {
 		$this->data['lab_units'] = $this->masters_model->get_data("lab_unit");
 		$this->data['drugs'] = $this->masters_model->get_data("drugs");
 		$this->data['procedures'] = $this->masters_model->get_data("procedure");
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		$this->data['defaults'] = $this->staff_model->get_transport_defaults();
 		$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 		$this->data['drugs_available'] = $this->hospital_model->get_drugs();
@@ -353,6 +354,17 @@ class Register extends CI_Controller {
 			);
 			
 				echo json_encode($list);
+		}
+		else return false;
+	}
+	function search_prescription_drugs(){
+		if($results = $this->masters_model->get_data("drugs")){
+			$list=array(
+				'drugs'=> $results,
+				'drugs_available'=> $this->hospital_model->get_drugs()
+			);
+			
+			echo json_encode($list);
 		}
 		else return false;
 	}
