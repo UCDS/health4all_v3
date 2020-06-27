@@ -2302,7 +2302,7 @@ pri.print();
 								'<option value="">-Enter Generic Drug Name-</option>'+
 								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" placeholder="Enter note here" style="border: 0px;background: transparent;" hidden></textarea>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<input type="text" name="duration_'+$i+'" placeholder="Days" style="width:60px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
@@ -2312,22 +2312,22 @@ pri.print();
 								<?php } ?>
 								'</select>'+
 							'</td> -->'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bb_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ab_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bl_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="al_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bd_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ad_'+$i+'" value="1" /></label>'+
 							'</td>'+
 							'<!--<td>'+
