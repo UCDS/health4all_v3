@@ -148,8 +148,8 @@ class Home extends CI_Controller {
 				$this->load->helper('captcha');
 				$captcha_config = array(   
 					'word'          => $captcha_word,
-					'img_path'	=> '/health4all_v3/assets/captcha/',
-					'font_path' => '/health4all_v3/assets/fonts/extraBoldItalic.ttf',
+					'img_path'	=> './assets/captcha/',
+					'font_path' => './assets/fonts/extraBoldItalic.ttf',
 					'img_url'	=> base_url().'assets/captcha/',                
 					'img_width'	=> '150',
 					'img_height'    => 30,
@@ -164,6 +164,7 @@ class Home extends CI_Controller {
 				$this->load->helper('form');
 				$this->load->library('form_validation');				
 				$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
+				$this->form_validation->set_rules('captcha_text', 'Captcha', 'trim|required|xss_clean');
 				$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
 				if ($this->form_validation->run() === FALSE)
 				{
@@ -196,11 +197,11 @@ class Home extends CI_Controller {
 	   $username = $this->input->post('username');
 	   $captcha_text = $this->input->post('captcha_text');
 	   
-	//    if(!strtoupper($this->session->userdata(strtoupper($captcha_text)))){
-	// 	   $this->session->unset_userdata(strtoupper($captcha_text));
-	// 		$this->form_validation->set_message('check_database','Invalid Username or Password or Captcha');
-	// 		return false;
-	//    }
+	   if(!strtoupper($this->session->userdata(strtoupper($captcha_text)))){
+		   $this->session->unset_userdata(strtoupper($captcha_text));
+			$this->form_validation->set_message('check_database','Invalid Username or Password or Captcha');
+			return false;
+	   }
 	   //query the database
 	   $result = $this->staff_model->login($username, $password);
 	   if($result)
