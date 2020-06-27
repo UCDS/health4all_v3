@@ -259,6 +259,25 @@ $(function(){
 				</tbody>
 				<tfoot>
 					<th colspan="20" class="text-center">
+		<h4>Calls on  
+
+						<?php
+						if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+						if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
+						if($this->input->post('date')){
+							$date = date("d-M-Y",strtotime($this->input->post('date')));
+						}
+						else $date = date("d-M-Y");
+						?>
+						<input type="text" class="sr-only" value="<?php echo $date;?>" name="date" />
+						<input  class="sr-only" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" />
+						<input  class="sr-only" type="text" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" />
+						<input class="sr-only" value ="<?php echo $this->input->post('helpline_id');?>" name="helpline_id" />
+						<input class="sr-only" value ="<?php echo $this->input->post('from_number');?>" name="from_number" />
+						<input class="sr-only" value ="<?php echo $this->input->post('to_number');?>" name="to_number" />
+						<input class="sr-only" value ="<?php echo $this->input->post('call_category');?>" name="call_category" />
+						<input class="sr-only" value ="<?php echo $this->input->post('caller_type');?>" name="caller_type" />
+						<input class="sr-only" value ="<?php echo $this->input->post('resolution_status');?>" name="resolution_status" />
 						<input type="submit" class="btn btn-sm btn-primary" name="submit" value="Update" />
 					</th>
 				</tfoot>
