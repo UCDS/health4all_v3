@@ -14,6 +14,10 @@
 	.error {
     	color: red;
   	}
+  	input.error, textarea.error, select.error,
+  	input.error_field{
+  		border: 1px solid red;
+  	}
     .obstetric_history_table {  
         border-collapse: collapse; 
     }
@@ -1486,7 +1490,7 @@ pri.print();
 						$(document).on('click', ".add_daily_note", function(){
 							var row = $(this).parents('tr:eq(0)').clone(false);
 							row.find('input,textarea').each(function(){
-								$(this).val('');
+								$(this).val('').removeClass('error_field');
 							});
 							row.find('span.error').remove();
 							$(this).parents('tbody.daily_notes').append(row);
@@ -2352,12 +2356,13 @@ pri.print();
 		})
 
 		// mandator fields check...
+		$(this).find("[name^=note_date]").removeClass('error_field');
 		$(".clinical-notes-table tbody.daily_notes tr span.error").remove();
 		$(".clinical-notes-table tbody.daily_notes tr").each(function(){
 		    if(flag && $(this).find("[name^=clinical_note]").val() && !$(this).find("[name^=note_date]").val()){
 	        	flag = false;
 	            $('a[href="#clinical"]').click();
-	            $(this).find("[name^=note_date]").after('<span class="error" style="display: block;">This field is required</span>');
+	            $(this).find("[name^=note_date]").addClass('error_field').after('<span class="error" style="display: block;">This field is required</span>');
 	            $(this).find("[name^=note_date]").get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
 		    }
 		});
