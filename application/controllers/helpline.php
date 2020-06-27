@@ -127,7 +127,6 @@ class Helpline extends CI_Controller {
 		$this->data['title']="Update HelpLine Calls";
 		$this->load->view('templates/header',$this->data);
 		$this->form_validation->set_rules('call[]','Call','trim|xss_clean');
-		$this->data['calls']=$this->helpline_model->get_calls();
 		$this->data['helpline']=$this->helpline_model->get_helpline("update");
 		$this->data['caller_type']=$this->helpline_model->get_caller_type();
 		$this->data['call_category']=$this->helpline_model->get_call_category();
@@ -137,6 +136,7 @@ class Helpline extends CI_Controller {
 			$this->load->view('pages/helpline/update_calls',$this->data);
 		}
 		else{
+			$this->data['calls']=$this->helpline_model->get_calls();
 			if(($this->input->post('submit'))) {
 				if(!!$this->input->post('call')){
 					if($this->helpline_model->update_call()){
