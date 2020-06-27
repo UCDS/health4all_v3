@@ -661,7 +661,6 @@ class Helpline_model extends CI_Model{
 		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
 		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left');
 		$query = $this->db->get();
-		echo $this->db->last_query();
 		return $query->result();
 	}
 
