@@ -100,7 +100,6 @@ class Helpline_model extends CI_Model{
 				$resolution_date_time = date("Y-m-d H:i:s",strtotime($this->input->post('resolution_date_'.$call)." ".$this->input->post('resolution_time_'.$call)));
 			}
 			else $resolution_date_time = 0;
-		//	echo $this->input->post('group_'.$call);
 			$data[]=array(
 				'call_id'=>$call,
 				'caller_type_id'=>$this->input->post("caller_type_".$call),
@@ -241,6 +240,9 @@ class Helpline_model extends CI_Model{
 
 	function get_calls(){
 		$user = $this->session->userdata('logged_in');
+
+        if($this->input->post('from_time')) $from_time=date("H:i:s",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+		if($this->input->post('to_time')) $to_time=date("H:i:s",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
 		if($this->input->post('date')){
 			$date = date("Y-m-d",strtotime($this->input->post("date")));
 			$this->db->where('date(start_time)',$date);
@@ -248,7 +250,12 @@ class Helpline_model extends CI_Model{
 		else{
 			$this->db->where('date(start_time)',date("Y-m-d"));
 		}
-	
+		if($this->input->post('from_time')){
+			$this->db->where('time(helpline_call.start_time) > ', date("H:i:s", strtotime($this->input->post('from_time'))));
+		}
+		if($this->input->post('to_time')){
+			$this->db->where('time(helpline_call.start_time) < ', date("H:i:s", strtotime($this->input->post('to_time'))));
+		}
 		if($this->input->post('from_number')){
 			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
 		}
@@ -654,7 +661,7 @@ class Helpline_model extends CI_Model{
 		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
 		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left');
 		$query = $this->db->get();
-	//echo '<h4>'.$type.' '.$to_number.'</h4>'.' '.$this->db->last_query().'<br>';
+		echo $this->db->last_query();
 		return $query->result();
 	}
 
