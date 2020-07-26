@@ -78,8 +78,17 @@ $(function(){
 			else $date = date("d-M-Y");
 			echo form_open('helpline/update_call',array('role'=>'form','class'=>'form-custom'));
 	?>
-		<h4>Calls on <input type="text" class="date" value="<?php echo $date;?>" name="date" /> 
-		<select name="helpline_id" style="width:100px" class="form-control">
+		<h4>Calls on <input type="text" class="date form-control" style="width:150px" value="<?php echo $date;?>" name="date" /> 
+
+		<?php
+        if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+        if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
+		?>
+		<input  class="form-control" type="text" style="width:100px" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" />
+		<input  class="form-control" type="text" style="width:100px" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" id="to_time" />
+
+
+		<select name="helpline_id"  style="width:100px" class="form-control">
 			<option value="">Helpline</option>
 			<?php foreach($helpline as $line){ ?>
 				<option value="<?php echo $line->helpline_id;?>"
@@ -87,8 +96,8 @@ $(function(){
 				><?php echo $line->helpline.' - '.$line->note;?></option>
 			<?php } ?>
 		</select>
-		<input type="text" class="form-control" placeholder="From Number" style="width:150px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
-		<input type="text" class="form-control" placeholder="To Number"  style="width:150px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
+		<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
+		<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
 		<select name="call_category" style="width:100px" class="form-control">
 			<option value="">Category</option>
 			<?php foreach($call_category as $cc){ ?>
@@ -118,7 +127,7 @@ $(function(){
 
 
 	<?php
-		if(!!$calls){
+		if(isset($calls) && !!$calls){
 	?>
 	<?php echo form_open("helpline/update_call",array("class"=>"form-custom","role"=>"form"));?>
 		<p><b>Select the calls to update.</b></p>
@@ -250,6 +259,25 @@ $(function(){
 				</tbody>
 				<tfoot>
 					<th colspan="20" class="text-center">
+		<h4>Calls on  
+
+						<?php
+						if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+						if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
+						if($this->input->post('date')){
+							$date = date("d-M-Y",strtotime($this->input->post('date')));
+						}
+						else $date = date("d-M-Y");
+						?>
+						<input type="text" class="sr-only" value="<?php echo $date;?>" name="date" />
+						<input  class="sr-only" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" />
+						<input  class="sr-only" type="text" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" />
+						<input class="sr-only" value ="<?php echo $this->input->post('helpline_id');?>" name="helpline_id" />
+						<input class="sr-only" value ="<?php echo $this->input->post('from_number');?>" name="from_number" />
+						<input class="sr-only" value ="<?php echo $this->input->post('to_number');?>" name="to_number" />
+						<input class="sr-only" value ="<?php echo $this->input->post('call_category');?>" name="call_category" />
+						<input class="sr-only" value ="<?php echo $this->input->post('caller_type');?>" name="caller_type" />
+						<input class="sr-only" value ="<?php echo $this->input->post('resolution_status');?>" name="resolution_status" />
 						<input type="submit" class="btn btn-sm btn-primary" name="submit" value="Update" />
 					</th>
 				</tfoot>
@@ -257,7 +285,8 @@ $(function(){
 		<?php
 			echo form_close();
 			}
-		else echo "No calls on the given date.";
+		else if(isset($calls) && count($calls) == 0) echo "No calls on the given date and time.";
+		else echo "Select search conditions and click 'Go'";
 		?>
 </div>
 
@@ -348,6 +377,10 @@ $(function(){
 </div>
 
 <script type="text/javascript">
+	$(function(){
+		$('#from_time').ptTimeSelect();
+		$('#to_time').ptTimeSelect();
+	});
 	function sendEmail(callId){
 		$(".category_row,.patient_row,.hospital_row").show();
 		$(".from_number").val($("#from_number_"+callId).text());
