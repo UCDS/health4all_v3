@@ -10,6 +10,15 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 
+
+<style>
+	.call_now_img{
+		width: 30px;
+	    cursor: pointer;
+	    padding-top: 5px;
+	}
+</style>
+
 <script type="text/javascript">
 $(function(){
 	$(".date").Zebra_DatePicker();
@@ -126,20 +135,34 @@ $(function(){
 		if(!!$calls){
 	?>
 		<table class="table table-striped table-bordered" id="table-sort">
+			<colgroup>
+				<col style="width: 1.3%;">
+				<col style="width: 3.1%;">
+				<col style="width: 3.7%;">
+				<col style="width: 6.2%;">
+				<col style="width: 29.1%;">
+				<col style="width: 15%;">
+				<col style="width: 3.8%;">
+				<col style="width: 5.8%;">
+				<col style="width: 6.7%;">
+				<col style="width: 6.7%;">
+				<col style="width: 2.7%;">
+				<col style="width: 4.4%;">
+			</colgroup>
 			<thead>
 				<th>#</th>
 				<th>Call ID</th>
 				<th>Call</th>
-				<th>From-To</th>
-				<th>Recording</th>
+				<th>Customer</th>
+				<th>Team Member @ Helpline</th>
 				<th>Note</th>
 				<th>Caller Type</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
 				<th>Resolution Time</th>
 				<th>TAT</th>
-				<th>Hospital</th>
-				<th>Patient</th>
+				<!-- <th>Hospital</th>
+				<th>Patient</th> -->
 				<th>Emails</th>
 			</thead>
 			<tbody>
@@ -171,12 +194,11 @@ $(function(){
 								<?php echo date("d-M-Y g:iA",strtotime($call->start_time));?>
 							</small>
 						</td>
-						<td>
-							<small><?php echo $call->from_number;?><br />
-							<?php echo $call->to_number;?>
-							</small>
+						<td class="text-center">
+							<small><?php echo $call->from_number;?></small><br />
+							<img src="<?php echo base_url();?>assets/images/call-now.png" class="call_now_img" onclick="initiateCall()" />
 						</td>
-						<td><small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;-&nbsp;<?php echo $call->line_note; ?>
+						<td><small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;@&nbsp;<?php echo $call->line_note; ?> - <?php echo $call->to_number;?>
 							<audio controls preload="none">
 								<source src="<?php echo $call->recording_url;?>" type="audio/mpeg">
 								Your browser does not support the audio element.
@@ -213,12 +235,12 @@ $(function(){
 								?>
 							</small>
 						</td>
-						<td>
+						<!-- <td>
 							<?php echo $call->hospital;?>
 						</td>
 						<td>
 							<?php echo $call->ip_op;?> <?php if($call->visit_id !=0) echo "#".$call->visit_id;?>
-						</td>
+						</td> -->
 						<td>
 							<?php if($call->email_count > 0) { ?>
 							<a href="#" onclick="display_emails(<?= $call->call_id;?>)"  data-toggle="modal" data-target="#emailModal"><i class="fa fa-envelope"></i> (<?= $call->email_count;?>)</a>
