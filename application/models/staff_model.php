@@ -569,5 +569,20 @@ class Staff_model extends CI_Model{
 		$result = $query->result();
 		return $result[0];
 	}
+
+	function search_staff_user($query="", $user_id=""){
+		$search = array(
+           'LOWER(first_name)'=>strtolower($query), 
+           'LOWER(last_name)'=>strtolower($query),
+           'LOWER(username)'=>strtolower($query),
+           'phone'=>$query,
+        );
+		$this->db->select("staff.first_name, staff.last_name, staff.phone, user.user_id, user.username")
+			->from("user")
+			->join("staff", "user.staff_id = staff.staff_id")
+			->or_like($search, 'both');
+		$query=$this->db->get();
+		return $query->result();
+	}
 }
 ?>

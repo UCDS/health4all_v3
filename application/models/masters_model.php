@@ -1589,5 +1589,10 @@ else if($type=="dosage"){
 	   $test_method = $this->input->post('test_method');
 	   $test_name = $this->input->post('test_name');
    }
+
+   function get_users(){
+   		$this->db->select("user_id, username")->from("user");
+        return $this->db->get()->result();
+   }
 }
 ?>

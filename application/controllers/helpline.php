@@ -258,4 +258,97 @@ class Helpline extends CI_Controller {
 		}
 		else return false;
 	}
+
+	function helpline_receivers(){
+		if($this->session->userdata('logged_in')){
+			$this->load->helper('form');
+			$this->data['title']="User Helpline Receivers";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['user_functions']=$this->staff_model->get_user_function();
+			$this->data['receivers'] = $this->helpline_model->getHelplineReceivers();
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);			
+			$this->load->view('pages/helpline_receiver_list',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else{
+			show_404();
+		}
+	}
+
+	function helpline_receivers_form($receiver_id=''){
+		if($this->session->userdata('logged_in')){  						
+            $this->data['userdata']=$this->session->userdata('logged_in');  
+		} else{
+            show_404(); 													
+        } 
+
+		/*$access = -1;
+		foreach($this->data['functions'] as $function){
+            if($function->user_function=="Helpline - Receivers"){
+                $access = 1;
+				break;
+            }
+		}
+		if($access != 1){
+			show_404();
+		}*/
+		
+		$this->load->helper('form');										
+		$this->load->library('form_validation'); 							
+		$this->data['title']="Add Helpline Receiver";										
+		$this->load->view('templates/header', $this->data);				
+		$this->load->view('templates/leftnav');	
+		$config=array(
+           array( 'field'   => 'full_name', 'label'   => 'Full Name', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'short_name', 'label'   => 'Short Name', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'email', 'label'   => 'Email', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'category', 'label'   => 'Category', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'app_id', 'label'   => 'App ID', 'rules'   => 'required|trim|xss_clean' )
+		);
+		if(!$receiver_id){
+			$config[] = array( 'field'   => 'phone', 'label'   => 'Phone', 'rules'   => 'required|trim|xss_clean' );
+		}
+		$this->form_validation->set_rules($config);
+
+		$this->data['users']=$this->masters_model->get_users();
+		$this->data['helplines']=$this->helpline_model->get_helplines();
+		
+		$existing_receivers = false;
+		if($this->input->post('phone')){
+			$this->data['receivers_exists_msg'] = "The receiver with this phone already exists";
+			$this->data['receivers'] = $existing_receivers = $this->helpline_model->getHelplineReceivers(array('phone' => $this->input->post('phone')));
+			if($existing_receivers){
+				$this->load->view('pages/helpline_receiver_list', $this->data);
+			}
+        }
+
+        if(!$existing_receivers){
+			if($this->form_validation->run()===FALSE) {	
+
+			} else {
+				if($this->helpline_model->save_helpline_receiver($receiver_id)){
+					$this->data['msg']="Helpline Receiver Saved Succesfully";					
+				}
+			}
+        }
+
+        $this->data['submitLink'] = "helpline/helpline_receivers_form";
+        $this->data['usersList'] = array();
+        if($receiver_id){
+        	$helpline_receiver = $this->helpline_model->getHelplineReceiverById($receiver_id)[0];
+        	$this->data['edit_data'] = json_encode(['helpline_receiver' => $helpline_receiver, 'helpline_receiver_link' => $this->helpline_model->getHelplineReceiverLinksById($receiver_id), 'userList' => $this->staff_model->search_staff_user("", $helpline_receiver->user_id)]);
+        	$this->data['submitLink'] = "helpline/helpline_receivers_form/" . $receiver_id;
+        }
+
+		$this->load->view('pages/helpline_receiver_form',$this->data);							
+		$this->load->view('templates/footer');								
+    }	
+
+	function search_staff_user(){
+		if($results = $this->staff_model->search_staff_user($this->input->post('query'))){			
+			echo json_encode($results);
+		}
+		else return false;
+	}
 }

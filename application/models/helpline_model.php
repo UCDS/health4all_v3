@@ -831,5 +831,104 @@ class Helpline_model extends CI_Model{
 		$this->db->trans_complete();
 		if($this->db->trans_status()===TRUE) return true; else { $this->db->trans_rollback(); return false; }	
 	}
+
+	function getHelplineReceivers($data=array()){
+		if(isset($data['phone'])){
+			$this->db->where('phone', '0' . $data['phone']);
+		}
+		$this->db->select("receiver_id, full_name, phone, email, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline", false)
+		->from('helpline_receiver')
+		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
+		->order_by('full_name', 'asc');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function getHelplineReceiverById($receiver_id){
+		$this->db->select("*")->from("helpline_receiver")->where('receiver_id', $receiver_id);
+        return $this->db->get()->result();
+	}
+
+	function getHelplineReceiverLinksById($receiver_id){
+		$this->db->select("*")->from("helpline_receiver_link")->where('receiver_id', $receiver_id);
+        return $this->db->get()->result();
+	}
+
+	function get_helplines(){
+		$this->db->select("helpline_id, helpline, note")->from("helpline");
+        return $this->db->get()->result();
+	}
+
+	function receiver_phone_exists($phone){
+		$this->db->where('phone', $phone);
+	    $query = $this->db->get('helpline_receiver');
+	    return $query->num_rows() > 0 ? $query->result() : false;
+	}
+
+	function save_helpline_receiver($receiver_id=''){
+		$helpline_receiver = array();																
+		if($this->input->post('full_name')){														
+            $helpline_receiver['full_name'] = $this->input->post('full_name');							
+        }
+		if($this->input->post('short_name')){														
+            $helpline_receiver['short_name'] = $this->input->post('short_name');							
+        }																
+		if($this->input->post('phone')){														
+            $helpline_receiver['phone'] = '0' . $this->input->post('phone');							
+        }
+		if($this->input->post('email')){														
+            $helpline_receiver['email'] = $this->input->post('email');							
+        }																
+		if($this->input->post('category')){														
+            $helpline_receiver['category'] = $this->input->post('category');							
+        }
+		if($this->input->post('user_id')){														
+            $helpline_receiver['user_id'] = $this->input->post('user_id');							
+        }
+		if($this->input->post('doctor')){														
+            $helpline_receiver['doctor'] = $this->input->post('doctor');							
+        }																
+		if($this->input->post('enable_outbound')){														
+            $helpline_receiver['enable_outbound'] = $this->input->post('enable_outbound');							
+        }
+		if($this->input->post('app_id')){														
+            $helpline_receiver['app_id'] = $this->input->post('app_id');							
+        }																
+		if($this->input->post('helpline_id')){														
+            $helpline_receiver['helpline_id'] = $this->input->post('helpline_id');							
+        }
+		if($this->input->post('activity_status')){														
+            $helpline_receiver['activity_status'] = $this->input->post('activity_status');							
+        }
+
+	   	$this->db->trans_start();
+        if($receiver_id){
+        	$this->db->where('receiver_id', $receiver_id);
+	   		$this->db->update('helpline_receiver', $helpline_receiver);
+
+	   		$this->db->where('receiver_id', $receiver_id);
+	   		$this->db->delete('helpline_receiver_link');
+        } else {
+        	$this->db->insert('helpline_receiver', $helpline_receiver);
+        	$receiver_id = $this->db->insert_id();
+        }
+
+        if($this->input->post("helpline_receiver_link")){
+        	$helpline_receiver_link = array();
+        	foreach($this->input->post("helpline_receiver_link") as $link){
+			    $helpline_receiver_link[] = array('receiver_id' => $receiver_id, 'helpline_id' => $link);
+			}
+			$this->db->insert_batch('helpline_receiver_link', $helpline_receiver_link);
+        }
+		
+		$this->db->trans_complete();
+		if($this->db->trans_status()==FALSE){
+			return false;
+		} else {
+           return true;
+        }  
+	}
+
+	// on receiver add, check for phone exists. & show the details of the record.
 }
 ?>
