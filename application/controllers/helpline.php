@@ -42,6 +42,17 @@ class Helpline extends CI_Controller {
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
+
+			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
+			$user_receiver_links = array();
+			if($user_receiver){
+				$user_receiver_links = $this->helpline_model->getHelplineReceiverLinksById($user_receiver->receiver_id);
+			}
+			$this->data['user_details']=json_encode(array(
+				'receiver' => $user_receiver,
+				'receiver_link' => $user_receiver_links
+			));
+
 			$this->load->view('pages/helpline/report_detailed',$this->data);
 			$this->load->view('templates/footer');
 		}
@@ -347,6 +358,13 @@ class Helpline extends CI_Controller {
 
 	function search_staff_user(){
 		if($results = $this->staff_model->search_staff_user($this->input->post('query'))){			
+			echo json_encode($results);
+		}
+		else return false;
+	}	
+
+	function search_helpline_receiver(){
+		if($results = $this->helpline_model->search_helpline_receiver($this->input->post('query'))){			
 			echo json_encode($results);
 		}
 		else return false;

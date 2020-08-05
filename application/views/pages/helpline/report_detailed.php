@@ -7,19 +7,28 @@
 
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 
 
 <style>
 	.call_now_img{
-		width: 30px;
 	    cursor: pointer;
 	    padding-top: 5px;
+	    color: #5cb85c;
+	}
+	.call_now_img .fa-phone{
+		border: 1px solid #5cb85c;
+	    border-radius: 50%;
+	    width: 40px;
+	    height: 40px;
+	    padding: 8px 4px 5px 4px;
 	}
 </style>
 
 <script type="text/javascript">
+var user_details = <?php echo $user_details; ?>;
 $(function(){
 	$(".date").Zebra_DatePicker();
 		var options = {
@@ -130,7 +139,9 @@ $(function(){
 					><?php echo $status->resolution_status;?></option>
 				<?php } ?>
 			</select>
-			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" /></form></h4>
+			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" />
+			<input type="button" value="Call" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;" />
+		</form></h4>
 	<?php
 		if(!!$calls){
 	?>
@@ -195,8 +206,8 @@ $(function(){
 							</small>
 						</td>
 						<td class="text-center">
-							<small><?php echo $call->from_number;?></small><br />
-							<img src="<?php echo base_url();?>assets/images/call-now.png" class="call_now_img" onclick="initiateCall()" />
+							<small><?php echo $call->from_number;?></small>
+							<p class="call_now_img call_button" onclick="openCallModalOnRowClick('<?php echo $call->from_number;?>', '<?php echo $call->to_number;?>', '<?php echo $call->line_note; ?>', '<?php echo $call->note;?>')" title="Click to Initiate Call" data-toggle="tooltip" style="display: none;"><i class="fa fa-phone fa-2x"></i></p>
 						</td>
 						<td><small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;@&nbsp;<?php echo $call->line_note; ?> - <?php echo $call->to_number;?>
 							<audio controls preload="none">
@@ -304,21 +315,171 @@ $(function(){
 
 
 <!-- Modal -->
-<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel">
   <div class="modal-dialog" role="document" style="width:90%">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Email</h4>
+        <h4 class="modal-title" id="emailModalLabel">Email</h4>
       </div>
-      <div class="modal-body">
-	  </div>
+      <div class="modal-body" id="emailModalBody"></div>
+	 </div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="callModal" tabindex="-1" role="dialog" aria-labelledby="callModalLabel">
+  <div class="modal-dialog" role="document" style="width:90%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="callModalLabel">Call</h4>
+      </div>
+      <div class="modal-body" id="callModalBody">
+      	<div class="row">							
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="callModal-customer">Customer<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="callModal-customer" required readonly />
+				</div>
+			</div>		
+
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="callModal-helplinewithname">Helpline<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="callModal-helplinewithname" required readonly />
+					<input type="hidden" id="callModal-helpline" />
+				</div>
+			</div>
+
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="callModal-agent">Connect to<font style="color:red">*</font></label>
+					<select id="callModal-agent" placeholder="-Enter Agent Name/Phone-" required>
+						<option value="">-Enter Agent Name/Phone-</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="col-xs-12">
+				<input type="button" value="Call" class="btn btn-primary btn-sm" onclick="initiateCall()" />
+			</div>
+		</div>
+      </div>
 	 </div>
 	</div>
 </div>
 
 <script type="text/javascript">
 function display_emails(callId){
-	$(".modal-body").html($(".emails_sent_"+callId).html());
+	$("#emailModalBody").html($(".emails_sent_"+callId).html());
 }
+
+async function openCallModalOnRowClick(from, to, to_name, note){
+	if(!note){
+		let flag = await new Promise((resolve) => {
+			bootbox.confirm({
+			    message: "Please update Note to make this call?",
+			    buttons: {
+			        confirm: {
+			            label: 'Ignore',
+			            className: 'btn-warning'
+			        },
+			        cancel: {
+			            label: 'OK',
+			            className: 'btn-success'
+			        }
+			    },
+			    callback: function (result) {
+			        resolve(result)
+			    }
+			});
+      	});
+      	if(!flag){
+      		return;
+      	}
+	}
+
+	// from = '09113067178'; // TEMPORARY OVERRIDE, TO BE REMOVED...
+	$('#callModal-customer').val(from);
+	$('#callModal-helplinewithname').val(to_name + ' - ' + to);
+	$('#callModal-helpline').val(to);
+
+	// TODO: Default to be done...
+
+	$("#callModal").modal({ keyboard: false, backdrop: 'static' });
+}
+
+function openCallModal(){
+	// from = '09113067178'; // TEMPORARY OVERRIDE, TO BE REMOVED...
+	$('#callModal-customer').val('');
+	
+	// TODO: Default to be done...
+
+	$("#callModal").modal({ keyboard: false, backdrop: 'static' });
+}
+
+function initiateCall(){
+	// customer to agent flow...
+	// ajax for call...
+}
+
+function initAgentSelectize(){
+	var selectize = $('#callModal-agent').selectize({
+	    valueField: 'receiver_id',
+	    labelField: 'custom_data',
+	    searchField: 'custom_data',
+	    options: [],
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="">' + escape(item.custom_data) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+	        $.ajax({
+	            url: '<?php echo base_url();?>helpline/search_helpline_receiver',
+	            type: 'POST',
+				dataType : 'JSON',
+				data : { query: query },
+	            error: function(res) {
+	                callback();
+	            },
+	            success: function(res) {
+	            	res = transformAgent(res);
+	                callback(res.slice(0, 10));
+	            }
+	        });
+		},
+
+	});
+	if($('#callModal-agent').attr("data-previous-value")){
+		selectize[0].selectize.setValue($('#callModal-agent').attr("data-previous-value"));
+	}
+}
+
+function transformAgent(res){
+	if(res){
+		res.map(function(d){
+			d.custom_data = d.full_name + ' - ' + d.phone;
+		    return d;
+		});
+	}
+	return res;
+}
+
+$(function(){
+	$('[data-toggle="tooltip"]').tooltip();
+
+	if(user_details.receiver && user_details.receiver.enable_outbound == "1"){
+		$('.call_button').show();
+
+		initAgentSelectize();
+	}
+});
 </script>

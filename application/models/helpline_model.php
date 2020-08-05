@@ -844,6 +844,12 @@ class Helpline_model extends CI_Model{
 		return $query->result();
 	}
 
+	function getHelplineReceiverByUserId($user_id){
+		$this->db->select("*")->from("helpline_receiver")->where('user_id', $user_id);
+		$result = $this->db->get()->result();
+        return count($result) > 0 ? $result[0] : false;
+	}
+
 	function getHelplineReceiverById($receiver_id){
 		$this->db->select("*")->from("helpline_receiver")->where('receiver_id', $receiver_id);
         return $this->db->get()->result();
@@ -929,6 +935,16 @@ class Helpline_model extends CI_Model{
         }  
 	}
 
-	// on receiver add, check for phone exists. & show the details of the record.
+	function search_helpline_receiver($query=""){
+		$search = array(
+           'LOWER(full_name)'=>strtolower($query), 
+           'phone'=>$query,
+        );
+		$this->db->select("receiver_id, phone, full_name")
+			->from("helpline_receiver")
+			->or_like($search, 'both');
+		$query=$this->db->get();
+		return $query->result();
+	}
 }
 ?>

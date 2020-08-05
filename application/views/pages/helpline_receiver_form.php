@@ -221,7 +221,7 @@ function initUserSelectize(){
 
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
-						<label for="helpline_receiver_link">Helpline Links</label>
+						<label for="helpline_receiver_link">Helpline Links<img src="<?php echo base_url();?>assets/images/information-icon.png" class="info_icon" title="Hold CTRL key and Click for multiple selections" data-toggle="tooltip"/></label>
 						<select id="helpline_receiver_link" name="helpline_receiver_link[]" class="form-control" multiple="">
 							<?php 
 								foreach($helplines as $helpline){
