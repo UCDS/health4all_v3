@@ -42,6 +42,17 @@ class Helpline extends CI_Controller {
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
+
+			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
+			$user_receiver_links = array();
+			if($user_receiver){
+				$user_receiver_links = $this->helpline_model->getHelplineReceiverLinksById($user_receiver->receiver_id);
+			}
+			$this->data['user_details']=json_encode(array(
+				'receiver' => $user_receiver,
+				'receiver_link' => $user_receiver_links
+			));
+
 			$this->load->view('pages/helpline/report_detailed',$this->data);
 			$this->load->view('templates/footer');
 		}
@@ -257,5 +268,160 @@ class Helpline extends CI_Controller {
 				echo json_encode($list);
 		}
 		else return false;
+	}
+
+	function helpline_receivers(){
+		if($this->session->userdata('logged_in')){
+			$this->load->helper('form');
+			$this->data['title']="User Helpline Receivers";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['user_functions']=$this->staff_model->get_user_function();
+			$this->data['receivers'] = $this->helpline_model->getHelplineReceivers();
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);			
+			$this->load->view('pages/helpline_receiver_list',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else{
+			show_404();
+		}
+	}
+
+	function helpline_receivers_form($receiver_id=''){
+		if($this->session->userdata('logged_in')){  						
+            $this->data['userdata']=$this->session->userdata('logged_in');  
+		} else{
+            show_404(); 													
+        } 
+
+		/*$access = -1;
+		foreach($this->data['functions'] as $function){
+            if($function->user_function=="Helpline - Receivers"){
+                $access = 1;
+				break;
+            }
+		}
+		if($access != 1){
+			show_404();
+		}*/
+		
+		$this->load->helper('form');										
+		$this->load->library('form_validation'); 							
+		$this->data['title']="Add Helpline Receiver";										
+		$this->load->view('templates/header', $this->data);				
+		$this->load->view('templates/leftnav');	
+		$config=array(
+           array( 'field'   => 'full_name', 'label'   => 'Full Name', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'short_name', 'label'   => 'Short Name', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'email', 'label'   => 'Email', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'category', 'label'   => 'Category', 'rules'   => 'required|trim|xss_clean' ),
+           array( 'field'   => 'app_id', 'label'   => 'App ID', 'rules'   => 'trim|xss_clean' )
+		);
+		if(!$receiver_id){
+			$config[] = array( 'field'   => 'phone', 'label'   => 'Phone', 'rules'   => 'required|trim|xss_clean' );
+		}
+		$this->form_validation->set_rules($config);
+
+		$this->data['users']=$this->masters_model->get_users();
+		$this->data['helplines']=$this->helpline_model->get_helplines();
+		
+		$existing_receivers = false;
+		if($this->input->post('phone')){
+			$this->data['receivers_exists_msg'] = "The receiver with this phone already exists";
+			$this->data['receivers'] = $existing_receivers = $this->helpline_model->getHelplineReceivers(array('phone' => $this->input->post('phone')));
+			if($existing_receivers){
+				$this->load->view('pages/helpline_receiver_list', $this->data);
+			}
+        }
+
+        if(!$existing_receivers){
+			if($this->form_validation->run()===FALSE) {	
+
+			} else {
+				if($this->helpline_model->save_helpline_receiver($receiver_id)){
+					$this->data['msg']="Helpline Receiver Saved Succesfully";					
+				}
+			}
+        }
+
+        $this->data['submitLink'] = "helpline/helpline_receivers_form";
+        $this->data['usersList'] = array();
+        if($receiver_id){
+        	$helpline_receiver = $this->helpline_model->getHelplineReceiverById($receiver_id)[0];
+        	$this->data['edit_data'] = json_encode(['helpline_receiver' => $helpline_receiver, 'helpline_receiver_link' => $this->helpline_model->getHelplineReceiverLinksById($receiver_id), 'userList' => $this->staff_model->search_staff_user("", $helpline_receiver->user_id)]);
+        	$this->data['submitLink'] = "helpline/helpline_receivers_form/" . $receiver_id;
+        }
+
+		$this->load->view('pages/helpline_receiver_form',$this->data);							
+		$this->load->view('templates/footer');								
+    }	
+
+	function search_staff_user(){
+		if($results = $this->staff_model->search_staff_user($this->input->post('query'))){			
+			echo json_encode($results);
+		}
+		else return false;
+	}	
+
+	function search_helpline_receiver(){
+		if($results = $this->helpline_model->search_helpline_receiver($this->input->post('query'))){			
+			echo json_encode($results);
+		}
+		else return false;
+	}	
+
+	function get_helpline_receiver_by_doctor(){
+		$results = array();
+		if($this->input->post('links') == "1"){
+			$results = $this->helpline_model->get_helpline_receiver_links_by_doctor($this->input->post('doctor'), $this->input->post('helpline'));
+		} else {
+			$results = $this->helpline_model->get_helpline_receiver_by_doctor($this->input->post('doctor'), $this->input->post('helpline'));
+		}
+		if(!$results || empty($results)) $results = array();
+		echo json_encode($results);
+	}
+
+	function initiate_call(){
+
+		// TODO: TO BE MOVED TO config/exotel.php  <---- HAD TO PLACE BELOW AS CONFIG LOADING WAS NOT WORKING...
+		/*$api_key = $this->config->item('exotel_api_key');
+		$api_token = $this->config->item('exotel_api_token');
+		$account_sid = $this->config->item('exotel_account_sid');
+		$account_subdomain = $this->config->item('exotel_account_subdomain');
+		$call_type = $this->config->item('exotel_call_type');*/
+		$api_key = '';
+		$api_token = '';
+		$account_sid = '';
+		$account_subdomain = 'api.exotel.com';
+		$call_type = 'trans';
+
+
+		$from = $this->input->post('from');
+		$app_url = 'http://my.exotel.in/exoml/start/' . $this->input->post('app_id');
+		$calledId = $this->input->post('called_id');
+
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Calls/connect");
+
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query( array( 'From' => $from, 'Url' => $app_url, 'CallerId' => $calledId, 'CallType' => $call_type) ) );
+
+		// Receive server response ...
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$result = curl_exec($ch);
+		if (curl_errno($ch)) {
+		    $error_msg = curl_error($ch);
+		}
+
+		curl_close ($ch);
+
+		if (isset($error_msg)) {
+			echo $error_msg;
+		} else {
+			echo true;
+		}
 	}
 }

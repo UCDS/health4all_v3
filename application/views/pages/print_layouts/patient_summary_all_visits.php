@@ -34,8 +34,8 @@
 	}
 	}
 </style>
+<?php foreach($patient_visits as $pvInd => $patient_visit) { ?>
 <script type="text/javascript">
-<?php foreach($patient_visits as $patient_visit) { ?>
 	$(function(){
 		var settings = {
 		barHeight: 20,
@@ -47,9 +47,8 @@
 			settings
 		);	// patient->patient_id, done
 	});
-<?php } ?>
 </script>
-<?php foreach($patient_visits as $patient_visit) { ?>
+
 <table style="width:98%;padding:5px;">
 	<tbody>
 		<tr>
@@ -136,43 +135,9 @@
 		</tr>
 		</tbody>
 		<tbody>
-		<?php if(!!$patient_visit->admit_weight || !!$patient_visit->sbp || !!$patient_visit->dbp || !!$patient_visit->pulse_rate){ ?>
-		<tr class="print-element">
-			<td style="padding-top:20px">
-			<b>Weight: </b><?php  if(!!$patient_visit->admit_weight) echo $patient_visit->admit_weight." kgs";?> 
-			</td>
-			<td style="padding-top:20px">
-			<b>BP: </b><?php  if(!!$patient_visit->sbp && !!$patient_visit->dbp) echo $patient_visit->sbp."/".$patient_visit->dbp;?> 
-			</td>
-			<td style="padding-top:20px">
-			<b>Pulse Rate: </b><?php if(!!$patient_visit->pulse_rate) echo $patient_visit->pulse_rate;?>
-			</td>
-		</tr>
-		<?php } ?>
-		<?php if(!!$patient_visit->temperature || !!$patient_visit->respiratory_rate){ ?>
-		<tr class="print-element">
-			<td>
-			<b>Temperature: </b><?php if(!!$patient_visit->temperature) echo  $patient_visit->temperature." F";?> 
-			</td>
-			<td>
-			<b>Respiratory Rate: </b><?php if(!!$patient_visit->respiratory_rate) echo  $patient_visit->respiratory_rate;?> 
-			</td>
-			<td></td>
-		</tr>
-		<?php } ?>
-		<?php if(!!$patient_visit->blood_sugar || !!$patient_visit->hb || !!$patient_visit->hb1ac){ ?>
-		<tr class="print-element">
-			<td>
-			<b>Blood Sugar:</b> <?php if(!!$patient_visit->blood_sugar) echo $patient_visit->blood_sugar." mg/dL";?> 
-			</td>
-			<td>
-			<b>Hb:</b> <?php  if(!!$patient_visit->hb) echo $patient_visit->hb." g/dL";?>
-			</td>
-			<td>
-			<b>Hb1Ac: </b><?php  if(!!$patient_visit->hb1ac) echo $patient_visit->hb1ac."%";?> 
-			</td>
-		</tr>
-		<?php } ?>
+		<tr><td colspan="3"></td></tr>
+		<tr data-patient-clinical-details data-source="patient_visits" data-index="<?php echo $pvInd; ?>" data-print-mode="true" data-skip-if-no-value="true"></tr>
+
 		<?php if(!!$patient_visit->presenting_complaints) { ?>
 		<tr class="print-element">
 			<td  style="padding-top:20px" colspan="3">
