@@ -9,8 +9,10 @@ ALTER TABLE `helpline_receiver` CHANGE `app_id` `app_id` VARCHAR(6) NULL COMMENT
 CREATE TABLE `helpline_receiver_link` ( `id` INT NOT NULL AUTO_INCREMENT, `receiver_id` INT NOT NULL, `helpline_id` INT NOT NULL, PRIMARY KEY (`id`) ); 
 
 
-
 ALTER TABLE `helpline_receiver`   
 	CHANGE `doctor` `doctor` TINYINT(4) DEFAULT 0 NULL COMMENT '1 for True and 0 for False',
 	CHANGE `enable_outbound` `enable_outbound` TINYINT(4) DEFAULT 0 NULL COMMENT '1 for True and 0 for False',
 	CHANGE `activity_status` `activity_status` TINYINT(4) DEFAULT 0 NULL COMMENT '1 for active and 0 for inactive';
+
+
+update `db_version` set `version` = '1.0.2';
