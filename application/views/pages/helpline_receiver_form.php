@@ -157,10 +157,7 @@ function initUserSelectize(){
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label for="category">Category<font style="color:red">*</font></label>
-						<select id="category" name="category" class="form-control" required="">
-							<option value="">Select Category</option>
-							<option value="Volunteer">Volunteer</option>
-						</select>
+						<input type="text" class="form-control" placeholder="Enter Category" id="category" name="category" required/>
 					</div>
 				</div>
 
