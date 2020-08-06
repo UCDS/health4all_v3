@@ -891,21 +891,21 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('user_id')){														
             $helpline_receiver['user_id'] = $this->input->post('user_id');							
         }
-		if($this->input->post('doctor')){														
+		if($this->input->post('')){														
             $helpline_receiver['doctor'] = $this->input->post('doctor');							
         }																
-		if($this->input->post('enable_outbound')){														
+		if($this->input->post('')){														
             $helpline_receiver['enable_outbound'] = $this->input->post('enable_outbound');							
         }
-		if($this->input->post('app_id')){														
-            $helpline_receiver['app_id'] = $this->input->post('app_id');							
-        }																
-		if($this->input->post('helpline_id')){														
-            $helpline_receiver['helpline_id'] = $this->input->post('helpline_id');							
-        }
-		if($this->input->post('activity_status')){														
-            $helpline_receiver['activity_status'] = $this->input->post('activity_status');							
-        }
+
+        $helpline_receiver['doctor'] = $this->input->post('doctor') ? $this->input->post('doctor') : '0';
+
+        $helpline_receiver['enable_outbound'] = $this->input->post('enable_outbound') ? $this->input->post('enable_outbound') : '0';
+        
+        $helpline_receiver['app_id'] = $this->input->post('app_id') ? $this->input->post('app_id') : '';
+        
+        $helpline_receiver['helpline_id'] = $this->input->post('helpline_id') ? $this->input->post('helpline_id') : '0';
+		$helpline_receiver['activity_status'] = $this->input->post('activity_status') ? $this->input->post('activity_status') : '0';
 
 	   	$this->db->trans_start();
         if($receiver_id){

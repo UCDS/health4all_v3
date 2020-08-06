@@ -315,7 +315,7 @@ class Helpline extends CI_Controller {
            array( 'field'   => 'short_name', 'label'   => 'Short Name', 'rules'   => 'required|trim|xss_clean' ),
            array( 'field'   => 'email', 'label'   => 'Email', 'rules'   => 'required|trim|xss_clean' ),
            array( 'field'   => 'category', 'label'   => 'Category', 'rules'   => 'required|trim|xss_clean' ),
-           array( 'field'   => 'app_id', 'label'   => 'App ID', 'rules'   => 'required|trim|xss_clean' )
+           array( 'field'   => 'app_id', 'label'   => 'App ID', 'rules'   => 'trim|xss_clean' )
 		);
 		if(!$receiver_id){
 			$config[] = array( 'field'   => 'phone', 'label'   => 'Phone', 'rules'   => 'required|trim|xss_clean' );
@@ -392,11 +392,11 @@ class Helpline extends CI_Controller {
 		$api_key = '';
 		$api_token = '';
 		$account_sid = '';
-		$account_subdomain = '';
+		$account_subdomain = 'api.exotel.com';
 		$call_type = 'trans';
 
 
-		$from = '09113067178'; //$this->input->post('from');
+		$from = $this->input->post('from');
 		$app_url = 'http://my.exotel.in/exoml/start/' . $this->input->post('app_id');
 		$calledId = $this->input->post('called_id');
 

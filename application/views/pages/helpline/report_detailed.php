@@ -390,6 +390,7 @@ $(function(){
 						<label for="callModal-connectto-alternate-showmore">Show More</label>
 					</div>
 				</div>
+				<p class="error callModal-app_id-error">Call cannot be placed without app id</p>
 			</div>
 		</div>
 		<div class="row" style="margin-top: 20px;">
@@ -476,7 +477,8 @@ function setHelplineNumber(){
 
 function connectToChangeReset(){
 	$('.callModal-customer-error').hide();
-	
+	$('.callModal-app_id-error').hide();
+
 	$('[href="#change_connectto"]').removeAttr("data-hidden").html('Change');
 	$('#change_connectto_section').addClass('hidden');
 	$('[name=radio_doctor]:checked').removeAttr('checked');
@@ -491,8 +493,14 @@ function initiateCall(){
 		$('.callModal-customer-error').show();
 		return;
 	}
-
 	$('.callModal-customer-error').hide();
+	
+	if(!callDetails.app_id){
+		$('.callModal-app_id-error').show();
+		return;
+	}
+	$('.callModal-app_id-error').hide();
+
 
 	// customer to agent flow...
 	// ajax for call...

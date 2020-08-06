@@ -16,7 +16,7 @@ $(function(){
 		$.each(Object.keys(helpline_receiver), function(i, k){
 			if(helpline_receiver[k]){
 				if($('input#' + k).attr('type') == 'checkbox'){
-					$('input#' + k).attr('checked', 'checked');
+					if(helpline_receiver[k] == "1") $('input#' + k).attr('checked', 'checked');
 				} else { // if($('input#' + k).attr('type') == 'text' || $('select#' + k).length > 0){
 					$('#' + k).val(helpline_receiver[k]);
 				}
@@ -192,7 +192,7 @@ function initUserSelectize(){
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label for="app_id">App ID</label>
-						<input type="text" class="form-control" placeholder="Enter Phone" id="app_id" name="app_id" />
+						<input type="text" class="form-control" placeholder="Enter App Id" id="app_id" name="app_id" />
 					</div>
 				</div>
 
