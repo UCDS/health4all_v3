@@ -368,5 +368,60 @@ class Helpline extends CI_Controller {
 			echo json_encode($results);
 		}
 		else return false;
+	}	
+
+	function get_helpline_receiver_by_doctor(){
+		$results = array();
+		if($this->input->post('links') == "1"){
+			$results = $this->helpline_model->get_helpline_receiver_links_by_doctor($this->input->post('doctor'), $this->input->post('helpline'));
+		} else {
+			$results = $this->helpline_model->get_helpline_receiver_by_doctor($this->input->post('doctor'), $this->input->post('helpline'));
+		}
+		if(!$results || empty($results)) $results = array();
+		echo json_encode($results);
+	}
+
+	function initiate_call(){
+
+		// TODO: TO BE MOVED TO config/exotel.php  <---- HAD TO PLACE BELOW AS CONFIG LOADING WAS NOT WORKING...
+		/*$api_key = $this->config->item('exotel_api_key');
+		$api_token = $this->config->item('exotel_api_token');
+		$account_sid = $this->config->item('exotel_account_sid');
+		$account_subdomain = $this->config->item('exotel_account_subdomain');
+		$call_type = $this->config->item('exotel_call_type');*/
+		$api_key = '';
+		$api_token = '';
+		$account_sid = '';
+		$account_subdomain = '';
+		$call_type = 'trans';
+
+
+		$from = '09113067178'; //$this->input->post('from');
+		$app_url = 'http://my.exotel.in/exoml/start/' . $this->input->post('app_id');
+		$calledId = $this->input->post('called_id');
+
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Calls/connect");
+
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query( array( 'From' => $from, 'Url' => $app_url, 'CallerId' => $calledId, 'CallType' => $call_type) ) );
+
+		// Receive server response ...
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$result = curl_exec($ch);
+		if (curl_errno($ch)) {
+		    $error_msg = curl_error($ch);
+		}
+
+		curl_close ($ch);
+
+		if (isset($error_msg)) {
+			echo $error_msg;
+		} else {
+			echo true;
+		}
 	}
 }

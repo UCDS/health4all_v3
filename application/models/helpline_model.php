@@ -845,7 +845,7 @@ class Helpline_model extends CI_Model{
 	}
 
 	function getHelplineReceiverByUserId($user_id){
-		$this->db->select("*")->from("helpline_receiver")->where('user_id', $user_id);
+		$this->db->select("*")->from("helpline_receiver")->join('helpline','helpline_receiver.helpline_id = helpline.helpline_id')->where('user_id', $user_id);
 		$result = $this->db->get()->result();
         return count($result) > 0 ? $result[0] : false;
 	}
@@ -856,7 +856,7 @@ class Helpline_model extends CI_Model{
 	}
 
 	function getHelplineReceiverLinksById($receiver_id){
-		$this->db->select("*")->from("helpline_receiver_link")->where('receiver_id', $receiver_id);
+		$this->db->select("*")->from("helpline_receiver_link")->join('helpline','helpline_receiver_link.helpline_id = helpline.helpline_id')->where('receiver_id', $receiver_id);
         return $this->db->get()->result();
 	}
 
@@ -944,6 +944,16 @@ class Helpline_model extends CI_Model{
 			->from("helpline_receiver")
 			->or_like($search, 'both');
 		$query=$this->db->get();
+		return $query->result();
+	}
+
+	function get_helpline_receiver_by_doctor($doctor="", $helpline=""){
+		$query = $this->db->query("SELECT full_name, phone, category, app_id FROM helpline_receiver JOIN helpline ON helpline_receiver.helpline_id = helpline.helpline_id WHERE activity_status = 1 AND helpline.helpline = '".$helpline."' AND doctor = '".($doctor == "1" ? 1 : 0)."' GROUP BY helpline_receiver.receiver_id");
+		return $query->result();
+	}
+
+	function get_helpline_receiver_links_by_doctor($doctor="", $helpline=""){
+		$query = $this->db->query("SELECT full_name, phone, category, app_id FROM helpline_receiver_link JOIN helpline ON helpline_receiver_link.helpline_id = helpline.helpline_id JOIN helpline_receiver ON helpline_receiver.receiver_id = helpline_receiver_link.receiver_id WHERE activity_status = 1 AND helpline.helpline = '".$helpline."' AND doctor = '".($doctor == "1" ? 1 : 0)."' GROUP BY helpline_receiver_link.receiver_id");
 		return $query->result();
 	}
 }

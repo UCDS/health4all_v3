@@ -25,10 +25,24 @@
 	    height: 40px;
 	    padding: 8px 4px 5px 4px;
 	}
+	.hidden{
+		display: none; 
+		visibility: hidden;
+	}
+	.line-through{
+		text-decoration: line-through;
+	}
+	.error{
+		color: red;
+		font-size: 12px;
+	}
 </style>
 
 <script type="text/javascript">
 var user_details = <?php echo $user_details; ?>;
+var receiver = user_details.receiver;
+var callDetails = {};
+
 $(function(){
 	$(".date").Zebra_DatePicker();
 		var options = {
@@ -140,7 +154,7 @@ $(function(){
 				<?php } ?>
 			</select>
 			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" />
-			<input type="button" value="Call" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;" />
+			<button type="button" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;"><i class="fa fa-phone" style="padding-right: 5px;"></i> Call</button>
 		</form></h4>
 	<?php
 		if(!!$calls){
@@ -339,30 +353,48 @@ $(function(){
       	<div class="row">							
 			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 				<div class="form-horizontal">
-					<label for="callModal-customer">Customer<font style="color:red">*</font></label>
-					<input type="text" class="form-control" id="callModal-customer" required readonly />
+					<label for="callModal-customer">Call<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="callModal-customer" placeholder="Enter '0' followed by 10 digit phone number" required readonly onblur="setFromNumber()" />
+					<p class="error callModal-customer-error">This field is required</p>
 				</div>
 			</div>		
 
 			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 				<div class="form-horizontal">
-					<label for="callModal-helplinewithname">Helpline<font style="color:red">*</font></label>
+					<label for="callModal-helplinewithname">Through Helpline<font style="color:red">*</font></label>
 					<input type="text" class="form-control" id="callModal-helplinewithname" required readonly />
+					<select class="form-control" id="callModal-helplinewithname-dropdown" style="display: none" onchange="setHelplineNumber()"></select>
 					<input type="hidden" id="callModal-helpline" />
 				</div>
 			</div>
-
-			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+		</div>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-xs-12">
 				<div class="form-horizontal">
-					<label for="callModal-agent">Connect to<font style="color:red">*</font></label>
-					<select id="callModal-agent" placeholder="-Enter Agent Name/Phone-" required>
-						<option value="">-Enter Agent Name/Phone-</option>
-					</select>
+					<label for="callModal-connectto">Connect to<font style="color:red">*</font></label>
+					<p id="callModal-connectto"></p>
+					<p id="callModal-connectto-updated"></p>
+					<a href="#change_connectto">Change</a>
+
+					<div id="change_connectto_section" class="hidden">
+						<input type="radio" id="callModal-connectto-radio-doctor" name="radio_doctor" value="1" />
+						<label for="callModal-connectto-radio-doctor" style="margin-right: 20px;">Doctor</label>
+
+						<input type="radio" id="callModal-connectto-radio-nondoctor" name="radio_doctor" value="0" />
+						<label for="callModal-connectto-radio-nondoctor">Non-Doctor</label>
+					</div>
+
+					<div id="callModal_connectto_alternate_section">
+						<select id="callModal-connectto-alternate" required style="margin-right: 20px;" onchange="updateConnectto()"></select>
+						<input type="checkbox" id="callModal-connectto-alternate-showmore" value="1" />
+						<label for="callModal-connectto-alternate-showmore">Show More</label>
+					</div>
 				</div>
 			</div>
-
+		</div>
+		<div class="row" style="margin-top: 20px;">
 			<div class="col-xs-12">
-				<input type="button" value="Call" class="btn btn-primary btn-sm" onclick="initiateCall()" />
+				<input id="initiateCallButton" type="button" value="Call" class="btn btn-primary btn-sm" onclick="initiateCall()" />
 			</div>
 		</div>
       </div>
@@ -400,10 +432,17 @@ async function openCallModalOnRowClick(from, to, to_name, note){
       	}
 	}
 
-	// from = '09113067178'; // TEMPORARY OVERRIDE, TO BE REMOVED...
-	$('#callModal-customer').val(from);
-	$('#callModal-helplinewithname').val(to_name + ' - ' + to);
-	$('#callModal-helpline').val(to);
+	connectToChangeReset();
+
+	callDetails.from = from;
+	callDetails.called_id = to;
+	callDetails.app_id = receiver.app_id;
+
+
+	$('#callModal-customer').val(from).attr('readonly', 'readonly');
+	$('#callModal-helplinewithname-dropdown').hide();
+	$('#callModal-helplinewithname').val(to_name + ' - ' + to).show();
+	$('#callModal-connectto').html(receiver.full_name + ', ' + receiver.phone +  ', '  + receiver.category + ', ' + receiver.note + ', ' + receiver.helpline);
 
 	// TODO: Default to be done...
 
@@ -411,17 +450,70 @@ async function openCallModalOnRowClick(from, to, to_name, note){
 }
 
 function openCallModal(){
-	// from = '09113067178'; // TEMPORARY OVERRIDE, TO BE REMOVED...
-	$('#callModal-customer').val('');
-	
+	connectToChangeReset();
+
+	callDetails.from = '';
+	callDetails.called_id = $('#callModal-helplinewithname-dropdown').val();
+	callDetails.app_id = receiver.app_id;
+
+	$('#callModal-customer').val('').removeAttr('readonly');
+	$('#callModal-helplinewithname').hide();
+	$('#callModal-helplinewithname-dropdown').show();
+	$('#callModal-connectto').html(receiver.full_name + ', ' + receiver.phone +  ', '  + receiver.category + ', ' + receiver.note + ', ' + receiver.helpline);
+
 	// TODO: Default to be done...
 
 	$("#callModal").modal({ keyboard: false, backdrop: 'static' });
 }
 
+function setFromNumber(){
+	callDetails.from = $('#callModal-customer').val();
+}
+
+function setHelplineNumber(){
+	callDetails.called_id = $('#callModal-helplinewithname-dropdown').val();
+}
+
+function connectToChangeReset(){
+	$('.callModal-customer-error').hide();
+	
+	$('[href="#change_connectto"]').removeAttr("data-hidden").html('Change');
+	$('#change_connectto_section').addClass('hidden');
+	$('[name=radio_doctor]:checked').removeAttr('checked');
+
+	$('#callModal_connectto_alternate_section').addClass('hidden');
+	$('#callModal-connectto-alternate option').remove();
+	$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+}
+
 function initiateCall(){
+	if(!callDetails.from){
+		$('.callModal-customer-error').show();
+		return;
+	}
+
+	$('.callModal-customer-error').hide();
+
 	// customer to agent flow...
 	// ajax for call...
+	$('#initiateCallButton').val('Calling...').attr('disabled', 'disabled');
+
+	$.ajax({
+        url: '<?php echo base_url();?>helpline/initiate_call',
+        type: 'POST',
+		dataType : 'JSON',
+		data : callDetails,
+        error: function(res) {
+            //callback();
+            $('#initiateCallButton').val('Call').removeAttr('disabled');
+            bootbox.alert("Call failed: " + JSON.stringify(res));
+        },
+        success: function(res) {
+			$('#initiateCallButton').val('Call').removeAttr('disabled');
+			$("#callModal").modal('hide');
+			bootbox.alert("Call initiated successfully");
+        }
+    });
 }
 
 function initAgentSelectize(){
@@ -473,13 +565,100 @@ function transformAgent(res){
 	return res;
 }
 
+function loadReceivers(links){
+	revertConnecto()
+
+	$.ajax({
+        url: '<?php echo base_url();?>helpline/get_helpline_receiver_by_doctor',
+        type: 'POST',
+		dataType : 'JSON',
+		data : { doctor: $('[name=radio_doctor]:checked').val(), helpline: callDetails.called_id, links: links },
+        error: function(res) {
+            //callback();
+        },
+        success: function(res) {
+			$('#callModal_connectto_alternate_section').removeClass('hidden');
+			$('#callModal-connectto-alternate').append('<option value="">Select alternate connect</option>');
+
+			if(res){
+				$.each(res, function(i, d){
+					$('#callModal-connectto-alternate').append('<option value="'+d.app_id+'">'+d.full_name+', '+d.phone+', '+d.category+'</option>');
+				})
+			}
+        }
+    });
+}
+					
+function updateConnectto(){
+	revertConnecto();
+
+	if($('#callModal-connectto-alternate').val()){
+		callDetails.app_id = $('#callModal-connectto-alternate').val();
+		var display_text = $('#callModal-connectto-alternate option[value="'+$('#callModal-connectto-alternate').val()+'"]').html();
+		$("#callModal-connectto").addClass('line-through');
+		$("#callModal-connectto-updated").html(display_text + ', ' + receiver.note + ', ' + receiver.helpline);
+	}
+}
+
+function revertConnecto(){
+	callDetails.app_id = receiver.app_id;
+	$("#callModal-connectto").removeClass('line-through');
+	$("#callModal-connectto-updated").html('');	
+}
+
 $(function(){
 	$('[data-toggle="tooltip"]').tooltip();
 
-	if(user_details.receiver && user_details.receiver.enable_outbound == "1"){
+	if(receiver && receiver.enable_outbound == "1"){
 		$('.call_button').show();
 
-		initAgentSelectize();
+		// initAgentSelectize();
+
+		if(receiver.helpline){
+			$('#callModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+		}
+		if(user_details.receiver_link){
+			$.each(user_details.receiver_link, function(i, d){
+				$('#callModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - '+d.helpline+'</option>');
+			})
+		}
 	}
+
+	$('#callModal').on('click', '[href="#change_connectto"]', function(e){
+		e.preventDefault();
+
+		$('[name=radio_doctor]:checked').removeAttr('checked');
+		$('#callModal_connectto_alternate_section').addClass('hidden');
+		$('#callModal-connectto-alternate option').remove();
+		$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+		revertConnecto();
+
+		if($(this).attr("data-hidden")){
+			callDetails.app_id = receiver.app_id;
+			$(this).removeAttr("data-hidden").html('Change');
+			$('#change_connectto_section').addClass('hidden');
+		} else  {
+			callDetails.app_id = '';
+			$(this).attr("data-hidden", "true").html('Cancel');
+			$('#change_connectto_section').removeClass('hidden');
+		}
+	});
+
+	$('[name=radio_doctor]').on('click', function(e){
+
+		$('#callModal_connectto_alternate_section').addClass('hidden');
+		$('#callModal-connectto-alternate option').remove();
+		$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+
+		loadReceivers("0");
+		
+	});
+
+	$('#callModal-connectto-alternate-showmore').on('click', function(e){
+		$('#callModal-connectto-alternate option').remove();
+
+		loadReceivers($('#callModal-connectto-alternate-showmore:checked').length > 0 ? "1" : "0");
+		
+	});
 });
 </script>
