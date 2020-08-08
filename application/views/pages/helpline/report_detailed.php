@@ -7,10 +7,42 @@
 
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
+
+
+<style>
+	.call_now_img{
+	    cursor: pointer;
+	    padding-top: 5px;
+	    color: #5cb85c;
+	}
+	.call_now_img .fa-phone{
+		border: 1px solid #5cb85c;
+	    border-radius: 50%;
+	    width: 40px;
+	    height: 40px;
+	    padding: 8px 4px 5px 4px;
+	}
+	.hidden{
+		display: none; 
+		visibility: hidden;
+	}
+	.line-through{
+		text-decoration: line-through;
+	}
+	.error{
+		color: red;
+		font-size: 12px;
+	}
+</style>
 
 <script type="text/javascript">
+var user_details = <?php echo $user_details; ?>;
+var receiver = user_details.receiver;
+var callDetails = {};
+
 $(function(){
 	$(".date").Zebra_DatePicker();
 		var options = {
@@ -121,25 +153,41 @@ $(function(){
 					><?php echo $status->resolution_status;?></option>
 				<?php } ?>
 			</select>
-			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" /></form></h4>
+			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" />
+			<button type="button" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;"><i class="fa fa-phone" style="padding-right: 5px;"></i> Call</button>
+		</form></h4>
 	<?php
 		if(!!$calls){
 	?>
 		<table class="table table-striped table-bordered" id="table-sort">
+			<colgroup>
+				<col style="width: 1.3%;">
+				<col style="width: 3.1%;">
+				<col style="width: 3.7%;">
+				<col style="width: 6.2%;">
+				<col style="width: 29.1%;">
+				<col style="width: 15%;">
+				<col style="width: 3.8%;">
+				<col style="width: 5.8%;">
+				<col style="width: 6.7%;">
+				<col style="width: 6.7%;">
+				<col style="width: 2.7%;">
+				<col style="width: 4.4%;">
+			</colgroup>
 			<thead>
 				<th>#</th>
 				<th>Call ID</th>
 				<th>Call</th>
-				<th>From-To</th>
-				<th>Recording</th>
+				<th>Customer</th>
+				<th>Team Member @ Helpline</th>
 				<th>Note</th>
 				<th>Caller Type</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
 				<th>Resolution Time</th>
 				<th>TAT</th>
-				<th>Hospital</th>
-				<th>Patient</th>
+				<!-- <th>Hospital</th>
+				<th>Patient</th> -->
 				<th>Emails</th>
 			</thead>
 			<tbody>
@@ -171,12 +219,11 @@ $(function(){
 								<?php echo date("d-M-Y g:iA",strtotime($call->start_time));?>
 							</small>
 						</td>
-						<td>
-							<small><?php echo $call->from_number;?><br />
-							<?php echo $call->to_number;?>
-							</small>
+						<td class="text-center">
+							<small><?php echo $call->from_number;?></small>
+							<p class="call_now_img call_button" onclick="openCallModalOnRowClick('<?php echo $call->from_number;?>', '<?php echo $call->to_number;?>', '<?php echo $call->line_note; ?>', '<?php echo $call->note;?>')" title="Click to Initiate Call" data-toggle="tooltip" style="display: none;"><i class="fa fa-phone fa-2x"></i></p>
 						</td>
-						<td><small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;-&nbsp;<?php echo $call->line_note; ?>
+						<td><small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;@&nbsp;<?php echo $call->line_note; ?> - <?php echo $call->to_number;?>
 							<audio controls preload="none">
 								<source src="<?php echo $call->recording_url;?>" type="audio/mpeg">
 								Your browser does not support the audio element.
@@ -213,12 +260,12 @@ $(function(){
 								?>
 							</small>
 						</td>
-						<td>
+						<!-- <td>
 							<?php echo $call->hospital;?>
 						</td>
 						<td>
 							<?php echo $call->ip_op;?> <?php if($call->visit_id !=0) echo "#".$call->visit_id;?>
-						</td>
+						</td> -->
 						<td>
 							<?php if($call->email_count > 0) { ?>
 							<a href="#" onclick="display_emails(<?= $call->call_id;?>)"  data-toggle="modal" data-target="#emailModal"><i class="fa fa-envelope"></i> (<?= $call->email_count;?>)</a>
@@ -282,21 +329,344 @@ $(function(){
 
 
 <!-- Modal -->
-<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel">
   <div class="modal-dialog" role="document" style="width:90%">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Email</h4>
+        <h4 class="modal-title" id="emailModalLabel">Email</h4>
       </div>
-      <div class="modal-body">
-	  </div>
+      <div class="modal-body" id="emailModalBody"></div>
+	 </div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="callModal" tabindex="-1" role="dialog" aria-labelledby="callModalLabel">
+  <div class="modal-dialog" role="document" style="width:90%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="callModalLabel">Call</h4>
+      </div>
+      <div class="modal-body" id="callModalBody">
+      	<div class="row">							
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="callModal-customer">Call<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="callModal-customer" placeholder="Enter '0' followed by 10 digit phone number" required readonly onblur="setFromNumber()" />
+					<p class="error callModal-customer-error">This field is required</p>
+				</div>
+			</div>		
+
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="callModal-helplinewithname">Through Helpline<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="callModal-helplinewithname" required readonly />
+					<select class="form-control" id="callModal-helplinewithname-dropdown" style="display: none" onchange="setHelplineNumber()"></select>
+					<input type="hidden" id="callModal-helpline" />
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-xs-12">
+				<div class="form-horizontal">
+					<label for="callModal-connectto">Connect to<font style="color:red">*</font></label>
+					<p id="callModal-connectto"></p>
+					<p id="callModal-connectto-updated"></p>
+					<a href="#change_connectto">Change</a>
+
+					<div id="change_connectto_section" class="hidden">
+						<input type="radio" id="callModal-connectto-radio-doctor" name="radio_doctor" value="1" />
+						<label for="callModal-connectto-radio-doctor" style="margin-right: 20px;">Doctor</label>
+
+						<input type="radio" id="callModal-connectto-radio-nondoctor" name="radio_doctor" value="0" />
+						<label for="callModal-connectto-radio-nondoctor">Non-Doctor</label>
+					</div>
+
+					<div id="callModal_connectto_alternate_section">
+						<select id="callModal-connectto-alternate" required style="margin-right: 20px;" onchange="updateConnectto()"></select>
+						<input type="checkbox" id="callModal-connectto-alternate-showmore" value="1" />
+						<label for="callModal-connectto-alternate-showmore">Show More</label>
+					</div>
+				</div>
+				<p class="error callModal-app_id-error">Call cannot be placed without app id</p>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-xs-12">
+				<input id="initiateCallButton" type="button" value="Call" class="btn btn-primary btn-sm" onclick="initiateCall()" />
+			</div>
+		</div>
+      </div>
 	 </div>
 	</div>
 </div>
 
 <script type="text/javascript">
 function display_emails(callId){
-	$(".modal-body").html($(".emails_sent_"+callId).html());
+	$("#emailModalBody").html($(".emails_sent_"+callId).html());
 }
+
+async function openCallModalOnRowClick(from, to, to_name, note){
+	if(!note){
+		let flag = await new Promise((resolve) => {
+			bootbox.confirm({
+			    message: "Please update Note to make this call?",
+			    buttons: {
+			        confirm: {
+			            label: 'Ignore',
+			            className: 'btn-warning'
+			        },
+			        cancel: {
+			            label: 'OK',
+			            className: 'btn-success'
+			        }
+			    },
+			    callback: function (result) {
+			        resolve(result)
+			    }
+			});
+      	});
+      	if(!flag){
+      		return;
+      	}
+	}
+
+	connectToChangeReset();
+
+	callDetails.from = from;
+	callDetails.called_id = to;
+	callDetails.app_id = receiver.app_id;
+
+
+	$('#callModal-customer').val(from).attr('readonly', 'readonly');
+	$('#callModal-helplinewithname-dropdown').hide();
+	$('#callModal-helplinewithname').val(to_name + ' - ' + to).show();
+	$('#callModal-connectto').html(receiver.full_name + ', ' + receiver.phone +  ', '  + receiver.category + ', ' + receiver.note + ', ' + receiver.helpline);
+
+	// TODO: Default to be done...
+
+	$("#callModal").modal({ keyboard: false, backdrop: 'static' });
+}
+
+function openCallModal(){
+	connectToChangeReset();
+
+	callDetails.from = '';
+	callDetails.called_id = $('#callModal-helplinewithname-dropdown').val();
+	callDetails.app_id = receiver.app_id;
+
+	$('#callModal-customer').val('').removeAttr('readonly');
+	$('#callModal-helplinewithname').hide();
+	$('#callModal-helplinewithname-dropdown').show();
+	$('#callModal-connectto').html(receiver.full_name + ', ' + receiver.phone +  ', '  + receiver.category + ', ' + receiver.note + ', ' + receiver.helpline);
+
+	// TODO: Default to be done...
+
+	$("#callModal").modal({ keyboard: false, backdrop: 'static' });
+}
+
+function setFromNumber(){
+	callDetails.from = $('#callModal-customer').val();
+}
+
+function setHelplineNumber(){
+	callDetails.called_id = $('#callModal-helplinewithname-dropdown').val();
+}
+
+function connectToChangeReset(){
+	$('.callModal-customer-error').hide();
+	$('.callModal-app_id-error').hide();
+
+	$('[href="#change_connectto"]').removeAttr("data-hidden").html('Change');
+	$('#change_connectto_section').addClass('hidden');
+	$('[name=radio_doctor]:checked').removeAttr('checked');
+
+	$('#callModal_connectto_alternate_section').addClass('hidden');
+	$('#callModal-connectto-alternate option').remove();
+	$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+}
+
+function initiateCall(){
+	if(!callDetails.from){
+		$('.callModal-customer-error').show();
+		return;
+	}
+	$('.callModal-customer-error').hide();
+	
+	if(!callDetails.app_id){
+		$('.callModal-app_id-error').show();
+		return;
+	}
+	$('.callModal-app_id-error').hide();
+
+
+	// customer to agent flow...
+	// ajax for call...
+	$('#initiateCallButton').val('Calling...').attr('disabled', 'disabled');
+
+	$.ajax({
+        url: '<?php echo base_url();?>helpline/initiate_call',
+        type: 'POST',
+		dataType : 'JSON',
+		data : callDetails,
+        error: function(res) {
+            //callback();
+            $('#initiateCallButton').val('Call').removeAttr('disabled');
+            bootbox.alert("Call failed: " + JSON.stringify(res));
+        },
+        success: function(res) {
+			$('#initiateCallButton').val('Call').removeAttr('disabled');
+			$("#callModal").modal('hide');
+			bootbox.alert("Call initiated successfully");
+        }
+    });
+}
+
+function initAgentSelectize(){
+	var selectize = $('#callModal-agent').selectize({
+	    valueField: 'receiver_id',
+	    labelField: 'custom_data',
+	    searchField: 'custom_data',
+	    options: [],
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="">' + escape(item.custom_data) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+	        $.ajax({
+	            url: '<?php echo base_url();?>helpline/search_helpline_receiver',
+	            type: 'POST',
+				dataType : 'JSON',
+				data : { query: query },
+	            error: function(res) {
+	                callback();
+	            },
+	            success: function(res) {
+	            	res = transformAgent(res);
+	                callback(res.slice(0, 10));
+	            }
+	        });
+		},
+
+	});
+	if($('#callModal-agent').attr("data-previous-value")){
+		selectize[0].selectize.setValue($('#callModal-agent').attr("data-previous-value"));
+	}
+}
+
+function transformAgent(res){
+	if(res){
+		res.map(function(d){
+			d.custom_data = d.full_name + ' - ' + d.phone;
+		    return d;
+		});
+	}
+	return res;
+}
+
+function loadReceivers(links){
+	revertConnecto()
+
+	$.ajax({
+        url: '<?php echo base_url();?>helpline/get_helpline_receiver_by_doctor',
+        type: 'POST',
+		dataType : 'JSON',
+		data : { doctor: $('[name=radio_doctor]:checked').val(), helpline: callDetails.called_id, links: links },
+        error: function(res) {
+            //callback();
+        },
+        success: function(res) {
+			$('#callModal_connectto_alternate_section').removeClass('hidden');
+			$('#callModal-connectto-alternate').append('<option value="">Select alternate connect</option>');
+
+			if(res){
+				$.each(res, function(i, d){
+					$('#callModal-connectto-alternate').append('<option value="'+d.app_id+'">'+d.full_name+', '+d.phone+', '+d.category+'</option>');
+				})
+			}
+        }
+    });
+}
+					
+function updateConnectto(){
+	revertConnecto();
+
+	if($('#callModal-connectto-alternate').val()){
+		callDetails.app_id = $('#callModal-connectto-alternate').val();
+		var display_text = $('#callModal-connectto-alternate option[value="'+$('#callModal-connectto-alternate').val()+'"]').html();
+		$("#callModal-connectto").addClass('line-through');
+		$("#callModal-connectto-updated").html(display_text + ', ' + receiver.note + ', ' + receiver.helpline);
+	}
+}
+
+function revertConnecto(){
+	callDetails.app_id = receiver.app_id;
+	$("#callModal-connectto").removeClass('line-through');
+	$("#callModal-connectto-updated").html('');	
+}
+
+$(function(){
+	$('[data-toggle="tooltip"]').tooltip();
+
+	if(receiver && receiver.enable_outbound == "1"){
+		$('.call_button').show();
+
+		// initAgentSelectize();
+
+		if(receiver.helpline){
+			$('#callModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+		}
+		if(user_details.receiver_link){
+			$.each(user_details.receiver_link, function(i, d){
+				$('#callModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - '+d.helpline+'</option>');
+			})
+		}
+	}
+
+	$('#callModal').on('click', '[href="#change_connectto"]', function(e){
+		e.preventDefault();
+
+		$('[name=radio_doctor]:checked').removeAttr('checked');
+		$('#callModal_connectto_alternate_section').addClass('hidden');
+		$('#callModal-connectto-alternate option').remove();
+		$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+		revertConnecto();
+
+		if($(this).attr("data-hidden")){
+			callDetails.app_id = receiver.app_id;
+			$(this).removeAttr("data-hidden").html('Change');
+			$('#change_connectto_section').addClass('hidden');
+		} else  {
+			callDetails.app_id = '';
+			$(this).attr("data-hidden", "true").html('Cancel');
+			$('#change_connectto_section').removeClass('hidden');
+		}
+	});
+
+	$('[name=radio_doctor]').on('click', function(e){
+
+		$('#callModal_connectto_alternate_section').addClass('hidden');
+		$('#callModal-connectto-alternate option').remove();
+		$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+
+		loadReceivers("0");
+		
+	});
+
+	$('#callModal-connectto-alternate-showmore').on('click', function(e){
+		$('#callModal-connectto-alternate option').remove();
+
+		loadReceivers($('#callModal-connectto-alternate-showmore:checked').length > 0 ? "1" : "0");
+		
+	});
+});
 </script>

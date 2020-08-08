@@ -126,43 +126,9 @@
 				</tr>
 				</tbody>
 				<tbody>
-				<?php if(!!$patient->admit_weight || !!$patient->sbp || !!$patient->dbp || !!$patient->pulse_rate){ ?>
-				<tr class="print-element">
-					<td style="padding-top:20px">
-					<b>Weight: </b><?php  if(!!$patient->admit_weight) echo $patient->admit_weight." kgs";?> 
-					</td>
-					<td style="padding-top:20px">
-					<b>BP: </b><?php  if(!!$patient->sbp && !!$patient->dbp) echo $patient->sbp."/".$patient->dbp;?> 
-					</td>
-					<td style="padding-top:20px">
-					<b>Pulse Rate: </b><?php if(!!$patient->pulse_rate) echo $patient->pulse_rate;?>
-					</td>
-				</tr>
-				<?php } ?>
-				<?php if(!!$patient->temperature || !!$patient->respiratory_rate){ ?>
-				<tr class="print-element">
-					<td>
-					<b>Temperature: </b><?php if(!!$patient->temperature) echo  $patient->temperature." F";?> 
-					</td>
-					<td>
-					<b>Respiratory Rate: </b><?php if(!!$patient->respiratory_rate) echo  $patient->respiratory_rate;?> 
-					</td>
-					<td></td>
-				</tr>
-				<?php } ?>
-				<?php if(!!$patient->blood_sugar || !!$patient->hb || !!$patient->hb1ac){ ?>
-				<tr class="print-element">
-					<td>
-					<b>Blood Sugar:</b> <?php if(!!$patient->blood_sugar) echo $patient->blood_sugar." mg/dL";?> 
-					</td>
-					<td>
-					<b>Hb:</b> <?php  if(!!$patient->hb) echo $patient->hb." g/dL";?>
-					</td>
-					<td>
-					<b>Hb1Ac: </b><?php  if(!!$patient->hb1ac) echo $patient->hb1ac."%";?> 
-					</td>
-				</tr>
-				<?php } ?>
+				<tr><td colspan="3"></td></tr>
+				<tr data-patient-clinical-details data-source="patient" data-print-mode="true" data-skip-if-no-value="true"></tr>
+
 				<?php if(!!$patient->presenting_complaints) { ?>
 				<tr class="print-element">
 					<td  style="padding-top:20px" colspan="3">

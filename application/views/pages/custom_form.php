@@ -876,6 +876,15 @@ pri.print();
 					</div>
 					<?php 
 					break;
+					case "spo2" : ?>
+					<div class="<?php echo $class;?>">
+						<div class="form-group">
+						<label class="control-label">SpO2<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
+						<input type="text" name="spo2" class="form-control spo2" value="<?php if($update) echo $patient->spo2;?>"  <?php if($field->mandatory) echo "required"; ?> />
+						</div>
+					</div>
+					<?php 
+					break;
 					case "temperature" : ?>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">

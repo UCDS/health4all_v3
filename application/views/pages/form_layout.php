@@ -642,6 +642,13 @@
 						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
 						</div>
 					</div>
+					<div class="layout-div col-md-4 spo2">
+						<div class="form-group">
+						<label class="control-label">SpO2</label>
+						<input type="text" name=" control-label" style="width: 170px" class="form-control" />
+						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
+						</div>
+					</div>
 					<div class="layout-div col-md-4 provisional_diagnosis">
 						<div class="form-group">
 						<label class="control-label">Provisional Diag.</label>
@@ -1015,6 +1022,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="blood_pressure" class="checklist" />Blood Pressure</label>
+					</div>
+				</li> 
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="spo2" class="checklist" />SpO2</label>
 					</div>
 				</li> 
 				<li>  

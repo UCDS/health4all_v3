@@ -278,7 +278,7 @@
 		}
 		?>
 
-<?php if(preg_match("^user_panel/*^",current_url()) || preg_match("^hospital/add_hospital^",current_url()) || preg_match("^departments/*^",current_url()) || preg_match("^hospital_areas/*^",current_url()) ||preg_match("^hospital_units/*^",current_url()) ) { ?>
+<?php if(preg_match("^user_panel/*^",current_url()) || preg_match("^hospital/add_hospital^",current_url()) || preg_match("^departments/*^",current_url()) || preg_match("^hospital_areas/*^",current_url()) ||preg_match("^hospital_units/*^",current_url()) || preg_match("^helpline/*^",current_url()) ) { ?>
 
 		<div class="col-xs-1 col-md-1 sidebar-left">
 			<strong>Settings</strong>
@@ -317,8 +317,12 @@
 
 				<li class="navbar-text">Helpline</li>
 				<li <?php if(preg_match("^helpline/add_call_group^",current_url())) echo 'class="active"';?> >
-					<a href="<?php echo base_url()."helpline/add_call_group";?>">Add Call Group</a>
+					<a href="<?php echo "#"; //echo base_url()."helpline/add_call_group";?>">Add Call Group</a>
+				</li>
+				<li <?php if(preg_match("^helpline/helpline_receivers^",current_url())) echo 'class="active"';?> >
+					<a href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Receivers</a>
 				</li>
 				</ul>
         </div>
 <?php } ?>
+	

@@ -14,6 +14,10 @@
 	.error {
     	color: red;
   	}
+  	input.error, textarea.error, select.error,
+  	input.error_field{
+  		border: 1px solid red;
+  	}
     .obstetric_history_table {  
         border-collapse: collapse; 
     }
@@ -30,6 +34,13 @@
     	height: 15px;
     	margin-right: 5px;
     	margin-left: 5px;
+    }
+    .prescription_warning_i{
+    	width: 25px;
+    	height: 25px;
+    	padding-right: 5px;
+    	padding-left: 5px;
+    	font-size: 15px;
     }
     .border_bottom_dashed{
     	border-bottom: 1px dashed black;
@@ -1349,54 +1360,10 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Clinical" && ($f->add==1 || $f->edit==1)) { ?>
 		<div role="tabpanel" class="tab-pane" id="clinical">
-                    <div data-patient-quick-info></div>
-			<div class="row alt">
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Admit Weight</label>
-					<input type="text" name="admit_weight" class="form-control" value="<?php if(!!$patient->admit_weight) echo $patient->admit_weight;?>" <?php if($f->edit==1  && empty($patient->admit_weight)) echo ''; else echo ' readonly'; ?> />
-				</div>
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Blood Pressure<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="SBP - Systolic Blood Pressure / DBP- Diastolic Blood Pressure" data-toggle="tooltip"/></label>
-					<input maxlength="3" size="3" type="text" placeholder="SBP" name="sbp" style="width:60px" class="form-control blood_pressure" value="<?php if(!!$patient->sbp) echo $patient->sbp;?>" <?php if($f->edit==1 && empty($patient->sbp)) echo ''; else echo ' readonly'; ?> />/
-					<input maxlength="3" size="3" type="text" placeholder="DBP" name="dbp"  style="width:60px" class="form-control blood_pressure" value="<?php if(!!$patient->dbp) echo $patient->dbp;?>" <?php if($f->edit==1 && empty($patient->dbp)) echo ''; else echo ' readonly'; ?> />
-				</div>
+            <div data-patient-quick-info></div>
+            
+            <div data-patient-clinical-details data-source="patient" data-edit-privilege="<?php echo $f->edit==1; ?>" data-readonly-if-not-empty="true"></div>
 
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Pulse Rate</label>
-					<input type="text" name="pulse_rate" class="form-control pulse_rate" value="<?php if(!!$patient->pulse_rate)  echo $patient->pulse_rate;?>"  <?php if($f->edit==1  && empty($patient->pulse_rate)) echo ''; else echo ' readonly'; ?> />
-				</div>
-			</div>
-			<div class="row alt">
-				
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">SpO2<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Oxygen Saturation" data-toggle="tooltip"/></label>
-					<input maxlength="3" size="3" type="text" name="spo2"  style="width:50px" class="form-control spo2" value="<?php if(!!$patient->spo2) echo $patient->spo2;?>" <?php if($f->edit==1 && empty($patient->spo2)) echo ''; else echo ' readonly'; ?> />%
-				</div>
-				
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Respiratory Rate</label>
-					<input type="text" name="respiratory_rate" class="form-control respiratory_rate" value="<?php if(!!$patient->respiratory_rate) echo $patient->respiratory_rate;?>" <?php if($f->edit==1  && empty($patient->respiratory_rate)) echo ''; else echo ' readonly'; ?> />
-				</div>
-
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Temperature</label>
-					<input type="text" name="temperature" class="form-control" value="<?php if(!!$patient->temperature)  echo $patient->temperature;?>" <?php if($f->edit==1 && empty($patient->temperature)) echo ''; else echo ' readonly'; ?> />
-				</div>
-			</div>
-			<div class="row alt">
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Blood Sugar</label>
-					<input maxlength="3" size="3" type="text" name="blood_sugar"  style="width:50px" class="form-control blood_sugar" value="<?php if(!!$patient->blood_sugar) echo $patient->blood_sugar;?>" <?php if($f->edit==1 && empty($patient->blood_sugar)) echo ''; else echo ' readonly'; ?> /> mg/dL
-				</div>
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">Hb<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Haemoglobin" data-toggle="tooltip"/></label>
-					<input maxlength="4" size="4" type="text" name="hb"  style="width:50px" class="form-control hb" value="<?php if(!!$patient->hb) echo $patient->hb;?>" <?php if($f->edit==1 && empty($patient->hb)) echo ''; else echo ' readonly'; ?> /> g/dL
-				</div>
-				<div class="col-md-4 col-xs-6">
-					<label class="control-label">HbA1c<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="Glycated Haemoglobin" data-toggle="tooltip"/></label>
-					<input maxlength="3" size="3" type="text" name="hb1ac"  style="width:50px" class="form-control hb1ac" value="<?php if(!!$patient->hb1ac) echo $patient->hb1ac;?>" <?php if($f->edit==1 && empty($patient->hb1ac)) echo ''; else echo ' readonly'; ?> />%
-				</div>
-			</div>
 			<div class="row alt">
 				<div class="col-md-12 col-xs-12">
 					<label class="control-label">
@@ -1503,7 +1470,7 @@ pri.print();
 							<tbody class="daily_notes dynamic-row">
 								<tr>
 									<td><textarea rows="4" cols="60" name="clinical_note[]"  class="form-control"></textarea></td>
-									<td>Select Date and Time to save the note <br /> <input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
+									<td><span class="note_date_label">Select Date and Time to save the note</span> <br /> <input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
 									<td>
 										<button  type="button" class="btn btn-sm btn-primary add_daily_note">Add</button>
 										<button  type="button" class="btn btn-sm btn-danger remove_daily_note">X</button>
@@ -1523,7 +1490,7 @@ pri.print();
 						$(document).on('click', ".add_daily_note", function(){
 							var row = $(this).parents('tr:eq(0)').clone(false);
 							row.find('input,textarea').each(function(){
-								$(this).val('');
+								$(this).val('').removeClass('error_field');
 							});
 							row.find('span.error').remove();
 							$(this).parents('tbody.daily_notes').append(row);
@@ -1847,7 +1814,10 @@ pri.print();
 						</tr>
 					</tbody>
 				</table>
-				<div style="text-align: center;margin-bottom: 20px;font-size: 12px;"><span>Please enter Numbers of Days and select Timings for prescribed medicines where applicable</span></div>
+				<div style="font-size: 12px;">
+					<div style="margin-bottom: 5px;"><i style="color: orange" class="fa fa-bell prescription_warning_i" title="Alert" data-toggle="tooltip"></i><span data-defaults-config="PRESCRIPTIONALERT"></span></div>
+					<div><i style="color: red" class="fa fa-bell prescription_warning_i"  title="Mandatory" data-toggle="tooltip"></i><span data-defaults-config="SYMPTOMSALERT"></span></div>
+				</div>
 			</div>
 			</div>
 			<div class="row alt">
@@ -2302,7 +2272,7 @@ pri.print();
 								'<option value="">-Enter Generic Drug Name-</option>'+
 								'</select>'+'<i class="glyphicon glyphicon-pencil"></i><span class="note_tooltip">[Click to Add Note]</span>'+'<textarea name="note_'+$i+'" cols="30" rows="10" placeholder="Enter note here" style="border: 0px;background: transparent;" hidden></textarea>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<input type="text" name="duration_'+$i+'" placeholder="Days" style="width:60px" class="form-control" />'+
 							'</td>'+
 							'<!-- <td>'+
@@ -2312,22 +2282,22 @@ pri.print();
 								<?php } ?>
 								'</select>'+
 							'</td> -->'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bb_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ab_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bl_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="al_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="bd_'+$i+'" value="1" /></label>'+
 							'</td>'+
-							'<td>'+
+							'<td class="text-center">'+
 								'<label><input type="checkbox" name="ad_'+$i+'" value="1" /></label>'+
 							'</td>'+
 							'<!--<td>'+
@@ -2386,12 +2356,13 @@ pri.print();
 		})
 
 		// mandator fields check...
+		$(this).find("[name^=note_date]").removeClass('error_field');
 		$(".clinical-notes-table tbody.daily_notes tr span.error").remove();
 		$(".clinical-notes-table tbody.daily_notes tr").each(function(){
 		    if(flag && $(this).find("[name^=clinical_note]").val() && !$(this).find("[name^=note_date]").val()){
 	        	flag = false;
 	            $('a[href="#clinical"]').click();
-	            $(this).find("[name^=note_date]").after('<span class="error" style="display: block;">This field is required</span>');
+	            $(this).find("[name^=note_date]").addClass('error_field').after('<span class="error" style="display: block;">This field is required</span>');
 	            $(this).find("[name^=note_date]").get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
 		    }
 		});
@@ -2407,7 +2378,7 @@ pri.print();
 			if(!optionalFlag){
 				flag = false;
 				await new Promise((resolve) => {
-					bootbox.alert("Medicine prescription is not permitted without Symptoms or Clinical Notes or Diagnosis being mentioned.", function(){ 
+					bootbox.alert(defaultsConfigsObj['SYMPTOMSALERT'].default_description, function(){ 
 					    resolve(false);
 					});
 				})
@@ -2419,7 +2390,7 @@ pri.print();
 		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0 && $('[name=signed_consultation]').length > 0 && $('[name=signed_consultation]:checked').length == 0){
 			flag = false;
 			await new Promise((resolve) => {
-				bootbox.alert("Medicine prescrition is not permitted without Doctor sign off. Please ensure treating Doctor signs off this consultation", function(){ 
+				bootbox.alert(defaultsConfigsObj['SIGNOFFALERT'].default_description, function(){ 
 				    $('[name=signed_consultation]').get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
 				    resolve(false);
 				});
@@ -2472,16 +2443,24 @@ pri.print();
 	}
 
 	var defaultsConfigs = JSON.parse('<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>');
+	var defaultsConfigsObj = {};
+	defaultsConfigs.map(function(dc){
+		defaultsConfigsObj[dc.default_id] = dc;
+	});
+
+	function initDefaultsConfigsElements(){
+		$('[data-defaults-config]').each(function(){
+			if($(this).attr('data-defaults-config') && defaultsConfigsObj[$(this).attr('data-defaults-config')]){
+				$(this).html(defaultsConfigsObj[$(this).attr('data-defaults-config')].default_description);
+			}
+		});
+	}
 
 	function initUpdatePatientValidations(){
 		if(!defaultsConfigs){
 			bootbox.alert("Defaults configurations are missing, Kindly contact admin regarding this.");
 			return;
 		}
-		var defaultsConfigsObj = {};
-		defaultsConfigs.map(function(dc){
-			defaultsConfigsObj[dc.default_id] = dc;
-		});
 
 		var validatiorRules = {
             age_years: {
@@ -2536,11 +2515,16 @@ pri.print();
 	        rules: validatiorRules,
 	        messages: validationMessages,
 	        errorPlacement: function( label, element ) {
-				if( ["age_years", "age_months", "age_days", "sbp", "dbp"].indexOf(element.attr( "name" )) > -1 ) {
-					element.parent().append( label ); // this would append the label after all your checkboxes/labels (so the error-label will be the last element in <div class="controls"> )
+	        	if( ["sbp", "dbp"].indexOf(element.attr( "name" )) == -1 ) {
+	        		label.css({display: 'block'});
+	        	}
+	        	element.parent().append( label ); 
+				/*if( ["age_years", "age_months", "age_days", "sbp", "dbp"].indexOf(element.attr( "name" )) > -1 ) {
+					// this would append the label after all your checkboxes/labels (so the error-label will be the last element in <div class="controls"> )
+					element.parent().append( label ); 
 				} else {
 					label.insertAfter( element ); // standard behaviour
-				}
+				}*/
 			}
 	        /*ignore: ".date_custom",
 	        submitHandler: function (form) {
@@ -2642,7 +2626,116 @@ pri.print();
 	function performTemplateReplacement(){
 		$("[data-patient-quick-info]").replaceWith($('#template-patient-quick-info').html());
 	}
+
+	var patient = JSON.parse('<?php echo (isset($patient) && count($patient) > 0) ? json_encode($patient) : 'null'; ?>');
+	var patient_visits = JSON.parse('<?php echo (isset($patient_visits) && count($patient_visits) > 0) ? json_encode($patient_visits) : 'null'; ?>');
+
+	function constructPatientDetails(){
+		jQuery.fn.tagNameLowerCase = function() {
+		  return this.prop("tagName").toLowerCase();
+		};
+
+		var prescriptionElements = [
+			{'label': 'Admit Weight', 'value': ['admit_weight'], 'delimiter': '/', 'suffix': 'kgs'},
+			{'label': 'Blood Pressure', 'value': ['sbp', 'dbp'], 'delimiter': '/', 'suffix': '', 'labelTooltip': 'SBP - Systolic Blood Pressure / DBP- Diastolic Blood Pressure', 'fieldAttributes': ['maxlength="3" size="3" placeholder="SBP" style="width: 60px"', 'maxlength="3" size="3" placeholder="DBP" style="width: 60px"']},
+			{'label': 'Pulse Rate', 'value': ['pulse_rate'], 'delimiter': '/', 'suffix': ''},
+			{'label': 'SpO2', 'value': ['spo2'], 'delimiter': '/', 'suffix': '%', 'labelTooltip': 'Oxygen Saturation', 'fieldAttributes': ['maxlength="3" size="3" style="width: 50px"']},
+			{'label': 'Respiratory Rate', 'value': ['respiratory_rate'], 'delimiter': '/', 'suffix': ''},
+			{'label': 'Temperature', 'value': ['temperature'], 'delimiter': '/', 'suffix': 'F'},
+			{'label': 'Blood Sugar', 'value': ['blood_sugar'], 'delimiter': '/', 'suffix': 'mg/dL', 'fieldAttributes': ['maxlength="3" size="3" style="width: 50px"']},
+			{'label': 'Hb', 'value': ['hb'], 'delimiter': '/', 'suffix': 'g/dL', 'labelTooltip': 'Haemoglobin', 'fieldAttributes': ['maxlength="4" size="4" style="width: 50px"']},
+			{'label': 'HbA1c', 'value': ['hb1ac'], 'delimiter': '/', 'suffix': '%', 'labelTooltip': 'Glycated Haemoglobin', 'fieldAttributes': ['maxlength="3" size="3" style="width: 50px"']}
+		];
+
+		$('[data-patient-clinical-details]').each(function(i, pe){
+			var source = $(this).attr('data-source');
+			var index = $(this).attr('data-index');
+			var editPrivilege = $(this).attr('data-edit-privilege');
+			var readonlyIfNotEmpty = $(this).attr('data-readonly-if-not-empty');
+			var printMode = $(this).attr('data-print-mode');
+			var skipIfNoValue = $(this).attr('data-skip-if-no-value');
+			
+			// <input <?php if($f->edit==1  && empty($patient->admit_weight)) echo ''; else echo ' readonly'; ?> />
+
+			var rowWrapper = '<div class="row alt"></div>';
+			var fieldWrapper = '<div class="col-md-4 col-xs-6"></div>';
+			var labelWrapper = '<label class="control-label"></label>';
+			if(printMode){
+				rowWrapper = '<tr class="print-element"></tr>';
+				fieldWrapper = '<td></td>';
+				labelWrapper = '<b></b>';
+			}
+
+			var wrapper = $('<div></div>');
+			var row = $(rowWrapper);
+			var data = window[source];
+			if(index){
+				data = data[index];
+			}
+			$.each(prescriptionElements, function(i, d){
+				var field = $(fieldWrapper);
+				var label = $(labelWrapper);
+
+				var fieldValue = d.value.map((d) => {
+					if(data[d] == "0") data[d] = "";
+					return data[d];
+				}).join(d.delimiter);
+				if(fieldValue == "/") fieldValue = "";
+				// TODO: THIS NEEDS TO BE FIXED AT BACKEND...
+				
+				// for print, skip the display if no value... this has been negated to continue without adding for last item
+				if(!(printMode && skipIfNoValue && !fieldValue)){
+					label.append(d.label + (printMode ? ':' : ''));
+					if(!printMode && d.labelTooltip){
+						label.append('<img src="<?php echo base_url();?>assets/images/information-icon.png" class="prescription_table_heading_info_icons" title="'+d.labelTooltip+'" data-toggle="tooltip"/>');
+					}
+					label.append('&nbsp;');
+					field.append(label);
+					if(printMode){
+						field.append(fieldValue);
+					} else {
+						field.append(d.value.map((df, i) => { 
+							var placeholder = (d.placeholder && d.placeholder[i]) ? 'placeholder="'+d.placeholder[i]+'"' : '';
+						    return '<input type="text" name="'+df+'" '+placeholder+' '+d.fieldAttributes+' class="form-control" value="'+data[df]+'" '+(!editPrivilege || (readonlyIfNotEmpty && data[df]) ? 'readonly' : '')+' />';
+						}).join(d.delimiter));
+					}
+					if(d.suffix){
+						field.append(' ' + d.suffix);
+					}
+					row.append(field);
+				}
+
+
+				if(
+					// to append the row, column has to be there...
+					row.find(field.tagNameLowerCase()).length > 0 && (
+						// if for ui, append the row for every 3 fields...
+						(!printMode && ((i+1) % 3 == 0)) || 
+						// if for print, append the row only when there are 3 fields...
+						(printMode && row.find(field.tagNameLowerCase()).length == 3) || 
+						// if this is the last element of the iteration, then append the row...
+						(i == prescriptionElements.length - 1)
+					)
+				){
+					if(printMode && (i == prescriptionElements.length - 1) && row.find(field.tagNameLowerCase()).length < 3){
+						const missingColumns = 3 - row.find(field.tagNameLowerCase()).length;
+						for(var pmi = 0; pmi < missingColumns; pmi++){
+							row.append($(fieldWrapper))
+						}
+					}
+					wrapper.append(row);
+					row = $(rowWrapper);
+				}
+			});
+			$(this).replaceWith(wrapper.html());
+		})
+	}
+
 	$(document).ready(function(){
+		// TODO: ADD OTHER FIELDS TO THE LIST...
+		constructPatientDetails();
+
+
 		performTemplateReplacement();
 
 		$('[data-toggle="tooltip"]').tooltip();
@@ -2668,6 +2761,19 @@ pri.print();
 		$(document).on('keydown', '.prescription textarea', textareaResizeHeightDelayed);
 		$(document).on('keyup', '.prescription textarea', textareaResizeHeightDelayed);
 
+
+		// keypress for clinical notes...
+		var clinicalDateRequiredIfNotesNotEmpty = function(e){
+			$(this).parents('tr').find('.note_date_label b').remove();
+			if($(this).val()){
+				$(this).parents('tr').find('.note_date_label').append('<b class="error">*</b>');
+			}
+		}
+		$(document).on('cut', '[name^=clinical_note]', clinicalDateRequiredIfNotesNotEmpty);
+		$(document).on('paste', '[name^=clinical_note]', clinicalDateRequiredIfNotesNotEmpty);
+		$(document).on('keydown', '[name^=clinical_note]', clinicalDateRequiredIfNotesNotEmpty);
+		$(document).on('keyup', '[name^=clinical_note]', clinicalDateRequiredIfNotesNotEmpty);
+		
 
 		$('#prescription_table').click(function(event){
 			var noteToggleFunction = function(target){
@@ -2695,6 +2801,7 @@ pri.print();
 		initPrescriptionDrugSelectize();
 
 		initUpdatePatientValidations();
+		initDefaultsConfigsElements();
 
 		// Goto line no 2144
 		$SBP = '';
