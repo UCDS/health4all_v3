@@ -3,15 +3,6 @@ deployment:
   tasks:
 # Next line defines a DEPLOYPATH with the path to the document root of your website so that you will not have to enter it in each command manually:
     - export DEPLOYPATH=/home/adminhat/public_html/
-    
-#copy all from sub folder root:
-    - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/controllers $DEPLOYPATH
-    
-#copy all from sub folder root:
-    - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/models $DEPLOYPATH
-    
+      
 #copy all from sub folder root:
     - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/views $DEPLOYPATH
-    
-#copy all from sub folder root:
-    - /bin/cp -R /home/adminhat/repositories/health4all_v3/assets $DEPLOYPATH
