@@ -1,0 +1,17 @@
+---
+deployment:
+  tasks:
+# Next line defines a DEPLOYPATH with the path to the document root of your website so that you will not have to enter it in each command manually:
+    - export DEPLOYPATH=/home/adminhat/www/
+    
+#copy all from sub folder root:
+    - /bin/cp -R application/controllers $DEPLOYPATH
+    
+#copy all from sub folder root:
+    - /bin/cp -R application/models $DEPLOYPATH
+    
+#copy all from sub folder root:
+    - /bin/cp -R application/views $DEPLOYPATH
+    
+#copy all from sub folder root:
+    - /bin/cp -R assets $DEPLOYPATH
