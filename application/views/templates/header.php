@@ -329,8 +329,12 @@
 			if($f->user_function=="OP Detail"){ //OP Detail?>
 						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail - 2</a></li>
 			<?php	}
+			if($f->user_function=="create_appointment"){ ?>
+				<li><a href="<?php echo base_url()."reports/create_appointment";?>">Create Appointment</a></li>	
+			<?php	}
 			if($f->user_function=="follow_up_report"){ ?>
 				<li><a href="<?php echo base_url()."report/get/follow_up_report";?>">Follow Up Report</a></li>
+						
 			<?php	}
 			if($f->user_function=="IP Detail"){ ?>
 						<li><a href="<?php echo base_url()."reports/ip_detail";?>">IP Detail</a></li>
