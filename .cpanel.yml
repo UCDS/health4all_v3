@@ -6,12 +6,6 @@ deployment:
       
 #copy all from sub folder root:
     - /bin/cp -R /home/adminhat/repositories/health4all_v3/application $DEPLOYPATH/application
-
-#copy all from sub folder root:
-   # - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/views $DEPLOYPATH/application
-
-#copy all from sub folder root:
-   # - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/controllers $DEPLOYPATH/application
     
 #copy all from sub folder root:
     - /bin/cp -R /home/adminhat/repositories/health4all_v3/assets $DEPLOYPATH
