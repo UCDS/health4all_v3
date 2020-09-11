@@ -5,4 +5,13 @@ deployment:
     - export DEPLOYPATH=/home/adminhat/public_html/
       
 #copy all from sub folder root:
+    - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/models $DEPLOYPATH
+
+#copy all from sub folder root:
     - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/views $DEPLOYPATH
+
+#copy all from sub folder root:
+    - /bin/cp -R /home/adminhat/repositories/health4all_v3/application/controllers $DEPLOYPATH
+    
+#copy all from sub folder root:
+    - /bin/cp -R /home/adminhat/repositories/health4all_v3/assets $DEPLOYPATH
