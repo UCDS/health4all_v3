@@ -5,7 +5,7 @@ deployment:
     - export DEPLOYPATH=/home/adminhat/public_html/
       
 #copy all from sub folder root:
-    - /bin/cp -R /home/adminhat/repositories/health4all_v3/application $DEPLOYPATH/application
+    - /bin/cp -R /home/adminhat/repositories/health4all_v3/application $DEPLOYPATH
     
 #copy all from sub folder root:
     - /bin/cp -R /home/adminhat/repositories/health4all_v3/assets $DEPLOYPATH
