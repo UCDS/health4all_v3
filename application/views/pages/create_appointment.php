@@ -188,8 +188,10 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<td><?php echo $s->volunteer;?></td>
 		<td><?php echo $s->doctor;?></td>
     		<td><?php echo $s->appointment_with;?></td>
-		<td><?php if($s->appointment_date=='0000-00-00') {echo '';} else {echo date("j M Y", strtotime("$s->appointment_date"));}?></td>
-		<td><?php if($s->appointment_time=='00-00-00') {echo '';} else {echo date("h:i A.", strtotime("$s->appointment_time"));}?></td>
+		<td><?php //if($s->appointment_date=='0000-00-00') {echo '';} else {echo date("j M Y", strtotime("$s->appointment_date"));}
+			echo $s->appointment_date;?></td>
+		<td><?php //if($s->appointment_time=='00-00-00') {echo '';} else {echo date("h:i A.", strtotime("$s->appointment_time"));}
+			echo $s->appointment_time;?></td>
 		<td><?php echo $s->appointment_update_by_time;?></td>
 		<td><?php if($s->signed==0) { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
 	</tr>
