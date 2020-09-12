@@ -539,7 +539,7 @@ function get_op_detail_with_idproof(){
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
-		 ->join('staff as doctor','patient.signed_consultation=doctor.staff_id','left')
+		 ->join('staff as doctor','patient_visit.signed_consultation=doctor.staff_id','left')
 		 ->join('user as volunteer_user','patient.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')		
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
