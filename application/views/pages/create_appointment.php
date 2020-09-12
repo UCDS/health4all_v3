@@ -144,7 +144,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>SNo</th>
 		<th>Patient ID</th>
 		<th>OP No.</th>
-		<th>Date</th>
+		<th>Visit Date</th>
 		<th>Time</th>
 		<th>Name</th>
 		<th>Gender</th>
@@ -156,6 +156,8 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<th>OP Created By</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
+		<th>Appointment Date</th>
+		<th>Appointment Time</th>
     		<th>Update</th>
 	</thead>
 	<tbody>
@@ -185,6 +187,8 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<td><?php echo $s->volunteer;?></td>
     		<td><?php echo $s->doctor;?></td>
     		<td></td>
+		<td></td>
+		<td></td>
     		<td><button type="button" class="btn btn-primary">Edit</button></td>
 	</tr>
 	<?php
