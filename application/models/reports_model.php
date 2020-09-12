@@ -529,20 +529,20 @@ function get_op_detail_with_idproof(){
 			$this->db->select('"0" as area',false);
 		}
 
-		$this->db->select("patient.patient_id, patient.address, hosp_file_no, patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
-		gender,IF(gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name,father_name) parent_spouse,unit_name,area_name,
-		age_years,age_months,age_days,patient.place,phone,department, admit_date, admit_time,CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
+		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
+		p.place, p.phone, department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer",false);
-		 $this->db->from('patient_visit')
-		 ->join('patient','patient_visit.patient_id=patient.patient_id')
-		 ->join('department','patient_visit.department_id=department.department_id','left')
-		 ->join('unit','patient_visit.unit=unit.unit_id','left')
-		 ->join('area','patient_visit.area=area.area_id','left')
-		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
-		 ->join('staff as doctor','patient_visit.signed_consultation=doctor.staff_id','left')
-		 ->join('user as volunteer_user','patient.insert_by_user_id = volunteer_user.user_id','left')
+		 $this->db->from('patient_visit as pv')
+		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('area','pv.area=area.area_id','left')
+		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
+		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
+		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')		
-		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
+		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
 		$resource=$this->db->get();
