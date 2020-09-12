@@ -552,8 +552,8 @@ function get_op_detail_with_idproof(){
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')"); 
-		 ->order_by('admit_date','ASC');
-		 ->order_by('admit_time','ASC');
+		 $this->db->order_by('admit_date','ASC');
+		 $this->db->order_by('admit_time','ASC');
 			
 		$resource=$this->db->get();
 		return $resource->result();
