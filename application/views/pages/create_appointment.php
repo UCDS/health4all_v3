@@ -191,7 +191,7 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<td><?php echo $s->appointment_date;?></td>
 		<td><?php echo $s->appointment_time;?></td>
 		<td><?php echo $s->appointment_update_by_time;?></td>
-		<td><?php echo $s->button;?></td>
+		<td><?php if ($s->doctor='') { echo "<button type="button" class="btn btn-primary">Primary</button>";}?></td>
 	</tr>
 	<?php
 	$total_count++;
