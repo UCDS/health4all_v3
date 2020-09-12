@@ -186,12 +186,12 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php echo $s->phone;?></td>
 		<td><?php echo $s->department;?></td>
     		<td><?php echo $s->volunteer;?></td>
-    		<td><?php echo $s->doctor;?></td>
-    		<td></td>
-		<td></td>
-		<td></td>
-		<td></td>
-    		<td><button type="button" class="btn btn-primary">Update</button></td>
+		<td><?php echo $s->doctor;?></td>
+    		<td><?php echo $s->appointment_with;?></td>
+    		<td><?php echo $s->apointment_date;?></td>
+		<td><?php echo $s->appointment_time;?></td>
+		<td><?php echo $s->appointment_update_by_time;?></td>
+		<td><button type="button" class="btn btn-primary">Update</button></td>
 	</tr>
 	<?php
 	$total_count++;
