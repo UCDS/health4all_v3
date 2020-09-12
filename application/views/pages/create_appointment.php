@@ -155,9 +155,10 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Department</th>
     		<th>OP Created By</th>
 		<th>Doctor Consulted</th>
-		<th>Appointment With</th>
-		<th>Appointment Date</th>
-		<th>Appointment Time</th>
+		<th>Appointment (Appt) With</th>
+		<th>Appt Date</th>
+		<th>Appt Time</th>
+		<th>Appt Update By/Time</th>
     		<th>Update</th>
 	</thead>
 	<tbody>
@@ -189,7 +190,8 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<td></td>
 		<td></td>
 		<td></td>
-    		<td><button type="button" class="btn btn-primary">Edit</button></td>
+		<td></td>
+    		<td><button type="button" class="btn btn-primary">Update</button></td>
 	</tr>
 	<?php
 	$total_count++;
