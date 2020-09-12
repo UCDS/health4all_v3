@@ -531,13 +531,17 @@ function get_op_detail_with_idproof(){
 
 		$this->db->select("patient.patient_id, patient.address, hosp_file_no, patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name,father_name) parent_spouse,unit_name,area_name,
-		age_years,age_months,age_days,patient.place,phone,department, admit_date, admit_time",false);
+		age_years,age_months,age_days,patient.place,phone,department, admit_date, admit_time,CONCAT(doctor.first_name, " ", doctor.last_name) as doctor, 
+		CONCAT(volunteer.first_name, " ", volunteer.last_name) as volunteer",false);
 		 $this->db->from('patient_visit')
 		 ->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		 ->join('staff doctor','patient.signed_consultation=doctor.staff_id','left')
+		 ->join('user','patient.insert_by_user_id = user.user_id','left')
+		 ->join('staff volunteer','user.staff_id=volunteer.staff_id','left')		
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
