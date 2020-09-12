@@ -185,7 +185,7 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<td><?php echo $s->volunteer;?></td>
     		<td><?php echo $s->doctor;?></td>
     		<td></td>
-    		<td></td>
+    		<td><button type="button" class="btn btn-primary">Edit</button></td>
 	</tr>
 	<?php
 	$total_count++;
