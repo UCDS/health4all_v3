@@ -233,14 +233,14 @@ $(document).ready(function(){$("#from_date").datepicker({
 				<?php echo date("h:i A.", strtotime("$s->admit_time"));?>,&nbsp;</span>
 				</p>
 				<p class="bg-primary text-white">
-				<span><b>Name:</b> <?php echo $s->name;?>,&nbsp;<?php echo $s->gender;?>&nbsp;/&nbsp;
+				<span><b>Patient:</b> <?php echo $s->name;?>,&nbsp;<?php echo $s->gender;?>&nbsp;/&nbsp;
 				<?php echo $age;?>, &nbsp;<b>Relative:</b> <?php echo $s->parent_spouse;?>,&nbsp;</span>
-				<span><b>Address:</b> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
+				<span><b>From:</b> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
 				<span><b>Ph:</b> <?php echo $s->phone;?>, &nbsp;</span>
 				</p>
 				<p>
-				<span>OP Created By: <?php echo $s->volunteer;?>,&nbsp;</span>
-				<span>Doctor Consulted: <?php echo $s->doctor;?></span>
+				<span><b>OP Created By:</b> <?php echo $s->volunteer;?>,&nbsp;</span>
+				<span><b>Doctor Consulted:</b> <?php echo $s->doctor;?></span>
 				</p>	
 			</div>	
 
