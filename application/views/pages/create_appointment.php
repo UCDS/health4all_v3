@@ -82,7 +82,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
 	?>
-	<div class="row">
+<div class="row">
 		<h4>Create Appointment</h4>	
 		<?php echo form_open("reports/create_appointment",array('role'=>'form','class'=>'form-custom')); ?> 
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
@@ -132,7 +132,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
-	<?php if(isset($report) && count($report)>0){ ?>
+<?php if(isset($report) && count($report)>0){ ?>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th>SNo</th>
@@ -196,16 +196,16 @@ $(document).ready(function(){$("#from_date").datepicker({
 				{echo date("j M Y h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
 		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '
-		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_' . --$sno .'">Update</button>
+		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
 		'; }?></td>
 	</tr>
-	<?php }	?>
+	<?php $sno++;}	?>
 	</tbody>
 	</table>	
 	<?php } else { ?>
 	No patient registrations on the given date.
-	<?php } ?>
-	</div>	
+<?php } ?>
+</div>	
 
 <?php if(isset($report) && count($report)>0){ ?>
 <?php $sno=1;
@@ -215,7 +215,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 	if(!!$s->age_months) $age.=$s->age_months."M ";
 	if(!!$s->age_days) $age.=$s->age_days."D ";
 	if($s->age_days==0 && $s->age_months==0 && $s->age_years==0) $age.="0D"; ?>
-		
+
 <div class="modal fade" id="myModal_<?php echo $sno; ?>" role="dialog">
 	<div class="modal-dialog">
 	<!-- Modal content-->
@@ -243,7 +243,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				<span>Doctor Consulted: <?php echo $s->doctor;?></span>
 				</p>	
 			</div>	
-			
+
 			<form action="/action_page.php">
 
 			<div class="form-group">
@@ -277,10 +277,10 @@ $(document).ready(function(){$("#from_date").datepicker({
 				<label for="summary_sent_time">Summary Sent Date-Time:</label>
 				<input type="text" class="form-control" id="pwd">
 			</div>
-			
+
 			<button type="submit" class="btn btn-default">Submit</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			
+
 			</form> 
 		</div>
 	</div>
