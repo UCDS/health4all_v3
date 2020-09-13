@@ -256,16 +256,21 @@ i can
 
 			  <div class="form-group">
 			    <label for="department">Department:</label>
-			    <select class="form-control">
-				    <option>1</option>
-				    <option>2</option>
-				    <option>3</option>
-				    <option>4</option>
-			    </select>
+			    <select name="department" id="department" class="form-control">
+					<option value="">Department</option>
+					<?php 
+					foreach($all_departments as $dept){
+						echo "<option value='".$dept->department_id."'";
+						if($s->department == $dept->department) echo " selected ";
+						echo ">".$dept->department."</option>";
+					}
+					?>
+				</select>
 			  </div>
 			  <div class="form-group">
 			    <label for="appointment_with">Appointment With:</label>
-			    <select class="form-control" id="sel1">
+			    <?php var_dump($helpline_doctor) ?>
+				  <select class="form-control" id="sel1">
 				    <option>1</option>
 				    <option>2</option>
 				    <option>3</option>
