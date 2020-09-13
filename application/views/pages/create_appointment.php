@@ -155,6 +155,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Department</th>
     		<th>OP Created By</th>
 		<th>Doctor Consulted</th>
+		<th>Summary Sent Time</th>
 		<th>Appointment (Appt) With</th>
 		<th>Appt Date</th>
 		<th>Appt Time</th>
@@ -187,11 +188,12 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php echo $s->department;?></td>
     		<td><?php echo $s->volunteer;?></td>
 		<td><?php echo $s->doctor;?></td>
+		<td><?php echo $s->summary_sent_time;?></td>
     		<td><?php echo $s->appointment_with;?></td>
 		<td><?php if(isset($s->appointment_date) && $s->appointment_date!="") {echo date("j M Y", strtotime("$s->appointment_date"));} else {echo $s->appointment_date="";}?></td>
 		<td><?php if(isset($s->appointment_time) && $s->appointment_time!="") {echo date("h:i A.", strtotime("$s->appointment_time"));} else {echo $s->appointment_time="";}?></td>
 		<td><?php echo $s->appointment_update_by_time;?></td>
-		<td><?php if($s->signed==0) { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
+		<td><?php if($s->signed==0 or $s->summary_sent_time!="") { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
 	</tr>
 	<?php
 	$total_count++;
