@@ -240,15 +240,11 @@ i can
 			</div>
 			<div class="modal-body">
 			<div>
-			<p><span>Patient ID: <?php echo $s->patient_id;?>,&nbsp;</span><span>OP#: <?php echo $s->hosp_file_no;?>,&nbsp;</span>
-			<span>Date: <?php echo date("j M Y", strtotime("$s->admit_date"));?>,&nbsp;</span>
-			<span>Time: <?php echo date("h:i A.", strtotime("$s->admit_time"));?>,&nbsp;</span></p>
-			<p><span>Name: <?php echo $s->name;?>,&nbsp;</span>
-			<span>Gender: <?php echo $s->gender;?>,&nbsp;</span>
-			<span>Age: <?php echo $age;?>, &nbsp;</span></p>
-			<p><span>Relative: <?php echo $s->parent_spouse;?>,&nbsp;</span>
-			<span>Address: <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
-			<span>Phone: <?php echo $s->phone;?>, &nbsp;</span></p>
+			<p><span><b>Patient ID:</b> <?php echo $s->patient_id;?>,&nbsp;</span><span><b>OP#:</b> <?php echo $s->hosp_file_no;?>,&nbsp;</span>
+			<span><b>Date:</b> <?php echo date("j M Y", strtotime("$s->admit_date"));?>&nbsp;<?php echo date("h:i A.", strtotime("$s->admit_time"));?>,&nbsp;</span></p>
+			<p><span><b>Name:</b> <?php echo $s->name;?>,&nbsp;<?php echo $s->gender;?>&nbsp;/&nbsp;<?php echo $age;?>, &nbsp;<b>Relative:</b> <?php echo $s->parent_spouse;?>,&nbsp;
+			<span><b>Address:</b> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
+			<span><b>Ph:</b> <?php echo $s->phone;?>, &nbsp;</span></p>
 			<p><span>OP Created By: <?php echo $s->volunteer;?>,&nbsp;</span>
 			<span>Doctor Consulted: <?php echo $s->doctor;?></span></p>	
 			</div>	
