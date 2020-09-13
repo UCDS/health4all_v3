@@ -203,7 +203,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				{echo date("j M Y h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
 		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '		
-		  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Update</button>
+		  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_<?php echo $sno; ?>">Update</button>
 		'; }?></td>
 	</tr>
 	<?php
@@ -216,30 +216,63 @@ $(document).ready(function(){$("#from_date").datepicker({
 	</tr>
 	</tbody>
 	</table>
-		
+i can 		
 	<?php } else { ?>
 	No patient registrations on the given date.
 	<?php } ?>
-	</div>
+	</div>	
 
+	<?php if(isset($report) && count($report)>0){ ?>
+		<?php $sno=1;
+		foreach($report as $s){
+		$age="";
+		if(!!$s->age_years) $age.=$s->age_years."Y ";
+		if(!!$s->age_months) $age.=$s->age_months."M ";
+		if(!!$s->age_days) $age.=$s->age_days."D ";
+		if($s->age_days==0 && $s->age_months==0 && $s->age_years==0) $age.="0D"; ?>
+		<div class="modal fade" id="myModal_<?php echo $sno; ?>" role="dialog">
+		    <div class="modal-dialog">
+		      <!-- Modal content-->
+		      <div class="modal-content">
+			<div class="modal-header">
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+			  <h4 class="modal-title">Update Appointment</h4>
+			</div>
+			<div class="modal-body">
+			<div>
+			<span><?php echo $s->patient_id;?></span>
+			<span><?php echo $s->hosp_file_no;?></span>
+			<span><?php echo date("j M Y", strtotime("$s->admit_date"));?></span>
+			<span><?php echo date("h:i A.", strtotime("$s->admit_time"));?></span>
+			<span><?php echo $s->name;?></span>
+			<span><?php echo $s->gender;?></span>
+			<span><?php echo $age;?></span>
+			<span><?php echo $s->parent_spouse;?></span>
+			<span><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?></span>
+			<span><?php echo $s->phone;?></span>
+			<span><?php echo $s->volunteer;?></span>
+			<span><?php echo $s->doctor;?></span>	
+			</div>	
+			<form action="/action_page.php">
+
+			  <div class="form-group">
+			    <label for="email">Email address:</label>
+			    <input type="email" class="form-control" id="email">
+			  </div>
+			  <div class="form-group">
+			    <label for="pwd">Password:</label>
+			    <input type="password" class="form-control" id="pwd">
+			  </div>
+				
+			  <button type="submit" class="btn btn-default">Submit</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</form> 
+			</div>
+			</div>
+
+		    </div>
+		  </div>
+		<?php $sno++;}?>
+	<?php }?>
   <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-          <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-
+  
