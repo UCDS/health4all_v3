@@ -196,7 +196,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				{echo date("j M Y h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
 		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '
-		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
+		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_' . --$sno .'">Update</button>
 		'; }?></td>
 	</tr>
 	<?php }	?>
