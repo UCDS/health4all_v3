@@ -534,6 +534,7 @@ function get_op_detail_with_idproof(){
 		p.place, p.phone, department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer,
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
+		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
 		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
 		IF(pv.signed_consultation=0, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name,' ',appointment_update_time), '') as appointment_update_by_time,
