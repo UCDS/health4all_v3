@@ -198,9 +198,10 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php if(isset($s->appointment_time) && $s->appointment_time!="") 
 				{echo date("h:i A.", strtotime("$s->appointment_time"));} 
 				else {echo $s->appointment_time="";}?></td>
-		<td><?php echo $s->appointment_update_by . ", " . if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
+		<td><?php echo $s->appointment_update_by . ", "; 
+				if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
 				{echo date("j M Y h:i A.", strtotime("$s->appointment_update_time"));} 
-				else {echo $s->appointment_update_time="";};?></td>
+				else {echo $s->appointment_update_time="";}?></td>
 		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
 	</tr>
 	<?php
