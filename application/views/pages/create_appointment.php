@@ -140,11 +140,11 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>OP No.</th>
 		<th>Visit Date</th>
 		<th>Time</th>
-		<th>Name</th>
+		<th>Patient</th>
 		<th>Gender</th>
 		<th>Age</th>
 		<th>Relative</th>
-		<th>Place</th>
+		<th>From</th>
 		<th>Phone</th>
 		<th>Department</th>
     		<th>OP Created By</th>
