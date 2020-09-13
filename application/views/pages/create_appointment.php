@@ -202,7 +202,9 @@ $(document).ready(function(){$("#from_date").datepicker({
 				if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
 				{echo date("j M Y h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
-		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
+		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '		
+		  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Update</button>
+		'; }?></td>
 	</tr>
 	<?php
 	$total_count++;
@@ -219,3 +221,25 @@ $(document).ready(function(){$("#from_date").datepicker({
 	No patient registrations on the given date.
 	<?php } ?>
 	</div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
