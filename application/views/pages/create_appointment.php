@@ -133,9 +133,6 @@ $(document).ready(function(){$("#from_date").datepicker({
 		</form>
 	<br />
 	<?php if(isset($report) && count($report)>0){ ?>
-		<button type="button" class="btn btn-default btn-md print">
-		<span class="glyphicon glyphicon-print"></span> Print
-		</button>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th>SNo</th>
