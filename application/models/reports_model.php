@@ -484,8 +484,6 @@ function get_op_detail_with_idproof(){
 		 ->join('department','staff.department_id=department.department_id','left') 
 		 ->join('hospital','department.hospital_id=hospital.hospital_id','left')
 		 ->join('helpline_receiver','hospital.helpline_id=helpline_receiver.helpline_id','left') 
-		 ->join('user','helpline_receiver.user_id = user.user_id','left')
-		 ->join('staff','user.staff_id=staff.staff_id','left')
 		 ->where('hospital.hospital_id',$hospital['hospital_id'])
 		 ->where('helpline_receiver.doctor',1);	 
 		 $this->db->order_by('department','ASC');
