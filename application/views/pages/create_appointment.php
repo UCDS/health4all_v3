@@ -193,7 +193,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php if(isset($s->appointment_date) && $s->appointment_date!="") {echo date("j M Y", strtotime("$s->appointment_date"));} else {echo $s->appointment_date="";}?></td>
 		<td><?php if(isset($s->appointment_time) && $s->appointment_time!="") {echo date("h:i A.", strtotime("$s->appointment_time"));} else {echo $s->appointment_time="";}?></td>
 		<td><?php echo $s->appointment_update_by_time;?></td>
-		<td><?php if($s->signed==0 or $s->summary_sent_time!="") { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
+		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '<button type="button" class="btn btn-primary">Update</button>'; }?></td>
 	</tr>
 	<?php
 	$total_count++;
