@@ -537,7 +537,8 @@ function get_op_detail_with_idproof(){
 		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
 		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
-		IF(pv.signed_consultation=0, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name,' ',appointment_update_time), '') as appointment_update_by_time,
+		IF(pv.signed_consultation=0, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_udate_by,
+		pv.appointment_update_time as appointment_update_time,
 		pv.signed_consultation as signed",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
