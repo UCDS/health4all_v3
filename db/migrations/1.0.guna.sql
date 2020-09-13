@@ -7,3 +7,5 @@ ALTER TABLE `patient_visit` ADD `appointment_with` INT NULL AFTER `update_dateti
 #helpline_id field added to hospital table
 ALTER TABLE `hospital` ADD `helpline_id` INT NULL AFTER `type6`; 
 
+#adding field to patient_visit table to capture time when the doctor consultation summary has been sent to patient, especially in cases of teleconsultation
+ALTER TABLE `patient_visit` ADD `summary_sent_time` DATETIME NULL AFTER `appointment_update_time`; 
