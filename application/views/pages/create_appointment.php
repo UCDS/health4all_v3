@@ -240,28 +240,45 @@ i can
 			</div>
 			<div class="modal-body">
 			<div>
-			<span><?php echo $s->patient_id;?></span>
-			<span><?php echo $s->hosp_file_no;?></span>
-			<span><?php echo date("j M Y", strtotime("$s->admit_date"));?></span>
-			<span><?php echo date("h:i A.", strtotime("$s->admit_time"));?></span>
-			<span><?php echo $s->name;?></span>
-			<span><?php echo $s->gender;?></span>
-			<span><?php echo $age;?></span>
-			<span><?php echo $s->parent_spouse;?></span>
-			<span><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?></span>
-			<span><?php echo $s->phone;?></span>
-			<span><?php echo $s->volunteer;?></span>
-			<span><?php echo $s->doctor;?></span>	
+			<p><span>Patient ID: <?php echo $s->patient_id;?>,&nbsp;</span><span>OP#: <?php echo $s->hosp_file_no;?>,&nbsp;</span>
+			<span>Date: <?php echo date("j M Y", strtotime("$s->admit_date"));?>,&nbsp;</span>
+			<span>Time: <?php echo date("h:i A.", strtotime("$s->admit_time"));?>,&nbsp;</span></p>
+			<p><span>Name: <?php echo $s->name;?>,&nbsp;</span>
+			<span>Gender: <?php echo $s->gender;?>,&nbsp;</span>
+			<span>Age: <?php echo $age;?>, &nbsp;</span></p>
+			<p><span>Relative: <?php echo $s->parent_spouse;?>,&nbsp;</span>
+			<span>Address: <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
+			<span>Phone: <?php echo $s->phone;?>, &nbsp;</span></p>
+			<p><span>OP Created By: <?php echo $s->volunteer;?>,&nbsp;</span>
+			<span>Doctor Consulted: <?php echo $s->doctor;?></span></p>	
 			</div>	
 			<form action="/action_page.php">
 
 			  <div class="form-group">
-			    <label for="email">Email address:</label>
-			    <input type="email" class="form-control" id="email">
+			    <label for="department">Department:</label>
+			    <select class="form-control">
+				    <option>1</option>
+				    <option>2</option>
+				    <option>3</option>
+				    <option>4</option>
+			    </select>
 			  </div>
 			  <div class="form-group">
-			    <label for="pwd">Password:</label>
-			    <input type="password" class="form-control" id="pwd">
+			    <label for="appointment_with">Appointment With:</label>
+			    <select class="form-control" id="sel1">
+				    <option>1</option>
+				    <option>2</option>
+				    <option>3</option>
+				    <option>4</option>
+			    </select>
+			  </div>
+			  <div class="form-group">
+			    <label for="appointment_time">Appointment Date-Time:</label>
+			    <input type="text" class="form-control" id="pwd">
+			  </div>
+			  <div class="form-group">
+			    <label for="summary_sent_time">Summary Sent Date-Time:</label>
+			    <input type="text" class="form-control" id="pwd">
 			  </div>
 				
 			  <button type="submit" class="btn btn-default">Submit</button>
