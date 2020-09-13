@@ -189,7 +189,7 @@ $(document).ready(function(){$("#from_date").datepicker({
     		<td><?php echo $s->volunteer;?></td>
 		<td><?php echo $s->doctor;?></td>
 		<td><?php if(isset($s->summary_sent_time) && $s->summary_sent_time!="")
-				{echo date("j M Y h:i A.", strtotime("$s->summary_sent_time"))}
+				{echo date("j M Y h:i A.", strtotime("$s->summary_sent_time"));}
 				else {echo $s->summary_sent_time="";};?></td>
     		<td><?php echo $s->appointment_with;?></td>
 		<td><?php if(isset($s->appointment_date) && $s->appointment_date!="") 
