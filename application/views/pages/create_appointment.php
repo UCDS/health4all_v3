@@ -167,7 +167,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		if($s->age_days==0 && $s->age_months==0 && $s->age_years==0) $age.="0D";
 	?>
 	<tr>
-		<td><?php echo $sno++;?></td>
+		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
 		<td><?php echo date("j M Y", strtotime("$s->admit_date"));?></td>
