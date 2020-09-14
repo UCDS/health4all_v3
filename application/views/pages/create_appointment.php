@@ -244,8 +244,10 @@ $(document).ready(function(){$(".datepicker").datepicker({
 				</p>	
 			</div>	
 
-			<form action="/action_page.php">
-
+			<?php echo form_open("reports/create_appointment",array('role'=>'form','class'=>'form-custom')); ?>
+			<input type="hidden" name="create_appointment" value="true">
+			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">	
+			
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">
