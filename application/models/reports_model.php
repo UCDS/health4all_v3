@@ -481,7 +481,7 @@ function get_op_detail_with_idproof(){
 		
 		$this->db->select("staff.staff_id, CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor, department.department as department", false);
 		 $this->db->from('helpline_receiver')
-		 ->join('hospital','hospital.hospital_id=helpline_receiver.hospital_id','left') 
+		 ->join('hospital','hospital.helpline_id=helpline_receiver.helpline_id','left') 
 		 ->join('user','user.user_id=helpline_receiver.user_id','left')
 		 ->join('staff','staff.staff_id=user.staff_id','left')
 		 ->join('department','department.department_id=staff.department_id','left')	 
