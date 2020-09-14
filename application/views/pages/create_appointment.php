@@ -281,12 +281,9 @@ $(document).ready(function(){$(".datepicker").datepicker({
 				       value="<?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
 						{echo date("Y-m-d\TH:i", strtotime("$s->appointment_date_time"));} 
 						else {echo $s->appointment_date_time="";}?>" 
-				       class="form-control">
-				
-				<?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
-				{echo date("Y-m-d\TH:i", strtotime("$s->appointment_date_time"));} 
-				else {echo $s->appointment_date_time="";}?>
+				       		class="form-control">
 			</div>
+			
 			<div class="form-group">
 				<label for="summary_sent_time">Summary Sent Date-Time:</label>
 				<input name="summary_sent_time" type="datetime-local" class="form-control" >
