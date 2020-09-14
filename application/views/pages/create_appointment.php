@@ -264,10 +264,10 @@ $(document).ready(function(){$("#from_date").datepicker({
 				<?php //var_dump($helpline_doctor); ?>
 				<select name="helpline_doctor" id="helpline_doctor" class="form-control">
 					<?php 
-					foreach($helpline_doctor){
-						echo "<option value='".$helpline_doctor->staff_id."'";
-						if($s->appointment_with_id == $helpline_doctor->staff_id) echo " selected ";
-						echo ">".$helpline_doctor->helpline_doctor."</option>";
+					foreach($helpline_doctor as $doctor){
+						echo "<option value='".$doctor->staff_id."'";
+						if($s->appointment_with_id == $doctor->staff_id) echo " selected ";
+						echo ">".$doctor->helpline_doctor."</option>";
 					}
 					?>
 				</select>
