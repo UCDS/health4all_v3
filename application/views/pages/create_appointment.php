@@ -278,8 +278,14 @@ $(document).ready(function(){$(".datepicker").datepicker({
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
 				<input name="appointment_time" type="datetime-local" 
-				       value="<?php echo date("Y-m-d\TH:i:s", strtotime("$s->appointment_date_time")); ?>" 
+				       value="<?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
+						{echo date("Y-m-d\TH:i", strtotime("$s->appointment_date_time"));} 
+						else {echo $s->appointment_date_time="";}?>" 
 				       class="form-control">
+				
+				<?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
+				{echo date("Y-m-d\TH:i", strtotime("$s->appointment_date_time"));} 
+				else {echo $s->appointment_date_time="";}?>
 			</div>
 			<div class="form-group">
 				<label for="summary_sent_time">Summary Sent Date-Time:</label>
