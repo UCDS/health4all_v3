@@ -249,7 +249,6 @@ $(document).ready(function(){$("#from_date").datepicker({
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department" id="department" class="form-control">
-					<option value="">Department</option>
 					<?php 
 					foreach($all_departments as $dept){
 						echo "<option value='".$dept->department_id."'";
@@ -259,16 +258,21 @@ $(document).ready(function(){$("#from_date").datepicker({
 					?>
 				</select>
 			</div>
+				
 			<div class="form-group">
-				<label for="appointment_with">Appointment With:</label>
-				<?php var_dump($helpline_doctor); ?>
-				<select class="form-control" id="sel1">
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
+				<label for="helpline_doctor">Appointment With:</label>
+				<?php //var_dump($helpline_doctor); ?>
+				<select name="helpline_doctor" id="helpline_doctor" class="form-control">
+					<?php 
+					foreach($helpline_doctor){
+						echo "<option value='".$helpline_doctor->staff_id."'";
+						if($s->appointment_with_id == $helpline_doctor->staff_id) echo " selected ";
+						echo ">".$helpline_doctor->helpline_doctor."</option>";
+					}
+					?>
 				</select>
 			</div>
+				
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
 				<input type="text" class="form-control" id="pwd">
