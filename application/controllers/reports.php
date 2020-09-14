@@ -256,7 +256,7 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
-		if($this->input->post('visit_id')){ $this->report_model->update_appointment();}
+		if($this->input->post('visit_id')){ $this->reports_model->update_appointment();}
 		$this->data['report']=$this->reports_model->get_appointment($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
