@@ -600,15 +600,15 @@ function get_op_detail_with_idproof(){
         }
          
         $this->db->trans_start();
-        $this->db->where('department_id',$this->input->post('department_id'));
-        $this->db->update('department', $department_info);
+        $this->db->where('visit_id',$this->input->post('visit_id'));
+        $this->db->update('patient_visit', $appointment_info);
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
-        }
+        	}
         else{
                 return true;
-        } 
+        	} 
     	}
 	
 	
