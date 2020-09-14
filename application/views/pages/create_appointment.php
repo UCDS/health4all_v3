@@ -277,11 +277,11 @@ $(document).ready(function(){$(".datepicker").datepicker({
 				
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
-				<input name="appointment_time" type="time" value="<?php echo $s->appointment_date_time ; ?>" class="form-control datepicker">
+				<input name="appointment_time" type="datetime-local" value="<?php echo $s->appointment_date_time ; ?>" class="form-control">
 			</div>
 			<div class="form-group">
 				<label for="summary_sent_time">Summary Sent Date-Time:</label>
-				<input name="summary_sent_time" type="time" class="form-control datepicker" >
+				<input name="summary_sent_time" type="datetime-local" class="form-control" >
 			</div>
 
 			<button type="submit" class="btn btn-default">Submit</button>
