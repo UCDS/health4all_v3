@@ -132,7 +132,7 @@ $(document).ready(function(){$(".datepicker").datepicker({
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
-<?php if($this->input->post('visit_id') { ?>
+<?php if($this->input->post('visit_id')) { ?>
 <?php if($updated) { ?>
 <div class="alert alert-success" role="alert">Updated Patient Record!</div>
 <?php } else {?>
