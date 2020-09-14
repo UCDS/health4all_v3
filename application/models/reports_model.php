@@ -476,6 +476,8 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 	}
 	
+	
+	
 	function get_helpline_doctor(){
 		$hospital=$this->session->userdata('hospital');
 		
@@ -582,6 +584,33 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 	}
 
+	function update_appointment(){
+        $appointment_info = array();
+        if($this->input->post('department_id')){
+            $appointment_info['department_id'] = $this->input->post('department_id');
+        }
+        if($this->input->post('appointment_with')){
+            $appointment_info['appointment_with'] = $this->input->post('appointment_with');
+        }
+        if($this->input->post('appointment_time')){
+            $appointment_info['appointment_time'] = $this->input->post('appointment_time');
+        }
+         if($this->input->post('summary_sent_time')){
+            $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
+        }
+         
+        $this->db->trans_start();
+        $this->db->where('department_id',$this->input->post('department_id'));
+        $this->db->update('department', $department_info);
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+                return false;
+        }
+        else{
+                return true;
+        } 
+    	}
+	
 	
 	function get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type=0,$outcome=0){
 		$hospital=$this->session->userdata('hospital');
