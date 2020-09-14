@@ -278,7 +278,7 @@ $(document).ready(function(){$(".datepicker").datepicker({
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
 				<input name="appointment_time" type="datetime-local" 
-				       value="<?php echo date("m d Y H:i", strtotime("$s->appointment_date_time")); ?>" 
+				       value="<?php echo date("Y-m-d\TH:i:s", strtotime("$s->appointment_date_time")); ?>" 
 				       class="form-control">
 			</div>
 			<div class="form-group">
