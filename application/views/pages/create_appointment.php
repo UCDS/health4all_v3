@@ -261,7 +261,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 			</div>
 			<div class="form-group">
 				<label for="appointment_with">Appointment With:</label>
-				<?php var_dump($helpline_doctor) ?>
+				<?php var_dump($helpline_doctor); ?>
 				<select class="form-control" id="sel1">
 					<option>1</option>
 					<option>2</option>
