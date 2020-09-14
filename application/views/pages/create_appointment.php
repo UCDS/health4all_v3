@@ -248,7 +248,7 @@ $(document).ready(function(){$(".datepicker").datepicker({
 
 			<div class="form-group">
 				<label for="department">Department:</label>
-				<select name="department" id="department" class="form-control">
+				<select name="department_id" id="department" class="form-control">
 					<option>Select Department</option>
 					<?php 
 					foreach($all_departments as $dept){
@@ -263,7 +263,7 @@ $(document).ready(function(){$(".datepicker").datepicker({
 			<div class="form-group">
 				<label for="helpline_doctor">Appointment With:</label>
 				<?php //var_dump($helpline_doctor); ?>
-				<select name="helpline_doctor" id="helpline_doctor" class="form-control">
+				<select name="appointment_with" id="helpline_doctor" class="form-control">
 					<option>Select Doctor</option>
 					<?php 
 					foreach($helpline_doctor as $doctor){
@@ -277,11 +277,11 @@ $(document).ready(function(){$(".datepicker").datepicker({
 				
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
-				<input type="text" value="<?php echo $s->appointment_date_time ; ?>" class="form-control datepicker">
+				<input name="appointment_time" type="text" value="<?php echo $s->appointment_date_time ; ?>" class="form-control datepicker">
 			</div>
 			<div class="form-group">
 				<label for="summary_sent_time">Summary Sent Date-Time:</label>
-				<input type="text" class="form-control" id="pwd">
+				<input name="summary_sent_time" type="text" class="form-control" >
 			</div>
 
 			<button type="submit" class="btn btn-default">Submit</button>
