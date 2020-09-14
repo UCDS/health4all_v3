@@ -555,6 +555,7 @@ function get_op_detail_with_idproof(){
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
 		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
+		pv.appointment_time as appointment_date_time,
 		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
 		IF(pv.signed_consultation=0, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name),'') as appointment_update_by,
