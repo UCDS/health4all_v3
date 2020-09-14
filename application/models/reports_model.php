@@ -480,17 +480,15 @@ function get_op_detail_with_idproof(){
 		$hospital=$this->session->userdata('hospital');
 		
 		$this->db->select("staff.staff_id, CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor, department.department as department", false);
-		 $this->db->from('staff')
-		 ->join('department','staff.department_id=department.department_id','left') 
-		 ->join('hospital','department.hospital_id=hospital.hospital_id','left')
-		 ->join('helpline_receiver','hospital.helpline_id=helpline_receiver.helpline_id','left')
-		 ->join('user','user.user_id=helpline_receiver.user_id','left')	 
+		 $this->db->from('helpline_receiver')
+		 ->join('hospital','hospital.hospital_id=helpline_receiver.hospital_id','left') 
+		 ->join('user','user.user_id=helpline_receiver.user_id','left')
+		 ->join('staff','staff.staff_id=user.staff_id','left')
+		 ->join('department','department.department_id=staff.department_id','left')	 
 		 ->where('hospital.hospital_id',$hospital['hospital_id'])
 		 ->where('helpline_receiver.doctor',1)
-		 ->where('staff.staff_id','user.staff_id');
 		 $this->db->order_by('department','ASC');
 		 $this->db->order_by('helpline_doctor','ASC');
-		 $this->db->last_query;
 		
 		$resource=$this->db->get();
 		return $resource->result();
