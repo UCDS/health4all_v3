@@ -479,7 +479,8 @@ function get_op_detail_with_idproof(){
 	function get_helpline_doctor(){
 		$hospital=$this->session->userdata('hospital');
 		
-		$this->db->select("staff.staff_id, CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor, department.department as department", false);
+		$this->db->select("staff.staff_id, CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name, ', ', staff.phone) as helpline_doctor,
+				department.department as department", false);
 		 $this->db->from('helpline_receiver')
 		 ->join('hospital','hospital.helpline_id=helpline_receiver.helpline_id','left') 
 		 ->join('user','user.user_id=helpline_receiver.user_id','left')
