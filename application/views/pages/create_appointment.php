@@ -132,6 +132,14 @@ $(document).ready(function(){$(".datepicker").datepicker({
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
+<?php if($this->input->post('visit_id') { ?>
+<?php if($updated) { ?>
+<div class="alert alert-success" role="alert">Updated Patient Record!</div>
+<?php } else {?>
+<div class="alert alert-danger" role="alert">Something went wrong</div>
+<?php } ?>
+<?php } ?>
+<br />
 <?php if(isset($report) && count($report)>0){ ?>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
