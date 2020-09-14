@@ -598,7 +598,7 @@ function get_op_detail_with_idproof(){
          if($this->input->post('summary_sent_time')){
             $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
         }
-	echo $appointment_info;
+	var_dump($appointment_info);
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
