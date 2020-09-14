@@ -274,7 +274,7 @@ $(document).ready(function(){$(".datepicker").datepicker({
 				<label for="helpline_doctor">Appointment With:</label>
 				<?php //var_dump($helpline_doctor); ?>
 				<select name="appointment_with" id="helpline_doctor" class="form-control">
-					<option>Select Doctor</option>
+					<option value="NULL">Select Doctor</option>
 					<?php 
 					foreach($helpline_doctor as $doctor){
 						echo "<option value='".$doctor->staff_id."'";
