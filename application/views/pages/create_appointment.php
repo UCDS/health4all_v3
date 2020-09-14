@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <script type="text/javascript">
-$(document).ready(function(){$("#from_date").datepicker({
+$(document).ready(function(){$(".datepicker").datepicker({
 		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
 		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
 		$("#to_date").datepicker("option","minDate",sdt)}})
@@ -277,7 +277,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
-				<input type="text" class="form-control" id="pwd">
+				<input type="text" value="<?php echo $s->appointment_date_time ; ?>" class="form-control datepicker">
 			</div>
 			<div class="form-group">
 				<label for="summary_sent_time">Summary Sent Date-Time:</label>
