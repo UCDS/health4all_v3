@@ -490,6 +490,7 @@ function get_op_detail_with_idproof(){
 		 ->where('staff.staff_id','user.staff_id');
 		 $this->db->order_by('department','ASC');
 		 $this->db->order_by('helpline_doctor','ASC');
+		 $this->db->last_query;
 		
 		$resource=$this->db->get();
 		return $resource->result();
