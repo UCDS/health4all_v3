@@ -249,6 +249,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department" id="department" class="form-control">
+					<option>Select Department</option>
 					<?php 
 					foreach($all_departments as $dept){
 						echo "<option value='".$dept->department_id."'";
@@ -263,6 +264,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				<label for="helpline_doctor">Appointment With:</label>
 				<?php //var_dump($helpline_doctor); ?>
 				<select name="helpline_doctor" id="helpline_doctor" class="form-control">
+					<option>Select Doctor</option>
 					<?php 
 					foreach($helpline_doctor as $doctor){
 						echo "<option value='".$doctor->staff_id."'";
