@@ -552,7 +552,7 @@ function get_op_detail_with_idproof(){
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
-		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer,
+		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
 		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
 		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
