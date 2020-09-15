@@ -250,8 +250,12 @@ $(document).ready(function(){$("#from_date").datepicker({
 
 			<?php echo form_open("reports/create_appointment",array('role'=>'form','class'=>'form-custom')); ?>
 			<input type="hidden" name="create_appointment" value="true">
-			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">	
-			
+			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">
+			<input type="hidden" name="visit_id" value="<?php echo $this->input->post('from_date');?>">
+			<input type="hidden" name="visit_id" value="<?php echo $this->input->post('to_date');?>">
+			<input type="hidden" name="visit_id" value="<?php echo $this->input->post('from_time');?>">
+			<input type="hidden" name="visit_id" value="<?php echo $this->input->post('to_time');?>">
+						
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">
