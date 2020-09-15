@@ -612,7 +612,7 @@ function get_op_detail_with_idproof(){
         	} 
     	}
 	
-	function get_my_patient_list(){
+	function get_doctor_patient_list(){
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
