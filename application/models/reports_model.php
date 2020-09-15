@@ -694,10 +694,6 @@ function get_op_detail_with_idproof(){
 		
 		$this->db->where('pv.appointment_with', $this->session->userdata('logged_in')['staff_id']);
 		$this->db->or_where('pv.signed_consultation', $this->session->userdata('logged_in')['staff_id']); 
-		//->where('test_order.hospital_id',$hospital['hospital_id'])
-		//$where = "$this->session->userdata('logged_in')['staff_id'] = pv.appointment_with OR 
-		//	  $this->session->userdata('logged_in')['staff_id']= pv.signed_consultation";
-		//$this->db->where($where);
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
