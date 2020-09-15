@@ -149,7 +149,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Visit Date</th>
 		<th>Time</th>
 		<th>Patient</th>
-		<th>Relative</th>
+		<th>Related to</th>
 		<th>From</th>
 		<th>Phone</th>
 		<th>Department</th>
@@ -238,7 +238,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				</p>
 				<p class="bg-primary text-white">
 				<span><b>Patient:</b> <?php echo $s->name;?>,&nbsp;<?php echo $age;?>&nbsp;/&nbsp;
-				<?php echo $s->gender;?>, &nbsp;<b>Relative:</b> <?php echo $s->parent_spouse;?>,&nbsp;</span>
+				<?php echo $s->gender;?>, &nbsp;<b>Related to:</b> <?php echo $s->parent_spouse;?>,&nbsp;</span>
 				<span><b>From:</b> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
 				<span><b>Ph:</b> <?php echo $s->phone;?>, &nbsp;</span>
 				</p>
