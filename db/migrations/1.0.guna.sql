@@ -9,3 +9,6 @@ ALTER TABLE `hospital` ADD `helpline_id` INT NULL AFTER `type6`;
 
 #adding field to patient_visit table to capture time when the doctor consultation summary has been sent to patient, especially in cases of teleconsultation
 ALTER TABLE `patient_visit` ADD `summary_sent_time` DATETIME NULL AFTER `appointment_update_time`; 
+
+# New user function for doctors to view their list of patients
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'my_patient_list', 'My Patient List', 'To provide list of Patients Visits assigned to a Doctor, both waiting and completed consultations. '); 
