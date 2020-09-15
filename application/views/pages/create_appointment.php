@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <script type="text/javascript">
-$(document).ready(function(){$(".datepicker").datepicker({
+$(document).ready(function(){$("#from_date").datepicker({
 		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
 		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
 		$("#to_date").datepicker("option","minDate",sdt)}})
@@ -149,8 +149,6 @@ $(document).ready(function(){$(".datepicker").datepicker({
 		<th>Visit Date</th>
 		<th>Time</th>
 		<th>Patient</th>
-		<th>Gender</th>
-		<th>Age</th>
 		<th>Relative</th>
 		<th>From</th>
 		<th>Phone</th>
@@ -180,9 +178,7 @@ $(document).ready(function(){$(".datepicker").datepicker({
 		<td><?php echo $s->hosp_file_no;?></td>
 		<td><?php echo date("j M Y", strtotime("$s->admit_date"));?></td>
 		<td><?php echo date("h:i A.", strtotime("$s->admit_time"));?></td>
-		<td><?php echo $s->name;?></td>
-		<td><?php echo $s->gender;?></td>
-		<td><?php echo $age;?></td>
+		<td><?php echo $s->name . ", " . $age . " / " . $s->gender;?></td>
 		<td><?php echo $s->parent_spouse;?></td>
 		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?></td>
 		<td><?php echo $s->phone;?></td>
@@ -241,8 +237,8 @@ $(document).ready(function(){$(".datepicker").datepicker({
 				<?php echo date("h:i A.", strtotime("$s->admit_time"));?>,&nbsp;</span>
 				</p>
 				<p class="bg-primary text-white">
-				<span><b>Patient:</b> <?php echo $s->name;?>,&nbsp;<?php echo $s->gender;?>&nbsp;/&nbsp;
-				<?php echo $age;?>, &nbsp;<b>Relative:</b> <?php echo $s->parent_spouse;?>,&nbsp;</span>
+				<span><b>Patient:</b> <?php echo $s->name;?>,&nbsp;<?php echo $age;?>&nbsp;/&nbsp;
+				<?php echo $s->gender;?>, &nbsp;<b>Relative:</b> <?php echo $s->parent_spouse;?>,&nbsp;</span>
 				<span><b>From:</b> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?>,&nbsp;</span>
 				<span><b>Ph:</b> <?php echo $s->phone;?>, &nbsp;</span>
 				</p>
