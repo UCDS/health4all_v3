@@ -237,7 +237,7 @@ class Reports extends CI_Controller {
 	
 	public function create_appointment($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
-		echo var_dump($this->session->userdata());
+		echo var_dump($this->session->userdata);
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
