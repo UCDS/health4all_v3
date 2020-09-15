@@ -664,7 +664,11 @@ function get_op_detail_with_idproof(){
 		else{
 			$this->db->select('"0" as area',false);
 		}
-
+		
+		
+		$where = "$this->session->userdata('logged_in')['staff_id'] = pv.appointment_with OR 
+			  $this->session->userdata('logged_in')['staff_id'] = pv.signed_consultation";
+		
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
@@ -690,10 +694,12 @@ function get_op_detail_with_idproof(){
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
+		 ->where($where)
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')"); 
-		 $this->db->order_by('admit_date','ASC');
-		 $this->db->order_by('admit_time','ASC');
-			
+		 
+		$this->db->order_by('admit_date','ASC');
+		$this->db->order_by('admit_time','ASC');
+		
 		$resource=$this->db->get();
 		return $resource->result();
 	}
