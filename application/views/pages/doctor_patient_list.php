@@ -83,8 +83,8 @@ $(document).ready(function(){$("#from_date").datepicker({
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
 	?>
 <div class="row">
-		<h4>Create Appointment</h4>	
-		<?php echo form_open("reports/create_appointment",array('role'=>'form','class'=>'form-custom')); ?> 
+		<h4>Doctor Patient List</h4>	
+		<?php echo form_open("reports/doctor_patient_list",array('role'=>'form','class'=>'form-custom')); ?> 
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 	                From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
@@ -160,6 +160,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Appt Date</th>
 		<th>Appt Time</th>
 		<th>Appt Update By/Time</th>
+		<th>Update</th>
     </thead>
 	<tbody>
 	<?php 
@@ -198,6 +199,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
 				{echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
+		<td><button type="button" class="btn btn-primary">Update</button></td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
