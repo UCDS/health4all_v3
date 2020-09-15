@@ -690,11 +690,11 @@ function get_op_detail_with_idproof(){
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
-		 ->where("(pv.appointment_with  =  $this->session->userdata('logged_in')['staff_id'] OR
-			pv.signed_consultation =  $this->session->userdata('logged_in')['staff_id'])")   
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')"); 
-		
-		 
+						
+		$where = "$this->session->userdata('logged_in')['staff_id'] = pv.appointment_with OR 
+			  $this->session->userdata('logged_in')['staff_id']= pv.signed_consultation";
+		$this->db->where($where);
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
