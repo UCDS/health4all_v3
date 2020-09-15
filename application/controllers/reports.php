@@ -265,12 +265,9 @@ class Reports extends CI_Controller {
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 
 	    'trim|required|xss_clean');
+			
 		if ($this->form_validation->run() === FALSE)
 		{	
-			$this->data['from_date'] = $this->input->post('from_date');
-			$this->data['to_date'] = $this->input->post('to_date');
-			$this->data['from_time'] = $this->input->post('from_time');
-			$this->data['to_time'] = $this->input->post('to_time');
 			$this->load->view('pages/create_appointment',$this->data);
 		}
 		else{
