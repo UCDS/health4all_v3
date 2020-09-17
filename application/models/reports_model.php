@@ -677,34 +677,38 @@ function get_op_detail_with_idproof(){
 		IF(pv.signed_consultation=0, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name),'') as appointment_update_by,
 		IF(pv.signed_consultation=0, appointment_update_time,'') as appointment_update_time,  
 		pv.signed_consultation as signed",false);
-		 $this->db->from('patient_visit as pv');
-		 $this->db->join('patient as p','pv.patient_id=p.patient_id');
-		 $this->db->join('department','pv.department_id=department.department_id','left');
-		 $this->db->join('unit','pv.unit=unit.unit_id','left');
-		 $this->db->join('area','pv.area=area.area_id','left');
-		 $this->db->join('hospital','pv.hospital_id=hospital.hospital_id','left');
-		 $this->db->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left');
-		 $this->db->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left');
-		 $this->db->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left');	 
-		 $this->db->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left');
-		 $this->db->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
+		
+		$this->db->from('patient_visit as pv');
+		$this->db->join('patient as p','pv.patient_id=p.patient_id');
+		$this->db->join('department','pv.department_id=department.department_id','left');
+		$this->db->join('unit','pv.unit=unit.unit_id','left');
+		$this->db->join('area','pv.area=area.area_id','left');
+		$this->db->join('hospital','pv.hospital_id=hospital.hospital_id','left');
+		$this->db->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left');
+		$this->db->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left');
+		$this->db->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left');	 
+		$this->db->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left');
+		$this->db->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
+		
 		$where = "pv.hospital_id = $hospital['hospital_id']
 			  AND visit_type = 'OP'
 			  AND (admit_date BETWEEN '$from_date' AND '$to_date')
 			  AND (pv.appointment_with = $this->session->userdata('logged_in')['staff_id']
-			  OR  pv.signed_consultation = $this->session->userdata('logged_in')['staff_id'])";
+			  OR  pv.signed_consultation = $this->session->userdata('logged_in')['staff_id'])
+			  ";
 		$this->db->where($where);
-		 //->where('pv.hospital_id',$hospital['hospital_id'])
-		 //->where('visit_type','OP')
-		 //->where("(admit_date BETWEEN '$from_date' AND '$to_date')"); 
-		
-		//$this->db->where('pv.appointment_with', $this->session->userdata('logged_in')['staff_id']);
-		//$this->db->or_where('pv.signed_consultation', $this->session->userdata('logged_in')['staff_id']); 
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
 		$resource=$this->db->get();
 		return $resource->result();
+		
+		//$sql = $this->db->get_compiled_select();
+		//echo $sql;
+		//$query = $db->query('SELECT name, title, email FROM my_table');
+		//$results = $query->getResult();
+		
+		
 	}
 
 	
