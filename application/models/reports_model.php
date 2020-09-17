@@ -690,13 +690,15 @@ function get_op_detail_with_idproof(){
 		$this->db->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left');
 		$this->db->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
 		
-		$where = "pv.hospital_id = $hospital['hospital_id']
+		$current_hospital = $hospital['hospital_id'];
+		$user_staff_id = $this->session->userdata('logged_in')['staff_id'];
+		
+		$where = "pv.hospital_id = $current_hospital
 			  AND visit_type = 'OP'
 			  AND (admit_date BETWEEN '$from_date' AND '$to_date')
-			  AND (pv.appointment_with = $this->session->userdata('logged_in')['staff_id']
-			  OR  pv.signed_consultation = $this->session->userdata('logged_in')['staff_id'])
-			  ";
-		$this->db->where($where, FALSE);
+			  AND (pv.appointment_with = $user_staff_id OR pv.signed_consultation = $user_staff_id)";
+		$this->db->where($where);
+		
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
