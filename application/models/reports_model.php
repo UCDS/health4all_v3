@@ -696,7 +696,7 @@ function get_op_detail_with_idproof(){
 			  AND (pv.appointment_with = $this->session->userdata('logged_in')['staff_id']
 			  OR  pv.signed_consultation = $this->session->userdata('logged_in')['staff_id'])
 			  ";
-		$this->db->where($where);
+		$this->db->where($where, FALSE);
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
