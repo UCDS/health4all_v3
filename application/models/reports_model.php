@@ -687,13 +687,19 @@ function get_op_detail_with_idproof(){
 		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
 		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
-		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')		
-		 ->where('pv.hospital_id',$hospital['hospital_id'])
-		 ->where('visit_type','OP')
-		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')"); 
+		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
+		$where = "pv.hospital_id = $hospital['hospital_id']
+			  AND visit_type = 'OP'
+			  AND (admit_date BETWEEN '$from_date' AND '$to_date')
+			  AND (pv.appointment_with = $this->session->userdata('logged_in')['staff_id']
+			  OR  pv.signed_consultation = $this->session->userdata('logged_in')['staff_id'])";
+		$this->db->where($where);
+		 //->where('pv.hospital_id',$hospital['hospital_id'])
+		 //->where('visit_type','OP')
+		 //->where("(admit_date BETWEEN '$from_date' AND '$to_date')"); 
 		
-		$this->db->where('pv.appointment_with', $this->session->userdata('logged_in')['staff_id']);
-		$this->db->or_where('pv.signed_consultation', $this->session->userdata('logged_in')['staff_id']); 
+		//$this->db->where('pv.appointment_with', $this->session->userdata('logged_in')['staff_id']);
+		//$this->db->or_where('pv.signed_consultation', $this->session->userdata('logged_in')['staff_id']); 
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
