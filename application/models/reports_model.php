@@ -700,11 +700,12 @@ function get_op_detail_with_idproof(){
 		$this->db->order_by('admit_date','ASC');
 		$this->db->order_by('admit_time','ASC');
 		
+		$sql = $this->db->get_compiled_select();
+		echo $sql;
+		
 		$resource=$this->db->get();
 		return $resource->result();
 		
-		//$sql = $this->db->get_compiled_select();
-		//echo $sql;
 		//$query = $db->query('SELECT name, title, email FROM my_table');
 		//$results = $query->getResult();
 		
