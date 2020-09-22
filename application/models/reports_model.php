@@ -704,8 +704,8 @@ function get_op_detail_with_idproof(){
 		
 		$resource=$this->db->get();
 		return $resource->result();
-			
-		
+
+    
 	}
 
 	
