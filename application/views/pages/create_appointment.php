@@ -147,16 +147,16 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Patient ID</th>
 		<th>OP No.</th>
 		<th>Consultation Request Time</th>
-		<th>Patient</th>
+		<th>PatientInfo</th>
 		<th>Related to</th>
 		<th>From</th>
 		<th>Phone</th>
 		<th>Department</th>
-    		<th>OP Created By</th>
+    		<th>Request CreatedBy</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
 		<th>Appointment Time</th>
-		<th>Summary Sent Time</th>
+		<th>Consultation Summary Sent</th>
 		<th>Appointment Update By/Time</th>
     		<th>Update Appointment</th>
 	</thead>
