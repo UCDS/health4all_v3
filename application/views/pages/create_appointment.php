@@ -147,7 +147,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Patient ID</th>
 		<th>OP No.</th>
 		<th>Consultation Request Time</th>
-		<th>Patient-Info</th>
+		<th>PatientInfo</th>
 		<th>Related to</th>
 		<th>From</th>
 		<th>Phone</th>
