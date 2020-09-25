@@ -139,7 +139,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 <div class="alert alert-danger" role="alert">Something went wrong</div>
 <?php } ?>
 <?php } ?>
-<br />
+
 <?php if(isset($report) && count($report)>0){ ?>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
