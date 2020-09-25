@@ -146,7 +146,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>SNo</th>
 		<th>Patient ID</th>
 		<th>OP No.</th>
-		<th>Consult Request Time</th>
+		<th>Consultation Request Time</th>
 		<th>Patient</th>
 		<th>Related to</th>
 		<th>From</th>
@@ -154,11 +154,11 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Department</th>
     		<th>OP Created By</th>
 		<th>Doctor Consulted</th>
-		<th>Appointment (Appt) With</th>
-		<th>Appt Time</th>
+		<th>Appointment With</th>
+		<th>Appointment Time</th>
 		<th>Summary Sent Time</th>
-		<th>Appt Update By/Time</th>
-    		<th>Update Appt</th>
+		<th>Appointment Update By/Time</th>
+    		<th>Update Appointment</th>
 	</thead>
 	<tbody>
 	<?php 
