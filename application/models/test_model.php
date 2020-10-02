@@ -5,7 +5,7 @@ class test_model extends CI_Model{
 		parent::__construct();
 	}
 
-  function get_appointment(){
+  function appointment(){
 		
     $this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
