@@ -1,5 +1,21 @@
 <?php
 class Test extends CI_Controller{
+  
+  function __construct(){
+		parent::__construct();
+		$this->load->model('test_model');
+	}
+  
+  public function appointment()
+	{
+		
+		$this->data['report']=$this->test_model->appointment();
+	
+		$this->load->view('pages/test_appointment',$this->data);
+		
+		
+	}
+  
   public function view($page = 'test_home')
   {
     if(! file_exists(APPPATH.'views/pages/'.$page.'.php'))
