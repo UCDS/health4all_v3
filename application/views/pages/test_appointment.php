@@ -59,5 +59,6 @@
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
+	<?php echo $this->db->last_query(); ?>  
   </body>
 </html>
