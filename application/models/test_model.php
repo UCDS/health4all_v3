@@ -30,7 +30,7 @@ class test_model extends CI_Model{
 		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')		
-		 ->where('pv.hospital_id',428)
+		 ->where('pv.hospital_id',15)
 		 ->where('visit_type','OP')
 		 ->where("(admit_date BETWEEN '2020-09-01' AND '2020-09-30')"); 
 		 $this->db->order_by('admit_date','ASC');
