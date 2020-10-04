@@ -108,7 +108,7 @@ $(function(){
         <td><?php echo $a->email; ?></td>
         <td><?php echo $a->category; ?></td>
         <td>
-            <?php echo $a->user_id == 1 ? 'Yes': 'No';?>
+            <?php echo $a->user_id ? 'Yes': 'No';?>
         </td>
         <td>
             <?php echo $a->doctor == 1 ? 'Yes': 'No';?>
