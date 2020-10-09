@@ -159,6 +159,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Consultation Summary Sent</th>
 		<th>Appointment Update By/Time</th>
     		<th>Update Appointment</th>
+		<th>View Summary</th>
 	</thead>
 	<tbody>
 	<?php 
@@ -196,6 +197,11 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '
 		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
 		'; }?></td>
+		<td><button type="button" class="btn btn-success" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>Update</button></td>
+		<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$s->visit_id));?>
+		<input type="text" class="sr-only" hidden value="<?php echo $s->visit_id;?>" form="select_patient_<?php echo $s->visit_id;?>" name="selected_patient" />
+		<input type="text" class="sr-only" hidden value="<?php echo $s->patient_id;?>" name="patient_id" />
+		</form>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
