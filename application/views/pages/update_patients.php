@@ -2627,8 +2627,8 @@ pri.print();
 		$("[data-patient-quick-info]").replaceWith($('#template-patient-quick-info').html());
 	}
 
-	var patient = JSON.parse('<?php echo (isset($patient) && count($patient) > 0) ? json_encode($patient) : 'null'; ?>');
-	var patient_visits = JSON.parse('<?php echo (isset($patient_visits) && count($patient_visits) > 0) ? json_encode($patient_visits) : 'null'; ?>');
+	var patient = <?php echo json_encode((isset($patient) && count($patient) > 0) ? $patient : array()); ?>;
+	var patient_visits = <?php echo json_encode((isset($patient_visits) && count($patient_visits) > 0) ? $patient_visits : array()); ?>;
 
 	function constructPatientDetails(){
 		jQuery.fn.tagNameLowerCase = function() {

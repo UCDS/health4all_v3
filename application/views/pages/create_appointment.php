@@ -158,7 +158,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Appointment Time</th>
 		<th>Consultation Summary Sent</th>
 		<th>Appointment Update By/Time</th>
-    		<th>Update Appointment</th>
+ 		<th>Update Appointment</th>
 		<th>View Summary</th>
 	</thead>
 	<tbody>

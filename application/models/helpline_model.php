@@ -888,15 +888,8 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('category')){														
             $helpline_receiver['category'] = $this->input->post('category');							
         }
-		if($this->input->post('user_id')){														
-            $helpline_receiver['user_id'] = $this->input->post('user_id');							
-        }
-		if($this->input->post('')){														
-            $helpline_receiver['doctor'] = $this->input->post('doctor');							
-        }																
-		if($this->input->post('')){														
-            $helpline_receiver['enable_outbound'] = $this->input->post('enable_outbound');							
-        }
+
+        $helpline_receiver['user_id'] = $this->input->post('user_id') ? $this->input->post('user_id') : '0';
 
         $helpline_receiver['doctor'] = $this->input->post('doctor') ? $this->input->post('doctor') : '0';
 
