@@ -195,7 +195,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				{echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
 		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '
-		<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
 		'; }?></td>
 		<td><button type="button" class="btn btn-success" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>Update</button></td>
 		<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$s->visit_id));?>
