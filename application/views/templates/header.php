@@ -373,6 +373,9 @@
 			if($f->user_function=="Helpline Update"){ ?>
 					<li><a href="<?php echo base_url()."helpline/update_call";?>"><i class="fa fa-phone"></i>HelpLine Update</a></li>
 					<li><a href="<?php echo base_url()."helpline/update_voicemail_calls";?>"><i class="fa fa-phone"></i>HelpLine Voicemail Update</a></li>
+			<?php }
+			if($f->user_function=="documentation"){ ?>
+					<li><a href="<?php echo base_url()."documentation/documents";?>"><i class="fa fa-phone"></i>User Documents</a></li>
 			<?php } } ?>
                     <li><a href="<?php echo base_url()."contact_us";?>"><i class="fa fa-question"> </i> Contact us</a></li>
 				</ul>
