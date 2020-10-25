@@ -76,9 +76,14 @@ $(document).ready(function(){$("#from_date").datepicker({
         });
 </script>
 <div class="row">
-		<h4>Documentation</h4>	
 
 <?php if(isset($report) && count($report)>0){ ?>
+
+	<h3 class="col-md-12">List of Documents 
+	<?php if($add_access==1){ ?>
+	<a href="<?php echo base_url()."documentation/add_document";?>" class="btn btn-primary">Add</a>
+	<?php } ?></h3>
+
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th>SNo</th>
@@ -97,9 +102,12 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php echo $s->keyword;?></td>
 		<td><?php echo $s->topic;?></td>
 		<td style="text-align:center;">
-		    <?php if(isset($s->document_link) && $s->document_link!="") {echo "<a href=" . base_url() . "assets/user_documents/" . $s->document_link . 
+			<?php 
+			// Display document icon with document hyper link only if document link is available in DB
+			if(isset($s->document_link) && $s->document_link!="") {echo "<a href=" . base_url() . "assets/user_documents/" . $s->document_link . 
 			" target=\"_blank\"><i class=\"fa fa-file\" style=\"font-size:24px;color:rgb(236, 121, 121)\"></i></a>";}
-			  else {echo "";}?>
+			  else {echo "";}
+			?>
 		</td>
 		<td><?php echo date("j M Y", strtotime("$s->document_date"));?></td>
 	</tr>
@@ -107,6 +115,6 @@ $(document).ready(function(){$("#from_date").datepicker({
 	</tbody>
 	</table>	
 	<?php } else { ?>
-	No documents available.
+	     No documents available.
 <?php } ?>
 </div>	
