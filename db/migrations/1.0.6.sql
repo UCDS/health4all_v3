@@ -13,7 +13,7 @@ INSERT INTO `defaults` VALUES ('udoc_remove_spaces', 'Remove spaces in User Docu
 
 INSERT INTO `defaults` VALUES ('udoc_overwrite', 'Overwrite feature for document upload', 'If set to true, if a file with the same name as the one you are uploading exists, it will be overwritten. If set to false, a number will be appended to the filename if another with the same name exists.', 'Text', '', '', '', 'TRUE');
 
-UPDATE `defaults` SET `default_unit` = 'Pixel' WHERE `defaults`.`default_id` = 'ucdoc_max_width';
+UPDATE `defaults` SET `default_unit` = 'Pixel' WHERE `defaults`.`default_id` = 'udoc_max_width';
 
 UPDATE `defaults` SET `default_unit` = 'Pixel' WHERE `defaults`.`default_id` = 'udoc_max_height';
 
