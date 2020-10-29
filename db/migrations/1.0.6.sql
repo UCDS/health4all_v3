@@ -17,4 +17,4 @@ UPDATE `defaults` SET `default_unit` = 'Pixel' WHERE `defaults`.`default_id` = '
 
 UPDATE `defaults` SET `default_unit` = 'Pixel' WHERE `defaults`.`default_id` = 'udoc_max_height';
 
-UPDATE `defaults` SET `default_unit` = 'File Type' WHERE `defaults`.`default_id` = 'ucdoc_allowed_types';
+UPDATE `defaults` SET `default_unit` = 'File Type' WHERE `defaults`.`default_id` = 'udoc_allowed_types';
