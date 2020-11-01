@@ -309,7 +309,6 @@ class documentation extends CI_Controller {
                     $uploadOk = 0;
                 } else {
                     $file = $this->upload->data();
-                    echo $file['file_name'];
                     $uploadOk = 1;
                 }
             }
