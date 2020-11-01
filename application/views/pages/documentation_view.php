@@ -91,6 +91,11 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Topic</th>
 		<th>Document</th>
 		<th>Document Date</th>
+		<?php if($edit_access==1){ ?>
+		    <th>Added by</th>
+			<th>Edited by</th>		
+	    	<th>Edit</th>
+		<?php } ?>		
 	</thead>
 	<tbody>
 	<?php 
@@ -110,6 +115,23 @@ $(document).ready(function(){$("#from_date").datepicker({
 			?>
 		</td>
 		<td><?php echo date("j M Y", strtotime("$s->document_date"));?></td>
+		<?php if($edit_access==1){ ?>		
+			<td><?php echo $s->creator . ", "; 
+				if(isset($s->insert_datetime) && $s->insert_datetime!="" 
+				   && strtotime($s->insert_datetime)!=strtotime('0000-00-00 00:00:00')) 
+				{echo date("j M Y", strtotime("$s->insert_datetime")).", ".date("h:i A.", strtotime("$s->insert_datetime"));} 
+				else {echo $s->insert_datetime="";}?>
+			</td>
+			<td><?php echo $s->modifier . ", "; 
+				if(isset($s->update_datetime) && $s->update_datetime!=""
+				&& strtotime($s->update_datetime)!=strtotime('0000-00-00 00:00:00')) 
+				{echo date("j M Y", strtotime("$s->update_datetime")).", ".date("h:i A.", strtotime("$s->update_datetime"));} 
+				else {echo $s->update_datetime="";}?>
+			</td>			
+	    	<td>
+	            <a href="<?php echo base_url()."documentation/edit_document/".$s->id;?>" class="btn btn-primary">Edit</a>
+	    	</td>
+		<?php } ?>		
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
