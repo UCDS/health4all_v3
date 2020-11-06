@@ -77,7 +77,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 </script>
 <div class="row">
 
-<?php if(isset($report) && count($report)>0){ ?>
+<?php if(isset($report)) { ?>
 
 	<h3 class="col-md-12">List of Documents 
 	<?php if($add_access==1){ ?>
@@ -109,7 +109,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td style="text-align:center;">
 			<?php 
 			// Display document icon with document hyper link only if document link is available in DB
-			if(isset($s->document_link) && $s->document_link!="") {echo "<a href=" . base_url() . "assets/user_documents/" . $s->document_link . 
+			if(isset($s->document_link) && $s->document_link!="") {echo "<a href=" . base_url() . "documentation/display_document/" . $s->document_link . 
 			" target=\"_blank\"><i class=\"fa fa-file\" style=\"font-size:24px;color:rgb(236, 121, 121)\"></i></a>";}
 			  else {echo "";}
 			?>

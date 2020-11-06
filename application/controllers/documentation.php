@@ -323,5 +323,55 @@ class documentation extends CI_Controller {
 		}
 		$this->load->view('pages/document_edit_view',$this->data);							
 		$this->load->view('templates/footer');								
-    }         
+    }
+    
+    // Method for displaying single user document
+	public function display_document($document_link)
+	{
+            // Validate user access for this method
+            if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                $add_access=0;
+
+                // Fetch user functions and check if the user has 
+                // access to documentation access rights
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="documentation"){
+                            $access=1;
+                            if ($function->add==1) $add_access=1;
+                            if ($function->edit==1) $edit_access=1;
+                    }
+                
+                }
+
+                // Initialize Model and View for documentation controller
+                if($access==1){
+                    $this->download_file('assets/user_documents/'.$document_link, $document_link);                    
+                }
+                else{
+                    show_404();
+                }
+            }
+        else{
+            show_404();
+        }
+    }
+    
+    function download_file($path, $name)
+    {
+      if(is_file($path))
+      {
+        $this->load->helper('file');
+    
+        header('Content-Type: '.get_mime_by_extension($path));  
+        header('Content-Disposition: inline; filename="'.basename($name).'"');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-Length: '.filesize($path));
+        
+        header('Connection: close');
+        readfile($path); 
+        die();
+      }
+    }
 }
