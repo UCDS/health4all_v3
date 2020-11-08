@@ -7,8 +7,13 @@
 	}
 </style>
 	<div class="row">
+    <?php foreach($defaultsConfigs as $default){
+			if ($default->default_id == "uc_url")
+			    $uc_url = $default->value;
+        }
+        ?>                   
 
-	    <h2>Welcome to Health4All <small>- a Free and Open Source application developed and supported by <a href="http://www.yousee.in/c4c" target="_blank">YouSee</a></small></h2>
+	    <h2>Welcome to Health4All <small>- a Free and Open Source application developed and supported by <a href=<?php echo $uc_url ?> target="_blank">YouSee</a></small></h2>
 		<br />
 		<div class="col-md-6">
 			<div class="alert alert-info" role="alert">
