@@ -1,5 +1,7 @@
 # Health4All
 
+Contact On [gunaranjan@yousee.one]
+
 Softwares to be installed
     - WAMP / XAMPP Server
     - Recommendation: SQLYog Community IDE [Instead of phpmyadmin if available and familiar for the programmer]
@@ -30,3 +32,7 @@ DB Migration,
 
 TODOs,
     - DB Migration needs to be automated --> https://www.youtube.com/watch?v=i07XXM37VFk
+
+References,
+    - Database Migrations
+        - https://codeinphp.github.io/post/database-migrations-in-codeigniter/
