@@ -325,7 +325,7 @@
 <div class="row" style="position:relative;">
 <?php echo form_open('dashboard/helpline/',array('role'=>'form','class'=>'form-custom')); ?>
 	<div class="row">
-	<span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <select name="helpline_id" style="width:300px" class="form-control">
+			<span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <select name="helpline_id" style="width:300px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
@@ -333,6 +333,19 @@
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
 			</select></span>
+			<select name="call_direction" style="width:150px" class="form-control">
+					<option value="">Call Direction</option>
+					<option <?php if($this->input->post('call_direction') == "incoming") echo " selected "; ?> value="incoming">Incoming calls</option>
+					<option <?php if($this->input->post('call_direction') == "outbound-dial") echo " selected "; ?> value="outbound-dial">Outgoing calls</option>
+			</select>
+			<select name="call_type" style="width:150px" class="form-control">
+					<option value="">Call Type</option>
+					<option <?php if($this->input->post('call_type') == "completed") echo " selected "; ?> value="completed">Completed</option>
+					<option <?php if($this->input->post('call_type') == "client-hangup") echo " selected "; ?> value="client-hangup">Client Hangup</option>
+					<option <?php if($this->input->post('call_type') == "voicemail") echo " selected "; ?> value="voicemail">Voicemail</option>
+					<option <?php if($this->input->post('call_type') == "incomplete") echo " selected "; ?> value="incomplete">Incomplete</option>
+					<option <?php if($this->input->post('call_type') == "call-attempt") echo " selected "; ?> value="call-attempt">Call Attempt</option>
+			</select>
 			<br>
 			</row>
 			<?php
