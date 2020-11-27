@@ -177,6 +177,79 @@ pri.print();
       }
    });
    
+   $('#myModalDelete_').on('show.bs.modal', function(e) {
+
+		//get data-id attribute of the clicked element
+		var id = $(e.relatedTarget).data('id');
+
+		//populate the textbox
+		$(e.currentTarget).find('input[name="document_link"]').val(id);
+	});
+
+   $("#file_upload").click(function (event) {
+	    //stop submit the form, we will post it manually.
+		event.preventDefault();
+
+        // Get form
+        var form = $(event.target).parents('form')[0];
+
+        // Create an FormData object 
+        var data = new FormData(form);
+        var id = $(this).attr('id')
+        // disabled the submit button
+        $("#file_upload").prop("disabled", true);
+
+        $.ajax({
+	        type: "POST",
+	        enctype: 'multipart/form-data',
+	        url: $(form).attr('action'),
+	        data: data,
+	        processData: false,
+	        contentType: false,
+	        cache: false,
+	        success: function (data) {
+		        // show success notification here...
+		        location.reload()
+	        },
+    	    error: function (e) {
+	    	    // show error notification here...
+		        $("#file_upload").prop("disabled", false);
+	        }
+	     });
+   });
+
+   $("#btdelete").click(function(){
+	    //stop submit the form, we will post it manually.
+		event.preventDefault();
+
+        // Get form
+        var form = $(event.target).parents('form')[0];
+
+        // Create an FormData object 
+        var data = new FormData(form);
+
+        // disabled the submit button
+        $("#btdelete").prop("disabled", true);
+
+        $.ajax({
+	        type: "POST",
+	        enctype: 'multipart/form-data',
+	        url: $(form).attr('action'),
+	        data: data,
+	        processData: false,
+	        contentType: false,
+	        cache: false,
+	        success: function (data) {
+		        // show success notification here...
+		        location.reload()
+	        },
+    	    error: function (e) {
+	    	    // show error notification here...
+		        $("#btdelete").prop("disabled", false);
+	        }
+	     });
+    });
+
    $("input:radio[name=insurance_case]").click(function() {
       if($('input[name=insurance_case]:checked').val()==0){
           $("#insurance_id").prop("disabled", true);
@@ -395,6 +468,15 @@ pri.print();
 			foreach($functions as $f){ 
 				if($f->user_function == "Discharge" && ($f->add==1 || $f->edit==1)) { ?>
 					<li role="presentation" <?php if(count($previous_visits) > 1) echo "class='active'"; ?>><a href="#vitals" aria-controls="discharge" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-signal" aria-hidden="true">&nbsp;</span>Vitals Trend</a></li>
+				<?php 
+				break;
+				 } 
+			}
+		?>
+		<?php 
+			foreach($functions as $f){ 
+				if($f->user_function == "patient_document_upload" && ($f->add==1 || $f->edit==1)) { ?>
+					<li role="presentation" <?php if(count($previous_visits) > 1) echo "class='active'"; ?>><a href="#docupload" aria-controls="docupload" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-file" aria-hidden="true">&nbsp;</span>Patient Documents</a></li>
 				<?php 
 				break;
 				 } 
@@ -2064,7 +2146,66 @@ pri.print();
 			</div>
 			</div>			
 		</div>
-	  </div>
+		<!-- Insert New Tab here for Patient documents upload -->
+		<div role="tabpanel" class="tab-pane  <?php if(count($previous_visits) > 1) echo "active"; ?>" id="docupload">
+			<div data-patient-quick-info></div>
+
+			<div class="row">
+			<div class="col-md-12">
+			<h4 class="col-md-12">List of Documents 
+			<?php  echo '
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $patient->patient_id .'">Add</button>
+		'; ?>
+	        </h4>			
+			<table class="table table-striped table-bordered" id="detailed_table" >
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Document Date</th>
+						<th>Document Type</th>
+						<th>Note</th>
+						<th>Document</th>
+						<!--<th>Edit</th>-->
+						<th>Delete</th>
+					</tr>
+				</thead>
+				<tbody><!-- tr td -->
+					<?php $i=1; foreach($patient_document_upload as $document){ ?>
+					<tr id="<?php echo $patient->patient_id; ?>">
+						<td><?php echo $i; ?></td>
+						<td><?php echo $document->document_date; ?></td>
+						<td><?php echo $document->document_type; ?></td>
+						<td><?php echo $document->note; ?></td>
+						<td style="text-align:center;">
+		                	<?php 
+		                    	// Display document icon with document hyper link only if document link is available in DB
+		                    	if(isset($document->document_link) && $document->document_link!="") {echo "<a href=" . base_url() . "register/display_document/".$document->document_link . 
+		                    	" target=\"_blank\"><i class=\"fa fa-file\" style=\"font-size:24px;color:rgb(236, 121, 121)\"></i></a>";}
+		                        else {echo "";}
+			                ?>
+		                </td>
+					    <!--<td>
+						    <a href="<?php echo base_url()."register/edit_document/".$patient->patient_id."/". $document->document_link;?>" class="btn btn-primary">Edit</a>
+	    	            </td> -->
+						<td style="text-align:center;">
+						<?php 
+						?>
+						<button type="button" id="deleteButton" class="btn btn-info" data-target="#myModalDelete_" data-toggle="modal" data-id=<?php echo $document->document_link?> >Delete </button>
+						
+							</div>
+		                </td>
+					</tr>
+					<?php $i++; } ?>
+				</tbody>
+				<tfoot><!-- tr td -->
+					
+				</tfoot>
+			</table>
+			</div>
+			</div>			
+		</div> <!--Patient Document Upload -->
+			
+	  </div>	
 
 	<div class="col-md-4 text-right">
 			<label class="control-label">
@@ -2195,7 +2336,38 @@ pri.print();
 		</div>
 		</div>
 </div>
+
+<!--kchintak-->
 <br />
+<?php if(isset($patients) && count($patients)>0){ ?>
+<div class="modal fade" id="myModalDelete_" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content">
+		<div class="modal-header bg-primary text-white">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title">Do you want to delete this record</h4>
+		</div>
+        <div class="modal-body">
+		
+		  	<?php echo form_open("register/update_patients",array('class'=>'form-horizontal','role'=>'form','id'=>'select_patient_'.$patient->visit_id, 'method'=>'POST')); ?>
+		    <input type="text" hidden name="document_link" id="document_link" value=""/>
+			<input type="text" class="sr-only" hidden value="<?php echo $patient->visit_id;?>" form="select_patient_<?php echo $patient->visit_id;?>" name="selected_patient" />
+			<input type="text" class="sr-only" hidden value="<?php echo $patient->patient_id;?>" name="patient_id" />
+			<div class="form-group">						
+	    	   <div class="col-md-6">
+				   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				   <button class="btn btn-danger"  type="button" name="btdelete" id="btdelete" >Delete</button>
+		    	</div>
+		    </div>
+
+			</form> 
+	    </div>
+	</div>
+	</div>
+</div>
+		<?php } ?>
+
 <script>
 	$(function(){
 		selectize = $("#icd_code")[0].selectize;
@@ -2891,7 +3063,104 @@ pri.print();
 <div class="sr-only" id="print-div-all" style="width:100%;height:100%;"> 
 			<?php $this->load->view('pages/print_layouts/patient_summary_all_visits');?>
 </div>
+<?php if(isset($patients) && count($patients)>0){ ?>
+<div class="modal fade" id="myModal_<?php echo $patient->patient_id; ?>" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content">
+		<div class="modal-header bg-primary text-white">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title">Add Document</h4>
+		</div>
+		<div class="modal-body">
+			<div>
+			    <p class="bg-primary text-white">
+				<span><b>Patient ID:</b> <?php echo $patient->patient_id;?>,&nbsp;</span>
+				<span><b>Patient:</b> <?php echo $patient->first_name.$patient->last_name;?>,&nbsp;<?php echo $patient->age_years;?>&nbsp;/&nbsp;
+				<?php echo $patient->gender;?>, &nbsp;<b>Related to:</b> <?php echo $patient->father_name.','.$patient->mother_name.','.$patient->spouse_name;?>,&nbsp;</span>
+				<span><b>From:</b> <?php if(!!$patient->address && !!$patient->place) echo $patient->address.", ".$patient->place; else echo $patient->address." ".$patient->place;?>,&nbsp;</span>
+				<span><b>Ph:</b> <?php echo $patient->phone;?>, &nbsp;</span>
+				</p>	
+			</div>	
+			<?php echo form_open_multipart("register/update_patients",array('class'=>'form-horizontal','role'=>'form','id'=>'select_patient_'.$patient->visit_id, 'method'=>'POST')); ?>
 
+			<input type="hidden" name="update_patients" value="true">
+			<input type="text" class="sr-only" hidden value="<?php echo $patient->visit_id;?>" form="select_patient_<?php echo $patient->visit_id;?>" name="selected_patient" />
+			<input type="text" class="sr-only" hidden value="<?php echo $patient->patient_id;?>" name="patient_id" />	
+								
+			<div class="form-group">
+                <div class="col-md-3">
+		        	<label for="document_date" class="control-label">Document Date*</label>
+		        </div>
+		        <div class="col-md-6">
+		        	<input type="date" class="form-control" value="<?php echo date('Y-m-d'); ?>" id="document_date" name="document_date" required />
+		        </div>
+        	</div>						
+			<div class="form-group">
+		    	<div class="col-md-3">			
+			    	<label for="document_type">Document Type:</label>
+				</div>
+		        <div class="col-md-6">				
+				<select name="document_type" id="document_type" class="form-control">
+					<option>Select Document Type</option>
+					<?php 
+					foreach($patient_document_type as $type){
+						echo "<option value='".$type->document_type_id."'";
+						if($this->input->post('document_type') && $this->input->post('document_type') == $type->document_type_id) echo " selected ";
+						echo ">".$type->document_type."</option>";
+					}
+					?>
+				</select>
+				</div>
+			</div>
+			<div class="form-group">
+		        <div class="col-md-3">
+	        		<label for="note" class="control-label">Note</label>
+	        	</div>
+	        	<div class="col-md-6">
+	            	<input type="text" class="form-control" placeholder="note" id="note" name="note"/>
+	        	</div>
+	        </div>				
+            <div class="form-group">
+   	            <div class="col-md-3">
+			        <label for="note" class="control-label">Upload Document*</label>
+	        	</div>
+	    	<div class="col-md-6">
+	    		<input type="text" class="sr-only" hidden name="document_link"/>
+                <input type="file" name="upload_file" id="upload_file" readonly="true"/>
+            </div>
+	        <div class="col-md-6">
+		    <?php 
+		    // Add text Tip for defaults
+	        foreach($defaultsConfigs as $default){
+	     	    if ($default->default_id=="pdoc_max_size"){
+					$max_size = "Max Size " . $default->value . " " . $default->default_unit;
+				}
+				if ($default->default_id=="pdoc_allowed_types"){
+	    		    $allowed_types = $default->default_unit ." " . $default->value;
+				 }
+	     	    if ($default->default_id=="pdoc_max_width"){
+					$max_width = "Max Width " . $default->value . " " . $default->default_unit;
+				}
+				if ($default->default_id=="pdoc_max_height"){
+	    		    $max_height = "Max Height " . $default->value ." " . $default->default_unit;
+	         	}			  
+			}
+			echo nl2br($max_size . " : " . $allowed_types . "\n(If image is allowed: " . $max_width . " : " . $max_height . ")");
+	        ?>
+	     	</div>
+	    	<div class="col-md-6">
+                    <div id="moreImageUpload"></div>
+                    <div style="clear:both;"></div><br>
+                  <button class="btn btn-lg btn-primary btn-block"  type="submit" name="file_upload" value="Upload" class="btn btn-group btn-default btn-animated"  id="file_upload" >Submit</button>
+            </div>
+
+			</form> 
+	    </div>
+	</div>
+	</div>
+</div>
+<?php } ?>
 <template id="template-patient-quick-info" type="text/html">
     <div class="row alt">
         <div class="col-md-4 col-xs-6">

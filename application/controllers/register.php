@@ -45,6 +45,7 @@ class Register extends CI_Controller {
 			$this->load->model('patient_model');
 			$this->load->model('counter_model');
 			$this->load->model('gen_rep_model');
+			$this->load->model('patient_document_upload_model');
 			$user_id = $userdata['user_id'];
 			$this->data['hospitals'] = $this->staff_model->user_hospital($user_id);
 			$this->data['functions'] = $this->staff_model->user_function($user_id);
@@ -264,6 +265,7 @@ class Register extends CI_Controller {
 		$this->data['drugs_available'] = $this->hospital_model->get_drugs();
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('selected_patient');
+		$document_link = $this->input->post('document_link');
 		if($this->input->post('selected_patient')){
 			$this->data['previous_visits']=$this->register_model->get_visits($patient_id);
 			$this->data['patient_visits'] = $this->gen_rep_model->simple_join('patient_visits_all', false);
@@ -273,6 +275,28 @@ class Register extends CI_Controller {
 			// $this->data['previous_prescriptions'] = $this->register_model->get_previous_prescriptions($visit_id);
 		}		
 		//  $this->data['hospitals'] = $this->hospital_model->get_hospitals();
+
+        // Fetch user document upload defaults
+        foreach($this->data['defaultsConfigs'] as $default){
+            if ($default->default_id == "pdoc_allowed_types"){
+               $allowed_types = $default->value;
+            }
+            if ($default->default_id == "pdoc_max_size"){
+                $max_size = $default->value;
+            }
+            if ($default->default_id == "pdoc_max_width"){
+                $max_width = $default->value;
+            }
+            if ($default->default_id == "pdoc_max_height"){
+                $max_height = $default->value;
+            }
+            if ($default->default_id == "pdoc_remove_spaces"){
+                $remove_spaces = $default->value;
+            }
+            if ($default->default_id == "pdoc_overwrite"){
+                $overwrite = $default->value;
+            }                                   
+        }        
 		//  $this->data['arrival_modes'] = $this->patient_model->get_arrival_modes();
         $this->data['visit_names'] = $this->staff_model->get_visit_name();
 		$this->form_validation->set_rules('patient_number', 'IP/OP Number',
@@ -282,7 +306,59 @@ class Register extends CI_Controller {
 			$this->load->view('pages/update_patients',$this->data);
 		}
 		else{		
-			
+			// Patient documents
+			if ( array_key_exists("upload_file", $_FILES)){
+                $dir_path = './assets/patient_documents/';
+                $config['upload_path'] = $dir_path;
+                $config['allowed_types'] = $allowed_types;
+                $config['max_size'] = $max_size;
+                $config['max_width'] = $max_width;
+                $config['max_height'] = $max_height;
+                $config['encrypt_name'] = FALSE;
+                $config['overwrite'] = $overwrite;
+                $config['remove_spaces'] = $remove_spaces;
+ 
+                // Upload file and add document record
+                $msg = "Error: ";
+                $uploadOk = 1;
+                $target_file = $dir_path . basename($_FILES["upload_file"]["name"]);
+                $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+                if ($_FILES['upload_file']['size'] <= 0 && $uploadOk == 1) {
+                    $msg = $msg . "Select at least one file.";
+                    $uploadOk = 0;
+                }
+
+                // Check for upload errors
+                if ($uploadOk == 0) {
+                    $this->data['msg']= $msg . " Your file was not uploaded.";
+                }
+                else {
+				    // if everything is ok, try to upload file
+				    $new_name = $patient_id.'_'.$_FILES["upload_file"]['name'];
+                    $config['file_name'] = $new_name;
+                    $this->load->library('upload', $config);
+                    if (!$this->upload->do_upload('upload_file')) {
+                        $msg = $msg . $this->upload->display_errors();
+                        $uploadOk = 0;
+                    } else {
+                        $file = $this->upload->data();
+                        $uploadOk = 1;
+                    }
+                }
+
+                // Add document record
+		        if ($uploadOk ==1 && $this->patient_document_upload_model->add_document($patient_id, $file['file_name'])){							
+				    $this->data['msg']="Document Added Succesfully";		
+			    }
+			}
+
+			if ($document_link){
+				if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
+					$this->delete_document($document_link);
+				}
+			}
+					
 			$this->data['transporters'] = $this->staff_model->get_staff("Transport");
 			if($this->input->post('update_patient') && $transaction){				
 				$update = $this->register_model->update();
@@ -310,6 +386,8 @@ class Register extends CI_Controller {
 					$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
 					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
+					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($patient_id);
+					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
 				}
 				$this->load->view('pages/update_patients',$this->data);
 			}
@@ -333,6 +411,8 @@ class Register extends CI_Controller {
 						$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
 					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
+					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($patient_id);
+					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
 				}
 				$this->load->view('pages/update_patients',$this->data);
 			}
@@ -347,6 +427,7 @@ class Register extends CI_Controller {
 		show_404();
 		}
 	}
+
 	function search_icd_codes(){
 		if($icd_codes = $this->register_model->search_icd_codes()){
 			$list=array(
@@ -432,5 +513,59 @@ class Register extends CI_Controller {
 		else{
 		show_404();
 		}
+	}
+    // Method for displaying single user document
+	public function display_document($document_link)
+	{
+        // Validate user access for this method
+        if($this->session->userdata('logged_in')){
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            $add_access=0;
+
+            // Fetch user functions and check if the user has 
+            // access to documentation access rights
+            foreach($this->data['functions'] as $function){
+                if($function->user_function=="Update Patients"){
+                    $access=1;
+                    if ($function->add==1) $add_access=1;
+                    if ($function->edit==1) $edit_access=1;
+                    }
+                
+                }
+
+                // Initialize Model and View for documentation controller
+            if($access==1){
+                $this->download_file('assets/patient_documents/'.$document_link, $document_link);                    
+            }
+            else{
+                show_404();
+            }
+        }
+        else{
+            show_404();
+        }
+    }
+    
+    function download_file($path, $name)
+    {
+        if(is_file($path))
+        {
+            $this->load->helper('file');
+    
+            header('Content-Type: '.get_mime_by_extension($path));  
+            header('Content-Disposition: inline; filename="'.basename($name).'"');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: '.filesize($path));
+        
+            header('Connection: close');
+            readfile($path); 
+            die();
+        }
+	}
+	
+	function delete_document($document_link)
+	{
+		unlink('assets/patient_documents/'.$document_link);
 	}
 }
