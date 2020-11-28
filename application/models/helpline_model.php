@@ -412,6 +412,12 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}
+		if($this->input->post('call_direction')){
+			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+		}
+		if($this->input->post('call_type')){
+			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
+		}
 		$this->db->select('*, helpline_receiver.short_name as short_name, helpline_call.call_id, helpline_call.call_group_id, helpline_call.note,count(helpline_email_id) email_count, helpline.note as line_note')
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
@@ -653,6 +659,12 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}
+		if($this->input->post('call_direction')){
+			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+		}
+		if($this->input->post('call_type')){
+			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
+		}
 
 		$this->db->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
@@ -725,6 +737,12 @@ class Helpline_model extends CI_Model{
 		}
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		if($this->input->post('call_direction')){
+			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+		}
+		if($this->input->post('call_type')){
+			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
 		}
 
 		$this->db->select("count(call_id) calls ")
