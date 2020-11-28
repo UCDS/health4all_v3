@@ -475,7 +475,7 @@ pri.print();
 		?>
 		<?php 
 			foreach($functions as $f){ 
-				if($f->user_function == "patient_document_upload" && ($f->add==1 || $f->edit==1)) { ?>
+				if($f->user_function == "patient_document_upload" && ($f->add==1 || $f->view ==1 || $f->edit==1 || $f->remove==1)) { ?>
 					<li role="presentation" <?php if(count($previous_visits) > 1) echo "class='active'"; ?>><a href="#docupload" aria-controls="docupload" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-file" aria-hidden="true">&nbsp;</span>Patient Documents</a></li>
 				<?php 
 				break;
@@ -2153,7 +2153,7 @@ pri.print();
 			<div class="row">
 			<div class="col-md-12">
 			<h4 class="col-md-12">List of Documents 
-			<?php  echo '
+			<?php if($patient_document_add_access==1) echo '
 		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $patient->patient_id .'">Add</button>
 		'; ?>
 	        </h4>			
@@ -2166,7 +2166,7 @@ pri.print();
 						<th>Note</th>
 						<th>Document</th>
 						<!--<th>Edit</th>-->
-						<th>Delete</th>
+						<?php if($patient_document_remove_access==1) echo "<th>Delete</th>" ?>
 					</tr>
 				</thead>
 				<tbody><!-- tr td -->
@@ -2187,13 +2187,13 @@ pri.print();
 					    <!--<td>
 						    <a href="<?php echo base_url()."register/edit_document/".$patient->patient_id."/". $document->document_link;?>" class="btn btn-primary">Edit</a>
 	    	            </td> -->
-						<td style="text-align:center;">
-						<?php 
+						<?php if($patient_document_remove_access==1) echo "
+						<td style=\"text-align:center;\">
+
+						<button type=\"button\" id=\"deleteButton\" class=\"btn btn-info\" data-target=\"#myModalDelete_\" data-toggle=\"modal\" data-id=$document->document_link >Delete </button>
+						</td>"
 						?>
-						<button type="button" id="deleteButton" class="btn btn-info" data-target="#myModalDelete_" data-toggle="modal" data-id=<?php echo $document->document_link?> >Delete </button>
-						
-							</div>
-		                </td>
+
 					</tr>
 					<?php $i++; } ?>
 				</tbody>

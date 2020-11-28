@@ -14,6 +14,7 @@ class User_panel extends CI_Controller {
 		$this->data['functions']=$this->staff_model->user_function($user_id);
 		$this->data['departments']=$this->staff_model->user_department($user_id);
 		}
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");  
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");	
 	}

@@ -57,7 +57,7 @@ class Masters_model extends CI_Model{
 			{
 				if($this->input->post('select')) $user_id = $this->input->post('user_id');
 				else if($this->input->post('update')) $user_id = $this->input->post('user');
-				$this->db->select('function_id,add,edit,view')->where('user.user_id',$user_id)
+				$this->db->select('function_id,add,edit,view,remove')->where('user.user_id',$user_id)
 				->join('user_function_link','user.user_id=user_function_link.user_id');				
 			}
 		}
@@ -680,19 +680,21 @@ function update_data($type){
 		$user_functions_data=array();
 		$update_functions_data=array();
 		foreach($result as $row){                   //Update existing functions
-			$add=0;$edit=0;$view=0;$active = 0;
+			$add=0;$edit=0;$view=0;$active = 0;$remove=0;
 			if($this->input->post($row->user_function_id))
 				foreach($this->input->post($row->user_function_id) as $access){
 					if($access=="add") $add=1;
 					if($access=="edit") $edit=1;
 					if($access=="view") $view=1;
-                                        if($access=="add" || $access=="edit" || $access=="view") $active = 1;
+					if($access=="remove") $remove=1;
+                                        if($access=="add" || $access=="edit" || $access=="view" || $access=="remove") $active = 1;
 				}
 				$update_functions_data[]=array(
 					'link_id'=>$row->link_id,
 					'add'=>$add,
 					'edit'=>$edit,
 					'view'=>$view,
+					'remove'=>$remove,
                                         'active'=>$active
 				);
 			$existing_functions[]=$row->user_function_id;
@@ -702,12 +704,14 @@ function update_data($type){
 				$add=0;
 				$edit=0;
 				$view=0;
+				$remove=0;
 				if($this->input->post($u)){
 					foreach($this->input->post($u) as $access){
 						if($access=="add") $add=1;
 						if($access=="edit") $edit=1;
 						if($access=="view") $view=1;
-                                                if($access=="add" || $access=="edit" || $access=="view") $active = 1;
+						if($access=="remove") $remove=1;
+                                                if($access=="add" || $access=="edit" || $access=="view" || $access=="remove") $active = 1;
 					}
 					$user_functions_data[]=array(
 						'user_id'=>$this->input->post('user'),
@@ -715,6 +719,7 @@ function update_data($type){
 						'add'=>$add,
 						'edit'=>$edit,
 						'view'=>$view,
+						'remove'=>$remove,
                                                 'active'=>$active
 					);
 				}
