@@ -157,6 +157,7 @@ $(document).ready(function(){
 								<th>Add</th>
 								<th>Edit</th>
 								<th>View</th>
+								<th>Remove</th>
 							</thead>
 							<tbody>
 							<tr>
@@ -164,17 +165,20 @@ $(document).ready(function(){
 								<td><input type="checkbox" class="add_all" value="add_all" /></td>
 								<td><input type="checkbox" class="edit_all" value="add_all" /></td>
 								<td><input type="checkbox" class="view_all" value="add_all" /></td>
+								<td><input type="checkbox" class="remove_all" value="add_all" /></td>
 							</tr>
 							<?php foreach($user_functions as $f){
 								
 									$add="";
 									$edit="";
 									$view="";
+									$remove="";
 								foreach($user as $u){
 									if($u->function_id == $f->user_function_id){
 										if($u->add==1) $add="checked"; 
 										if($u->edit==1) $edit="checked";
 										if($u->view==1) $view="checked";
+										if($u->remove==1) $remove="checked";
 									}
 								}
 							?>
@@ -188,6 +192,7 @@ $(document).ready(function(){
 									<td><input type="checkbox" class="add" name="<?php echo $f->user_function_id;?>[]" value="add" <?php echo $add;?> /></td>
 									<td><input type="checkbox" class="edit" name="<?php echo $f->user_function_id;?>[]" value="edit" <?php echo $edit;?>  /></td>
 									<td><input type="checkbox" class="view" name="<?php echo $f->user_function_id;?>[]" value="view" <?php echo $view;?>  /></td>
+									<td><input type="checkbox" class="remove" name="<?php echo $f->user_function_id;?>[]" value="remove" <?php echo $remove;?>  /></td>
 								</tr>
 							<?php } ?>
 							</tbody>

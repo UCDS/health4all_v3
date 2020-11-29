@@ -238,9 +238,15 @@ class Register extends CI_Controller {
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
+		$patient_document_add_access=0;
+		$patient_document_remove_access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Update Patients"){
 				$access=1;
+			}
+			if($function->user_function=="patient_document_upload"){
+				if ($function->add==1) $patient_document_add_access=1;
+				if ($function->remove==1) $patient_document_remove_access=1;
 			}
 		}
 		if($access==1){
@@ -263,6 +269,8 @@ class Register extends CI_Controller {
 		$this->data['defaults'] = $this->staff_model->get_transport_defaults();
 		$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 		$this->data['drugs_available'] = $this->hospital_model->get_drugs();
+		$this->data['patient_document_add_access']=$patient_document_add_access;
+		$this->data['patient_document_remove_access']=$patient_document_remove_access;
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('selected_patient');
 		$document_link = $this->input->post('document_link');
