@@ -38,6 +38,19 @@ class patient_document_upload_model extends CI_Model{
 
 	// Method to add patient documents	
 	function add_document($patient_id, $file_name){
+        // Document names are unique. Do not add documents with same name
+		$this->db->where('patient_id',$patient_id);
+		$this->db->where('document_link',$file_name);
+		$this->db->select("id, patient_id, document_link", false);
+		$this->db->from('patient_document_upload');
+		
+		$query=$this->db->get();
+		if($query->num_rows()>0)
+		{
+			return false;
+		}
+
+		// Add the new document
 		$document = array();	
 		$document['patient_id']=$patient_id;															
 		if($this->input->post('document_date')){														
@@ -47,8 +60,8 @@ class patient_document_upload_model extends CI_Model{
             $document['document_type_id'] = $this->input->post('document_type');							
 		}
 																
-        $document['document_link'] = $file_name;							
-        
+        $document['document_link'] = $file_name;			
+
 		if($this->input->post('document_date')){														
             $document['document_date'] = $this->input->post('document_date');							
         }
@@ -70,14 +83,43 @@ class patient_document_upload_model extends CI_Model{
 	}
 
 	function delete_document($patient_id, $document_link){
+
+		// Fetch document details before deleting it and make entry in removed_patient_document_upload table
+		$this->db->select("id, patient_id, document_date, document_type_id, note, document_link, insert_datetime, insert_by_staff_id, update_datetime, update_by_staff_id", false);
+		$this->db->from('patient_document_upload');
+		$this->db->where('patient_id',$patient_id);		
+		$this->db->where('document_link',$document_link);
+		$query = $this->db->get();
+		$result = $query->row();
+
+		if (!!$result){
+			$document['id'] = $result->id;
+			$document['document_date'] = $result->document_date;
+			$document['document_type_id'] = $result->document_type_id;
+			$document['note'] = $result->note;
+			$document['insert_datetime'] = $result->insert_datetime;
+			$document['insert_by_staff_id'] = $result->insert_by_staff_id;
+			$document['update_datetime'] = $result->update_datetime;
+			$document['update_by_staff_id'] = $result->update_by_staff_id;
+		}
+
+		$document['patient_id'] = $patient_id;
+		$document['document_link'] = $document_link;
+		$document['removed_by_staff_id'] = $this->session->userdata('logged_in')['staff_id'];
+		$document['removed_datetime'] = date("Y-m-d H:i:s");
+		$this->db->trans_start();
+		$this->db->insert('removed_patient_document_upload',$document);
+		$this->db->trans_complete();
+
+		// Delete the record
 		$delete_record = array(
             'patient_id' => $patient_id,
             'document_link' => $document_link
         );
 
 		$this->db->delete('patient_document_upload',$delete_record);
-		$affected_rows = $this->db->affected_rows();
-        
+		$affected_rows = $this->db->affected_rows();	
+		
         return $affected_rows;
 	}
 }
