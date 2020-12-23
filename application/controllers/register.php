@@ -335,7 +335,12 @@ class Register extends CI_Controller {
                 if ($_FILES['upload_file']['size'] <= 0 && $uploadOk == 1) {
                     $msg = $msg . "Select at least one file.";
                     $uploadOk = 0;
-                }
+				}
+				
+				// Document type is manditory
+				if (!$this->input->post('document_type'))  {
+                    $uploadOk = 0;
+				}
 
                 // Check for upload errors
                 if ($uploadOk == 0) {

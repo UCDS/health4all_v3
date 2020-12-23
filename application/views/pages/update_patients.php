@@ -2173,7 +2173,7 @@ pri.print();
 					<?php $i=1; foreach($patient_document_upload as $document){ ?>
 					<tr id="<?php echo $patient->patient_id; ?>">
 						<td><?php echo $i; ?></td>
-						<td><?php echo $document->document_date; ?></td>
+						<td><?php echo date("d-M-Y",strtotime($document->document_date)); ?></td>
 						<td><?php echo $document->document_type; ?></td>
 						<td><?php echo $document->note; ?></td>
 						<td style="text-align:center;">
@@ -3098,11 +3098,11 @@ pri.print();
         	</div>						
 			<div class="form-group">
 		    	<div class="col-md-3">			
-			    	<label for="document_type">Document Type:</label>
+			    	<label for="document_type">Document Type*</label>
 				</div>
 		        <div class="col-md-6">				
-				<select name="document_type" id="document_type" class="form-control">
-					<option>Select Document Type</option>
+				<select required name="document_type" id="document_type" class="form-control">
+					<option selected disabled value="">Select Document Type</option>
 					<?php 
 					foreach($patient_document_type as $type){
 						echo "<option value='".$type->document_type_id."'";
