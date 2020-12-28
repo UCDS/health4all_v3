@@ -7,7 +7,7 @@ class patient_document_upload_model extends CI_Model{
 	// Method to fetch patient documents
 	function get_patient_documents($patient_id){
         if($patient_id!=0) //if the visit_id is true, select the patient where visit_id equals the given visit id
-            $this->db->where('patient_visit.patient_id',$patient_id);
+			$this->db->where('patient_visit.patient_id',$patient_id);
         else return false; 
 	
 		$this->db->select("id, patient_document_upload.patient_id, document_date, patient_document_upload.document_type_id, document_type, patient_document_upload.note, document_link, CONCAT(creator.first_name, ' ', creator.last_name) as creator, CONCAT(modifier.first_name, ' ', modifier.last_name) as modifier, patient_document_upload.insert_datetime, patient_document_upload.update_datetime", false);
@@ -15,9 +15,10 @@ class patient_document_upload_model extends CI_Model{
         ->join('patient_document_type', 'patient_document_upload.document_type_id=patient_document_type.document_type_id', 'left')
 		->join('staff as creator','patient_document_upload.insert_by_staff_id=creator.staff_id','left')
         ->join('staff as modifier','patient_document_upload.update_by_staff_id=modifier.staff_id','left')
-        ->join('patient_visit','patient_document_upload.patient_id=patient_visit.patient_id');
+		->join('patient_visit','patient_document_upload.patient_id=patient_visit.patient_id');
 
-        $this->db->order_by('document_date', 'DESC');
+		$this->db->order_by('document_date', 'DESC');
+		$this->db->group_by('document_link');
 
 		$resource=$this->db->get();
 		
