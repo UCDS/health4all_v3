@@ -236,7 +236,7 @@ pri.print();
 					if($update) $time = date("g:iA",strtotime($patient->admit_time));
 					else $time=date("g:iA");
 				?>
-				<input type="text" name="time" class="form-control time" style="width:100px" value="<?php echo $time;?>"  required readonly />
+				<input type="text" name="time" class="form-control time" style="width:100px" value="<?php echo $time;?>"  required />
 				</div>
 			</div>
 			<h4><?php echo $form_name; ?></h4>
