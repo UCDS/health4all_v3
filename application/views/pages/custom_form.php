@@ -249,7 +249,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">First Name<?php if($field->mandatory) { ?><span class="mandatory">*</span><?php } ?></label>
-						<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if($patient) echo $patient->first_name;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if($patient) echo $patient->first_name;?>" <?php if($patient && $patient->first_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -259,7 +259,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Last Name<?php if($field->mandatory) { ?><span class="mandatory">*</span><?php } ?></label>
-						<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if($patient) echo $patient->last_name;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if($patient) echo $patient->last_name;?>" <?php if($patient && $patient->last_name) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -270,16 +270,16 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Birth Date<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="dob" class="form-control" id="dob" value="<?php if($update) echo $patient->dob;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="dob" class="form-control" id="dob" value="<?php if($update) echo $patient->dob;?>" <?php if($patient && $patient->dob) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 					
 					<div class="<?php echo $class;?> sr-only">
 						<div class="form-group">
 						<label class="control-label">Age<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" id="age_years" name="age_years" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_years; else echo '0' ?>" <?php if($field->mandatory) echo "required"; ?> />Y
-						<input type="text" id="age_months" name="age_months" class="form-control" size="1" value="<?php if($patient)  echo $patient->age_months; else echo '0' ?>" <?php if($field->mandatory) echo "required"; ?> />M
-						<input type="text" id="age_days" name="age_days" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_days; else echo '0' ?>" <?php if($field->mandatory) echo "required"; ?> />D
+						<input type="text" id="age_years" name="age_years" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_years; else echo '0' ?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />Y
+						<input type="text" id="age_months" name="age_months" class="form-control" size="1" value="<?php if($patient)  echo $patient->age_months; else echo '0' ?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />M
+						<input type="text" id="age_days" name="age_days" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_days; else echo '0' ?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />D
 						</div>
 					</div>
 				<?php 
@@ -289,25 +289,35 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Age<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="age_years" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($field->mandatory) echo "required"; ?> />Y
-						<input type="text" name="age_months" class="form-control" size="1" tabindex="1000"  value="<?php if($patient)  echo $patient->age_months;?>" <?php if($field->mandatory) echo "required"; ?> />M
-						<input type="text" name="age_days" class="form-control" size="1"  tabindex="1001" value="<?php if($patient)  echo $patient->age_days;?>" <?php if($field->mandatory) echo "required"; ?> />D
+						<input type="text" name="age_years" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />Y
+						<input type="text" name="age_months" class="form-control" size="1" tabindex="1000"  value="<?php if($patient)  echo $patient->age_months;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />M
+						<input type="text" name="age_days" class="form-control" size="1"  tabindex="1001" value="<?php if($patient)  echo $patient->age_days;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />D
 						</div>
 					</div>
 				<?php 
 					break; 					
 					case "gender" : ?>
 					<div class="<?php echo $class;?>">
+					    <?php if ($patient->gender == 'M' || $patient->gender == 'F' || $patient->gender == 'O') {
+						?>
 						<div class="radio">
-						<label class="control-label"><input type="radio" class="gender" value="M" name="gender" <?php if($patient)  if($patient->gender=="M") echo " checked ";?> <?php if($field->mandatory) echo "required"; ?> /> Male</label>
+						<label class="control-label"><input type="radio" class="gender" value="<?php echo $patient->gender;?>" name="gender" <?php if($patient)  if($patient->gender=="M") echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> /> <?php echo $patient->gender;?></label>
+						</div>						
+						<?php
+						}
+						else {
+						?>
+						<div class="radio">
+						<label class="control-label"><input type="radio" class="gender" value="M" name="gender" <?php if($patient)  if($patient->gender=="M") echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> /> Male</label>
 						</div>
 						<div class="radio">
-						<label class="control-label"><input type="radio" class="gender" value="F" name="gender" <?php if($patient)  if($patient->gender=="F") echo " checked ";?> <?php if($field->mandatory) echo "required"; ?> /> Female</label>
+						<label class="control-label"><input type="radio" class="gender" value="F" name="gender" <?php if($patient)  if($patient->gender=="F") echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> /> Female</label>
 						</div>
 						<div class="radio">
-						<label class="control-label"><input type="radio" class="gender" value="O" name="gender" <?php if($patient)  if($patient->gender=="O") echo " checked ";?> <?php if($field->mandatory) echo "required"; ?> /> Others</label>
+						<label class="control-label"><input type="radio" class="gender" value="O" name="gender" <?php if($patient)  if($patient->gender=="O") echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> /> Others</label>
 						</div>
 						<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?>
+						<?php } ?>
 					</div>
 				<?php 
 					break;					
@@ -315,7 +325,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Address<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<textarea rows="1" cols="30" name="address" class="form-control" <?php if($field->mandatory) echo "required"; ?>><?php if($patient) echo $patient->address;?></textarea>
+						<textarea rows="1" cols="30" name="address" class="form-control" <?php if($patient && $patient->address) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?>><?php if($patient) echo $patient->address;?></textarea>
 						</div> 
 					</div>
 				<?php 
@@ -324,7 +334,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Place<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="place" class="form-control" value="<?php if($patient) echo $patient->place;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="place" class="form-control" value="<?php if($patient) echo $patient->place;?>" <?php if($patient && $patient->place) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -394,7 +404,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Phone<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -403,7 +413,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Alt. Phone<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($patient && $patient->alt_phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -412,7 +422,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Father's Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="father_name" class="form-control" value="<?php if($patient) echo $patient->father_name;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="father_name" class="form-control" value="<?php if($patient) echo $patient->father_name;?>" <?php if($patient && $patient->father_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				
@@ -422,7 +432,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Mother's Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="mother_name" class="form-control" value="<?php if($patient) echo $patient->mother_name;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="mother_name" class="form-control" value="<?php if($patient) echo $patient->mother_name;?>" <?php if($patient && $patient->mother_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -431,7 +441,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Spouse Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="spouse_name" id="spouse_name" class="form-control" value="<?php if ($patient) echo $patient->spouse_name;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="spouse_name" id="spouse_name" class="form-control" value="<?php if ($patient) echo $patient->spouse_name;?>" <?php if($patient && $patient->spouse_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -440,7 +450,14 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Id Proof Type<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<select name="id_proof_type" class="form-control" <?php if($field->mandatory) echo "required"; ?>>
+						<select name="id_proof_type" class="form-control" <?php if($patient && $patient->id_proof_type_id) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?>>
+						<?php 
+								if ($patient && $patient->id_proof_type_id) {
+									$id_prooftype = $id_proof_types[($patient->id_proof_type_id)-1];
+									echo "<option value='".$patient->id_proof_type_id."' selected >".$id_prooftype->id_proof_type."</option>";
+								}
+							    else {
+						?>
 						<option value="">--Select--</option>
 						<?php 
 						foreach($id_proof_types as $id_proof_type){
@@ -449,6 +466,7 @@ pri.print();
 							echo ">".$id_proof_type->id_proof_type."</option>";
 						}
 						?>
+						<?php } ?>
 						</select>
 						</div>
 					</div>
@@ -458,7 +476,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Id Proof No<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="id_proof_no" id="id_proof_no" class="form-control" value="<?php if($patient) echo $patient->id_proof_number;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="id_proof_no" id="id_proof_no" class="form-control" value="<?php if($patient) echo $patient->id_proof_number;?>" <?php if($patient && $patient->id_proof_number) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>	
 				<?php 
@@ -468,6 +486,11 @@ pri.print();
 						<div class="form-group">
 						<label class="control-label">Occupation<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
 						<select name="occupation" class="form-control" <?php if($field->mandatory) echo "required"; ?>>
+						<?php 
+							    if ($patient && $patient->occupation_id) 
+							    	echo "<option value=\"$patient->occupation_id\" selected >$patient->occupation_id</option>";
+							    else {
+						?>
 						<option value="">--Select--</option>
 						<?php 
 						foreach($occupations as $occupation){
@@ -476,6 +499,8 @@ pri.print();
 							echo ">".$occupation->occupation."</option>";
 						}
 						?>
+						<?php }?>
+
 						</select>
 						</div>
 					</div>
@@ -500,7 +525,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Education Level<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="education_level" id="education_level" class="form-control" value="<?php if($patient) echo $patient->educational_level;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="education_level" id="education_level" class="form-control" value="<?php if($patient) echo $patient->education_level;?>" <?php if($patient && $patient->education_level) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>	
 				
@@ -510,7 +535,12 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Blood Group<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<select name="blood_group" class="form-control">
+						<select name="blood_group" class="form-control" <?php if($patient && $patient->blood_group) echo "readonly"; ?> >
+							<?php 
+							    if ($patient && $patient->blood_group) 
+							    	echo "<option value=\"$patient->blood_group\" selected >$patient->blood_group</option>";
+							    else {
+							?>
 							<option value="">--Select--</option> 
 							<option value="A+" <?php if($patient->blood_group == "A+") echo " selected ";?>>A+</option>
 							<option value="A-" <?php if($patient->blood_group == "A-") echo " selected ";?>>A-</option>
@@ -520,6 +550,8 @@ pri.print();
 							<option value="AB-" <?php if($patient->blood_group == "AB-") echo " selected ";?>>AB-</option>
 							<option value="O+" <?php if($patient->blood_group == "O+") echo " selected ";?>>O+</option>
 							<option value="O-" <?php if($patient->blood_group == "O-") echo " selected ";?>>O-</option>
+							<?php } ?>
+
 						</select>
 						<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?>
 						</div>
@@ -530,7 +562,12 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Education Qualification <?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<select name="education_qualification" class="form-control" <?php if($field->mandatory) echo "required"; ?>>
+						<select name="education_qualification" class="form-control" <?php if($patient && $patient->education_qualification) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?>>
+						<?php 
+							    if ($patient && $patient->education_qualification) 
+							    	echo "<option value=\"$patient->education_qualification\" selected >$patient->education_qualification</option>";
+							    else {
+						?>
 							<option value="">Select</option>
 							<option value="SSC">ssc</option>
 							<option value="INTERMEDIATE">Intermediate</option>
@@ -538,8 +575,9 @@ pri.print();
 							<option value="M.TECH">M.tech</option>
 				            <option value="M.Sc">M.Sc</option>
 							<option value="Undergraduate">Undergraduate</option>
+						<?php }?>
 						</select> 
-						<?php if($patient) echo $patient->education_qualification ;?>
+						<!--<?php if($patient) echo $patient->education_qualification ;?>-->
 						<?php if($field->mandatory) echo "required"; ?>
 						</div>
 					</div>
@@ -833,7 +871,7 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Identification Marks<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="identification_marks" class="form-control mlc" value="<?php if($update) echo $patient->identification_marks;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="identification_marks" class="form-control mlc" value="<?php if($update) echo $patient->identification_marks;?>" <?php if($patient && $patient->identification_marks) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 					<?php 
