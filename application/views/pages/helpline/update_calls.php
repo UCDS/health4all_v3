@@ -64,7 +64,7 @@ $(function(){
 			$("#table-sort").tablesorter(options);
   });
 </script>
-<div class="row">
+<div class="row form-group">
 	<?php if(isset($msg)) { ?>
 		<div class="alert alert-info">
 			<?php echo $msg; ?>
@@ -96,7 +96,7 @@ $(function(){
 				><?php echo $line->helpline.' - '.$line->note;?></option>
 			<?php } ?>
 		</select>
-		<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
+		<input type="text" class="form-control" placeholder="From Number*" required style="width:120px" value="<?php echo $this->input->post('from_number');?>" name="from_number" /> 
 		<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
 		<select name="call_category" style="width:100px" class="form-control">
 			<option value="">Category</option>
@@ -308,7 +308,7 @@ $(function(){
 		<div class="row">
 		<div class="col-md-3">From Number: </div>
 		<div class="col-md-9">
-				<input class="from_number form-control" readonly name="from_number" form="send_email_form">
+				<input class="from_number form-control" readonly name="from_number" required== True form="send_email_form">
 		</div>
 		</div>
 		<div class="row">
