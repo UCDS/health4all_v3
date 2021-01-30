@@ -215,7 +215,7 @@ $(function(){
 							</select>
 						</td>
 						<td>
-							<select name="language_<?php echo $call->call_id;?>"  id="language_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+							<select name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:100px" class="form-control">
 								<option value="">Select</option>
 								<?php foreach($language as $lng){ ?>
 									<option value="<?php echo $lng->language_id;?>"

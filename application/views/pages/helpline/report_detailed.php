@@ -186,7 +186,6 @@ $(function(){
 				<col style="width: 6.7%;">
 				<col style="width: 6.7%;">
 				<col style="width: 2.7%;">
-				<col style="width: 4.4%;">
 			</colgroup>
 			<thead>
 				<th>#</th>
