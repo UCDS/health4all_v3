@@ -89,3 +89,22 @@ ALTER TABLE `removed_patient_document_upload`
 ALTER TABLE `removed_patient_document_upload`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+CREATE TABLE `language` ( 
+  `language_id` INT NOT NULL AUTO_INCREMENT, 
+  `name` VARCHAR(50) NOT NULL , 
+  `description` VARCHAR(200) NOT NULL , 
+  PRIMARY KEY (`language_id`)
+);
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (1, 'Telugu', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (2, 'English', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (3, 'Hindi', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (4, 'Bengali', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (5, 'Odiya', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (6, 'Kannada', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (7, 'Tamil', ''); 
+INSERT INTO `language` (`language_id`, `name`, `description`) VALUES (8, 'Malayalam', ''); 
+
+ALTER TABLE `helpline_call`
+  ADD COLUMN `language_id` INT,
+  ADD CONSTRAINT `fk_helpline_call_language_id` 
+  FOREIGN KEY (language_id) REFERENCES language(language_id);

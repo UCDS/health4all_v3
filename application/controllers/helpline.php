@@ -140,6 +140,7 @@ class Helpline extends CI_Controller {
 		$this->form_validation->set_rules('call[]','Call','trim|xss_clean');
 		$this->data['helpline']=$this->helpline_model->get_helpline("update");
 		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['language']=$this->helpline_model->get_language();
 		$this->data['call_category']=$this->helpline_model->get_call_category();
 		$this->data['resolution_status']=$this->helpline_model->get_resolution_status();
 		$this->data['all_hospitals']=$this->staff_model->get_hospital();

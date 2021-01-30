@@ -103,6 +103,7 @@ class Helpline_model extends CI_Model{
 			$data[]=array(
 				'call_id'=>$call,
 				'caller_type_id'=>$this->input->post("caller_type_".$call),
+				'language_id'=>$this->input->post("language_".$call),
 				'call_category_id'=>$this->input->post("call_category_".$call),
 				'resolution_status_id'=>$this->input->post("resolution_status_".$call),
 				'hospital_id'=>$this->input->post("hospital_".$call),
@@ -353,6 +354,11 @@ class Helpline_model extends CI_Model{
 		$query = $this->db->get();
 		return $query->result();
 	}
+	function get_language(){
+		$this->db->select('*')->from('language');
+		$query = $this->db->get();
+		return $query->result();
+	}
 	function get_call_category(){
 		$this->db->select('*')->from('helpline_call_category');
 		$query = $this->db->get();
@@ -429,6 +435,7 @@ class Helpline_model extends CI_Model{
 		->join('helpline_call_group','helpline_call.call_group_id = helpline_call_group.call_group_id','left')
 		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left')
 		->join('helpline_email','helpline_call.call_id = helpline_email.call_id','left')
+		->join('language','helpline_call.language_id = language.language_id','left')
 		->group_by('helpline_call.call_id')
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
 		->where('user_helpline_link.user_id', $user['user_id'])

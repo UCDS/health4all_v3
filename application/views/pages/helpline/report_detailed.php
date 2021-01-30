@@ -196,10 +196,11 @@ $(function(){
 				<th>Team Member @ Helpline</th>
 				<th>Note</th>
 				<th>Caller Type</th>
+				<th>Primary Language</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
-				<th>Resolution Time</th>
-				<th>TAT</th>
+				<!-- <th class="hidden">Resolution Time</th>
+				<th class="hidden">TAT</th> -->
 				<!-- <th>Hospital</th>
 				<th>Patient</th> -->
 				<th>Emails</th>
@@ -251,17 +252,20 @@ $(function(){
 							<?php echo $call->caller_type;?>
 						</td>
 						<td>
+							<?php echo $call->name;?>
+						</td>
+						<td>
 							<?php echo $call->call_category;?>
 						</td>
 						<td>
 							<?php echo $call->resolution_status;?>
 						</td>
-						<td>
+						<td class="hidden">
 							<small>
 							<?php if($call->resolution_date_time != 0) echo date("d-M-Y g:i A",strtotime($call->resolution_date_time)); else echo '';?>
 							</small>
 						</td>
-						<td>
+						<td class="hidden">
 							<small>
 								<?php if($call->resolution_date_time != 0){
 									$diff = date_diff(date_create($call->resolution_date_time),date_create($call->start_time));
