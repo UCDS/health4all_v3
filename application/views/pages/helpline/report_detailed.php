@@ -159,6 +159,14 @@ $(function(){
 					><?php echo $ct->caller_type;?></option>
 				<?php } ?>
 			</select>
+			<select name="language" style="width:100px" class="form-control">
+				<option value="">Language</option>
+				<?php foreach($language as $lng){ ?>
+					<option value="<?php echo $lng->language_id;?>"
+					<?php if($this->input->post('language') == $lng->	language_id) echo " selected "; ?>
+					><?php echo $lng->name;?></option>
+				<?php } ?>
+			</select>
 			<select name="resolution_status" style="width:100px" class="form-control">
 				<option value="">Status</option>
 				<?php foreach($resolution_status as $status){ ?>

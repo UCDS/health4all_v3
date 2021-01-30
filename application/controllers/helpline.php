@@ -37,6 +37,7 @@ class Helpline extends CI_Controller {
 			$this->load->view('templates/header',$this->data);
 			$this->data['calls']=$this->helpline_model->get_detailed_report();
 			$this->data['caller_type']=$this->helpline_model->get_caller_type();
+			$this->data['language']=$this->helpline_model->get_language();
 			$this->data['call_category']=$this->helpline_model->get_call_category();
 			$this->data['resolution_status']=$this->helpline_model->get_resolution_status();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");

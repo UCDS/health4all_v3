@@ -118,7 +118,7 @@ $(function(){
 			<option value="">Language</option>
 			<?php foreach($language as $lng){ ?>
 				<option value="<?php echo $lng->language_id;?>"
-				<?php if($this->input->post('language_id') == $lng->language_id) echo " selected "; ?>
+				<?php if($this->input->post('language') == $lng->language_id) echo " selected "; ?>
 				><?php echo $lng->name;?></option>
 			<?php } ?>
 		</select>
