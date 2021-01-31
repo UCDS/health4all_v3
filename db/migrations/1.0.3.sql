@@ -1,3 +1,6 @@
+#Adding AUTO_INCREMENT to user_function table
+ALTER TABLE `user_function` CHANGE `user_function_id` `user_function_id` INT(11) NOT NULL AUTO_INCREMENT; 
+
 #New user function to create appointments
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'create_appointment', 'Create Appointment', ''); 
 
