@@ -164,7 +164,7 @@ $(function(){
 				<?php foreach($language as $lng){ ?>
 					<option value="<?php echo $lng->language_id;?>"
 					<?php if($this->input->post('language') == $lng->	language_id) echo " selected "; ?>
-					><?php echo $lng->name;?></option>
+					><?php echo $lng->language;?></option>
 				<?php } ?>
 			</select>
 			<select name="resolution_status" style="width:100px" class="form-control">
@@ -259,7 +259,7 @@ $(function(){
 							<?php echo $call->caller_type;?>
 						</td>
 						<td>
-							<?php echo $call->name;?>
+							<?php echo $call->language;?>
 						</td>
 						<td>
 							<?php echo $call->call_category;?>
