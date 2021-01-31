@@ -203,7 +203,7 @@ $(function(){
 				<th>Team Member @ Helpline</th>
 				<th>Note</th>
 				<th>Caller Type</th>
-				<th>Primary Language</th>
+				<th>Language</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
 				<!-- <th class="hidden">Resolution Time</th>
