@@ -89,4 +89,21 @@ ALTER TABLE `removed_patient_document_upload`
 ALTER TABLE `removed_patient_document_upload`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+CREATE TABLE `language` ( 
+  `language_id` INT NOT NULL AUTO_INCREMENT, 
+  `language` VARCHAR(50) NOT NULL ,  
+  PRIMARY KEY (`language_id`)
+);
+INSERT INTO `language` (`language_id`, `language`) VALUES (1, 'Telugu'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (2, 'English'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (3, 'Hindi'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (4, 'Bengali'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (5, 'Odiya'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (6, 'Kannada'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (7, 'Tamil'); 
+INSERT INTO `language` (`language_id`, `language`) VALUES (8, 'Malayalam'); 
+
+ALTER TABLE `helpline_call`
+  ADD COLUMN `language_id` INT;
+  
 INSERT INTO `defaults` (`default_id`, `default_tilte`, `default_description`, `default_type`, `default_unit`, `lower_range`, `upper_range`, `value`) VALUES ('pagination', 'Pagination', 'Default number of rows to be loaded for reports', 'Numeric', NULL, '50', '200', '50');
