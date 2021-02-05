@@ -89,3 +89,4 @@ ALTER TABLE `removed_patient_document_upload`
 ALTER TABLE `removed_patient_document_upload`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
+INSERT INTO `defaults` (`default_id`, `default_tilte`, `default_description`, `default_type`, `default_unit`, `lower_range`, `upper_range`, `value`) VALUES ('pagination', 'Pagination', 'Default number of rows to be loaded for reports', 'Numeric', NULL, '50', '200', '50');
