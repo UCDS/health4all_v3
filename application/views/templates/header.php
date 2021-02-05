@@ -329,9 +329,9 @@
 			if($f->user_function=="OP Detail"){ //OP Detail?>
 						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail - 2</a></li>
 			<?php	}
-			if($f->user_function=="create_appointment"){ ?>
-				<li><a href="<?php echo base_url()."reports/create_appointment";?>">Create Appointment</a></li>	
-			<?php	}
+			if($f->user_function=="create_appointment"){ ?>	
+                                <li><a href="<?php echo base_url()."reports/appointment";?>">Registrations/Appointments</a></li>
+                        <?php	}
 			if($f->user_function=="doctor_patient_list"){ ?>
 				<li><a href="<?php echo base_url()."reports/doctor_patient_list";?>">Doctor Patient List</a></li>	
 			<?php	}
