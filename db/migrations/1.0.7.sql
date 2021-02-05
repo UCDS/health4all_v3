@@ -104,8 +104,7 @@ INSERT INTO `language` (`language_id`, `language`) VALUES (7, 'Tamil');
 INSERT INTO `language` (`language_id`, `language`) VALUES (8, 'Malayalam'); 
 
 ALTER TABLE `helpline_call`
-  ADD COLUMN `language_id` INT;
-  
+ ADD COLUMN `language_id` INT;
 
 
 INSERT INTO `defaults` (`default_id`, `default_tilte`, `default_description`, `default_type`, `default_unit`, `lower_range`, `upper_range`, `value`) VALUES ('pagination', 'Pagination', 'Default number of rows to be loaded for reports', 'Numeric', NULL, '50', '200', '50');
