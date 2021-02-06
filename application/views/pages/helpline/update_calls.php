@@ -64,7 +64,7 @@ $(function(){
 			$("#table-sort").tablesorter(options);
   });
 </script>
-<div class="row">
+<div class="row form-group">
 	<?php if(isset($msg)) { ?>
 		<div class="alert alert-info">
 			<?php echo $msg; ?>
@@ -96,7 +96,7 @@ $(function(){
 				><?php echo $line->helpline.' - '.$line->note;?></option>
 			<?php } ?>
 		</select>
-		<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
+		<input type="text" class="form-control" placeholder="From Number*" required style="width:120px" value="<?php echo $this->input->post('from_number');?>" name="from_number" /> 
 		<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
 		<select name="call_category" style="width:100px" class="form-control">
 			<option value="">Category</option>
@@ -112,6 +112,14 @@ $(function(){
 				<option value="<?php echo $ct->caller_type_id;?>"
 				<?php if($this->input->post('caller_type') == $ct->caller_type_id) echo " selected "; ?>
 				><?php echo $ct->caller_type;?></option>
+			<?php } ?>
+		</select>
+		<select name="language" style="width:100px" class="form-control">
+			<option value="">Language</option>
+			<?php foreach($language as $lng){ ?>
+				<option value="<?php echo $lng->language_id;?>"
+				<?php if($this->input->post('language') == $lng->language_id) echo " selected "; ?>
+				><?php echo $lng->language;?></option>
 			<?php } ?>
 		</select>
 		<select name="resolution_status" style="width:100px" class="form-control">
@@ -141,6 +149,7 @@ $(function(){
 				<th>Recording</th>
 				<th>Note</th>
 				<th>Caller Type</th>
+				<th>Language</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
 				<th>Hospital</th>
@@ -202,6 +211,17 @@ $(function(){
 									<option value="<?php echo $ct->caller_type_id;?>"
 									<?php if($call->caller_type_id == $ct->caller_type_id) echo " selected "; ?>
 									><?php echo $ct->caller_type;?></option>
+								<?php } ?>
+							</select>
+						</td>
+						<td>
+							<select name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+								<option value="">Select</option>
+								<?php foreach($language as $lng){ ?>
+									<option value="<?php echo $lng->language_id;?>"
+										<?php if($call->language_id == $lng->language_id) echo " selected "; ?>
+										><?php echo $lng->language;?>
+									</option>
 								<?php } ?>
 							</select>
 						</td>
@@ -277,6 +297,7 @@ $(function(){
 						<input class="sr-only" value ="<?php echo $this->input->post('to_number');?>" name="to_number" />
 						<input class="sr-only" value ="<?php echo $this->input->post('call_category');?>" name="call_category" />
 						<input class="sr-only" value ="<?php echo $this->input->post('caller_type');?>" name="caller_type" />
+						<input class="sr-only" value ="<?php echo $this->input->post('language_id');?>" name="language_id" />
 						<input class="sr-only" value ="<?php echo $this->input->post('resolution_status');?>" name="resolution_status" />
 						<input type="submit" class="btn btn-sm btn-primary" name="submit" value="Update" />
 					</th>
@@ -308,7 +329,7 @@ $(function(){
 		<div class="row">
 		<div class="col-md-3">From Number: </div>
 		<div class="col-md-9">
-				<input class="from_number form-control" readonly name="from_number" form="send_email_form">
+				<input class="from_number form-control" readonly name="from_number" required== True form="send_email_form">
 		</div>
 		</div>
 		<div class="row">
@@ -387,19 +408,19 @@ $(function(){
 		$(".call_date").val($("#call_date_"+callId).text());
 		$(".recording").val($("#recording_"+callId).attr('src'));
 		if($("#call_category_"+callId).val()!=''){
-		$(".call_category").val($("#call_category_"+callId+" :selected").text());
+			$(".call_category").val($("#call_category_"+callId+" :selected").text());
 		}
 		else $(".category_row").hide();
 		if($("#hospital_"+callId).val()!=''){
-		$(".hospital").val($("#hospital_"+callId+" :selected").text());
+			$(".hospital").val($("#hospital_"+callId+" :selected").text());
 		}
 		else $('.hospital_row').hide();
 		if($("#visit_type_"+callId).val()!='' && $("#visit_id_"+callId).val()!='0'){
-		$(".patient").val($("#visit_type_"+callId+" :selected").text() +" #"+ $("#visit_id_"+callId).val());
+			$(".patient").val($("#visit_type_"+callId+" :selected").text() +" #"+ $("#visit_id_"+callId).val());
 		}
 		else $(".patient_row").hide();
 		if($("#caller_type_"+callId).val()!=''){
-		$(".caller_type").val($("#caller_type_"+callId+" :selected").text());
+			$(".caller_type").val($("#caller_type_"+callId+" :selected").text());
 		}
 		else $(".caller_type_row").hide();
 		$(".note").text($("#note_"+callId).val());

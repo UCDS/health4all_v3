@@ -45,57 +45,63 @@
 		<table style="width:98%;padding:5px;">
 				<tbody>
 				<tr>
-				<td colspan="3">
-				<span style="position:absolute;" id="patient_barcode"></span>
-				<div style="float:right; margin-right:10%;">
-					<div id="qr_code" style="position:absolute;padding-top:2px;"></div>
-					<div style="position:absolute;top:75px;font-size:10px;"><b>ID:</b> <?php echo $patient->patient_id;?></div>
-
-					<?php
-						if($patient->gender == "M"){
-							$relation = "S/O";
-						} 
-						else $relation = "D/O";
-						$qr_text = "i:".$patient->patient_id." n:".$patient->name." g:".$patient->gender." a:".$patient->age_years." r:".$relation." s:".$patient->parent_spouse." l:".$patient->place." p:".$patient->phone;
-					?>
-					<script type="text/javascript">
-						document.getElementById("qr_code").innerHTML="";
-						var qrcode = new QRCode(document.getElementById("qr_code"), {
-							width : 55,
-							height : 55
-						});
-						qrcode.makeCode("<?php echo $qr_text;?>");
-					</script>
-				</div>
-				<div>
-					<div style="position:absolute;" id="barcode"></div>
-				</div>
-				<?php $hospital=$this->session->userdata('hospital');?>
-				<div style="float:middle;text-align:center">
+				<td colspan="3"><?php $hospital=$this->session->userdata('hospital');?>
+				<div style="float:left;text-align:left;left:auto;">
 				<font size="4"><?php echo $hospital['hospital'];?></font><br />
 					<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
-					@ 
 					<?php echo $hospital['place']; ?>, 
 					<?php echo $hospital['district']; ?>
 				<br />
-				<br />
+				</div>			
+				<div style="float:right;margin-right:10;">			
+				<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
+				</div>
+				</td>
+				</tr>
+				<tr>
+				<td colspan="3">
+				<div style="float:middle;text-align:center">
 				<span ><b>
 					<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY</b></span>
-				<br />
-				<?php 
+					
+				</div>
+				
+				</td></tr>
+				<tr>
+				<td colspan="3"><?php $hospital=$this->session->userdata('hospital');?>
+				<div style="float:left;text-align:left;left:auto;">
+				<b><?php 
 					if($patient->visit_type == "OP") 
 						echo "Consultation"; 
 					else 
-						echo "Admit";?> Date: <?php echo date("d-M-Y",strtotime($patient->admit_date)); echo " ".date("g:iA",strtotime($patient->admit_time)); 
-					if($patient->visit_type != "OP"){ 
-						echo ", ";
-						if(!!$patient->outcome) echo $patient->outcome; else echo "Discharge"?> 
-							Date: 
+						echo "Admit";?> Date: </b> <?php 
+						if($patient->appointment_time === NULL){
+						echo date("d-M-Y",strtotime($patient->admit_date)); echo " ".date("g:i A",strtotime($patient->admit_time));
+						}else{
+						echo date("d-M-Y", strtotime("$patient->appointment_time"))." ".date("h:i A", strtotime("$patient->appointment_time"));
+						
+						}
+						?>
+						<br/>
+						<?php
+					if($patient->visit_type != "OP"){ ?>
+						<b> <?php if(!!$patient->outcome) echo $patient->outcome; else echo "Discharge"?> 
+							Date:</b>
 							<?php 
 							if($patient->outcome_date != 0) echo date("d-M-Y",strtotime($patient->outcome_date)); 
-							if($patient->outcome_time != 0) echo " ".date("g:iA",strtotime($patient->outcome_time)); 
+							if($patient->outcome_time != 0) echo " ".date("g:i A",strtotime($patient->outcome_time)); 
 					}
+					
 					?>
+					
+				</div>							
+				<div style="float:right;">
+				
+				<span  id="patient_barcode"></span>
+				<div id="barcode"></div>
+				</div>
+				<div style="float:right;">
+				<b> Person ID: </b>
 				</div>
 				</td>
 				</tr>
@@ -110,9 +116,9 @@
 							if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
 							echo "/".$patient->gender; ?></td>
 
-						<td>
+						<td></td>
 							
-						</td> 
+						
 				</tr>
 				<tr width="95%">
 						<td><b>Father/Spouse: </b> <?php echo $patient->parent_spouse; ?></td>
