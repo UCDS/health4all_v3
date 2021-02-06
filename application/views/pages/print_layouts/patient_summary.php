@@ -54,7 +54,7 @@
 				<br />
 				</div>			
 				<div style="float:right;margin-right:10;">			
-				<img src="<?php echo base_url()."/assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
+				<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
 				</div>
 				</td>
 				</tr>
