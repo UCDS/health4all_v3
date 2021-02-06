@@ -54,7 +54,7 @@
 				<br />
 				</div>			
 				<div style="float:right;margin-right:10;">			
-				<img src="<?php echo base_url().$hospital['logo'];?>" width="65px" height="65px" />
+				<img src="<?php echo base_url()."/assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
 				</div>
 				</td>
 				</tr>
@@ -116,9 +116,9 @@
 							if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
 							echo "/".$patient->gender; ?></td>
 
-						<td>
+						<td></td>
 							
-						</td> 
+						
 				</tr>
 				<tr width="95%">
 						<td><b>Father/Spouse: </b> <?php echo $patient->parent_spouse; ?></td>
