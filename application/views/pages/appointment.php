@@ -345,7 +345,6 @@ echo "</select></li>";
 
 
 <div style='padding: 0px 2px;'>
-<?php echo("<script>console.log('PHP: " . $total_no_of_pages . "');</script>"); ?>
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
