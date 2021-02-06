@@ -515,9 +515,9 @@ function get_op_detail_with_idproof(){
 		
 		
 	        
-	        $date_filter_field="Appointment";
-		if($this->input->post('dateby') && $this->input->post('dateby')=="Registartion"){
-			$date_filter_field="Registartion";
+	        $date_filter_field="Registration";
+		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
+			$date_filter_field="Appointment";
 		}	
 					
 		$hospital=$this->session->userdata('hospital');
@@ -553,7 +553,7 @@ function get_op_detail_with_idproof(){
 		 	$from_time = '00:00';
 		}
 		
-		if($date_filter_field=="Registartion"){
+		if($date_filter_field=="Registration"){
 			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
 			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
 			$this->db->order_by('admit_date','ASC');
@@ -619,7 +619,7 @@ function get_op_detail_with_idproof(){
 	}
 
 	function get_registration_appointment_count(){
-	        $date_filter_field="Registartion";
+	        $date_filter_field="Registration";
 		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
 			$date_filter_field="Appointment";
 		}
@@ -657,7 +657,7 @@ function get_op_detail_with_idproof(){
 		 	$from_time = '00:00';
 		}
 		
-		if($date_filter_field=="Registartion"){
+		if($date_filter_field=="Registration"){
 			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
 			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
 		} 
