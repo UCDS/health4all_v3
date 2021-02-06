@@ -164,10 +164,9 @@ input[type=number] {
 <div class="row">
 		<h4>Registrations / Appointments</h4>	
 		<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
-			 <input type="hidden" name="filter_submitted" value="true">
 			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
                         Search by : <select name="dateby" id="dateby" class="form-control">   
-                        <option value="Registartion" <?php echo ($this->input->post('dateby') == 'Registartion') ? 'selected' : ''; ?> >Registartion</option> 
+                        <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option> 
                         <option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>          
                         </select>
                       
@@ -239,6 +238,8 @@ input[type=number] {
 	}
 	$total_records = $report_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
+	if ($total_no_of_pages == 0)
+		$total_no_of_pages = 1;
 	$second_last = $total_no_of_pages - 1; 
 	$offset = ($page_no-1) * $total_records_per_page;
 	$previous_page = $page_no - 1;
@@ -344,7 +345,6 @@ echo "</select></li>";
 
 
 <div style='padding: 0px 2px;'>
-
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
@@ -356,13 +356,13 @@ echo "</select></li>";
 		<th>SNo</th>
 		<th>Patient ID</th>
 		<th>OP No.</th>
-		<th>Consultation Request Time</th>
+		<th>Registration Time</th>
 		<th>PatientInfo</th>
 		<th>Related to</th>
 		<th>From</th>
 		<th>Phone</th>
 		<th>Department</th>
-    		<th>Request CreatedBy</th>
+    		<th>Registered By</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
 		<th>Appointment Time</th>
@@ -521,7 +521,7 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
-	<?php } else if($this->input->post('filter_submitted'))  { ?>
+	<?php } else { ?>
 	
 	No patient registrations on the given date.
 <?php }  ?>
@@ -565,7 +565,6 @@ echo "</select></li>";
 			</div>	
 
 			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom')); ?>
-			<input type="hidden" name="filter_submitted" value="true">
 			<input type="hidden" name="appointment" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">
 			<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
