@@ -42,6 +42,7 @@
 var user_details = <?php echo $user_details; ?>;
 var receiver = user_details.receiver;
 var callDetails = {};
+var smsDetails = {};
 
 $(function(){
 	$(".date").Zebra_DatePicker();
@@ -177,6 +178,10 @@ $(function(){
 			</select>
 			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" />
 			<button type="button" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;"><i class="fa fa-phone" style="padding-right: 5px;"></i> Call</button>
+			<?php if ($add_sms_access==1){ ?>
+			<button type="button" class="btn btn-primary btn-sm sms_button" onclick="openSmsModal()" style="display: none;"><i class="fa fa-envelope-o" style="padding-right: 5px;"></i> SMS</button>
+			<?php } ?>
+
 		</form></h4>
 	<?php
 		if(!!$calls){
@@ -428,7 +433,134 @@ $(function(){
 	</div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="smsModal" tabindex="-1" role="dialog" aria-labelledby="smsModalLabel">
+  <div class="modal-dialog" role="document" style="width:90%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="smsModalLabel">SMS</h4>
+      </div>
+      <div class="modal-body" id="smsModalBody">
+      	<div class="row">							
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-customer">SMS To<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="smsModal-customer" placeholder="Enter '0' followed by 10 digit phone number" required readonly onblur="setSmsToNumber()" />
+					<p class="error smsModal-customer-error">This field is required</p>
+				</div>
+			</div>		
+
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-helplinewithname">Through Helpline<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="smsModal-helplinewithname" required readonly />
+					<select class="form-control" id="smsModal-helplinewithname-dropdown" style="display: none" onchange="setSmsHelplineNumber()"></select>
+					<input type="hidden" id="smsModal-helpline" />
+				</div>
+			</div>
+			<!--<?php
+				echo("<script>console.log('PHP: " . json_encode($sms_templates) . "');</script>");
+			?>-->
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-templatewithname">Template<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="smsModal-templatewithname" required readonly />
+					<select class="form-control" id="smsModal-templatewithname-dropdown" style="display: none" onchange="setSmsTemplateName()"></select>
+					<input type="hidden" id="smsModal-helpline" />
+				</div>
+			</div>			
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-template">SMS Content<font style="color:red">*</font></label>
+					<textarea class="form-control" id="smsModal-template"  required rows="8" onblur=smsTemplate()></textarea>
+					<p class="error smsModal-template-error">This field is required</p>
+				</div>
+			</div>	
+			<script type="text/javascript">
+
+			var smstemplate='<?php echo json_encode($sms_templates); ?>';
+			var inputF = document.getElementById("smsModal-template");
+			var json=JSON.parse(smstemplate);
+
+			function setSmsTemplate(helpline_id){
+				smsDetails.templateName=$('#smsModal-templatewithname-dropdown').val();
+				document.getElementById('smsModal-template').readOnly = false;
+				for (var key in json) {
+					if (json.hasOwnProperty(key)) {
+						if(json[key].helpline_id==helpline_id&& json[key].template_name == smsDetails.templateName){
+							if (json[key].edit_text_area==0){
+								document.getElementById('smsModal-template').readOnly = true;
+							}
+							inputF.value=json[key].template;
+							smsDetails.template=json[key].template;
+							smsDetails.sms_type=json[key].sms_type;
+							smsDetails.template_name=json[key].template_name;
+							smsDetails.dlt_tid=json[key].dlt_tid;
+							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
+						}
+					}
+				}
+			}
+
+			function setSmsTemplateWithName(helpline_id, templateName){
+				document.getElementById('smsModal-template').readOnly = false;
+				for (var key in json) {
+					if (json.hasOwnProperty(key)) {
+						if(json[key].helpline_id==helpline_id && json[key].template_name == templateName ){
+							document.getElementById("smsModal-template").value=json[key].template;
+							if (json[key].edit_text_area==0){
+								document.getElementById('smsModal-template').readOnly = true;
+							}
+							smsDetails.template=json[key].template;
+							smsDetails.sms_type=json[key].sms_type;
+							smsDetails.template_name=json[key].template_name;
+							smsDetails.dlt_tid=json[key].dlt_tid;
+							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
+							smsDetails.dlt_header = json[key].dlt_header;
+						}
+					}
+				}				
+			}
+
+			function setSmsTemplateName(){
+				smsDetails.templateName = $('#smsModal-templatewithname-dropdown').val();
+				smsDetails.called_id = $('#smsModal-helplinewithname-dropdown').val();
+				setSmsTemplateWithName(smsDetails.called_id, smsDetails.templateName);
+			}
+
+			function smsTemplate(){
+			    smsDetails.template=$('#smsModal-template').val();
+			}
+
+			function setSmsHelplineNumber(){
+				smsDetails.called_id = $('#smsModal-helplinewithname-dropdown').val();
+				document.getElementById("smsModal-templatewithname-dropdown").innerHTML = null; 
+				for (var key in json) {
+					if (json.hasOwnProperty(key)) {
+						if(json[key].helpline_id==smsDetails.called_id){
+							$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].template_name+'">'+json[key].template_name+'</option>');							
+						}
+					}
+				}
+				setSmsTemplateName();
+			}
+			</script>
+		</div>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-xs-12">
+				<input id="initiateSmsButton" type="button" value="Send" class="btn btn-primary btn-sm" onclick="initiateSms()" />
+			</div>
+		</div>
+      </div>
+	 </div>
+	</div>
+</div>
+
 <script type="text/javascript">
+
 function display_emails(callId){
 	$("#emailModalBody").html($(".emails_sent_"+callId).html());
 }
@@ -492,8 +624,40 @@ function openCallModal(){
 	$("#callModal").modal({ keyboard: false, backdrop: 'static' });
 }
 
+function openSmsModal(){
+	sendToChangeReset();
+
+	smsDetails.to = '';
+	smsDetails.called_id = $('#smsModal-helplinewithname-dropdown').val();
+	smsDetails.app_id = receiver.app_id;
+	
+
+	for (var key in json) {
+		if (json.hasOwnProperty(key)) {
+			if (json[key].helpline_id==smsDetails.called_id){
+				$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].template_name+'">'+json[key].template_name+'</option>');
+				document.getElementById("smsModal-template").value=json[key].template;
+			}
+		}
+	}
+
+	setSmsTemplate(smsDetails.called_id);
+
+	$('#smsModal-customer').val('').removeAttr('readonly');
+	$('#smsModal-helplinewithname').hide();
+	$('#smsModal-templatewithname').hide();
+	$('#smsModal-helplinewithname-dropdown').show();
+	$('#smsModal-templatewithname-dropdown').show();
+
+	$("#smsModal").modal({ keyboard: false, backdrop: 'static' });
+}
+
 function setFromNumber(){
 	callDetails.from = $('#callModal-customer').val();
+}
+
+function setSmsToNumber(){
+	smsDetails.to = $('#smsModal-customer').val();
 }
 
 function setHelplineNumber(){
@@ -511,6 +675,20 @@ function connectToChangeReset(){
 	$('#callModal_connectto_alternate_section').addClass('hidden');
 	$('#callModal-connectto-alternate option').remove();
 	$('#callModal-connectto-alternate-showmore').removeAttr('checked');
+}
+
+function sendToChangeReset(){
+	$('.smsModal-customer-error').hide();
+	$('.smsModal-app_id-error').hide();
+	$('.smsModal-template-error').hide(); 
+
+	$('[href="#change_sendto"]').removeAttr("data-hidden").html('Change');
+	$('#change_sendto_section').addClass('hidden');
+	$('[name=radio_doctor]:checked').removeAttr('checked');
+
+	$('#smsModal_sendto_alternate_section').addClass('hidden');
+	$('#smsModal-sendto-alternate option').remove();
+	$('#smsModal-sendto-alternate-showmore').removeAttr('checked');
 }
 
 function initiateCall(){
@@ -545,6 +723,35 @@ function initiateCall(){
 			$('#initiateCallButton').val('Call').removeAttr('disabled');
 			$("#callModal").modal('hide');
 			bootbox.alert("Call initiated successfully");
+        }
+    });
+}
+
+function initiateSms(){
+	if(!smsDetails.to){
+		$('.smsModal-customer-error').show();
+		return;
+	}
+	$('.smsModal-customer-error').hide();
+
+	// customer to agent flow...
+	// ajax for call...
+	$('#initiateSmsButton').val('Calling...').attr('disabled', 'disabled');
+
+	$.ajax({
+        url: '<?php echo base_url();?>helpline/initiate_sms',
+        type: 'POST',
+		dataType : 'JSON',
+		data : smsDetails,
+        error: function(res) {
+            //callback();
+			$('#initiateSmsButton').val('Send').removeAttr('disabled');
+            bootbox.alert(res.responseText);
+        },
+        success: function(res) {
+			$('#initiateSmsButton').val('Send').removeAttr('disabled');
+			$("#SmsModal").modal('hide');
+			bootbox.alert("Sms sent successfully");
         }
     });
 }
@@ -644,15 +851,18 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.call_button').show();
+		$('.sms_button').show();
 
 		// initAgentSelectize();
-
+		
 		if(receiver.helpline){
 			$('#callModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+			$('#smsModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
 		}
 		if(user_details.receiver_link){
 			$.each(user_details.receiver_link, function(i, d){
 				$('#callModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - '+d.helpline+'</option>');
+				$('#smsModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - '+d.helpline+'</option>');
 			})
 		}
 	}

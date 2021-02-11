@@ -16,6 +16,7 @@ class Helpline extends CI_Controller {
 		}
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
+		$this->data['sms_templates']=$this->helpline_model->get_sms_templates();	
 	}
 
 	function detailed_report(){
@@ -23,11 +24,18 @@ class Helpline extends CI_Controller {
 			show_404();
 		}
 		$access=0;
+		$add_sms_access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Helpline Reports"){
 					$access=1;
 			}
+			// Fetch user functions and check if the user has 
+        	// access to documentation access rights
+			if($function->user_function=="sms"){
+                if ($function->add==1) $add_sms_access=1;
+            }
 		}
+		
 		if($access==1){
 			$this->load->helper('form');
 			$this->load->library('form_validation');
@@ -43,6 +51,10 @@ class Helpline extends CI_Controller {
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
+			$this->data['add_sms_access']=$add_sms_access;
+			
+
+			//echo("<script>console.log('PHP: " . json_encode($this->data['sms_templates']) . "');</script>");
 
 			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
 			$user_receiver_links = array();
@@ -55,6 +67,33 @@ class Helpline extends CI_Controller {
 			));
 
 			$this->load->view('pages/helpline/report_detailed',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else show_404();
+	}
+	function sms_detailed_report(){
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="sms"){
+					$access=1;
+			}
+		}
+		if($access==1){
+			$this->load->helper('form');
+			$this->load->library('form_validation');
+			$user=$this->session->userdata('logged_in');
+			$this->data['user_id']=$user['user_id'];
+			$this->data['title']="HelpLine SMS";
+			$this->load->view('templates/header',$this->data);
+			$this->data['sms_data']=$this->helpline_model->get_sms_detailed_report();
+			$this->data['sent_status']=$this->helpline_model->get_sms_sent_status();
+			$this->data['sms_template']=$this->helpline_model->get_sms_template();
+			$this->data['helpline']=$this->helpline_model->get_helpline("report");
+			$this->data['all_hospitals']=$this->staff_model->get_hospital();
+			$this->load->view('pages/helpline/sms_report_detailed',$this->data);
 			$this->load->view('templates/footer');
 		}
 		else show_404();
@@ -424,6 +463,62 @@ class Helpline extends CI_Controller {
 			echo $error_msg;
 		} else {
 			echo true;
+		}
+	}
+
+	function initiate_sms(){
+
+		$to = $this->input->post('to');
+		$dltHeader = $this->input->post('dlt_header');
+		$calledId = $this->input->post('called_id');
+		$templateText = $this->input->post('template');
+		$templateName = $this->input->post('template_name');
+		$smstype = $this->input->post('sms_type');
+		$dlttid = $this->input->post('dlt_tid');
+		$dltEntityId  = $this->input->post('dlt_entity_id');
+
+		$post_data = array(
+			// 'From' doesn't matter; For transactional, this will be replaced with your SenderId;
+			// For promotional, this will be ignored by the SMS gateway
+			'From'   => $calledId,
+			'To'    => $to,
+			'Body'  => $templateText,
+			'DltEntityId' => $dltEntityId,
+			'DltTemplateId'=>$dlttid
+		);
+	
+		$api_key="";
+		$api_token =  "";
+		$account_sid = "yousee";
+		$account_subdomain = 'api.exotel.com';
+		
+		$url = "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Sms/send";	  
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_VERBOSE, 1);
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_FAILONERROR, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
+		 
+		$http_result = curl_exec($ch);
+		$error = curl_error($ch);
+		$http_code = curl_getinfo($ch ,CURLINFO_HTTP_CODE);
+		 
+		curl_close($ch);
+		$xml=<<<XML
+		$http_result
+		XML;
+	
+		$xmlresult=simplexml_load_string($xml);
+		
+		$this->helpline_model->set_sms_helpline($calledId, $to, $templateText, $templateName, $smstype, $dlttid, $http_code, strval($xmlresult->SMSMessage->Status), strval($xmlresult->SMSMessage->Sid), $xmlresult->SMSMessage->DetailedStatusCode, strval($xmlresult->SMSMessage->DetailedStatus));
+
+		if ($http_code==200){
+			echo true;
+		} else {
+			echo $xmlresult->RestException->Message;
 		}
 	}
 }

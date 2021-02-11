@@ -352,10 +352,13 @@
 					<?php	}
 
 			if($f->user_function=="Helpline Reports"){ ?>
-								<li><a href="<?php echo base_url()."helpline/detailed_report";?>">Helpline Detailed</a></li>
-								<li><a href="<?php echo base_url()."helpline/voicemail_detailed_report";?>">Helpline Voicemail Detailed</a></li>
-								<li><a href="<?php echo base_url()."helpline/report_groupwise";?>">Helpline Group Wise</a></li>
+								<li><a href="<?php echo base_url()."helpline/detailed_report";?>">Helpline Calls</a></li>
+								<!--<li><a href="<?php echo base_url()."helpline/voicemail_detailed_report";?>">Helpline Voicemail Detailed</a></li>
+								<li><a href="<?php echo base_url()."helpline/report_groupwise";?>">Helpline Group Wise</a></li>-->
 					<?php	}
+					if($f->user_function=="sms"){ ?>
+						<li><a href="<?php echo base_url()."helpline/sms_detailed_report";?>">Helpline SMS</a></li>
+					<?php }
 
 			} ?>
 			</ul>
