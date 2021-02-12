@@ -467,12 +467,11 @@ class Helpline extends CI_Controller {
 	}
 
 	function initiate_sms(){
-
 		$to = $this->input->post('to');
 		$dltHeader = $this->input->post('dlt_header');
 		$calledId = $this->input->post('called_id');
 		$templateText = $this->input->post('template');
-		$templateName = $this->input->post('template_name');
+		$templateId = $this->input->post('template_name');
 		$smstype = $this->input->post('sms_type');
 		$dlttid = $this->input->post('dlt_tid');
 		$dltEntityId  = $this->input->post('dlt_entity_id');
@@ -486,7 +485,6 @@ class Helpline extends CI_Controller {
 			'DltEntityId' => $dltEntityId,
 			'DltTemplateId'=>$dlttid
 		);
-	
 		$api_key="";
 		$api_token =  "";
 		$account_sid = "";
@@ -505,17 +503,17 @@ class Helpline extends CI_Controller {
 		$http_result = curl_exec($ch);
 		$error = curl_error($ch);
 		$http_code = curl_getinfo($ch ,CURLINFO_HTTP_CODE);
-		 
-		curl_close($ch);
 		
+		curl_close($ch);
 		//enable this for php version less than 5.6.40
+
 		//$xml=<<<XML
 		//$http_result
 		//XML;
-	
-		$xmlresult=simplexml_load_string($xml);
 		
-		$this->helpline_model->set_sms_helpline($calledId, $to, $templateText, $templateName, $smstype, $dlttid, $http_code, strval($xmlresult->SMSMessage->Status), strval($xmlresult->SMSMessage->Sid), $xmlresult->SMSMessage->DetailedStatusCode, strval($xmlresult->SMSMessage->DetailedStatus));
+		$xmlresult=simplexml_load_string($http_result);
+
+		$this->helpline_model->set_sms_helpline($calledId, $to, $templateText, $templateId, $smstype, $dlttid, $http_code, strval($xmlresult->SMSMessage->Status), strval($xmlresult->SMSMessage->Sid), $xmlresult->SMSMessage->DetailedStatusCode, strval($xmlresult->SMSMessage->DetailedStatus));
 
 		if ($http_code==200){
 			echo true;

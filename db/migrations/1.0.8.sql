@@ -54,3 +54,6 @@ CREATE TABLE `sms_template` (
 ALTER TABLE `helpline_receiver` ADD `enable_sms` TINYINT(1) NULL AFTER `enable_outbound`;
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'sms', 'SMS', '');
+
+ALTER TABLE `sms_template` CHANGE `sms_template_id` `sms_template_id` INT(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `sms_helpline` ADD `sms_template_id` INT NOT NULL AFTER `sms_type`;

@@ -487,7 +487,7 @@ class Helpline_model extends CI_Model{
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}
 		if($this->input->post('sms_template')){
-			$this->db->where('sms_template.template_name',$this->input->post('sms_template'));
+			$this->db->where('sms_template.sms_template_id',$this->input->post('sms_template'));
 		}
 		
 		$this->db->select('user.user_id,helpline_receiver.short_name,sms_helpline.id,sms_helpline.from_helpline as from_helpline, sms_helpline.sms_body as body,staff.staff_id,sms_helpline.to_receiver as receiver, sms_helpline.sent_by_staff as user,sms_helpline.from_helpline as from_number,helpline.note as helpline, sms_template.template_name, date(sms_helpline.date_created) as created_date, time(sms_helpline.date_created) as created_time ,sms_helpline.status,date(sms_helpline.date_sent) as sent_date, time(sms_helpline.date_sent) as sent_time, sms_helpline.status_code')
@@ -495,7 +495,7 @@ class Helpline_model extends CI_Model{
 		//->join('user_helpline_link', 'sms_helpline.from_helpline = user_helpline_link.helpline_id')
 		//->join('helpline', 'sms_helpline.from_helpline = user_helpline_link.helpline_id and user_helpline_link.helpline_id = helpline.helpline_id')
 		->join('helpline', 'sms_helpline.from_helpline =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id')
-		->join('sms_template', 'sms_helpline.dlt_tid = sms_template.dlt_tid')	
+		->join('sms_template', 'sms_helpline.sms_template_id = sms_template.sms_template_id')	
 		->join('staff', 'sms_helpline.sent_by_staff = staff.staff_id' )
 		->join('user', 'sms_helpline.sent_by_staff = user.staff_id' )	
 		->join('helpline_receiver', 'helpline_receiver.user_id = user.user_id and staff.staff_id = user.staff_id ' )	
@@ -967,16 +967,17 @@ class Helpline_model extends CI_Model{
 	}
 
 	function get_sms_templates(){
-		$this->db->select("helpline_id, dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area")->from("sms_template");
+		$this->db->select("helpline_id, sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area")->from("sms_template");
 		$this->db->where('use_status', 1);
 		return $this->db->get()->result();
 	}
 
-	function set_sms_helpline($calledId, $from, $template, $templateName, $smstype, $dlttid, $status_code, $status, $sms_id, $detailedStatusCode, $detailedStatus){
+	function set_sms_helpline($calledId, $from, $template, $templateId, $smstype, $dlttid, $status_code, $status, $sms_id, $detailedStatusCode, $detailedStatus){
 		$smshelpline = array();
 		$smshelpline['from_helpline']=$calledId;
 		$smshelpline['to_receiver']=$from;
 		$smshelpline['sms_type']=$smstype;
+		$smshelpline['sms_template_id']=$templateId;
 		$smshelpline['dlt_tid']=$dlttid;
 		$smshelpline['sms_body']=$template;
 		$smshelpline['status_code']=$status_code;
