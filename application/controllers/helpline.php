@@ -489,7 +489,7 @@ class Helpline extends CI_Controller {
 	
 		$api_key="";
 		$api_token =  "";
-		$account_sid = "yousee";
+		$account_sid = "";
 		$account_subdomain = 'api.exotel.com';
 		
 		$url = "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Sms/send";	  
