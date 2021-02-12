@@ -507,9 +507,11 @@ class Helpline extends CI_Controller {
 		$http_code = curl_getinfo($ch ,CURLINFO_HTTP_CODE);
 		 
 		curl_close($ch);
-		$xml=<<<XML
-		$http_result
-		XML;
+		
+		//enable this for php version less than 5.6.40
+		//$xml=<<<XML
+		//$http_result
+		//XML;
 	
 		$xmlresult=simplexml_load_string($xml);
 		
