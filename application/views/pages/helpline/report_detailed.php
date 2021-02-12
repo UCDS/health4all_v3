@@ -490,14 +490,14 @@ $(function(){
 				document.getElementById('smsModal-template').readOnly = false;
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==helpline_id&& json[key].template_name == smsDetails.templateName){
+						if(json[key].helpline_id==helpline_id&& json[key].sms_template_id == smsDetails.templateName){
 							if (json[key].edit_text_area==0){
 								document.getElementById('smsModal-template').readOnly = true;
 							}
 							inputF.value=json[key].template;
 							smsDetails.template=json[key].template;
 							smsDetails.sms_type=json[key].sms_type;
-							smsDetails.template_name=json[key].template_name;
+							smsDetails.template_name=json[key].sms_template_id;
 							smsDetails.dlt_tid=json[key].dlt_tid;
 							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
 						}
@@ -509,14 +509,14 @@ $(function(){
 				document.getElementById('smsModal-template').readOnly = false;
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==helpline_id && json[key].template_name == templateName ){
+						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == templateName ){
 							document.getElementById("smsModal-template").value=json[key].template;
 							if (json[key].edit_text_area==0){
 								document.getElementById('smsModal-template').readOnly = true;
 							}
 							smsDetails.template=json[key].template;
 							smsDetails.sms_type=json[key].sms_type;
-							smsDetails.template_name=json[key].template_name;
+							smsDetails.template_name=json[key].sms_template_id;
 							smsDetails.dlt_tid=json[key].dlt_tid;
 							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
 							smsDetails.dlt_header = json[key].dlt_header;
@@ -541,7 +541,10 @@ $(function(){
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
 						if(json[key].helpline_id==smsDetails.called_id){
-							$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].template_name+'">'+json[key].template_name+'</option>');							
+						if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
+                $('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
+            }
+														
 						}
 					}
 				}
@@ -635,9 +638,11 @@ function openSmsModal(){
 	for (var key in json) {
 		if (json.hasOwnProperty(key)) {
 			if (json[key].helpline_id==smsDetails.called_id){
-				$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].template_name+'">'+json[key].template_name+'</option>');
+			if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
+				$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
 				document.getElementById("smsModal-template").value=json[key].template;
 			}
+		    }
 		}
 	}
 

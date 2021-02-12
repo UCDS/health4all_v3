@@ -128,8 +128,8 @@ $(function(){
 			<select name="sms_template" style="width:150px" class="form-control">
 				<option value="">Template</option>
 				<?php foreach($sms_template as $template){ ?>
-					<option value="<?php echo $template->template_name;?>"
-					<?php if($this->input->post('sms_template') == $template->template_name) echo " selected "; ?>									
+					<option value="<?php echo $template->sms_template_id;?>"
+					<?php if($this->input->post('sms_template') == $template->sms_template_id) echo " selected "; ?>									
 					><?php echo $template->template_name;?></option>
 				<?php } ?>
 			</select>	
