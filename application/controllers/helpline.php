@@ -485,9 +485,9 @@ class Helpline extends CI_Controller {
 			'DltEntityId' => $dltEntityId,
 			'DltTemplateId'=>$dlttid
 		);
-		$api_key="86526f55015a828e2c1b5f18296bd4c3d806ef5091dbbb1d";
-		$api_token =  "58a6919d196042d90e37cab1535e4d9106d0b86dd16c6915";
-		$account_sid = "yousee";
+		$api_key="";
+		$api_token =  "";
+		$account_sid = "";
 		$account_subdomain = 'api.exotel.com';
 		
 		$url = "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Sms/send";	  
