@@ -57,3 +57,6 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 
 ALTER TABLE `sms_template` CHANGE `id` `sms_template_id` INT(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `sms_helpline` ADD `sms_template_id` INT NOT NULL AFTER `sms_type`;
+
+ALTER TABLE `sms_template` CHANGE `template` `template` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+ALTER TABLE `sms_helpline` CHANGE `sms_body` `sms_body` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
