@@ -261,7 +261,7 @@ class Helpline_model extends CI_Model{
 			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
 		}
 		if($this->input->post('to_number')){
-			$this->db->like('helpline_call.to_number', $this->input->post('to_number'));
+			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
 		}
 		if($this->input->post('caller_type')){
 			$this->db->where('helpline_caller_type.caller_type_id',$this->input->post('caller_type'));
@@ -380,6 +380,21 @@ class Helpline_model extends CI_Model{
 	}
 
 	function get_detailed_report(){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = 50;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
 		$user = $this->session->userdata('logged_in');
 
 		if($this->input->post('caller_type')){
@@ -395,7 +410,7 @@ class Helpline_model extends CI_Model{
 			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
 		}
 		if($this->input->post('to_number')){
-			$this->db->like('helpline_call.to_number', $this->input->post('to_number'));
+			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
 		}
 
 		if($this->input->post('resolution_status')){
@@ -448,11 +463,98 @@ class Helpline_model extends CI_Model{
 		->where('user_helpline_link.user_id', $user['user_id'])
 		->where('reports_access',1)
 		->order_by('start_time','desc');
+		$this->db->limit($rows_per_page,$start);	
 		$query = $this->db->get();
 		return $query->result();
 	}
 
+	function get_detailed_report_count(){
+		$user = $this->session->userdata('logged_in');
+
+		if($this->input->post('caller_type')){
+			$this->db->where('helpline_caller_type.caller_type_id',$this->input->post('caller_type'));
+		}
+		if($this->input->post('language')){
+			$this->db->where('helpline_call.language_id',$this->input->post('language'));
+		}
+		if($this->input->post('call_category')){
+			$this->db->where('helpline_call_category.call_category_id',$this->input->post('call_category'));
+		}
+		if($this->input->post('from_number')){
+			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
+		}
+		if($this->input->post('to_number')){
+			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
+			echo("<script>console.log('to_number: " . $this->input->post('to_number') . "');</script>");
+		}
+
+		if($this->input->post('resolution_status')){
+			$this->db->where('helpline_call.resolution_status_id',$this->input->post('resolution_status'));
+		}
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else{
+			$this->db->where('date(start_time)',date("Y-m-d"));
+		}
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		if($this->input->post('call_direction')){
+			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+		}
+		if($this->input->post('call_type')){
+			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
+		}
+		$this->db->select('count(*) as count')
+		->from('helpline_call')
+		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
+		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
+		->join('helpline_caller_type','helpline_call.caller_type_id = helpline_caller_type.caller_type_id','left')
+		->join('helpline_call_category','helpline_call.call_category_id = helpline_call_category.call_category_id','left')
+		->join('helpline_resolution_status','helpline_call.resolution_status_id = helpline_resolution_status.resolution_status_id','left')
+		->join('helpline_call_group','helpline_call.call_group_id = helpline_call_group.call_group_id','left')
+		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left')
+		->join('helpline_email','helpline_call.call_id = helpline_email.call_id','left')
+		->join('language','helpline_call.language_id = language.language_id','left')
+		->group_by('helpline_call.call_id')
+		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
+		->where('user_helpline_link.user_id', $user['user_id'])
+		->where('reports_access',1)
+		->order_by('start_time','desc');
+		$query = $this->db->get();
+		return $query->result();
+	}
 	function get_sms_detailed_report(){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = 50;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
 		$user = $this->session->userdata('logged_in');
 
 		if($this->input->post('to_number')){
@@ -501,10 +603,62 @@ class Helpline_model extends CI_Model{
 		->join('helpline_receiver', 'helpline_receiver.user_id = user.user_id and staff.staff_id = user.staff_id ' )	
 		->where('user_helpline_link.user_id', $user['user_id'])		
 		->order_by('date_created','desc');
+		$this->db->limit($rows_per_page,$start);	
 		$query = $this->db->get();	
 		return $query->result();
 	}
 
+	function get_sms_detailed_report_count(){
+		$user = $this->session->userdata('logged_in');
+
+		if($this->input->post('to_number')){
+			$this->db->like('sms_helpline.to_receiver', $this->input->post('to_number'));
+		}
+
+		if($this->input->post('sent_status')){
+			$this->db->where('sms_helpline.status_code',$this->input->post('sent_status'));
+		}
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(date(date_created) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('date(date_created)',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(date_created)',date("Y-m-d"));
+			}
+			$this->db->where('(date(date_created) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else{
+			$this->db->where('date(date_created)',date("Y-m-d"));
+		}
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		if($this->input->post('sms_template')){
+			$this->db->where('sms_template.sms_template_id',$this->input->post('sms_template'));
+		}
+		
+		$this->db->select('count(*) as count')
+		->from('sms_helpline')
+		->join('helpline', 'sms_helpline.from_helpline =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id')
+		->join('sms_template', 'sms_helpline.sms_template_id = sms_template.sms_template_id')	
+		->join('staff', 'sms_helpline.sent_by_staff = staff.staff_id' )
+		->join('user', 'sms_helpline.sent_by_staff = user.staff_id' )	
+		->join('helpline_receiver', 'helpline_receiver.user_id = user.user_id and staff.staff_id = user.staff_id ' )	
+		->where('user_helpline_link.user_id', $user['user_id'])		
+		->order_by('date_created','desc');
+		$query = $this->db->get();	
+		return $query->result();
+	}
+	
 	function get_voicemail_detailed_report(){
 		$user = $this->session->userdata('logged_in');
 		if($this->input->post('caller_type')){
