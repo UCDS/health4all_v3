@@ -11,7 +11,74 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 
+<script type="text/javascript">
+function doPost(page_no){	
+	var page_no_hidden = document.getElementById("page_no");
+  	page_no_hidden.value=page_no;
+        $('#call_detailed_report').submit();   
+   }
+function onchange_page_dropdown(dropdownobj){
+   doPost(dropdownobj.value);    
+}
+</script>
+<style type="text/css">
+.page_dropdown{
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    width: auto;
+    height: 34px;
+    line-height: 1.428571429;
+    text-decoration: none;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    margin-left: -1px;
+    color: #428bca;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    display: inline;
+}
+.page_dropdown:hover{
+    background-color: #eeeeee;
+    color: #2a6496;
+ }
+.page_dropdown:focus{
+    color: #2a6496;
+    outline:0px;	
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+.rows_per_page{
+    display: inline-block;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.428571429;
+    color: #555555;
+    vertical-align: middle;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+.rows_per_page:focus{
+    border-color: #66afe9;
+    outline: 0;	
+}
+</style>
 <style>
 	.call_now_img{
 	    cursor: pointer;
@@ -106,6 +173,14 @@ $(function(){
 	-->
 
 	<?php
+			$page_no = 1;
+			foreach($defaultsConfigs as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$rowsperpage = $default->value;
+		 			$upper_rowsperpage = $default->upper_range;
+		 			$lower_rowsperpage = $default->lower_range;
+		 		}
+			}	
 			if($this->input->post('from_date')){
 				$from_date = date("d-M-Y",strtotime($this->input->post('from_date')));
 			}
@@ -114,7 +189,7 @@ $(function(){
 				$to_date = date("d-M-Y",strtotime($this->input->post('to_date')));
 			}
 			else $to_date = date("d-M-Y");
-			echo form_open('helpline/detailed_report',array('role'=>'form','class'=>'form-custom'));
+			echo form_open('helpline/detailed_report',array('role'=>'form','class'=>'form-custom','id'=>'call_detailed_report','name'=>'call_detailed_report' ));
 	?>
 			<h4>Calls during</h4>
 			<input type="text" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
@@ -141,7 +216,7 @@ $(function(){
 					<option <?php if($this->input->post('call_type') == "incomplete") echo " selected "; ?> value="incomplete">Incomplete</option>
 					<option <?php if($this->input->post('call_type') == "call-attempt") echo " selected "; ?> value="call-attempt">Call Attempt</option>
 			</select>
-			<br />
+			
 			<input type="text" class="form-control" placeholder="From Number" style="width:150px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
 			<input type="text" class="form-control" placeholder="To Number"  style="width:150px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
 			<select name="call_category" style="width:100px" class="form-control">
@@ -176,16 +251,143 @@ $(function(){
 					><?php echo $status->resolution_status;?></option>
 				<?php } ?>
 			</select>
-			<input type="submit" value="Go" name="submit" class="btn btn-primary btn-sm" />
+			<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
+			 Rows per page : <input type="number" class="rows_per_page" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			<input type="submit" value="Go" name="submitBtn" class="btn btn-primary btn-sm" />
 			<button type="button" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;"><i class="fa fa-phone" style="padding-right: 5px;"></i> Call</button>
 			<?php if ($add_sms_access==1){ ?>
 			<button type="button" class="btn btn-primary btn-sm sms_button" onclick="openSmsModal()" style="display: none;"><i class="fa fa-envelope-o" style="padding-right: 5px;"></i> SMS</button>
 			<?php } ?>
 
-		</form></h4>
+		</form></h4><br />
 	<?php
 		if(!!$calls){
 	?>
+	<?php 
+	$total_records_per_page = $this->input->post('rows_per_page');
+	if ($this->input->post('page_no')) { 
+		$page_no = $this->input->post('page_no');
+	}
+	else{
+		$page_no = 1;
+	}
+	$tmp_count = 0;
+	foreach($calls_count as $count){
+		$tmp_count = $tmp_count + $count->count;
+	}
+	$total_records = $tmp_count;		
+	$total_no_of_pages = ceil($total_records / $total_records_per_page);
+	if ($total_no_of_pages==0)
+		$total_no_of_pages = 1;
+	$second_last = $total_no_of_pages - 1; 
+	$offset = ($page_no-1) * $total_records_per_page;
+	$previous_page = $page_no - 1;
+	$next_page = $page_no + 1;
+	$adjacents = "2";	
+?>
+
+<ul class="pagination" style="margin:0">
+<?php if($page_no > 1){
+echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
+} ?>
+
+<li <?php if($page_no <= 1){ echo "class='disabled'"; } ?>>
+<a <?php if($page_no > 1){
+echo "href=# onclick=doPost($previous_page)";
+
+} ?>>Previous</a>
+</li>
+<?php
+  if ($total_no_of_pages <= 10){  	 
+	for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
+	if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	        }else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+                }
+        }
+}
+else if ($total_no_of_pages > 10){
+	if($page_no <= 4) {			
+ 		for ($counter = 1; $counter < 8; $counter++){		 
+		if ($counter == $page_no) {
+	   		echo "<li class='active'><a>$counter</a></li>";	
+		}else{
+           		echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+                }
+}
+
+echo "<li><a>...</a></li>";
+echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+}
+elseif($page_no > 4 && $page_no < $total_no_of_pages - 4) {		 
+echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+echo "<li><a>...</a></li>";
+for (
+     $counter = $page_no - $adjacents;
+     $counter <= $page_no + $adjacents;
+     $counter++
+     ) {		
+     if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	}else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+          }                  
+       }
+echo "<li><a>...</a></li>";
+echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+}
+else {
+echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+echo "<li><a>...</a></li>";
+for (
+     $counter = $total_no_of_pages - 6;
+     $counter <= $total_no_of_pages;
+     $counter++
+     ) {
+     if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	}else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+	}                   
+     }
+}
+}  
+?>
+<li <?php if($page_no >= $total_no_of_pages){
+echo "class='disabled'";
+} ?>>
+<a <?php if($page_no < $total_no_of_pages) {
+echo "href=# onclick=doPost($next_page)";
+} ?>>Next</a>
+</li>
+
+<?php if($page_no < $total_no_of_pages){
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
+} ?>
+<?php if($total_no_of_pages > 0){
+echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
+for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
+                  echo "<option value=$counter ";
+                  if ($page_no == $counter){
+                   echo "selected";
+                  }         
+                  echo ">$counter</option>";
+	}
+echo "</select></li>";
+} ?>
+</ul>
+
+
+<div style='padding: 0px 2px;'>
+
+<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
+
+</div>
 		<table class="table table-striped table-bordered" id="table-sort">
 			<colgroup>
 				<col style="width: 1.3%;">
@@ -348,6 +550,110 @@ $(function(){
 				?>
 				</tbody>
 			</table>
+			<div style='padding: 0px 2px;'>
+
+<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
+
+</div>
+
+<ul class="pagination" style="margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 20px;
+    margin-left: 0px;">
+<?php if($page_no > 1){
+echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
+} ?>
+
+<li <?php if($page_no <= 1){ echo "class='disabled'"; } ?>>
+<a <?php if($page_no > 1){
+echo "href=# onclick=doPost($previous_page)";
+
+} ?>>Previous</a>
+</li>
+<?php
+  if ($total_no_of_pages <= 10){  	 
+	for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
+	if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	        }else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+                }
+        }
+}
+else if ($total_no_of_pages > 10){
+	if($page_no <= 4) {			
+ 		for ($counter = 1; $counter < 8; $counter++){		 
+		if ($counter == $page_no) {
+	   		echo "<li class='active'><a>$counter</a></li>";	
+		}else{
+           		echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+                }
+}
+
+echo "<li><a>...</a></li>";
+echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+}
+elseif($page_no > 4 && $page_no < $total_no_of_pages - 4) {		 
+echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+echo "<li><a>...</a></li>";
+for (
+     $counter = $page_no - $adjacents;
+     $counter <= $page_no + $adjacents;
+     $counter++
+     ) {		
+     if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	}else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+          }                  
+       }
+echo "<li><a>...</a></li>";
+echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+}
+else {
+echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+echo "<li><a>...</a></li>";
+for (
+     $counter = $total_no_of_pages - 6;
+     $counter <= $total_no_of_pages;
+     $counter++
+     ) {
+     if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	}else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+	}                   
+     }
+}
+}  
+?>
+<li <?php if($page_no >= $total_no_of_pages){
+echo "class='disabled'";
+} ?>>
+<a <?php if($page_no < $total_no_of_pages) {
+echo "href=# onclick=doPost($next_page)";
+} ?>>Next</a>
+</li>
+
+<?php if($page_no < $total_no_of_pages){
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
+} ?>
+<?php if($total_no_of_pages > 0){
+echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
+for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
+                  echo "<option value=$counter ";
+                  if ($page_no == $counter){
+                   echo "selected";
+                  }         
+                  echo ">$counter</option>";
+	}
+echo "</select></li>";
+} ?>
+</ul>
 		<?php
 			echo form_close();
 			}

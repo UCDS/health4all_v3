@@ -44,6 +44,7 @@ class Helpline extends CI_Controller {
 			$this->data['title']="HelpLine Calls - Detailed Report";
 			$this->load->view('templates/header',$this->data);
 			$this->data['calls']=$this->helpline_model->get_detailed_report();
+			$this->data['calls_count']=$this->helpline_model->get_detailed_report_count();
 			$this->data['caller_type']=$this->helpline_model->get_caller_type();
 			$this->data['language']=$this->helpline_model->get_language();
 			$this->data['call_category']=$this->helpline_model->get_call_category();
@@ -52,9 +53,9 @@ class Helpline extends CI_Controller {
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
 			$this->data['add_sms_access']=$add_sms_access;
-			
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 
-			//echo("<script>console.log('PHP: " . json_encode($this->data['sms_templates']) . "');</script>");
+			//echo("<script>console.log('PHP: " . json_encode($this->data['calls_count']) . "');</script>");
 
 			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
 			$user_receiver_links = array();
@@ -89,10 +90,12 @@ class Helpline extends CI_Controller {
 			$this->data['title']="HelpLine SMS";
 			$this->load->view('templates/header',$this->data);
 			$this->data['sms_data']=$this->helpline_model->get_sms_detailed_report();
+			$this->data['sms_count']=$this->helpline_model->get_sms_detailed_report_count();
 			$this->data['sent_status']=$this->helpline_model->get_sms_sent_status();
 			$this->data['sms_template']=$this->helpline_model->get_sms_template();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			$this->load->view('pages/helpline/sms_report_detailed',$this->data);
 			$this->load->view('templates/footer');
 		}
