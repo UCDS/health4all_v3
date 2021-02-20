@@ -107,6 +107,8 @@ input[type=number] {
 
 <script type="text/javascript">
 var user_details = <?php echo $user_details; ?>;
+var departments = <?php echo json_encode($department); ?>;
+var hospitals = <?php echo json_encode($all_hospitals); ?>;
 var receiver = user_details.receiver;
 var callDetails = {};
 var smsDetails = {};
@@ -174,7 +176,8 @@ $(function(){
 
 	<?php
 			$page_no = 1;
-			foreach($defaultsConfigs as $default){		 
+			foreach($defaultsConfigs as $default){	
+				// var_dump($default);	 
 		 	if($default->default_id=='pagination'){
 		 			$rowsperpage = $default->value;
 		 			$upper_rowsperpage = $default->upper_range;
@@ -195,7 +198,7 @@ $(function(){
 			<input type="text" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
 			<input type="text" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
 
-			<select name="helpline_id" style="width:100px" class="form-control">
+			<select name="helpline_id" id="helplineSelect" style="width:100px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
@@ -241,6 +244,14 @@ $(function(){
 					<option value="<?php echo $lng->language_id;?>"
 					<?php if($this->input->post('language') == $lng->	language_id) echo " selected "; ?>
 					><?php echo $lng->language;?></option>
+				<?php } ?>
+			</select>
+			<select id="departmentSelect" name="helpline_department" style="width:100px" class="form-control">
+				<option value="">Department</option>
+				<?php foreach($department as $dept){ ?>
+					<option value="<?php echo $dept->department_id;?>"
+					<?php if($this->input->post('helpline_department') == $dept->department_id) echo " selected "; ?>
+					><?php echo $dept->department;?></option>
 				<?php } ?>
 			</select>
 			<select name="resolution_status" style="width:100px" class="form-control">
@@ -411,6 +422,7 @@ echo "</select></li>";
 				<th>Note</th>
 				<th>Caller Type</th>
 				<th>Language</th>
+				<th>Department</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
 				<!-- <th class="hidden">Resolution Time</th>
@@ -467,6 +479,9 @@ echo "</select></li>";
 						</td>
 						<td>
 							<?php echo $call->language;?>
+						</td>
+						<td>
+							<?php echo $call->department;?>
 						</td>
 						<td>
 							<?php echo $call->call_category;?>
@@ -1151,6 +1166,34 @@ function updateConnectto(){
 	}
 }
 
+function setupDepartmentDropdown() {
+	console.log("setupDepartmentDropdown");
+	$("#helplineSelect").on("change", function() {
+		console.log("select changed");
+		const helplineId = $(this).val();
+		const helplineHospital = hospitals.filter(hospital => hospital.helpline_id == helplineId);
+		$("#departmentSelect options").remove();
+		if(helplineHospital.length > 0) {
+			const hospitalId = helplineHospital[0].hospital_id;
+			const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
+			if(helplineDepartments.length > 0) {
+				$("#departmentSelect options").remove();
+				const optionsHtml = helplineDepartments.map(dept => {
+					return `	<option value="${dept.department_id}">
+									${dept.department}
+								</option>`;
+				});
+				$("#departmentSelect").html(optionsHtml);
+				return;
+			}
+		}
+		const emptyHtml = `	<option value="">
+									Department
+							</option>`;
+		$("#departmentSelect").html(emptyHtml);
+	})
+}
+
 function revertConnecto(){
 	callDetails.app_id = receiver.app_id;
 	$("#callModal-connectto").removeClass('line-through');
@@ -1215,4 +1258,7 @@ $(function(){
 		
 	});
 });
+$(document).ready(function() {
+	setupDepartmentDropdown();
+})
 </script>

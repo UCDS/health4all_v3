@@ -7,6 +7,7 @@ class Helpline extends CI_Controller {
 		$this->load->model('masters_model');
 		$this->load->model('staff_model');
 		$this->load->model('helpline_model');
+		$this->load->model('hospital_model');
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
 		$user_id=$userdata['user_id'];
@@ -47,6 +48,7 @@ class Helpline extends CI_Controller {
 			$this->data['calls_count']=$this->helpline_model->get_detailed_report_count();
 			$this->data['caller_type']=$this->helpline_model->get_caller_type();
 			$this->data['language']=$this->helpline_model->get_language();
+			$this->data['department']=$this->hospital_model->get_department();
 			$this->data['call_category']=$this->helpline_model->get_call_category();
 			$this->data['resolution_status']=$this->helpline_model->get_resolution_status();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
@@ -56,7 +58,6 @@ class Helpline extends CI_Controller {
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 
 			//echo("<script>console.log('PHP: " . json_encode($this->data['calls_count']) . "');</script>");
-
 			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
 			$user_receiver_links = array();
 			if($user_receiver){
@@ -66,7 +67,7 @@ class Helpline extends CI_Controller {
 				'receiver' => $user_receiver,
 				'receiver_link' => $user_receiver_links
 			));
-
+			// var_dump($this->data);
 			$this->load->view('pages/helpline/report_detailed',$this->data);
 			$this->load->view('templates/footer');
 		}

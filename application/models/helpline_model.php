@@ -403,6 +403,9 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('language')){
 			$this->db->where('helpline_call.language_id',$this->input->post('language'));
 		}
+		if($this->input->post('helpline_department')){
+			$this->db->where('helpline_call.department_id',$this->input->post('helpline_department'));
+		}
 		if($this->input->post('call_category')){
 			$this->db->where('helpline_call_category.call_category_id',$this->input->post('call_category'));
 		}
@@ -458,6 +461,7 @@ class Helpline_model extends CI_Model{
 		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left')
 		->join('helpline_email','helpline_call.call_id = helpline_email.call_id','left')
 		->join('language','helpline_call.language_id = language.language_id','left')
+		->join('department', 'department.department_id = helpline_call.department_id','left')
 		->group_by('helpline_call.call_id')
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
 		->where('user_helpline_link.user_id', $user['user_id'])
