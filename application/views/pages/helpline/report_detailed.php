@@ -219,7 +219,7 @@ $(function(){
 			
 			<input type="text" class="form-control" placeholder="From Number" style="width:150px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
 			<input type="text" class="form-control" placeholder="To Number"  style="width:150px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
-			<select name="call_category" style="width:100px" class="form-control">
+			<select name="call_category" style="width:150px" class="form-control">
 				<option value="">Category</option>
 				<?php foreach($call_category as $cc){ ?>
 					<option value="<?php echo $cc->call_category_id;?>"
@@ -227,7 +227,7 @@ $(function(){
 					><?php echo $cc->call_category;?></option>
 				<?php } ?>
 			</select>	
-			<select name="caller_type" style="width:100px" class="form-control">
+			<select name="caller_type" style="width:150px" class="form-control">
 				<option value="">Caller</option>
 				<?php foreach($caller_type as $ct){ ?>
 					<option value="<?php echo $ct->caller_type_id;?>"
@@ -235,7 +235,7 @@ $(function(){
 					><?php echo $ct->caller_type;?></option>
 				<?php } ?>
 			</select>
-			<select name="language" style="width:100px" class="form-control">
+			<select name="language" style="width:150px" class="form-control">
 				<option value="">Language</option>
 				<?php foreach($language as $lng){ ?>
 					<option value="<?php echo $lng->language_id;?>"
@@ -243,7 +243,7 @@ $(function(){
 					><?php echo $lng->language;?></option>
 				<?php } ?>
 			</select>
-			<select name="resolution_status" style="width:100px" class="form-control">
+			<select name="resolution_status" style="width:150px" class="form-control">
 				<option value="">Status</option>
 				<?php foreach($resolution_status as $status){ ?>
 					<option value="<?php echo $status->resolution_status_id;?>"
@@ -263,8 +263,18 @@ $(function(){
 	<?php
 		if(!!$calls){
 	?>
+	<div style='padding: 0px 2px;'>
+
+<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+
+</div>
 	<?php 
-	$total_records_per_page = $this->input->post('rows_per_page');
+	if ($this->input->post('rows_per_page')){
+		$total_records_per_page = $this->input->post('rows_per_page');
+	}else{
+		$total_records_per_page = $rowsperpage;
+	}
+
 	if ($this->input->post('page_no')) { 
 		$page_no = $this->input->post('page_no');
 	}
@@ -421,7 +431,7 @@ echo "</select></li>";
 			</thead>
 			<tbody>
 			<?php
-				$i=1;
+				$i=(($page_no - 1)* $total_records_per_page) + 1;
 				foreach($calls as $call){ ?>
 					<tr>
 						<td>
