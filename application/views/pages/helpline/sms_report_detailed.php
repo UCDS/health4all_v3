@@ -250,6 +250,11 @@ $(function(){
 	<?php
 		if(!!$sms_data){
 	?>
+	<div style='padding: 0px 2px;'>
+
+<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+
+</div>
 	<?php 
 	$total_records_per_page = $this->input->post('rows_per_page');
 	if ($this->input->post('page_no')) { 
@@ -258,7 +263,12 @@ $(function(){
 	else{
 		$page_no = 1;
 	}
-	$total_records = $sms_count[0]->count;		
+	$total_records = $sms_count[0]->count;
+	if ($this->input->post('rows_per_page')){
+		$total_records_per_page = $this->input->post('rows_per_page');
+	}else{
+		$total_records_per_page = $rowsperpage;
+	}		
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages==0)
 		$total_no_of_pages = 1;
@@ -397,7 +407,7 @@ echo "</select></li>";
 			</thead>
 			<tbody>
 			<?php
-				$i=1;
+				$i=(($page_no - 1)* $total_records_per_page) + 1;
 				foreach($sms_data as $sms){ ?>
 					<tr>
 						<td>
