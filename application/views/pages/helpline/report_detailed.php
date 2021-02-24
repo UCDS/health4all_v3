@@ -195,7 +195,7 @@ $(function(){
 			<input type="text" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
 			<input type="text" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
 
-			<select name="helpline_id" style="width:100px" class="form-control">
+			<select name="helpline_id" style="width:150px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
