@@ -213,8 +213,8 @@ $(function(){
 			echo form_open('helpline/sms_detailed_report',array('role'=>'form','class'=>'form-custom','id'=>'sms_detailed_report','name'=>'sms_detailed_report'));
 	?>
 			<h4>SMS during</h4>
-			<input type="text" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
-			<input type="text" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
+			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
+			<input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
 
 			<select name="helpline_id" style="width:150px" class="form-control">
 				<option value="">Helpline</option>
