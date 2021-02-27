@@ -110,6 +110,7 @@ var user_details = <?php echo $user_details; ?>;
 var departments = <?php echo json_encode($department); ?>;
 var hospitals = <?php echo json_encode($all_hospitals); ?>;
 var receiver = user_details.receiver;
+var callData = <?php echo json_encode($calls); ?>;
 var callDetails = {};
 var smsDetails = {};
 
@@ -441,6 +442,8 @@ echo "</select></li>";
 						</td>
 						<td>
 							<?php echo $call->call_id;?>
+							<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>">edit</button>
+							<button class="sendEmail" onClick="openSendEmailModal(this)" data-id="<?php echo $call->call_id;?>">Send Email</button>
 						</td>
 						<td>
 							<?php if($call->call_type == "incomplete") { ?>
@@ -471,22 +474,22 @@ echo "</select></li>";
 							</audio>
 							</small>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->note;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->caller_type;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->language;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->department;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->call_category;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->resolution_status;?>
 						</td>
 						<td class="hidden">
@@ -506,7 +509,7 @@ echo "</select></li>";
 									}
 								?>
 							</small>
-						</td>
+						</td class="hospital">
 						<!-- <td>
 							<?php echo $call->hospital;?>
 						</td>
@@ -753,7 +756,7 @@ echo "</select></li>";
 	 </div>
 	</div>
 </div>
-
+<?php include_once("update_call_modal.php") ?>
 <!-- Modal -->
 <div class="modal fade" id="smsModal" tabindex="-1" role="dialog" aria-labelledby="smsModalLabel">
   <div class="modal-dialog" role="document" style="width:90%">
@@ -1171,27 +1174,53 @@ function setupDepartmentDropdown() {
 	$("#helplineSelect").on("change", function() {
 		console.log("select changed");
 		const helplineId = $(this).val();
-		const helplineHospital = hospitals.filter(hospital => hospital.helpline_id == helplineId);
-		$("#departmentSelect options").remove();
-		if(helplineHospital.length > 0) {
-			const hospitalId = helplineHospital[0].hospital_id;
-			const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
-			if(helplineDepartments.length > 0) {
-				$("#departmentSelect options").remove();
-				const optionsHtml = helplineDepartments.map(dept => {
-					return `	<option value="${dept.department_id}">
-									${dept.department}
-								</option>`;
-				});
-				$("#departmentSelect").html(optionsHtml);
-				return;
-			}
-		}
-		const emptyHtml = `	<option value="">
-									Department
-							</option>`;
-		$("#departmentSelect").html(emptyHtml);
+		const optionsHtml = getDepartmentOptionsForHelpline(helplineId);
+		$("#departmentSelect").html(optionsHtml);
 	})
+}
+
+function getDepartmentOptionsForHelpline(helplineId) {
+	const helplineHospital = hospitals.filter(hospital => hospital.helpline_id == helplineId);
+	let optionsHtml = buildEmptyOption("Department");
+	if(helplineHospital.length > 0) {
+		const hospitalId = helplineHospital[0].hospital_id;
+		const deptOptions = getDepartmentOptionsForHospital(hospitalId);
+		deptOptions? optionsHtml = deptOptions: "";		
+	}
+	return optionsHtml;
+}
+
+
+function getDepartmentOptionsForHospital(hospitalId) {
+	const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
+	if(helplineDepartments.length > 0) {
+		const optionsHtml = helplineDepartments.map(dept => {
+			return `	<option value="${dept.department_id}">
+							${dept.department}
+						</option>`;
+		});
+		return optionsHtml;
+	}
+	return null;
+}
+function buildEmptyOption(optionName) {
+	return `<option value="">
+					${optionName}
+			</option>`;
+
+}
+function openEditModal(e) {
+	const callId = $(e).attr('data-id');
+	const callArray = callData.filter((call) => call.call_id == callId);
+	if(callArray.length > 0) {
+		$("#updateCallModal").modal("show");
+		setupUpdateCallModalData(callArray[0])
+	}
+}
+function openSendEmailModal(e) {
+	const callId = $(this).attr('data-id');
+	$("#updateCallModal").modal("show");
+
 }
 
 function revertConnecto(){
