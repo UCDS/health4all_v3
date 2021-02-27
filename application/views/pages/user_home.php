@@ -1,7 +1,13 @@
 
 	<div class="row">
+
+        <?php foreach($defaultsConfigs as $default){
+            if ($default->default_id == "app_helpline")
+                $app_helpline_number = $default->value;
+        }
+        ?>                   
             
-	    <h1>Welcome to Health4All- <small><font color="green">Helpline Number(080-47103744)</font></small><br/>
+	    <h1>Welcome to Health4All- <small><font color="green">Helpline Number <?php echo $app_helpline_number ?></font></small><br/>
         <small>A Free and Open Source application supported by <a href="http://www.yousee.in" target="_blank">YouSee</a></small></h1>
 		
 		<br />
