@@ -379,7 +379,7 @@ class Helpline_model extends CI_Model{
 		return $query->result();
 	}
 
-	function get_detailed_report(){
+	function get_detailed_report($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -391,7 +391,7 @@ class Helpline_model extends CI_Model{
 			$rows_per_page = $this->input->post('rows_per_page');
 		}
 		else{
-			$rows_per_page = 50;
+			$rows_per_page = $default_rowsperpage;
 		}
 		$start = ($page_no -1 )  * $rows_per_page;
 		
@@ -545,7 +545,7 @@ class Helpline_model extends CI_Model{
 		$query = $this->db->get();
 		return $query->result();
 	}
-	function get_sms_detailed_report(){
+	function get_sms_detailed_report($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -556,7 +556,7 @@ class Helpline_model extends CI_Model{
 			$rows_per_page = $this->input->post('rows_per_page');
 		}
 		else{
-			$rows_per_page = 50;
+			$rows_per_page = $default_rowsperpage;
 		}
 		$start = ($page_no -1 )  * $rows_per_page;
 		$user = $this->session->userdata('logged_in');

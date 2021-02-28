@@ -498,7 +498,7 @@ function get_op_detail_with_idproof(){
 		
 	}
 	
-	function get_registration_appointment(){
+	function get_registration_appointment($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -509,7 +509,7 @@ function get_op_detail_with_idproof(){
 			$rows_per_page = $this->input->post('rows_per_page');
 		}
 		else{
-			$rows_per_page = 50;
+			$rows_per_page = $default_rowsperpage;
 		}
 		$start = ($page_no -1 )  * $rows_per_page;
 		

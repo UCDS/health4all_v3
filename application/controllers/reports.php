@@ -261,8 +261,13 @@ class Reports extends CI_Controller {
 		if($this->input->post('visit_id')){ 
 			if($this->reports_model->update_appointment()){$this->data['updated']=true;}
 		}
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$rowsperpage = $default->value;
+		 		}
+			}
 		$this->data['report_count']=$this->reports_model->get_registration_appointment_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
-		$this->data['report']=$this->reports_model->get_registration_appointment($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);		
+		$this->data['report']=$this->reports_model->get_registration_appointment($rowsperpage);		
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 

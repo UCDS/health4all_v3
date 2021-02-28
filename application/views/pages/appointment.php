@@ -228,8 +228,17 @@ input[type=number] {
 
 <?php if(isset($report) && count($report)>0)
 { ?>
+<div style='padding: 0px 2px;'>
+
+<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+
+</div>
 <?php 
-	$total_records_per_page = $this->input->post('rows_per_page');
+	if ($this->input->post('rows_per_page')){
+		$total_records_per_page = $this->input->post('rows_per_page');
+	}else{
+		$total_records_per_page = $rowsperpage;
+	}
 	if ($this->input->post('page_no')) { 
 		$page_no = $this->input->post('page_no');
 	}

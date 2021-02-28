@@ -197,10 +197,10 @@ $(function(){
 			echo form_open('helpline/detailed_report',array('role'=>'form','class'=>'form-custom','id'=>'call_detailed_report','name'=>'call_detailed_report' ));
 	?>
 			<h4>Calls during</h4>
-			<input type="text" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
-			<input type="text" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
+			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
+			<input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
 
-			<select name="helpline_id" id="helplineSelect" style="width:100px" class="form-control">
+			<select name="helpline_id" id="helplineSelect" style="width:150px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
@@ -208,12 +208,12 @@ $(function(){
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
 			</select>
-			<select name="call_direction" style="width:150px" class="form-control">
+			<select name="call_direction" style="width:120px" class="form-control">
 					<option value="">Call Direction</option>
 					<option <?php if($this->input->post('call_direction') == "incoming") echo " selected "; ?> value="incoming">Incoming calls</option>
 					<option <?php if($this->input->post('call_direction') == "outbound-dial") echo " selected "; ?> value="outbound-dial">Outgoing calls</option>
 			</select>
-			<select name="call_type" style="width:150px" class="form-control">
+			<select name="call_type" style="width:120px" class="form-control">
 					<option value="">Call Type</option>
 					<option <?php if($this->input->post('call_type') == "completed") echo " selected "; ?> value="completed">Completed</option>
 					<option <?php if($this->input->post('call_type') == "client-hangup") echo " selected "; ?> value="client-hangup">Client Hangup</option>
@@ -222,9 +222,9 @@ $(function(){
 					<option <?php if($this->input->post('call_type') == "call-attempt") echo " selected "; ?> value="call-attempt">Call Attempt</option>
 			</select>
 			
-			<input type="text" class="form-control" placeholder="From Number" style="width:150px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
-			<input type="text" class="form-control" placeholder="To Number"  style="width:150px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
-			<select name="call_category" style="width:100px" class="form-control">
+			<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
+			<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
+			<select name="call_category" style="width:150px" class="form-control">
 				<option value="">Category</option>
 				<?php foreach($call_category as $cc){ ?>
 					<option value="<?php echo $cc->call_category_id;?>"
@@ -232,7 +232,7 @@ $(function(){
 					><?php echo $cc->call_category;?></option>
 				<?php } ?>
 			</select>	
-			<select name="caller_type" style="width:100px" class="form-control">
+			<select name="caller_type" style="width:120px" class="form-control">
 				<option value="">Caller</option>
 				<?php foreach($caller_type as $ct){ ?>
 					<option value="<?php echo $ct->caller_type_id;?>"
@@ -240,7 +240,7 @@ $(function(){
 					><?php echo $ct->caller_type;?></option>
 				<?php } ?>
 			</select>
-			<select name="language" style="width:100px" class="form-control">
+			<select name="language" style="width:120px" class="form-control">
 				<option value="">Language</option>
 				<?php foreach($language as $lng){ ?>
 					<option value="<?php echo $lng->language_id;?>"
@@ -256,7 +256,7 @@ $(function(){
 					><?php echo $dept->department;?></option>
 				<?php } ?>
 			</select>
-			<select name="resolution_status" style="width:100px" class="form-control">
+			<select name="resolution_status" style="width:150px" class="form-control">
 				<option value="">Status</option>
 				<?php foreach($resolution_status as $status){ ?>
 					<option value="<?php echo $status->resolution_status_id;?>"
@@ -276,8 +276,18 @@ $(function(){
 	<?php
 		if(!!$calls){
 	?>
+	<div style='padding: 0px 2px;'>
+
+<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+
+</div>
 	<?php 
-	$total_records_per_page = $this->input->post('rows_per_page');
+	if ($this->input->post('rows_per_page')){
+		$total_records_per_page = $this->input->post('rows_per_page');
+	}else{
+		$total_records_per_page = $rowsperpage;
+	}
+
 	if ($this->input->post('page_no')) { 
 		$page_no = $this->input->post('page_no');
 	}
@@ -435,7 +445,7 @@ echo "</select></li>";
 			</thead>
 			<tbody>
 			<?php
-				$i=1;
+				$i=(($page_no - 1)* $total_records_per_page) + 1;
 				foreach($calls as $call){ ?>
 					<tr>
 						<td>

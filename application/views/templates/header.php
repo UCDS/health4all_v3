@@ -30,13 +30,20 @@
 	</script>
 </head>
 <body>
+
+		<?php foreach($defaultsConfigs as $default){
+			if ($default->default_id == "uc_url")
+			    $uc_url = $default->value;
+        }
+        ?>     
+
 <div id="wrap">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
 		<!-- Bootstrap toggle menu for mobile devices, only visible on small screens -->
-		<a class="navbar-brand" href="https://yousee.in/c4c" target="_blank"><span style="position:absolute;font-size:2.7em;left:5%;top:10px" class="logo logo-yousee"></a>
+		<a class="navbar-brand" href=<?php echo $uc_url; ?> target="_blank"><span style="position:absolute;font-size:2.7em;left:5%;top:10px" class="logo logo-yousee"></a>
 		
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
