@@ -109,6 +109,7 @@ input[type=number] {
 var user_details = <?php echo $user_details; ?>;
 var departments = <?php echo json_encode($department); ?>;
 var hospitals = <?php echo json_encode($all_hospitals); ?>;
+var userHospitals = <?php echo json_encode($user_hospitals); ?>;
 var receiver = user_details.receiver;
 var callData = <?php echo json_encode($calls); ?>;
 var callDetails = {};

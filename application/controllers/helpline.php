@@ -53,6 +53,7 @@ class Helpline extends CI_Controller {
 			$this->data['resolution_status']=$this->helpline_model->get_resolution_status();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
+			$this->data['user_hospitals']=$this->staff_model->user_hospital($user['user_id']);
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
 			$this->data['add_sms_access']=$add_sms_access;
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
