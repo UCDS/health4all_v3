@@ -47,6 +47,19 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-3">Hospital </div>
+                    <div class="col-md-6">
+                        <select class="hospital" name="hospital_<?php echo $call->call_id;?>" id="hospital_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                            <option value="">Select</option>
+                            <?php foreach($all_hospitals as $hosp){ ?>
+                                <option value="<?php echo $hosp->hospital_id;?>"
+                                <?php if($call->hospital_id == $hosp->hospital_id) echo " selected "; ?>
+                                ><?php echo $hosp->hospital;?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-3">Department</div>
                     <div class="col-md-6">
                         <select class="department" name="department<?php echo $call->call_id;?>"  id="department_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
@@ -87,19 +100,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-3">Hospital </div>
-                    <div class="col-md-6">
-                        <select class="hospital" name="hospital_<?php echo $call->call_id;?>" id="hospital_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
-                            <option value="">Select</option>
-                            <?php foreach($all_hospitals as $hosp){ ?>
-                                <option value="<?php echo $hosp->hospital_id;?>"
-                                <?php if($call->hospital_id == $hosp->hospital_id) echo " selected "; ?>
-                                ><?php echo $hosp->hospital;?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="col-md-3">Patient Type</div>
                     <div class="col-md-6">
                         <select class="patient_type" name="visit_type_<?php echo $call->call_id;?>" id="visit_type_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
@@ -119,6 +119,9 @@
                         <input class="call_id_email form-control" readonly name="call_id_email" form="send_email_form">
                     </div>
                 </div>
+                <div class="row" style="text-align: center">
+                    <input type="button" value="Update" class="submit btn btn-primary btn-sm" name="submit" form="send_email_form">
+                </div>
             </div>
         </div>
     </div>
@@ -136,12 +139,37 @@ function setupUpdateCallModalData(callData) {
     modal.find(".resolution_status").val(callData.resolution_status_id);
     // modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
     // modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
+    modal.find(".hospital").val(callData.user_hospitals);
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
 
-    const departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id)
+    const departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
     departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
     modal.find(".department").html(departmentOptions);
+    modal.find(".submit").on("click", function() {
+        callData = {
+            modal.find(".callId").html(callData.call_id);
+            modal.find(".notes").val(callData.notes);
+            "caller_type": modal.find(".caller_type").val();
+            "language": modal.find(".language").val();    
+            "call_category": modal.find(".call_category").val(callData.call_category_id);
+            "resolution_status": modal.find(".resolution_status").val();
+            // modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
+            // modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
+            "hospital": modal.find(".hospital").val(callData.user_hospitals);
+            modal.find(".patient_type").val(callData.ip_op);
+            modal.find(".visit_id").val(callData.visit_id);    
+
+            const departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
+            departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
+            modal.find(".department").html(departmentOptions);
+            
+        }    
+    })
+}
+
+function updateCallData() {
+
 }
 </script>
 <style>
