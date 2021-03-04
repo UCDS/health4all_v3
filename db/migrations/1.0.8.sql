@@ -71,7 +71,8 @@ CREATE TABLE `patient_consultation_summary` (
  `summary_link_contents_md5` varchar(50) NOT NULL,
  `last_download_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  `totaldownloads` int(11) NOT NULL DEFAULT '0',
- PRIMARY KEY (`summary_link_patient_id`,`summary_link_patient_visit_id`)
+ PRIMARY KEY (`summary_link_patient_id`,`summary_link_patient_visit_id`),
+ UNIQUE KEY `summary_link_contents_index` (`summary_link_contents_md5`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `sms_template` ADD `generate_by_query` TINYINT NOT NULL DEFAULT '0' COMMENT 'Check whether to generate sms content through method or not' AFTER `edit_text_area`;
