@@ -195,13 +195,6 @@ $(function(){
 
 	<?php
 			$page_no = 1;
-			foreach($defaultsConfigs as $default){		 
-		 	if($default->default_id=='pagination'){
-		 			$rowsperpage = $default->value;
-		 			$upper_rowsperpage = $default->upper_range;
-		 			$lower_rowsperpage = $default->lower_range;
-		 		}
-			}
 			if($this->input->post('from_date')){
 				$from_date = date("d-M-Y",strtotime($this->input->post('from_date')));
 			}

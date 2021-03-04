@@ -60,3 +60,28 @@ ALTER TABLE `sms_helpline` ADD `sms_template_id` INT NOT NULL AFTER `sms_type`;
 
 ALTER TABLE `sms_template` CHANGE `template` `template` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE `sms_helpline` CHANGE `sms_body` `sms_body` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
+ALTER TABLE `hospital` ADD `telehealth` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Determine whether hospital is running as telemedicine (1) or not ' AFTER `helpline_id`;
+
+CREATE TABLE `patient_consultation_summary` (
+ `summary_link_patient_id` int(11) NOT NULL,
+ `summary_link_patient_visit_id` int(11) NOT NULL,
+ `summary_link_contents` text NOT NULL,
+ `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `summary_link_contents_md5` varchar(50) NOT NULL,
+ `last_download_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `totaldownloads` int(11) NOT NULL DEFAULT '0',
+ PRIMARY KEY (`summary_link_patient_id`,`summary_link_patient_visit_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `sms_template` ADD `generate_by_query` TINYINT NOT NULL DEFAULT '0' COMMENT 'Check whether to generate sms content through method or not' AFTER `edit_text_area`;
+
+ALTER TABLE `sms_template` ADD `generation_method` VARCHAR(100) NOT NULL AFTER `generate_by_query`;
+
+ALTER TABLE `sms_template`
+  DROP `sms_default_id`,
+  DROP `sms_query_id`;
+
+ALTER TABLE `sms_template` ADD `report_download_url` VARCHAR(100) NOT NULL AFTER `generation_method`;
+
+ALTER TABLE `helpline_resolution_status` CHANGE `resolution_status` `resolution_status` VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;

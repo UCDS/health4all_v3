@@ -1121,7 +1121,7 @@ class Helpline_model extends CI_Model{
 	}
 
 	function get_sms_templates(){
-		$this->db->select("helpline_id, sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area")->from("sms_template");
+		$this->db->select("helpline_id, sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url")->from("sms_template");
 		$this->db->where('use_status', 1);
 		return $this->db->get()->result();
 	}

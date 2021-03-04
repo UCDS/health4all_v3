@@ -35,6 +35,59 @@ class Register_model extends CI_Model{
 	function __construct(){
 		parent::__construct();
 	}
+	function get_summary($summary_link_contents_md5) {
+		$this->db->select("summary_link_contents")
+			->from("patient_consultation_summary")
+			->where('summary_link_contents_md5',$summary_link_contents_md5);
+		$query=$this->db->get();
+		return $query->result();
+	}
+	function notify_summary_download(){
+		if ($this->input->post('summary_key') && $this->input->post('summary_key')!=""){
+			$this->db->set('totaldownloads', 'totaldownloads+1', FALSE);
+			$this->db->set('last_download_at', date("Y-m-d H:i:s"));
+			$this->db->where('summary_link_contents_md5', $this->input->post('summary_key'));
+			$this->db->update('patient_consultation_summary');
+		}
+	}
+	function insert_update_summary_link($summary_link_patient_id,$summary_link_patient_visit_id,$summary_link_contents){
+		$base64_encode_summary_link_contents = base64_encode($summary_link_contents);
+		$summary_link_contents_md5 = md5($base64_encode_summary_link_contents);
+		$data=array(
+	        'summary_link_patient_id'=>$summary_link_patient_id,
+			'summary_link_patient_visit_id'=>$summary_link_patient_visit_id,
+			'summary_link_contents'=>$base64_encode_summary_link_contents,
+			'summary_link_contents_md5'=> $summary_link_contents_md5
+		);
+		$this->db->replace('patient_consultation_summary',$data);
+		return $summary_link_contents_md5;
+	}
+	
+	function get_patient_visit_details($summary_link_patient_id,$summary_link_patient_visit_id){
+		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
+		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
+		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,hospital.hospital_short_name	,helpline.helpline,
+		pv.appointment_time as appointment_date_time,
+		pv.admit_date as admit_date,pv.admit_time as admit_time,
+		pv.signed_consultation as signed",false);
+		 $this->db->from('patient_visit as pv')
+		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('area','pv.area=area.area_id','left')
+		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
+		 ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
+		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
+		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
+		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
+		 ->where('visit_type','OP');
+		$this->db->where('p.patient_id', $summary_link_patient_id);	
+		$this->db->where('pv.visit_id', $summary_link_patient_visit_id);			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
 	//register() function does the patient registration or updating the existing patient records.
 	function register(){
 		//All the post variables are stored in local variables; 
@@ -971,7 +1024,7 @@ class Register_model extends CI_Model{
 		}
 		//Build the query to retrieve the patient records based on the search query.
 		$this->db->select("patient.*,patient_visit.*,CONCAT(patient.first_name,' ',patient.last_name) name,
-		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,designation",false)
+		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,staff.ima_registration_number as ima_registration_number,designation",false)
 		->from('patient')
 		->join('patient_visit','patient.patient_id=patient_visit.patient_id')
                 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')
