@@ -45,6 +45,7 @@ class Register extends CI_Controller {
 			$this->load->model('patient_model');
 			$this->load->model('counter_model');
 			$this->load->model('gen_rep_model');
+			$this->load->model('helpline_model');
 			$this->load->model('patient_document_upload_model');
 			$user_id = $userdata['user_id'];
 			$this->data['hospitals'] = $this->staff_model->user_hospital($user_id);
@@ -53,6 +54,7 @@ class Register extends CI_Controller {
 			//The OP and IP forms in the application are loaded into a data variable for the menu.
 			$this->data['op_forms'] = $this->staff_model->get_forms("OP");
 			$this->data['ip_forms'] = $this->staff_model->get_forms("IP");
+			$this->data['sms_templates']=$this->helpline_model->get_sms_templates();	
 		}
 	}
 	
@@ -234,10 +236,73 @@ class Register extends CI_Controller {
 		show_404();
 		}
 	}
+	
+	function generate_summary_link(){
+	
+		if($this->session->userdata('logged_in')){
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			
+			$access=0;
+			$patient_document_add_access=0;
+			$patient_document_remove_access=0;
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="Update Patients"){
+					$access=1;
+				}
+			}
+			if($access==1){
+				
+				$downloadurl = $this->input->post('summary_download_link');				
+				$key = $this->register_model->insert_update_summary_link($this->input->post('summary_link_patient_id'),$this->input->post('summary_link_patient_visit_id'),$this->input->post('summary_link_contents'));
+				$result=$this->register_model->get_patient_visit_details($this->input->post('summary_link_patient_id'),$this->input->post('summary_link_patient_visit_id'));
+				$val = $result[0];
+				//echo("<script>console.log('PHP: " . json_encode($this->data['result']) . "');</script>");
+				$basetemplate = $this->input->post('summary_link_sms');
+				$basetemplate = str_replace("{#PatientName#}",$val->name, $basetemplate);				
+				$basetemplate = str_replace("{#HospitalShortName#}",$val->hospital_short_name, $basetemplate);
+				$basetemplate = str_replace("{#HelpLineNumber#}",$val->helpline, $basetemplate);
+				$basetemplate = str_replace("{#DownloadLink#}",$downloadurl.$key, $basetemplate);
+				if ($val->signed=="0"){
+					$basetemplate = str_replace("{#DoctorName#}","Doctor", $basetemplate);
+					$convertedDate = date("j-M-Y", strtotime($val->admit_date));
+					$convertedTime = date("h:i A", strtotime($val->admit_time));
+					$basetemplate = str_replace("{#RegOrApptDate#}",$convertedDate." ".$convertedTime, $basetemplate);
+				}else{
+					$basetemplate = str_replace("{#DoctorName#}",$val->doctor, $basetemplate);
+					$convertedDateAndTime = date("j-M-Y h:i A", strtotime($val->appointment_date_time));
+					$basetemplate = str_replace("{#RegOrApptDate#}",$convertedDateAndTime, $basetemplate);
+				}
+				echo $basetemplate;
+			}		
+		}
+	}
+	
+	function notify_summary_download(){
+		$this->load->model('register_model');
+		$this->load->helper('form');
+		echo("<script>console.log('PHP: Manoj');</script>");	
+		$this->register_model->notify_summary_download();
+	}
+	function get_summary(){
+		if (isset($_GET['key']) && $_GET['key']!=""){				
+			$this->load->model('register_model');
+			$this->load->helper('form');
+			$this->data['result']=$this->register_model->get_summary($_GET['key']);
+			
+		} else {
+			$this->data['result'] = [] ;
+		}	
+			
+		$this->load->view('pages/print_layouts/download_summary',$this->data);
+	}
+	
 	function update_patients(){
+	
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
+		$hospital = $this->session->userdata('hospital');
 		$access=0;
+		$add_sms_access=0;
 		$patient_document_add_access=0;
 		$patient_document_remove_access=0;
 		foreach($this->data['functions'] as $function){
@@ -248,6 +313,11 @@ class Register extends CI_Controller {
 				if ($function->add==1) $patient_document_add_access=1;
 				if ($function->remove==1) $patient_document_remove_access=1;
 			}
+			// Fetch user functions and check if the user has 
+        		// access to documentation access rights
+			if($function->user_function=="sms"){
+                		if ($function->add==1 && $hospital["helpline"] && $hospital["helpline"]!="" && !empty($hospital["helpline"])) $add_sms_access=1;
+            		}
 		}
 		if($access==1){
 		$transaction = $this->transaction_condition();
@@ -256,6 +326,8 @@ class Register extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
+		$user=$this->session->userdata('logged_in');
+		$this->data['user_id']=$user['user_id'];	
 		$this->data['all_departments']=$this->staff_model->get_department();
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
@@ -271,6 +343,7 @@ class Register extends CI_Controller {
 		$this->data['drugs_available'] = $this->hospital_model->get_drugs();
 		$this->data['patient_document_add_access']=$patient_document_add_access;
 		$this->data['patient_document_remove_access']=$patient_document_remove_access;
+		$this->data['add_sms_access']=$add_sms_access;
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('selected_patient');
 		$document_link = $this->input->post('document_link');
@@ -304,7 +377,16 @@ class Register extends CI_Controller {
             if ($default->default_id == "pdoc_overwrite"){
                 $overwrite = $default->value;
             }                                   
-        }        
+        }
+        $user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
+			$user_receiver_links = array();
+			if($user_receiver){
+				$user_receiver_links = $this->helpline_model->getHelplineReceiverLinksById($user_receiver->receiver_id);
+			}
+			$this->data['user_details']=json_encode(array(
+				'receiver' => $user_receiver,
+				'receiver_link' => $user_receiver_links
+			));        
 		//  $this->data['arrival_modes'] = $this->patient_model->get_arrival_modes();
         $this->data['visit_names'] = $this->staff_model->get_visit_name();
 		$this->form_validation->set_rules('patient_number', 'IP/OP Number',

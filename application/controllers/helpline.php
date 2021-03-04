@@ -44,13 +44,16 @@ class Helpline extends CI_Controller {
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="HelpLine Calls - Detailed Report";
 			$this->load->view('templates/header',$this->data);
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-			foreach($this->data['defaultsConfigs'] as $default){		 
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");		 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
-		 			$rowsperpage = $default->value;		 			
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
 		 		}
 			}
-			$this->data['calls']=$this->helpline_model->get_detailed_report($rowsperpage);
+			$this->data['calls']=$this->helpline_model->get_detailed_report($this->data['rowsperpage']);
 			$this->data['calls_count']=$this->helpline_model->get_detailed_report_count();
 			$this->data['caller_type']=$this->helpline_model->get_caller_type();
 			$this->data['language']=$this->helpline_model->get_language();
@@ -99,10 +102,13 @@ class Helpline extends CI_Controller {
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
-		 			$rowsperpage = $default->value;
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
 		 		}
 			}
-			$this->data['sms_data']=$this->helpline_model->get_sms_detailed_report($rowsperpage);
+			$this->data['sms_data']=$this->helpline_model->get_sms_detailed_report($this->data['rowsperpage']);
 			$this->data['sms_count']=$this->helpline_model->get_sms_detailed_report_count();
 			$this->data['sent_status']=$this->helpline_model->get_sms_sent_status();
 			$this->data['sms_template']=$this->helpline_model->get_sms_template();
