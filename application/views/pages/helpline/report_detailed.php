@@ -1205,7 +1205,8 @@ function getDepartmentOptionsForHelpline(helplineId) {
 function getDepartmentOptionsForHospital(hospitalId) {
 	const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
 	if(helplineDepartments.length > 0) {
-		const optionsHtml = helplineDepartments.map(dept => {
+		let optionsHtml = buildEmptyOption("Select"); 
+		optionsHtml += helplineDepartments.map(dept => {
 			return `	<option value="${dept.department_id}">
 							${dept.department}
 						</option>`;
@@ -1213,6 +1214,19 @@ function getDepartmentOptionsForHospital(hospitalId) {
 		return optionsHtml;
 	}
 	return null;
+}
+function buildHospitalOptions(hospitals = []) {
+	if(hospitals && hospitals.length > 0) {
+		let optionsHtml = buildEmptyOption("Select"); 
+		optionsHtml += hospitals.map(hospital => {
+			return `	<option value="${hospital.hospital_id}">
+							${hospital.hospital}
+						</option>`;
+		});
+		return optionsHtml;
+	} else {
+		return null;
+	}
 }
 function buildEmptyOption(optionName = "Select") {
 	return `<option value="">

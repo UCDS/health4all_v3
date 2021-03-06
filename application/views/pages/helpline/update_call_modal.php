@@ -119,8 +119,10 @@
                         <input class="call_id_email form-control" readonly name="call_id_email" >
                     </div>
                 </div>
+                <div class="row updateCallStatus alert hidden" style="margin-left: 8px; margin-right: 8px;"></div>
                 <div class="row" style="text-align: center">
                     <button class="submit btn btn-primary btn-sm"  >Update</button>
+                    <button class="closeUpdateModal btn btn-danger btn-sm"  >Close</button>
                 </div>
             </div>
         </div>
@@ -139,7 +141,9 @@ function setupUpdateCallModalData(callData) {
     modal.find(".resolution_status").val(callData.resolution_status_id);
     // modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
     // modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
-    modal.find(".updateHospitalSelect").val(callData.user_hospitals);
+    const hospitals = buildHospitalOptions(userHospitals)
+    modal.find(".updateHospitalSelect").html(hospitals? hospitals: buildEmptyOption("Hospital"));
+    modal.find(".updateHospitalSelect").val(callData.hospital_id)
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
 
@@ -147,9 +151,7 @@ function setupUpdateCallModalData(callData) {
     departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
     modal.find(".updateDepartmentSelect").html(departmentOptions);
     registerHospitalChangeListener();
-    registerOnUpdateFormSubmitted();
-
-    
+    registerOnUpdateFormSubmitted(callData);
 }
 
 function updateCallData(callData) {
@@ -158,7 +160,16 @@ function updateCallData(callData) {
         data: callData,
         method: 'POST',
         success: (data) => {
-            
+            if(data)  {
+                data = JSON.parse(data);
+                if(data.status) {
+                    $(".updateCallStatus").html(data.msg);
+                    $(".updateCallStatus").removeClass("hidden").addClass("alert-info");
+                } else {
+                    $(".updateCallStatus").html(data.msg);
+                    $(".updateCallStatus").removeClass("hidden").addClass("alert-danger");
+                }
+            }
         },
         error: (error) => {
             console.log("failed");
@@ -166,7 +177,7 @@ function updateCallData(callData) {
     })
 }
 
-function registerOnUpdateFormSubmitted() {
+function registerOnUpdateFormSubmitted(callData) {
     const modal = $("#updateCallModal");
     modal.find(".submit").on("click", function(e) {
         e.preventDefault();
@@ -186,6 +197,9 @@ function registerOnUpdateFormSubmitted() {
         postData[`resolution_date_${callId}`] = modal.find(".language").val();
         updateCallData(postData);   
     });
+    modal.find(".closeUpdateModal").on("click", function() {
+        modal.modal('hide');
+    })
 }
 
 function registerHospitalChangeListener() {
