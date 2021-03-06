@@ -1214,7 +1214,7 @@ function getDepartmentOptionsForHospital(hospitalId) {
 	}
 	return null;
 }
-function buildEmptyOption(optionName) {
+function buildEmptyOption(optionName = "Select") {
 	return `<option value="">
 					${optionName}
 			</option>`;

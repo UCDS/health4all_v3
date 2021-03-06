@@ -49,7 +49,7 @@
                 <div class="row">
                     <div class="col-md-3">Hospital </div>
                     <div class="col-md-6">
-                        <select class="updateHospitalSelect" name="hospital_<?php echo $call->call_id;?>" id="hospital_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="updateHospitalSelect" style="width:100px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($all_hospitals as $hosp){ ?>
                                 <option value="<?php echo $hosp->hospital_id;?>"
@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-3">Department</div>
                     <div class="col-md-6">
-                        <select class="department" name="department<?php echo $call->call_id;?>"  id="department_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="updateDepartmentSelect"  style="width:100px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($department as $dept){ ?>
                                 <option value="<?php echo $dept->department_id;?>">
@@ -139,14 +139,15 @@ function setupUpdateCallModalData(callData) {
     modal.find(".resolution_status").val(callData.resolution_status_id);
     // modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
     // modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
-    modal.find(".hospital").val(callData.user_hospitals);
+    modal.find(".updateHospitalSelect").val(callData.user_hospitals);
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
 
     let departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
     departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
-    modal.find(".department").html(departmentOptions);
+    modal.find(".updateDepartmentSelect").html(departmentOptions);
     registerHospitalChangeListener();
+    registerOnUpdateFormSubmitted();
 
     
 }
@@ -157,7 +158,7 @@ function updateCallData(callData) {
         data: callData,
         method: 'POST',
         success: (data) => {
-            console.log("success", data);
+            
         },
         error: (error) => {
             console.log("failed");
@@ -188,13 +189,13 @@ function registerOnUpdateFormSubmitted() {
 }
 
 function registerHospitalChangeListener() {
-    $(".updateHospitalSelect").off("change")on("change", function() {
+    $(".updateHospitalSelect").off("change").on("change", function() {
 		const hostpitalId = $(this).val();
-		let optionsHtml = getDepartmentOptionsForHospital(helplineId);
+		let optionsHtml = getDepartmentOptionsForHospital(hostpitalId);
         if(optionsHtml == null) {
-            optionsHtml = buildEmptyOption();
+            optionsHtml = buildEmptyOption("Department");
         }
-		$("#departmentSelect").html(optionsHtml);
+		$(".updateDepartmentSelect").html(optionsHtml);
 	})
 
 }
