@@ -178,6 +178,26 @@ class Helpline extends CI_Controller {
 		else show_404();
 	}
 
+	function update_call_api() {
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="Helpline Update"){
+					$access=1;
+			}
+		}
+		if($access==1){
+			if($this->helpline_model->update_call()) {
+				$this->data['msg']="Calls Updated successfully";
+				$this->data['calls']=$this->helpline_model->get_calls();
+			}
+			else{
+				$this->data['msg']="Calls could not be updated. Please try again.";
+			}
+		}
+	}
 	function update_call(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();

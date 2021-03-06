@@ -49,7 +49,7 @@
                 <div class="row">
                     <div class="col-md-3">Hospital </div>
                     <div class="col-md-6">
-                        <select class="hospital" name="hospital_<?php echo $call->call_id;?>" id="hospital_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="updateHospitalSelect" name="hospital_<?php echo $call->call_id;?>" id="hospital_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($all_hospitals as $hosp){ ?>
                                 <option value="<?php echo $hosp->hospital_id;?>"
@@ -116,11 +116,11 @@
                 <div class="row">
                     <div class="col-md-3">Visit ID</div>
                     <div class="col-md-6">
-                        <input class="call_id_email form-control" readonly name="call_id_email" form="send_email_form">
+                        <input class="call_id_email form-control" readonly name="call_id_email" >
                     </div>
                 </div>
                 <div class="row" style="text-align: center">
-                    <input type="button" value="Update" class="submit btn btn-primary btn-sm" name="submit" form="send_email_form">
+                    <button class="submit btn btn-primary btn-sm"  >Update</button>
                 </div>
             </div>
         </div>
@@ -143,32 +143,59 @@ function setupUpdateCallModalData(callData) {
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
 
-    const departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
+    let departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
     departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
     modal.find(".department").html(departmentOptions);
-    modal.find(".submit").on("click", function() {
-        callData = {
-            modal.find(".callId").html(callData.call_id);
-            modal.find(".notes").val(callData.notes);
-            "caller_type": modal.find(".caller_type").val();
-            "language": modal.find(".language").val();    
-            "call_category": modal.find(".call_category").val(callData.call_category_id);
-            "resolution_status": modal.find(".resolution_status").val();
-            // modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
-            // modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
-            "hospital": modal.find(".hospital").val(callData.user_hospitals);
-            modal.find(".patient_type").val(callData.ip_op);
-            modal.find(".visit_id").val(callData.visit_id);    
+    registerHospitalChangeListener();
 
-            const departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
-            departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
-            modal.find(".department").html(departmentOptions);
-            
-        }    
+    
+}
+
+function updateCallData(callData) {
+    $.ajax({
+        url: 'update_call_api',
+        data: callData,
+        method: 'POST',
+        success: (data) => {
+            console.log("success", data);
+        },
+        error: (error) => {
+            console.log("failed");
+        }
     })
 }
 
-function updateCallData() {
+function registerOnUpdateFormSubmitted() {
+    const modal = $("#updateCallModal");
+    modal.find(".submit").on("click", function(e) {
+        e.preventDefault();
+        const postData = {};
+        const callId = callData.call_id;
+        postData["call"] = [callId];
+        postData[`caller_type_${callId}`] = modal.find(".caller_type").val();
+        postData[`language_${callId}`] = modal.find(".language").val();
+        postData[`call_category_${callId}`] = modal.find(".call_category").val();
+        postData[`resolution_status_${callId}`] = modal.find(".resolution_status").val();
+        postData[`hospital_${callId}`] = modal.find(".hospital").val();
+        postData[`visit_type_${callId}`] = modal.find(".patient_type").val();
+        postData[`visit_id_${callId}`] = modal.find(".visit_id").val();
+        postData[`note_${callId}`] = modal.find(".notes").val();
+        postData[`group_${callId}`] = modal.find(".language").val();
+        postData[`resolution_time_${callId}`] = modal.find(".language").val();
+        postData[`resolution_date_${callId}`] = modal.find(".language").val();
+        updateCallData(postData);   
+    });
+}
+
+function registerHospitalChangeListener() {
+    $(".updateHospitalSelect").off("change")on("change", function() {
+		const hostpitalId = $(this).val();
+		let optionsHtml = getDepartmentOptionsForHospital(helplineId);
+        if(optionsHtml == null) {
+            optionsHtml = buildEmptyOption();
+        }
+		$("#departmentSelect").html(optionsHtml);
+	})
 
 }
 </script>
