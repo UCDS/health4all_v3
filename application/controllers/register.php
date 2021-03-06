@@ -292,15 +292,18 @@ class Register extends CI_Controller {
 		} else {
 			$this->data['result'] = [] ;
 		}	
-			
-		$this->load->view('pages/print_layouts/download_summary',$this->data);
+		if (empty($this->data['result'])){	
+			$this->load->view('templates/invalid_page');
+		} else {
+			$this->load->view('pages/print_layouts/download_summary',$this->data);
+		} 
 	}
 	
 	function update_patients(){
 	
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
-		$hospital = $this->session->userdata('hospital');
+		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
 		$access=0;
 		$add_sms_access=0;
 		$patient_document_add_access=0;
@@ -316,7 +319,7 @@ class Register extends CI_Controller {
 			// Fetch user functions and check if the user has 
         		// access to documentation access rights
 			if($function->user_function=="sms"){
-                		if ($function->add==1 && $hospital["helpline"] && $hospital["helpline"]!="" && !empty($hospital["helpline"])) $add_sms_access=1;
+                		if ($function->add==1 && $this->data['hospital']["helpline"] && $this->data['hospital']["helpline"]!="" && !empty($this->data['hospital']["helpline"])) $add_sms_access=1;
             		}
 		}
 		if($access==1){

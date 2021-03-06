@@ -10,14 +10,6 @@
 <!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <style>
 	.error {
     	color: red;
@@ -3458,12 +3450,22 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
-
-		// initAgentSelectize();
-		
+		var helpline = '<?php echo $hospital->helpline;?>';
+		console.log(helpline);
 		if(receiver.helpline){
-			$('#smsModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+			if (receiver.helpline == helpline) {
+				$('#smsModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+			}
 		}
+		
+		if(user_details.receiver_link){
+			if (receiver.helpline == helpline) {		
+				$.each(user_details.receiver_link, function(i, d){
+					$('#smsModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - 				'+d.helpline+'</option>');
+				})
+			}
+		}
+		console.log('Manoj');
 		
 	}
 
