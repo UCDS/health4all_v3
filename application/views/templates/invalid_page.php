@@ -12,8 +12,8 @@ tr {page-break-inside: avoid}
        display: block;
        border: 1px solid #000000;
        text-align: center ;
-       width: 400px;
-       height: 36px;
+       width: 500px;
+       height: 45px;
        position: absolute;
        top:0;
 	bottom: 0;
