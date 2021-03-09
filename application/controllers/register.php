@@ -280,7 +280,6 @@ class Register extends CI_Controller {
 	function notify_summary_download(){
 		$this->load->model('register_model');
 		$this->load->helper('form');
-		echo("<script>console.log('PHP: Manoj');</script>");	
 		$this->register_model->notify_summary_download();
 	}
 	function get_summary(){
