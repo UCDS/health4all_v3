@@ -189,13 +189,17 @@ class Helpline extends CI_Controller {
 			}
 		}
 		if($access==1){
+			$data = [];
 			if($this->helpline_model->update_call()) {
-				$this->data['msg']="Calls Updated successfully";
-				$this->data['calls']=$this->helpline_model->get_calls();
+				$data['status'] = true;
+				$data['msg']="Call Updated successfully";
+				$data['calls']=$this->helpline_model->get_calls();
 			}
 			else{
-				$this->data['msg']="Calls could not be updated. Please try again.";
+				$data['status'] = false;
+				$data['msg']="Call could not be updated. Please try again.";
 			}
+			echo json_encode($data);
 		}
 	}
 	function update_call(){

@@ -133,14 +133,15 @@
 function setupUpdateCallModalData(callData) {
     console.log(callData);
     const modal = $("#updateCallModal");
+    hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
     modal.find(".notes").val(callData.notes);
     modal.find(".caller_type").val(callData.caller_type_id);
     modal.find(".language").val(callData.language_id);    
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
-    // modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
-    // modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
+    modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
+    modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
     const hospitals = buildHospitalOptions(userHospitals)
     modal.find(".updateHospitalSelect").html(hospitals? hospitals: buildEmptyOption("Hospital"));
     modal.find(".updateHospitalSelect").val(callData.hospital_id)
@@ -155,6 +156,7 @@ function setupUpdateCallModalData(callData) {
 }
 
 function updateCallData(callData) {
+    hideUpdateCallStatusMessage();
     $.ajax({
         url: 'update_call_api',
         data: callData,
@@ -177,6 +179,10 @@ function updateCallData(callData) {
     })
 }
 
+function hideUpdateCallStatusMessage() {
+    $(".updateCallStatus").html("");
+    $(".updateCallStatus").addClass("hidden");
+}
 function registerOnUpdateFormSubmitted(callData) {
     const modal = $("#updateCallModal");
     modal.find(".submit").on("click", function(e) {
