@@ -151,14 +151,7 @@ input[type=number] {
 	$from_time=0;$to_time=0;
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
-	$page_no = 1;
-	foreach($defaultsConfigs as $default){		 
-		 if($default->default_id=='pagination'){
-		 	$rowsperpage = $default->value;
-		 	$upper_rowsperpage = $default->upper_range;
-		 	$lower_rowsperpage = $default->lower_range;
-		 }
-	}	
+	$page_no = 1;	
 	
 	?>
 <div class="row">

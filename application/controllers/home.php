@@ -42,7 +42,9 @@ class Home extends CI_Controller {
 								 'place' => $row->place,
 								 'district' => $row->district,
 								 'state' => $row->state,
-								 'logo' => $row->logo
+								 'logo' => $row->logo,
+								 'telehealth' => $row->telehealth,
+								  'helpline' => $row->helpline
 								);
 								$this->session->set_userdata('hospital',$sess_array);
 								break;
@@ -65,7 +67,9 @@ class Home extends CI_Controller {
 						'place' => $row->place,
 						'district' => $row->district,
 						'state' => $row->state,
-						'logo' => $row->logo
+						'logo' => $row->logo,
+						'telehealth' => $row->telehealth,
+						'helpline' => $row->helpline
 					);
 					$this->session->set_userdata('hospital',$sess_array);
 					$this->session->set_userdata('place',array('camp_id'=>0,'name'=>'Blood Bank'));
@@ -109,7 +113,9 @@ class Home extends CI_Controller {
 								 'place' => $row->place,
 								 'district' => $row->district,
 								 'state' => $row->state,
-								 'logo' => $row->logo
+								 'logo' => $row->logo,
+								 'telehealth' => $row->telehealth,
+								 'helpline' => $row->helpline
 								);
 								$this->session->set_userdata('hospital',$sess_array);
 								break;
@@ -132,7 +138,9 @@ class Home extends CI_Controller {
 						'place' => $row->place,
 						'district' => $row->district,
 						'state' => $row->state,
-						'logo' => $row->logo
+						'logo' => $row->logo,
+					        'telehealth' => $row->telehealth,
+					        'helpline' => $row->helpline
 					);
 					$this->session->set_userdata('hospital',$sess_array);
 					$this->session->set_userdata('place',array('camp_id'=>0,'name'=>'Blood Bank'));

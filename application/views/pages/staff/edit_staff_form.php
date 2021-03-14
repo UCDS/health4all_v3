@@ -136,7 +136,8 @@ $(function(){
 						<option value="">MCI</option>
 						<option value ="1" <?php if($this->input->post('mci_flag') && $this->input->post('mci_flag')==1) echo "selected ";?>>Yes</option>
 						<option value ="0" <?php if($this->input->post('mci_flag') && $this->input->post('mci_flag')==0) echo "selected ";?>>No</option>
-					</select>					
+					</select>
+										
 					<input name="search_staff" value="true" type="hidden"></input>
 					<input class="btn btn-sm btn-primary" type="submit" value="search"/>
 		</form>
@@ -371,6 +372,14 @@ $(function(){
 		</div>
 	</div>	
 	
+	<div class="form-group">
+		<div class="col-md-3">
+			<label for="staff_type" class="control-label">Registration No</label>
+		</div>
+		<div class="col-md-6">
+		<input type="text" class="form-control" placeholder="Registration Number" id="ima_registration_number" name="ima_registration_number" value='<?php echo $staff[0]->ima_registration_number; ?>' />
+		</div>
+	</div>
 	
 	<div class="form-group">
 		<div class="col-md-3">

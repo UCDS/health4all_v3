@@ -1,9 +1,9 @@
-		<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="print">
+		<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 		<?php $patient=$patients[0];?>
 		<style>
-			@media print{
+			@media all{
 			table{
 				font-family: "Trebuchet MS","Sans Serif", Serif;
 
@@ -47,11 +47,22 @@
 				<tr>
 				<td colspan="3"><?php $hospital=$this->session->userdata('hospital');?>
 				<div style="float:left;text-align:left;left:auto;">
+				<?php if ($hospital['telehealth'] == "0") {?>
 				<font size="4"><?php echo $hospital['hospital'];?></font><br />
 					<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
 					<?php echo $hospital['place']; ?>, 
 					<?php echo $hospital['district']; ?>
 				<br />
+				<?php } else {?>
+				<?php if(!!$patient->doctor_name) {?> 
+				<font size="4">Teleconsultation with <?php echo $patient->doctor_name; ?></font><br />
+				<?php } else {?>
+				<font size="4">Teleconsultation with Doctor</font><br />
+				<?php } ?>
+				
+				        <?php echo "Facilitated by  ".$hospital['hospital']."<br />";?>
+					<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
+				<?php } ?>
 				</div>			
 				<div style="float:right;margin-right:10;">			
 				<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
@@ -417,7 +428,7 @@
 			<br />
 			<br />
 				<b>
-				<?php echo $patient->doctor_name."<br />".$patient->designation; ?>
+				<?php echo $patient->doctor_name." (Regd No: ". $patient->ima_registration_number .")<br />".$patient->designation; ?>
 				</b>
 			</td>
 			<?php } else { ?>
@@ -431,4 +442,4 @@
 <?php } ?>
 				</tr>				
 		</table>
-<p>Note: This is a Healthcare IT System generated document and does not need a signature</p>
+<p>Note: This is a Healthcare IT System generated document and does not need a signature. <br>Report generated on <?php echo date("j-M-Y h:i A"); ?>.</p>
