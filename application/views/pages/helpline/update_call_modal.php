@@ -140,8 +140,11 @@ function setupUpdateCallModalData(callData) {
     modal.find(".language").val(callData.language_id);    
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
-    modal.find(".resolution_date").val(callData.resolution_date_time.getDate());
-    modal.find(".resolution_time").val(callData.resolution_date_time.getDate());
+    debugger;
+    $(".resolution_date").Zebra_DatePicker();
+    $(".resolution_time").ptTimeSelect();
+    modal.find(".resolution_date").val(dateNow(new Date(callData.resolution_date_time)));
+    modal.find(".resolution_time").val(new Date(callData.resolution_date_time).toLocaleTimeString());
     const hospitals = buildHospitalOptions(userHospitals)
     modal.find(".updateHospitalSelect").html(hospitals? hospitals: buildEmptyOption("Hospital"));
     modal.find(".updateHospitalSelect").val(callData.hospital_id)
@@ -154,7 +157,24 @@ function setupUpdateCallModalData(callData) {
     registerHospitalChangeListener();
     registerOnUpdateFormSubmitted(callData);
 }
+function dateNow(dateObject){
+    const delimiter = "-";
+    const set = dateObject; 
+    let getDate = set.getDate().toString();
+    if (getDate.length == 1){
+        getDate = "0"+getDate;
+    }
+    let getMonth = (set.getMonth()+1).toString();
+    if (getMonth.length == 1){
+        getMonth = "0"+getMonth;
+    }
+    let getYear = set.getFullYear().toString();
+    const dateNow = getMonth + delimiter + getDate + delimiter + getYear; //today
+    return dateNow;
+}
+function formatDate() {
 
+}
 function updateCallData(callData) {
     hideUpdateCallStatusMessage();
     $.ajax({
