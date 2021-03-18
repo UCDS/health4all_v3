@@ -86,3 +86,25 @@ ALTER TABLE `sms_template`
 ALTER TABLE `sms_template` ADD `report_download_url` VARCHAR(100) NOT NULL AFTER `generation_method`;
 
 ALTER TABLE `helpline_resolution_status` CHANGE `resolution_status` `resolution_status` VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+CREATE TABLE `patient_document_upload_key` (
+ `patient_id` int(11) NOT NULL,
+ `visit_id` int(11) NOT NULL,
+ `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `expires_at` datetime NOT NULL,
+ `last_accessed_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `key_md5` varchar(50) NOT NULL,
+ `no_of_access` int(11) NOT NULL DEFAULT '0',
+ PRIMARY KEY (`patient_id`),
+ UNIQUE KEY `index_md5` (`key_md5`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `sms_template` (`sms_template_id`, `helpline_id`, `dlt_entity_id`, `dlt_tid`, `dlt_header`, `dlt_header_id`, `sms_type`, `template_name`, `template`, `use_status`, `edit_text_area`, `generate_by_query`, `generation_method`, `report_download_url`) VALUES (NULL, '08047103700', '1001618270000010389', '1107161581617391996', 'UCTELE', '1105159100077354842', 'TRANSACTIONAL OPT-IN', 'Submit Documents', 'Please submit reports of {#PatientName#} with {#patient_id#} using this link {#link#} for consultation request made through {#Phone, HospitalShortName#}. Arogya Seva ', '1', '0', '1', 'register/generate_doc_upload_link', 'http://<host>/register/document_upload?key=');
+
+INSERT INTO `defaults` (`default_id`, `default_tilte`, `default_description`, `default_type`, `default_unit`, `lower_range`, `upper_range`, `value`) VALUES ('patient_doc_link_expiry', 'Number of hours in which Patient summary will be available for users ', 'Number of hours in which Patient summary will be available for users ', 'Numeric', 'hours', NULL, NULL, '2');
+
+ALTER TABLE `patient_document_upload` CHANGE `insert_by_staff_id` `insert_by_staff_id` INT(11) NULL;
+
+ALTER TABLE `removed_patient_document_upload` CHANGE `insert_by_staff_id` `insert_by_staff_id` INT(11) NULL;
+
+ALTER TABLE `removed_patient_document_upload` CHANGE `removed_by_staff_id` `removed_by_staff_id` INT(11) NULL;
