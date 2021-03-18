@@ -501,6 +501,8 @@ class Register extends CI_Controller {
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
+		$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
+		//echo("<script>console.log('PHP: " . json_encode($this->data['staff_hospital']) . "');</script>");
 		$access=0;
 		$add_sms_access=0;
 		$patient_document_add_access=0;
@@ -517,7 +519,7 @@ class Register extends CI_Controller {
 			// Fetch user functions and check if the user has 
         		// access to documentation access rights
 			if($function->user_function=="sms"){
-                		if ($function->add==1 && $this->data['hospital']["helpline"] && $this->data['hospital']["helpline"]!="" && !empty($this->data['hospital']["helpline"])) $add_sms_access=1;
+                		if ($function->add==1 && $this->data['staff_hospital']["helpline"] && $this->data['staff_hospital']["helpline"]!="" && !empty($this->data['staff_hospital']["helpline"])) $add_sms_access=1;
             		}
 		}
 		if($access==1){
