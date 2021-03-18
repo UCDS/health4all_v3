@@ -38,6 +38,7 @@ tr {page-break-inside: avoid}
 </style>
 <?php if(isset($result) && count($result)>0) { ?>
 </style>
+<title><?php echo $title;?></title>
 <div>
 <button class="btn btn-md btn-primary float_center" type="button" onclick="downloadPDF()">Save to Device</button>
 <br/>

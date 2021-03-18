@@ -13,7 +13,7 @@ tr {page-break-inside: avoid}
        border: 1px solid #000000;
        text-align: center ;
        width: 500px;
-       height: 45px;
+       height: 39px;
        position: absolute;
        top:0;
 	bottom: 0;
@@ -22,4 +22,5 @@ tr {page-break-inside: avoid}
   	margin: auto;
     }
 </style>
+<title>Invalid Page</title>
 <div class="centerDiv"> The page you are looking for is either removed or invaild. <br> Please contact administrator for more details.</div>
