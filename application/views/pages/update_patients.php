@@ -3620,12 +3620,13 @@ $(function(){
 			}
 		}
 		
-		if(user_details.receiver_link){
-			if (receiver.helpline == helpline) {		
-				$.each(user_details.receiver_link, function(i, d){
-					$('#smsModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - 				'+d.helpline+'</option>');
-				})
-			}
+		if(user_details.receiver_link){					
+			$.each(user_details.receiver_link, function(i, d){
+				if (d.helpline == helpline) {
+					$('#smsModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - 				'+d.helpline+'</option>');					
+				}
+			})
+			
 		}
 		
 	}
