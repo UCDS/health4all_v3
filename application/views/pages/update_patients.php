@@ -3613,7 +3613,7 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
-		var valHospital = JSON.parse('<?php echo json_encode($staff_hospital); ?>');		
+		var valHospital = JSON.parse('<?php echo json_encode($hospital); ?>');		
 		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');
 			
 		
