@@ -10,14 +10,6 @@
 <!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <style>
 	.error {
     	color: red;
@@ -270,9 +262,35 @@ function openSmsModal(){
 
 		//get data-id attribute of the clicked element
 		var id = $(e.relatedTarget).data('id');
-
 		//populate the textbox
 		$(e.currentTarget).find('input[name="document_link"]').val(id);
+	});
+	
+	 $('#myModalEdit_').on('show.bs.modal', function(e) {
+
+		//get data-id attribute of the clicked element
+		var id = $(e.relatedTarget).data('id');
+		var note = $(e.relatedTarget).data('note');
+		var type = $(e.relatedTarget).data('type');
+		var doc_date = $(e.relatedTarget).data('date');
+		var record_id = $(e.relatedTarget).data('recordid');
+		//populate the textbox
+		$(e.currentTarget).find('input[name="edit_document_link"]').val(id);
+		$(e.currentTarget).find('label[id="filelink"]').html(id);
+		$(e.currentTarget).find('input[id="edit_note"]').val(note);
+		$(e.currentTarget).find('input[id="edit_record_id"]').val(record_id);
+		
+		if (type != "0") {		
+			 $(e.currentTarget).find('select[id="edit_document_type"]').val(type).change();
+		}
+		else {
+		 $(e.currentTarget).find('select[id="edit_document_type"]').val($('select[id="edit_document_type"] option:first').val()).change();
+		}
+		
+		if (doc_date != "") {		
+		
+			$(e.currentTarget).find('input[id="edit_document_date"]').val(doc_date);
+		}
 	});
 
    $("#file_upload").click(function (event) {
@@ -338,7 +356,37 @@ function openSmsModal(){
 	        }
 	     });
     });
+ $("#btEdit").click(function(){
+	    //stop submit the form, we will post it manually.
+		event.preventDefault();
 
+        // Get form
+        var form = $(event.target).parents('form')[0];
+
+        // Create an FormData object 
+        var data = new FormData(form);
+
+        // disabled the submit button
+        $("#btEdit").prop("disabled", true);
+
+        $.ajax({
+	        type: "POST",
+	        enctype: 'multipart/form-data',
+	        url: $(form).attr('action'),
+	        data: data,
+	        processData: false,
+	        contentType: false,
+	        cache: false,
+	        success: function (data) {
+		        // show success notification here...
+		        location.reload()
+	        },
+    	    error: function (e) {
+	    	    // show error notification here...
+		        $("#btEdit").prop("disabled", false);
+	        }
+	     });
+    });
    $("input:radio[name=insurance_case]").click(function() {
       if($('input[name=insurance_case]:checked').val()==0){
           $("#insurance_id").prop("disabled", true);
@@ -2254,7 +2302,7 @@ function openSmsModal(){
 						<th>Document Type</th>
 						<th>Note</th>
 						<th>Document</th>
-						<!--<th>Edit</th>-->
+						<?php if($patient_document_edit_access==1) echo "<th>Edit</th>" ?>
 						<?php if($patient_document_remove_access==1) echo "<th>Delete</th>" ?>
 					</tr>
 				</thead>
@@ -2266,6 +2314,7 @@ function openSmsModal(){
 						<td><?php echo $document->document_type; ?></td>
 						<td><?php echo $document->note; ?></td>
 						<td style="text-align:center;">
+						
 		                	<?php 
 		                    	// Display document icon with document hyper link only if document link is available in DB
 		                    	if(isset($document->document_link) && $document->document_link!="") {echo "<a href=" . base_url() . "register/display_document/".$document->document_link . 
@@ -2276,6 +2325,12 @@ function openSmsModal(){
 					    <!--<td>
 						    <a href="<?php echo base_url()."register/edit_document/".$patient->patient_id."/". $document->document_link;?>" class="btn btn-primary">Edit</a>
 	    	            </td> -->
+	    	            <?php if($patient_document_edit_access==1) echo "
+						<td style=\"text-align:center;\">
+
+						<button type=\"button\" id=\"editButton\" class=\"btn btn-info\" data-target=\"#myModalEdit_\" data-toggle=\"modal\" data-recordid=$document->id data-id=$document->document_link data-note=\"$document->note\" data-date=$document->document_date data-type=$document->document_type_id>Edit </button>
+						</td>"
+						?>
 						<?php if($patient_document_remove_access==1) echo "
 						<td style=\"text-align:center;\">
 
@@ -2510,18 +2565,38 @@ function openSmsModal(){
 							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
 							if(json[key].generate_by_query==1){
 							var target = '<?php echo base_url();?>'+ json[key].generation_method;
-							var content = document.getElementById('print-div');
-							var template = '';
-							$('#summary_link_contents').val(content.innerHTML); 
-							$('#summary_link_sms').val(json[key].template);
-							$('#summary_download_link').val(json[key].report_download_url);
-							$.ajax({
-  								type: 'POST',
-  								url: target,
-  								data: $("#generate_summary_link").serialize(), 
-  								success: function(response) { smsDetails.template = response; document.getElementById("smsModal-template").value = response;},
-   								error : function(response) {  bootbox.alert("Link Generation failed"); }
-   								});
+							switch (json[key].generation_method) {
+								case 'register/generate_summary_link':
+									var content = document.getElementById('print-div');
+									var template = '';
+									$('#summary_link_contents').val(content.innerHTML); 
+									$('#summary_link_sms').val(json[key].template);
+									$('#summary_download_link').val(json[key].report_download_url);
+									$.ajax({
+  										type: 'POST',
+  										url: target,
+  										data: $("#generate_summary_link").serialize(), 
+  										success: function(response) { smsDetails.template = response; document.getElementById("smsModal-template").value = response;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_doc_upload_link':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $patient->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $patient->visit_id;?>";
+   									jsonData.report_download_url = json[key].report_download_url;
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								
+							      }
 							}							
 							else{
 								smsDetails.template=json[key].template;
@@ -2547,20 +2622,38 @@ function openSmsModal(){
 							smsDetails.dlt_header = json[key].dlt_header;
 							if(json[key].generate_by_query==1){
 							var target = '<?php echo base_url();?>'+ json[key].generation_method;
-							var content = document.getElementById('print-div');
-							var template = '';
-							$('#summary_link_contents').val(content.innerHTML); 
-							$('#summary_link_sms').val(json[key].template);
-							$('#summary_download_link').val(json[key].report_download_url);
-							$.ajax({
-  								type: 'POST',
-  								url: target,
-  								data: $("#generate_summary_link").serialize(), 
-  								success: function(response) {  smsDetails.template = response; 
-  								document.getElementById("smsModal-template").value = smsDetails.template;
-  								},
-   								error : function(response) {  bootbox.alert("Link Generation failed"); }
-   								});
+							switch (json[key].generation_method) {
+								case 'register/generate_summary_link':
+									var content = document.getElementById('print-div');
+									var template = '';
+									$('#summary_link_contents').val(content.innerHTML); 
+									$('#summary_link_sms').val(json[key].template);
+									$('#summary_download_link').val(json[key].report_download_url);
+									$.ajax({
+  										type: 'POST',
+  										url: target,
+  										data: $("#generate_summary_link").serialize(), 
+  										success: function(response) { smsDetails.template = response; document.getElementById("smsModal-template").value = response;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_doc_upload_link':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $patient->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $patient->visit_id;?>";
+   									jsonData.report_download_url = json[key].report_download_url;
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								
+							       }
 							}							
 							else{
 								smsDetails.template=json[key].template;
@@ -2625,6 +2718,68 @@ function openSmsModal(){
 	    	   <div class="col-md-6">
 				   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				   <button class="btn btn-danger"  type="button" name="btdelete" id="btdelete" >Delete</button>
+		    	</div>
+		    </div>
+
+			</form> 
+	    </div>
+	</div>
+	</div>
+</div>
+
+<div class="modal fade" id="myModalEdit_" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content">
+		<div class="modal-header bg-primary text-white">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title">Edit Metadata</h4>
+		</div>
+        <div class="modal-body">
+		<label><b>File Name: &nbsp </b></label><label id="filelink"></label>
+		  	<?php echo form_open("register/update_patients",array('class'=>'form-horizontal','role'=>'form','id'=>'select_patient_'.$patient->visit_id, 'method'=>'POST')); ?>
+		  	<input type="text" hidden name="edit_record_id" id="edit_record_id"  value=""/>	
+		    <input type="text" hidden name="edit_document_link" id="edit_document_link" value=""/>
+		    
+			<input type="text" class="sr-only" hidden value="<?php echo $patient->visit_id;?>" form="select_patient_<?php echo $patient->visit_id;?>" name="selected_patient" />
+			<input type="text" class="sr-only" hidden value="<?php echo $patient->patient_id;?>" id="edit_patient_id" name="edit_patient_id" />
+			<div class="form-group">
+                <div class="col-md-3">
+		        	<label for="document_date" class="control-label">Document Date*</label>
+		        </div>
+		        <div class="col-md-6">
+		        	<input type="date" class="form-control" value="<?php echo date('Y-m-d'); ?>" id="edit_document_date" name="document_date" required />
+		        </div>
+        	</div>						
+			<div class="form-group">
+		    	<div class="col-md-3">			
+			    	<label for="document_type">Document Type*</label>
+				</div>
+		        <div class="col-md-6">				
+				<select required name="document_type" id="edit_document_type" class="form-control">
+					<option selected disabled value="">Select Document Type</option>
+					<?php 
+					foreach($patient_document_type as $type){
+						echo "<option value='".$type->document_type_id."'";
+						if($this->input->post('document_type') && $this->input->post('document_type') == $type->document_type_id) echo " selected ";
+						echo ">".$type->document_type."</option>";
+					}
+					?>
+				</select>
+				</div>
+			</div>
+			<div class="form-group">
+		        <div class="col-md-3">
+	        		<label for="note" class="control-label">Note</label>
+	        	</div>
+	        	<div class="col-md-6">
+	            	<input type="text" class="form-control" placeholder="note" id="edit_note" name="note"/>
+	        	</div>
+	        </div>	
+			<div class="form-group">						
+	    	   <div class="col-md-6">
+				   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				   <button class="btn btn-danger"  type="button" name="btEdit" id="btEdit" >Update</button>
 		    	</div>
 		    </div>
 
@@ -3458,11 +3613,19 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
-
-		// initAgentSelectize();
-		
+		var helpline = '<?php echo $hospital->helpline;?>';
 		if(receiver.helpline){
-			$('#smsModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+			if (receiver.helpline == helpline) {
+				$('#smsModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
+			}
+		}
+		
+		if(user_details.receiver_link){
+			if (receiver.helpline == helpline) {		
+				$.each(user_details.receiver_link, function(i, d){
+					$('#smsModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - 				'+d.helpline+'</option>');
+				})
+			}
 		}
 		
 	}

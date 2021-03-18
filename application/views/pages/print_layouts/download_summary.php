@@ -1,6 +1,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jspdf.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/html2pdf.bundle.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/bootstrap.css">
 <script>
  
 function downloadPDF(){
@@ -26,6 +27,7 @@ $.ajax({
 
 </script>
 <style>
+tr {page-break-inside: avoid}
 .float_center {
   float: right;
 
@@ -33,25 +35,12 @@ $.ajax({
   left: -50%; /* or right 50% */
   text-align: left;
 }
-.centerDiv
-    {
-       display: block;
-       border: 1px solid #000000;
-       text-align: center ;
-       width: 40%;
-       height: 36px;
-       position: absolute;
-       top:0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-  	margin: auto;
-    }
 </style>
 <?php if(isset($result) && count($result)>0) { ?>
 </style>
+<title><?php echo $title;?></title>
 <div>
-<button class="float_center" type="button" onclick="downloadPDF()">Save to Device</button>
+<button class="btn btn-md btn-primary float_center" type="button" onclick="downloadPDF()">Save to Device</button>
 <br/>
 </div>
 <br/>
@@ -62,13 +51,11 @@ echo base64_decode($result[0]->summary_link_contents);
 </div>
 <div>
 <br/>
-<button class="float_center" type="button" onclick="downloadPDF()">Save to Device</button>
+<button class="btn btn-md btn-primary float_center" type="button" onclick="downloadPDF()">Save to Device</button>
 </div>
 <?php echo form_open("register/notify_summary_download",array('id'=>'notify_summary_download')); ?>
 <input type="hidden" name="summary_key" id="summary_key" value="<?php echo $_GET['key']?>" />		
 </form>
-<?php } else { ?>
-<div class="centerDiv"> The page you are looking for is either removed or invaild. <br> Please contact administrator for more details.</div>
 <?php } ?>
  
 
