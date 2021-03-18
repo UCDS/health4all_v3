@@ -38,7 +38,7 @@ class Staff_model extends CI_Model{
 	function user_hospital($user_id = false){
 		if(!!$user_id)
 			$this->db->where('user_hospital_link.user_id',$user_id);
-		$this->db->select('hospital.hospital_id,hospital,hospital_short_name,description,place,district,state,logo,telehealth,helpline.helpline as helpline')->from('user')
+		$this->db->select('hospital.hospital_id,hospital,hospital_short_name,description,place,district,state,logo,telehealth,helpline.helpline as helpline,helpline.note helpline_note')->from('user')
 		->join('user_hospital_link','user.user_id=user_hospital_link.user_id')
 		->join('hospital','user_hospital_link.hospital_id=hospital.hospital_id')	
 		->join('helpline','hospital.helpline_id=helpline.helpline_id','left')	

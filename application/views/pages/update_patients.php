@@ -3613,21 +3613,11 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
-		var helpline = '<?php echo $hospital->helpline;?>';
-		if(receiver.helpline){
-			if (receiver.helpline == helpline) {
-				$('#smsModal-helplinewithname-dropdown').append('<option value="'+receiver.helpline+'">'+receiver.note+' - '+receiver.helpline+'</option>');
-			}
-		}
-		
-		if(user_details.receiver_link){					
-			$.each(user_details.receiver_link, function(i, d){
-				if (d.helpline == helpline) {
-					$('#smsModal-helplinewithname-dropdown').append('<option value="'+d.helpline+'">'+d.note+' - 				'+d.helpline+'</option>');					
-				}
-			})
+		var valHospital = JSON.parse('<?php echo json_encode($hospital); ?>');		
+		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');
 			
-		}
+		
+		
 		
 	}
 
