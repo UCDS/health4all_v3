@@ -35,7 +35,6 @@ function showImageHereFunc() {
 	}
 	$('#showImageHere').append("<div id='PatientDoc"+globalIndex+"' class='imgcontainer' hidden> <img src='"+imgUrl+"' height='100px' width='100px'/><br><br> <button type=\"button\" class=\"close\" aria-label=\"Close\" data-toggle=\"tooltip\" title=\"Remove document\" onclick='removeImage("+globalIndex+")'\"> <span aria-hidden=\"true\">&times;</span> </button> <div>"+ event.target.files[i].name.slice(0,20)+" - "+ event.target.files[i].type +"</div> </div><div id='PatientDocFullName"+globalIndex+"' hidden>"+event.target.files[i].name+ "</div>");
 	$('#showImageHere').append("<div id='PatientDocProgress"+globalIndex+"'>  <div>"+ event.target.files[i].name.slice(0,20)+" - "+ event.target.files[i].type +"</div> <div class=\'progress\' id=\"progressDivId\">  <div class=\'progress-bar\' id='progressBar"+globalIndex+"'> <div class=\'percent\' id='percent"+globalIndex+"'>0%</div> </div>  </div> </div>");
-	
 	// Get form
         var form = document.getElementById('imageInputForm');
 
@@ -71,7 +70,7 @@ function showImageHereFunc() {
 	        contentType: false,
 	        cache: false,
 	        enctype: 'multipart/form-data',
-            success: function (data) {         
+            success: function (data) {        
          	$("#PatientDoc"+data.globalImageIndex).show();
                $("#PatientDocProgress"+data.globalImageIndex).hide();
                bootbox.alert("Document uploaded successfully");
@@ -90,6 +89,7 @@ function showImageHereFunc() {
 
  </script> 
 <style>
+
 input[type="file"]{
    display: none;
 }
@@ -118,7 +118,9 @@ margin:5px;
 #outer {
   width:100%;
 }
-
+body{
+min-width:260px;
+}
 
 .progress-bar {
     background-color: #0000ff;
@@ -189,12 +191,12 @@ body.loading .loading_model {
 
 </div>
 
-<div style="border:2px dashed black;border-radius:15px;width:300px;background-color:#f5f5f0;margin-top:1%" class="float_center">
+<div style="border:2px dashed black;border-radius:15px;width:250px;background-color:#f5f5f0;margin-top:1%" class="float_center">
 <?php echo form_open("register/uploading_docs",array('role'=>'form','class'=>'form-custom','id'=>'imageInputForm','enctype'=>'multipart/form-data')); ?> 
 <input type="hidden" id="imageIndex" name="imageIndex">
 <input type="hidden" id="globalImageIndex" name="globalImageIndex">
 <input type="hidden" id="patient_id" name="patient_id" value=<?php echo $result[0]->patient_id;?>>
-<label class="custom-file-upload" style="text-align:center;margin-left:30%;color:#3333ff;">
+<label class="custom-file-upload" style="text-align:center;margin-left:26%;color:#3333ff;">
       <input type="file" id="uploadImageFile" name="uploadImageFile[]" title="" onchange="showImageHereFunc();"/>
         <span id="fileupload"><u> Browse Documents </u> </span>
 </label>
