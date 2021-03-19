@@ -111,7 +111,6 @@ margin:5px;
 }
 
 #inner {
-
   display: table;
   margin: 0 auto;
 }
@@ -175,7 +174,9 @@ body.loading .loading_model {
 }
 </style>
 <title><?php echo $title;?></title>
-
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
 <div id="outer">
   <div id="inner"><h4><b>Instructions</b></h4> 
 <ul>
@@ -202,7 +203,7 @@ body.loading .loading_model {
 </div>
 
 <div class="footer">
-<div id="inner" style="width:400px;">
+<div id="inner">
 <b>Close the page after the document upload. </b>
   <p><i>This page will expires at <?php echo date("j-M-Y h:i A",strtotime($result[0]->expires_at));?> </i></p>
 </div> 
