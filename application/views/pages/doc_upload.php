@@ -25,6 +25,11 @@ $.ajax({
 
 function showImageHereFunc() {
   var total_file=document.getElementById("uploadImageFile").files.length;
+  
+  if (total_file <= 0){
+  	return;
+  }
+  
   for(var i=0;i<total_file;i++) { 
 	document.getElementById("imageIndex").value=i;
 	document.getElementById("globalImageIndex").value=index;
@@ -83,7 +88,7 @@ function showImageHereFunc() {
           });         
     index = index + 1;
   }
-        
+  document.getElementById("uploadImageFile").value = "";     
         
 }
 
