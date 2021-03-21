@@ -1,0 +1,31 @@
+# Appointemnts Status - New Report/Form to update appointment status, primarily to update chekin status at Gate/Entry for apppointments
+
+##DB
+  ALTER TABLE patient_visit - add fields -> appointment_status.id, appointment_status_update_by(comment-staff_id), appointment_status_update_time 
+  INSERT INTO user_function(user_function) VALUE user_function (appointments_status)
+  CREATE appointment_status table (id, hospital_id, appointment_status)
+  INSERT INTO appointment_status(appointment_status) VALUE (Checked In, Registered, No Show, Cancelled)
+
+##Create New Report/Form View https://health4all.online/reports/appointment_status
+  Set default Search by Appointments
+  Add Form search option by Appointment Status, Phone and Manual Id
+  Provide default Pagination
+  Display and update "visit_type" - New or Revisit
+  Display column of manual id - hospital id
+  Display appointment_status and update patientappointment_status.id
+  Display and update appointment_status_update_by, appointment_status_update_time
+  Display button "Update" (display only to users with with access to edit appointment status)
+  Button "Update" action
+    Open Modal 
+      Select appointment_status values of that hospital, 
+      Display Current Date/times with select date picker to alter date time if necessary
+     Modal "Submit" action
+      Update patient_visit.appointment_status_id, patient_visit.appointment_status_update_by, patient_visit.appointment_status_update_time
+      
+  (Exlcude following columns from https://health4all.online/reports/appointment
+    Doctor consulted, Appoinment with, Summary Sent, View Summary)
+  
+  
+##SMS feature to convey appointments
+##SMS feature to convey appointment rescheduling
+##Feature Create appoinment quotas and validations for creating fresh appointments
