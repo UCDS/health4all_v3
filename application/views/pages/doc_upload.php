@@ -212,7 +212,7 @@ body.loading .loading_model {
 <div class="footer">
 <div id="inner">
 <b>Close the page after the document upload. </b>
-  <p><i>This page will expires at <?php echo date("j-M-Y h:i A",strtotime($result[0]->expires_at));?> </i></p>
+  <p><i>This page will expire at <?php echo date("j-M-Y h:i A",strtotime($result[0]->expires_at));?> </i></p>
 </div> 
 </div> 
 <div class="modal loading_model"></div>
