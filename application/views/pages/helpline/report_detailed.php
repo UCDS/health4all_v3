@@ -250,13 +250,11 @@ $(function(){
 					><?php echo $lng->language;?></option>
 				<?php } ?>
 			</select>
+			<select id="hospitalSelect" name="helpline_hospital" style="width:100px" class="form-control">
+				<option value="">Hospital</option>
+			</select>
 			<select id="departmentSelect" name="helpline_department" style="width:100px" class="form-control">
 				<option value="">Department</option>
-				<?php foreach($department as $dept){ ?>
-					<option value="<?php echo $dept->department_id;?>"
-					<?php if($this->input->post('helpline_department') == $dept->department_id) echo " selected "; ?>
-					><?php echo $dept->department;?></option>
-				<?php } ?>
 			</select>
 			<select name="resolution_status" style="width:150px" class="form-control">
 				<option value="">Status</option>
@@ -1181,17 +1179,40 @@ function updateConnectto(){
 		$("#callModal-connectto-updated").html(display_text + ', ' + receiver.note + ', ' + receiver.helpline);
 	}
 }
+function setupHospitalDropdown() {
+	console.log("setupHospitalDropdown");
+	const selectedHelpline = $("#helplineSelect").val();
+	if(selectedHelpline > 0) {
+		onHelplineDropdownChanged(selectedHelpline);
+	}
+	$("#helplineSelect").on("change", function() {	
+		const helplineId = $(this).val();
+		onHelplineDropdownChanged(helplineId);
+	})
+}
+function onHelplineDropdownChanged(helplineId) {
+	console.log("select changed");
+	const optionsHtml = getHospitalsForHelpline(helplineId);
+	$("#hospitalSelect").html(optionsHtml);
+}
 
 function setupDepartmentDropdown() {
+	const selectedHospital = $("#hospitalSelect").val();
+	if(selectedHospital > 0) {
+		onHospitalDropdownChanged(selectedHospital);
+	}
 	console.log("setupDepartmentDropdown");
-	$("#helplineSelect").on("change", function() {
+	$("#hospitalSelect").on("change", function() {
 		console.log("select changed");
-		const helplineId = $(this).val();
-		const optionsHtml = getDepartmentOptionsForHelpline(helplineId);
-		$("#departmentSelect").html(optionsHtml);
+		const hospitalId = $(this).val();
+		onHospitalDropdownChanged(hospitalId);
 	})
 }
 
+function onHospitalDropdownChanged(hospitalId) {
+	const optionsHtml = getDepartmentOptionsForHospital(hospitalId);
+	$("#departmentSelect").html(optionsHtml);
+}
 function getDepartmentOptionsForHelpline(helplineId) {
 	const helplineHospital = hospitals.filter(hospital => hospital.helpline_id == helplineId);
 	let optionsHtml = buildEmptyOption("Department");
@@ -1203,11 +1224,23 @@ function getDepartmentOptionsForHelpline(helplineId) {
 	return optionsHtml;
 }
 
-
+function getHospitalsForHelpline(helplineId) {
+	const helplineHospitals = hospitals.filter(hospital => hospital.helpline_id == helplineId);
+	if(helplineHospitals.length > 0) {
+		let optionsHtml = buildEmptyOption("Hospitals"); 
+		optionsHtml += helplineHospitals.map(hospital => {
+			return `	<option value="${hospital.hospital_id}">
+							${hospital.hospital}
+						</option>`;
+		});
+		return optionsHtml;
+	}
+	return null;
+}
 function getDepartmentOptionsForHospital(hospitalId) {
 	const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
 	if(helplineDepartments.length > 0) {
-		let optionsHtml = buildEmptyOption("Select"); 
+		let optionsHtml = buildEmptyOption("Department"); 
 		optionsHtml += helplineDepartments.map(dept => {
 			return `	<option value="${dept.department_id}">
 							${dept.department}
@@ -1315,6 +1348,7 @@ $(function(){
 	});
 });
 $(document).ready(function() {
+	setupHospitalDropdown();
 	setupDepartmentDropdown();
 })
 </script>

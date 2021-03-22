@@ -403,6 +403,9 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('language')){
 			$this->db->where('helpline_call.language_id',$this->input->post('language'));
 		}
+		if($this->input->post('helpline_hospital')){
+			$this->db->where('helpline_call.hospital_id',$this->input->post('helpline_hospital'));
+		}
 		if($this->input->post('helpline_department')){
 			$this->db->where('helpline_call.department_id',$this->input->post('helpline_department'));
 		}
