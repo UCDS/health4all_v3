@@ -29,7 +29,7 @@ function showImageHereFunc() {
   if (total_file <= 0){
   	return;
   }
-  
+  $("body").addClass("loading"); 
   for(var i=0;i<total_file;i++) { 
 	document.getElementById("imageIndex").value=i;
 	document.getElementById("globalImageIndex").value=index;
@@ -51,7 +51,8 @@ function showImageHereFunc() {
         var gi =  JSON.parse(JSON.stringify(globalIndex)); 
         xhr.upload.onprogress = function(e) {
            var percentValue = Math.floor(e.loaded / e.total *100);
-           var percentCompleted = percentValue + '%';
+           if(percentValue <= 100){
+           	var percentCompleted = percentValue + '%';
     	    
     	            
     	              $("#progressBar"+gi).animate({
@@ -63,7 +64,7 @@ function showImageHereFunc() {
     	                    $("#percent"+gi).text(percentCompleted);
     	                }
     	            });
-    	      
+    	     }
     	          
         };
         return xhr;
@@ -78,17 +79,19 @@ function showImageHereFunc() {
             success: function (data) {        
          	$("#PatientDoc"+data.globalImageIndex).show();
                $("#PatientDocProgress"+data.globalImageIndex).hide();
+               $("body").removeClass("loading");
                bootbox.alert("Document uploaded successfully");
             },
              error: function(data) {
-          	bootbox.alert(data.responseJSON.messages);
           	$("#PatientDocProgress"+data.responseJSON.globalImageIndex).hide();
           	$("#PatientDoc"+data.responseJSON.globalImageIndex).hide();
+          	$("body").removeClass("loading");
+          	bootbox.alert(data.responseJSON.messages);
         }
           });         
     index = index + 1;
   }
-  document.getElementById("uploadImageFile").value = "";     
+  //document.getElementById("uploadImageFile").value = "";     
         
 }
 
@@ -212,7 +215,7 @@ body.loading .loading_model {
 <div class="footer">
 <div id="inner">
 <b>Close the page after the document upload. </b>
-  <p><i>This page will expires at <?php echo date("j-M-Y h:i A",strtotime($result[0]->expires_at));?> </i></p>
+  <p><i>This page will expire at <?php echo date("j-M-Y h:i A",strtotime($result[0]->expires_at));?> </i></p>
 </div> 
 </div> 
 <div class="modal loading_model"></div>

@@ -330,9 +330,21 @@ class Register extends CI_Controller {
 	function deleting_documents(){
 	if($this->input->post('patient_id') && $this->input->post('patient_id')!="" && $this->input->post('document_link') && $this->input->post('document_link')!=""){ 
 		$this->load->model('patient_document_upload_model');
+		$this->load->model('masters_model');
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default){
+          
+            		if ($default->default_id == "pdoc_remove_spaces"){
+                		$remove_spaces = $default->value;
+            		}
+               }
 		$patient_id = $this->input->post('patient_id');
 		$deleteOk=0;
-		$document_link =  $patient_id."_".$this->input->post('document_link');
+		$document_link = $this->input->post('document_link');
+		if ($remove_spaces == "TRUE"){
+			$document_link = str_replace(' ', '_', $document_link);
+		}
+		$document_link =  $patient_id."_".$document_link;
 		if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
 					$this->delete_document($document_link);
 					$deleteOk=1;
@@ -350,7 +362,7 @@ class Register extends CI_Controller {
             	header('Content-Type: application/json; charset=UTF-8');
             	header('HTTP/1.1 500 Internal Server Error');    
             	$result=array();   
-            	$result['msg']='Failed';
+            	$result['msg']='Failed'.$document_link;
         	$result['globalImageIndex'] = $this->input->post('globalImageIndex');        
         	echo(json_encode($result));
             }
@@ -502,7 +514,7 @@ class Register extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
 		$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
-		//echo("<script>console.log('PHP: " . json_encode($this->data['staff_hospital']) . "');</script>");
+		echo("<script>console.log('PHP: " . json_encode($this->data['staff_hospital']) . "');</script>");
 		$access=0;
 		$add_sms_access=0;
 		$patient_document_add_access=0;
