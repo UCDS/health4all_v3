@@ -50,6 +50,38 @@ class Register_model extends CI_Model{
 			$this->db->update('patient_consultation_summary');
 		}
 	}
+	
+	function get_upload_link_metadata($key_md5) {
+		$array = array('pdu.key_md5' => $key_md5, 'pdu.expires_at >' => date("Y-m-d H:i:s"));
+		$this->db->select("pdu.patient_id,CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,pdu.expires_at",false)
+		->from("patient_document_upload_key as pdu")
+		->join("patient as p","pdu.patient_id=p.patient_id")
+		->where($array);
+		$query=$this->db->get();
+		$result = $query->result();
+		if(count($result)>0){
+			$this->db->set('no_of_access', 'no_of_access+1', FALSE);
+			$this->db->set('last_accessed_time', date("Y-m-d H:i:s"));
+			$this->db->where($array);
+			$this->db->update('patient_document_upload_key as pdu');
+		}
+		return $result;
+	}
+	
+	
+	function insert_update_patient_document_upload_key($patient_id,$visit_id,$patient_doc_link_expiry){
+		$expiry_time = date("Y-m-d H:i:s",strtotime('+'.$patient_doc_link_expiry. ' hour')); 
+		$key = md5($patient_id.$visit_id.$expiry_time); 
+		$data=array(
+	        'patient_id'=>$patient_id,
+			'visit_id'=>$visit_id,
+			'expires_at'=>$expiry_time,
+			'key_md5'=> $key
+		);
+		$this->db->replace('patient_document_upload_key',$data);
+		return $key;
+	}
+	
 	function insert_update_summary_link($summary_link_patient_id,$summary_link_patient_visit_id,$summary_link_contents){
 		$base64_encode_summary_link_contents = base64_encode($summary_link_contents);
 		$summary_link_contents_md5 = md5($base64_encode_summary_link_contents);

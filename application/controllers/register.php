@@ -280,27 +280,229 @@ class Register extends CI_Controller {
 	function notify_summary_download(){
 		$this->load->model('register_model');
 		$this->load->helper('form');
-		echo("<script>console.log('PHP: Manoj');</script>");	
 		$this->register_model->notify_summary_download();
+	}
+	function generate_doc_upload_link(){
+		if($this->session->userdata('logged_in')){
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){
+				if ($default->default_id == "patient_doc_link_expiry"){
+               			$patient_doc_link_expiry = $default->value;
+            			}
+			}
+			$downloadurl = $this->input->post('report_download_url');
+			$key = $this->register_model->insert_update_patient_document_upload_key($this->input->post('patient_id'),$this->input->post('visit_id'),(int)$patient_doc_link_expiry);
+			$result=$this->register_model->get_patient_visit_details($this->input->post('patient_id'),$this->input->post('visit_id'));
+			$val = $result[0];
+			$basetemplate = $this->input->post('template');
+			$basetemplate = str_replace("{#PatientName#}",$val->name, $basetemplate);	
+			$basetemplate = str_replace("{#patient_id#}","ID ".$val->patient_id, $basetemplate);			
+			$basetemplate = str_replace("HospitalShortName#}",$val->hospital_short_name, $basetemplate);
+			$basetemplate = str_replace("{#Phone",$val->helpline, $basetemplate);
+			$basetemplate = str_replace("{#link#}",$downloadurl.$key, $basetemplate);
+			header('Content-type: application/json');
+			$result=array();  
+            		$result['sms_content'] = $basetemplate; 
+			echo(json_encode($result));
+		}
+		
+		//echo("<script>console.log('PHP: " .$this->input->post('visit_id') . "');</script>");
+		
 	}
 	function get_summary(){
 		if (isset($_GET['key']) && $_GET['key']!=""){				
 			$this->load->model('register_model');
 			$this->load->helper('form');
+			$this->data['title']="Consultation Summary";
 			$this->data['result']=$this->register_model->get_summary($_GET['key']);
 			
 		} else {
 			$this->data['result'] = [] ;
 		}	
-			
-		$this->load->view('pages/print_layouts/download_summary',$this->data);
+		
+		if (empty($this->data['result'])){	
+			$this->load->view('templates/invalid_page');
+		} else {
+			$this->load->view('pages/print_layouts/download_summary',$this->data);
+		} 
 	}
 	
+	function deleting_documents(){
+	if($this->input->post('patient_id') && $this->input->post('patient_id')!="" && $this->input->post('document_link') && $this->input->post('document_link')!=""){ 
+		$this->load->model('patient_document_upload_model');
+		$patient_id = $this->input->post('patient_id');
+		$deleteOk=0;
+		$document_link =  $patient_id."_".$this->input->post('document_link');
+		if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
+					$this->delete_document($document_link);
+					$deleteOk=1;
+				}
+				
+		}
+		if ($deleteOk==1){               
+        	header('Content-Type: application/json; charset=UTF-8');
+            	header('HTTP/1.1 200 OK');  
+            	$result=array();  
+            	$result['globalImageIndex'] = $this->input->post('globalImageIndex'); 
+            	echo(json_encode($result));
+            }
+            else{
+            	header('Content-Type: application/json; charset=UTF-8');
+            	header('HTTP/1.1 500 Internal Server Error');    
+            	$result=array();   
+            	$result['msg']='Failed';
+        	$result['globalImageIndex'] = $this->input->post('globalImageIndex');        
+        	echo(json_encode($result));
+            }
+	}
+	function uploading_docs(){
+	$this->load->helper('form');
+	$this->load->model('masters_model');
+	$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+	foreach($this->data['defaultsConfigs'] as $default){
+            if ($default->default_id == "pdoc_allowed_types"){
+               $allowed_types = $default->value;
+            }
+            if ($default->default_id == "pdoc_max_size"){
+                $max_size = $default->value;
+            }
+            if ($default->default_id == "pdoc_max_width"){
+                $max_width = $default->value;
+            }
+            if ($default->default_id == "pdoc_max_height"){
+                $max_height = $default->value;
+            }
+            if ($default->default_id == "pdoc_remove_spaces"){
+                $remove_spaces = $default->value;
+            }
+            if ($default->default_id == "pdoc_overwrite"){
+                $overwrite = $default->value;
+            }                                   
+        }
+	$files = $_FILES;
+	$i = $this->input->post('imageIndex');
+	if (count($files["uploadImageFile"]["name"])>0) {
+                $dir_path = './assets/patient_documents/';
+                $config['upload_path'] = $dir_path;
+                $config['allowed_types'] = $allowed_types;
+                $config['max_size'] = $max_size;
+                $config['max_width'] = $max_width;
+                $config['max_height'] = $max_height;
+                $config['encrypt_name'] = FALSE;
+                $config['overwrite'] = $overwrite;
+                $config['remove_spaces'] = $remove_spaces;
+ 
+                // Upload file and add document record
+                $msg = "Error: ";
+                $uploadOk = 1;
+                $target_file = $dir_path . basename($files["uploadImageFile"]["name"][$i]);
+                $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+                if ($files['uploadImageFile']['size'][$i] <= 0 && $uploadOk == 1) {
+                    $msg = $msg . "Select at least one file.";
+                    $uploadOk = 0;
+				}
+
+
+                // Check for upload errors
+                if ($uploadOk == 0) {
+                    $msg = $msg . " Your file was not uploaded.";
+                }
+                else {
+				    // if everything is ok, try to upload file
+				    $new_name = $this->input->post('patient_id').'_'.$files["uploadImageFile"]['name'][$i];
+				    
+                    //$config['file_name'] = $new_name;
+                    $this->load->library('upload', $config);
+                    $_FILES['uploadImageFile']['name']= $new_name;
+        	     $_FILES['uploadImageFile']['type']= $files['uploadImageFile']['type'][$i];
+        	     $_FILES['uploadImageFile']['tmp_name']= $files['uploadImageFile']['tmp_name'][$i];
+                    $_FILES['uploadImageFile']['error']= $files['uploadImageFile']['error'][$i];
+                    $_FILES['uploadImageFile']['size']= $files['uploadImageFile']['size'][$i]; 
+                    if (!$this->upload->do_upload('uploadImageFile')) {
+                        $msg = $msg . $this->upload->display_errors();
+                        $uploadOk = 0;
+                    } else {
+                        $file = $this->upload->data();
+                        $uploadOk = 1;
+                        $this->load->model('patient_document_upload_model');
+                        $this->patient_document_upload_model->add_document($this->input->post('patient_id'), $file['file_name']);
+                    }
+                    
+                }
+            }
+
+            if ($uploadOk==1){               
+        	header('Content-Type: application/json; charset=UTF-8');
+            	header('HTTP/1.1 200 OK');  
+            	$result=array();  
+            	$result['globalImageIndex'] = $this->input->post('globalImageIndex'); 
+            	echo(json_encode($result));
+            }
+            else{
+            	header('Content-Type: application/json; charset=UTF-8');
+            	header('HTTP/1.1 500 Internal Server Error');    
+            	$result=array();    	
+        	$result['messages'] = $msg;
+        	$result['globalImageIndex'] = $this->input->post('globalImageIndex');        
+        	echo(json_encode($result));
+            }
+        }
+	
+	
+	function document_upload(){
+	
+	if (isset($_GET['key']) && $_GET['key']!=""){	
+			$this->load->helper('form');			
+			$this->load->model('register_model');
+			$this->load->model('masters_model');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			$this->data['title']="Document Upload";
+			foreach($this->data['defaultsConfigs'] as $default){
+			    if ($default->default_id == "pdoc_allowed_types"){
+			       $this->data['allowed_types'] = $default->value;
+			    }
+			    if ($default->default_id == "pdoc_max_size"){
+				$this->data['max_size'] = $default->value;
+			    }
+			    if ($default->default_id == "pdoc_max_width"){
+				$this->data['max_width'] = $default->value;
+			    }
+			    if ($default->default_id == "pdoc_max_height"){
+				$this->data['max_height'] = $default->value;
+			    }
+			    if ($default->default_id == "pdoc_remove_spaces"){
+				$this->data['remove_spaces'] = $default->value;
+			    }
+			    if ($default->default_id == "pdoc_overwrite"){
+				$this->data['overwrite'] = $default->value;
+			    }                                   
+			}
+			$this->data['result']=$this->register_model->get_upload_link_metadata($_GET['key']);
+			
+	} else {
+			$this->data['result'] = [] ;
+	}	
+	if (empty($this->data['result'])){	
+		$this->load->view('templates/invalid_page');
+	} else {
+		$this->load->view('pages/doc_upload',$this->data);
+	} 
+		
+		//echo("<script>console.log('PHP: " . json_encode($this->data['result']) . "');</script>");
+
+	
+	
+	
+        	
+	}
 	function update_patients(){
 	
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
-		$hospital = $this->session->userdata('hospital');
+		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
+		$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
+		//echo("<script>console.log('PHP: " . json_encode($this->data['staff_hospital']) . "');</script>");
 		$access=0;
 		$add_sms_access=0;
 		$patient_document_add_access=0;
@@ -312,11 +514,12 @@ class Register extends CI_Controller {
 			if($function->user_function=="patient_document_upload"){
 				if ($function->add==1) $patient_document_add_access=1;
 				if ($function->remove==1) $patient_document_remove_access=1;
+				if ($function->edit==1) $patient_document_edit_access=1;
 			}
 			// Fetch user functions and check if the user has 
         		// access to documentation access rights
 			if($function->user_function=="sms"){
-                		if ($function->add==1 && $hospital["helpline"] && $hospital["helpline"]!="" && !empty($hospital["helpline"])) $add_sms_access=1;
+                		if ($function->add==1 && $this->data['staff_hospital']["helpline"] && $this->data['staff_hospital']["helpline"]!="" && !empty($this->data['staff_hospital']["helpline"])) $add_sms_access=1;
             		}
 		}
 		if($access==1){
@@ -343,6 +546,7 @@ class Register extends CI_Controller {
 		$this->data['drugs_available'] = $this->hospital_model->get_drugs();
 		$this->data['patient_document_add_access']=$patient_document_add_access;
 		$this->data['patient_document_remove_access']=$patient_document_remove_access;
+		$this->data['patient_document_edit_access']=$patient_document_edit_access;
 		$this->data['add_sms_access']=$add_sms_access;
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('selected_patient');
@@ -452,6 +656,10 @@ class Register extends CI_Controller {
 				if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
 					$this->delete_document($document_link);
 				}
+			}
+			
+			if ($this->input->post('edit_document_link')){
+				$this->patient_document_upload_model->update_document_metadata();			
 			}
 					
 			$this->data['transporters'] = $this->staff_model->get_staff("Transport");
