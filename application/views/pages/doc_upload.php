@@ -80,18 +80,19 @@ function showImageHereFunc() {
          	$("#PatientDoc"+data.globalImageIndex).show();
                $("#PatientDocProgress"+data.globalImageIndex).hide();
                $("body").removeClass("loading");
+               document.getElementById("uploadImageFile").value = ""; 
                bootbox.alert("Document uploaded successfully");
             },
              error: function(data) {
           	$("#PatientDocProgress"+data.responseJSON.globalImageIndex).hide();
           	$("#PatientDoc"+data.responseJSON.globalImageIndex).hide();
           	$("body").removeClass("loading");
+          	document.getElementById("uploadImageFile").value = ""; 
           	bootbox.alert(data.responseJSON.messages);
         }
           });         
     index = index + 1;
-  }
-  //document.getElementById("uploadImageFile").value = "";     
+  }    
         
 }
 
