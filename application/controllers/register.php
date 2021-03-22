@@ -514,7 +514,7 @@ class Register extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
 		$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
-		echo("<script>console.log('PHP: " . json_encode($this->data['staff_hospital']) . "');</script>");
+		//echo("<script>console.log('PHP: " . json_encode($this->data['staff_hospital']) . "');</script>");
 		$access=0;
 		$add_sms_access=0;
 		$patient_document_add_access=0;
