@@ -5,6 +5,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.ptTimeSelect.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 
@@ -1245,7 +1246,7 @@ function openEditModal(e) {
 }
 function openSendEmailModal(e) {
 	const callId = $(this).attr('data-id');
-	$("#updateCallModal").modal("show");
+	// $("#updateCallModal").modal("show");
 
 }
 

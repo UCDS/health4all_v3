@@ -95,8 +95,8 @@
                                 ><?php echo $rs->resolution_status;?></option>
                             <?php } ?>
                         </select>
-                        <input class="date form-control" class="resolution_date" name="resolution_date_<?php echo $call->call_id;?>" value="<?php if($call->resolution_date_time != 0) echo date("d-M-Y",strtotime($call->resolution_date_time)); else echo '';?>" placeholder="Resolution Date" />
-                        <input class="time form-control" class="resolution_time" name="resolution_time_<?php echo $call->call_id;?>" value="<?php if($call->resolution_date_time != 0) echo date("g:i A",strtotime($call->resolution_date_time)); else echo '';?>" placeholder="Resolution Time" />                    
+                        <input class="date form-control resolution_date" name="resolution_date_<?php echo $call->call_id;?>" value="<?php if($call->resolution_date_time != 0) echo date("d-M-Y",strtotime($call->resolution_date_time)); else echo '';?>" placeholder="Resolution Date" />
+                        <input class="time form-control resolution_time" name="resolution_time_<?php echo $call->call_id;?>" value="<?php if($call->resolution_date_time != 0) echo date("g:i A",strtotime($call->resolution_date_time)); else echo '';?>" placeholder="Resolution Time" />                    
                     </div>
                 </div>
                 <div class="row">
@@ -140,11 +140,11 @@ function setupUpdateCallModalData(callData) {
     modal.find(".language").val(callData.language_id);    
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
-    debugger;
     $(".resolution_date").Zebra_DatePicker();
     $(".resolution_time").ptTimeSelect();
-    modal.find(".resolution_date").val(dateNow(new Date(callData.resolution_date_time)));
-    modal.find(".resolution_time").val(new Date(callData.resolution_date_time).toLocaleTimeString());
+    const resolutionMoment = moment(callData.resolution_date_time)
+    modal.find(".resolution_date").val(resolutionMoment.isValid()? resolutionMoment.format("DD-MMM-YYYY"): "");
+    modal.find(".resolution_time").val(resolutionMoment.isValid()? new Date(callData.resolution_date_time).toLocaleTimeString(): "");
     const hospitals = buildHospitalOptions(userHospitals)
     modal.find(".updateHospitalSelect").html(hospitals? hospitals: buildEmptyOption("Hospital"));
     modal.find(".updateHospitalSelect").val(callData.hospital_id)
@@ -170,6 +170,7 @@ function dateNow(dateObject){
     }
     let getYear = set.getFullYear().toString();
     const dateNow = getMonth + delimiter + getDate + delimiter + getYear; //today
+    console.log(dateNow);
     return dateNow;
 }
 function formatDate() {
