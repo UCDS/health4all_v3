@@ -454,9 +454,15 @@ echo "</select></li>";
 						</td>
 						<td>
 							<?php echo $call->call_id;?>
-							<?php if(in_array($call->helpline_id, $updatable_helpline)) { ?>
-								<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">edit</button>
-							<?php } ?>
+							<?php 
+							foreach($updatable_helpline as $updatable)
+							{ 
+								if($updatable->helpline_id == $call->helpline_id) { ?>
+									<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">edit</button>
+							<?php
+									break;
+								}
+							} ?>
 							<button class="sendEmail" onClick="openSendEmailModal(this)" data-id="<?php echo $call->call_id;?>">Email</button>
 						</td>
 						<td>
@@ -498,10 +504,10 @@ echo "</select></li>";
 							<?php echo $call->language;?>
 						</td>
 						<td >
-							<?php echo $call->department;?>
+							<?php echo $call->hospital;?>
 						</td>
 						<td >
-							<?php echo $call->hospital;?>
+							<?php echo $call->department;?>
 						</td>
 						<td >
 							<?php echo $call->call_category;?>
