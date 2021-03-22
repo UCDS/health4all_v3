@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document" style="width:90%">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close closeUpdateModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="updateCallModalLabel">Update Call</h4>
             </div>
             <div class="modal-body" style="Padding: 16px" id="emailModalBody">
@@ -135,7 +135,7 @@ function setupUpdateCallModalData(callData) {
     const modal = $("#updateCallModal");
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
-    modal.find(".notes").val(callData.notes);
+    modal.find(".notes").val(callData.note);
     modal.find(".caller_type").val(callData.caller_type_id);
     modal.find(".language").val(callData.language_id);    
     modal.find(".call_category").val(callData.call_category_id);
@@ -226,6 +226,7 @@ function registerOnUpdateFormSubmitted(callData) {
     });
     modal.find(".closeUpdateModal").on("click", function() {
         modal.modal('hide');
+        window.location.reload();
     })
 }
 

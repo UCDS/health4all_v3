@@ -106,12 +106,12 @@ input[type=number] {
 		font-size: 12px;
 	}
 </style>
-
 <script type="text/javascript">
 var user_details = <?php echo $user_details; ?>;
 var departments = <?php echo json_encode($department); ?>;
 var hospitals = <?php echo json_encode($all_hospitals); ?>;
 var userHospitals = <?php echo json_encode($user_hospitals); ?>;
+var updatableHelplines = <?php echo json_encode($updatable_helpline); ?>;
 var receiver = user_details.receiver;
 var callData = <?php echo json_encode($calls); ?>;
 var callDetails = {};
@@ -226,14 +226,6 @@ $(function(){
 			
 			<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
 			<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
-			<select name="call_category" style="width:150px" class="form-control">
-				<option value="">Category</option>
-				<?php foreach($call_category as $cc){ ?>
-					<option value="<?php echo $cc->call_category_id;?>"
-					<?php if($this->input->post('call_category') == $cc->call_category_id) echo " selected "; ?>									
-					><?php echo $cc->call_category;?></option>
-				<?php } ?>
-			</select>	
 			<select name="caller_type" style="width:120px" class="form-control">
 				<option value="">Caller</option>
 				<?php foreach($caller_type as $ct){ ?>
@@ -255,6 +247,14 @@ $(function(){
 			</select>
 			<select id="departmentSelect" name="helpline_department" style="width:100px" class="form-control">
 				<option value="">Department</option>
+			</select>
+			<select name="call_category" style="width:150px" class="form-control">
+				<option value="">Category</option>
+				<?php foreach($call_category as $cc){ ?>
+					<option value="<?php echo $cc->call_category_id;?>"
+					<?php if($this->input->post('call_category') == $cc->call_category_id) echo " selected "; ?>									
+					><?php echo $cc->call_category;?></option>
+				<?php } ?>
 			</select>
 			<select name="resolution_status" style="width:150px" class="form-control">
 				<option value="">Status</option>
@@ -434,6 +434,7 @@ echo "</select></li>";
 				<th>Note</th>
 				<th>Caller Type</th>
 				<th>Language</th>
+				<th>Hospital</th>
 				<th>Department</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
@@ -453,8 +454,10 @@ echo "</select></li>";
 						</td>
 						<td>
 							<?php echo $call->call_id;?>
-							<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>">edit</button>
-							<button class="sendEmail" onClick="openSendEmailModal(this)" data-id="<?php echo $call->call_id;?>">Send Email</button>
+							<?php if(in_array($call->helpline_id, $updatable_helpline)) { ?>
+								<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">edit</button>
+							<?php } ?>
+							<button class="sendEmail" onClick="openSendEmailModal(this)" data-id="<?php echo $call->call_id;?>">Email</button>
 						</td>
 						<td>
 							<?php if($call->call_type == "incomplete") { ?>
@@ -496,6 +499,9 @@ echo "</select></li>";
 						</td>
 						<td >
 							<?php echo $call->department;?>
+						</td>
+						<td >
+							<?php echo $call->hospital;?>
 						</td>
 						<td >
 							<?php echo $call->call_category;?>
