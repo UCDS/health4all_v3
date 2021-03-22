@@ -362,7 +362,7 @@ class Register extends CI_Controller {
             	header('Content-Type: application/json; charset=UTF-8');
             	header('HTTP/1.1 500 Internal Server Error');    
             	$result=array();   
-            	$result['msg']='Failed'.$document_link;
+            	$result['msg']='Failed';
         	$result['globalImageIndex'] = $this->input->post('globalImageIndex');        
         	echo(json_encode($result));
             }
