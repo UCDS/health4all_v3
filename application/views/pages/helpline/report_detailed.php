@@ -4,9 +4,6 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.ptTimeSelect.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
-
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
@@ -456,7 +453,7 @@ echo "</select></li>";
 							<?php echo $call->call_id;?>
 							<?php 
 							foreach($updatable_helpline as $updatable)
-							{ 
+							{ 							
 								if($updatable->helpline_id == $call->helpline_id) { ?>
 									<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">edit</button>
 							<?php
@@ -522,7 +519,10 @@ echo "</select></li>";
 						</td>
 						<td class="hidden">
 							<small>
-								<?php if($call->resolution_date_time != 0){
+								<?php 
+								
+								
+								if($call->resolution_date_time != 0){
 									$diff = date_diff(date_create($call->resolution_date_time),date_create($call->start_time));
 									if($diff->y != 0) echo $diff->y." Y, ".$diff->m." Months";
 									else if($diff->m != 0) echo $diff->m." Months, ".$diff->d." Days";
@@ -1197,6 +1197,7 @@ function setupHospitalDropdown() {
 	if(selectedHelpline > 0) {
 		onHelplineDropdownChanged(selectedHelpline);
 	}
+	
 	$("#helplineSelect").on("change", function() {	
 		const helplineId = $(this).val();
 		onHelplineDropdownChanged(helplineId);
@@ -1205,7 +1206,8 @@ function setupHospitalDropdown() {
 function onHelplineDropdownChanged(helplineId) {
 	console.log("select changed");
 	const optionsHtml = getHospitalsForHelpline(helplineId);
-	$("#hospitalSelect").html(optionsHtml);
+	$("#hospitalSelect").html(optionsHtml);	
+	onHospitalDropdownChanged();
 }
 
 function setupDepartmentDropdown() {
@@ -1213,6 +1215,8 @@ function setupDepartmentDropdown() {
 	if(selectedHospital > 0) {
 		onHospitalDropdownChanged(selectedHospital);
 	}
+
+	
 	console.log("setupDepartmentDropdown");
 	$("#hospitalSelect").on("change", function() {
 		console.log("select changed");
@@ -1224,6 +1228,7 @@ function setupDepartmentDropdown() {
 function onHospitalDropdownChanged(hospitalId) {
 	const optionsHtml = getDepartmentOptionsForHospital(hospitalId);
 	$("#departmentSelect").html(optionsHtml);
+		
 }
 function getDepartmentOptionsForHelpline(helplineId) {
 	const helplineHospital = hospitals.filter(hospital => hospital.helpline_id == helplineId);
@@ -1238,8 +1243,8 @@ function getDepartmentOptionsForHelpline(helplineId) {
 
 function getHospitalsForHelpline(helplineId) {
 	const helplineHospitals = hospitals.filter(hospital => hospital.helpline_id == helplineId);
-	if(helplineHospitals.length > 0) {
-		let optionsHtml = buildEmptyOption("Hospitals"); 
+	let optionsHtml = buildEmptyOption("Hospitals"); 
+	if(helplineHospitals.length > 0) {		
 		optionsHtml += helplineHospitals.map(hospital => {
 			return `	<option value="${hospital.hospital_id}">
 							${hospital.hospital}
@@ -1247,12 +1252,12 @@ function getHospitalsForHelpline(helplineId) {
 		});
 		return optionsHtml;
 	}
-	return null;
+	return optionsHtml;
 }
 function getDepartmentOptionsForHospital(hospitalId) {
 	const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
-	if(helplineDepartments.length > 0) {
-		let optionsHtml = buildEmptyOption("Department"); 
+	let optionsHtml = buildEmptyOption("Department"); 
+	if(helplineDepartments.length > 0) {		
 		optionsHtml += helplineDepartments.map(dept => {
 			return `	<option value="${dept.department_id}">
 							${dept.department}
@@ -1260,7 +1265,7 @@ function getDepartmentOptionsForHospital(hospitalId) {
 		});
 		return optionsHtml;
 	}
-	return null;
+	return optionsHtml;
 }
 function buildHospitalOptions(hospitals = []) {
 	if(hospitals && hospitals.length > 0) {
@@ -1276,7 +1281,7 @@ function buildHospitalOptions(hospitals = []) {
 	}
 }
 function buildEmptyOption(optionName = "Select") {
-	return `<option value="">
+	return `<option value="" selected>
 					${optionName}
 			</option>`;
 
@@ -1362,5 +1367,14 @@ $(function(){
 $(document).ready(function() {
 	setupHospitalDropdown();
 	setupDepartmentDropdown();
+	var hospital = "<?php echo $this->input->post('helpline_hospital')?>";
+	if(hospital != ""){
+		$("#hospitalSelect").val(hospital);
+		setupDepartmentDropdown();
+	}
+	var department = "<?php echo $this->input->post('helpline_department')?>";
+	if(department != ""){
+		$("#departmentSelect").val(department);
+	}
 })
 </script>

@@ -96,8 +96,8 @@ class Helpline_model extends CI_Model{
 		$calls = $this->input->post('call');
 		$data=array();
 		foreach($calls as $call){
-			if(!!$this->input->post('resolution_date_'.$call) && !! $this->input->post('resolution_time_'.$call)){
-				$resolution_date_time = date("Y-m-d H:i:s",strtotime($this->input->post('resolution_date_'.$call)." ".$this->input->post('resolution_time_'.$call)));
+			if(!!$this->input->post('resolution_date_time_'.$call) && !! $this->input->post('resolution_date_time_'.$call)){
+				$resolution_date_time = date("Y-m-d H:i:s",strtotime($this->input->post('resolution_date_time_'.$call)));
 			}
 			else $resolution_date_time = 0;
 			$data[]=array(
@@ -110,6 +110,7 @@ class Helpline_model extends CI_Model{
 				'ip_op'=>$this->input->post("visit_type_".$call),
 				'visit_id'=>$this->input->post("visit_id_".$call),
 				'note'=>$this->input->post("note_".$call),
+				'department_id'=>$this->input->post("department_id_".$call),
 				'call_group_id'=>$this->input->post("group_".$call),
 				'resolution_date_time'=>$resolution_date_time,
 				'updated'=>1
@@ -452,7 +453,7 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('call_type')){
 			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
 		}
-		$this->db->select('*, helpline_receiver.short_name as short_name, helpline_call.call_id, helpline_call.call_group_id, helpline_call.note,count(helpline_email_id) email_count, helpline.note as line_note')
+		$this->db->select('*, helpline_receiver.short_name as short_name, helpline_call.call_id, helpline_call.call_group_id, helpline_call.note,count(helpline_email_id) email_count, helpline.note as line_note,helpline.helpline_id')
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
@@ -494,7 +495,12 @@ class Helpline_model extends CI_Model{
 			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
 			echo("<script>console.log('to_number: " . $this->input->post('to_number') . "');</script>");
 		}
-
+		if($this->input->post('helpline_hospital')){
+			$this->db->where('helpline_call.hospital_id',$this->input->post('helpline_hospital'));
+		}
+		if($this->input->post('helpline_department')){
+			$this->db->where('helpline_call.department_id',$this->input->post('helpline_department'));
+		}
 		if($this->input->post('resolution_status')){
 			$this->db->where('helpline_call.resolution_status_id',$this->input->post('resolution_status'));
 		}
@@ -540,6 +546,7 @@ class Helpline_model extends CI_Model{
 		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left')
 		->join('helpline_email','helpline_call.call_id = helpline_email.call_id','left')
 		->join('language','helpline_call.language_id = language.language_id','left')
+		->join('department', 'department.department_id = helpline_call.department_id','left')
 		->group_by('helpline_call.call_id')
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
 		->where('user_helpline_link.user_id', $user['user_id'])

@@ -16,13 +16,13 @@
                 <div class="row">
                     <div class="col-md-3">Note</div>
                     <div class="col-md-6">
-                        <textarea name="note_<?php echo $call->call_id;?>" class="notes" rows="4" class="form-control"><?php echo $call->note;?></textarea>
+                        <textarea name="note_<?php echo $call->call_id;?>" class="notes" rows="4" class="form-control" style="width:250px"><?php echo $call->note;?></textarea>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3">Caller Type</div>
                     <div class="col-md-6">
-                        <select class="caller_type" name="caller_type_<?php echo $call->call_id;?>"  id="caller_type_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="caller_type" name="caller_type_<?php echo $call->call_id;?>"  id="caller_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($caller_type as $ct){ ?>
                                 <option value="<?php echo $ct->caller_type_id;?>"
@@ -35,7 +35,7 @@
                 <div class="row">
                     <div class="col-md-3">Language</div>
                     <div class="col-md-6">
-                        <select class="language" name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="language" name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($language as $lng){ ?>
                                 <option value="<?php echo $lng->language_id;?>"
@@ -49,7 +49,7 @@
                 <div class="row">
                     <div class="col-md-3">Hospital </div>
                     <div class="col-md-6">
-                        <select class="updateHospitalSelect" style="width:100px" class="form-control">
+                        <select class="updateHospitalSelect" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($all_hospitals as $hosp){ ?>
                                 <option value="<?php echo $hosp->hospital_id;?>"
@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-3">Department</div>
                     <div class="col-md-6">
-                        <select class="updateDepartmentSelect"  style="width:100px" class="form-control">
+                        <select class="updateDepartmentSelect"  style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($department as $dept){ ?>
                                 <option value="<?php echo $dept->department_id;?>">
@@ -74,7 +74,7 @@
                 <div class="row">
                     <div class="col-md-3">Caller Category</div>
                     <div class="col-md-6">
-                        <select class="call_category" name="call_category_<?php echo $call->call_id;?>" id="call_category_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="call_category" name="call_category_<?php echo $call->call_id;?>" id="call_category_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($call_category as $cc){ ?>
                                 <option value="<?php echo $cc->call_category_id;?>"
@@ -87,7 +87,7 @@
                 <div class="row">
                     <div class="col-md-3">Resolution Status</div>
                     <div class="col-md-6">
-                        <select class="resolution_status" name="resolution_status_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="resolution_status" name="resolution_status_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($resolution_status as $rs){ ?>
                                 <option value="<?php echo $rs->resolution_status_id;?>"
@@ -95,14 +95,15 @@
                                 ><?php echo $rs->resolution_status;?></option>
                             <?php } ?>
                         </select>
-                        <input class="date form-control resolution_date" name="resolution_date_<?php echo $call->call_id;?>" value="<?php if($call->resolution_date_time != 0) echo date("d-M-Y",strtotime($call->resolution_date_time)); else echo '';?>" placeholder="Resolution Date" />
-                        <input class="time form-control resolution_time" name="resolution_time_<?php echo $call->call_id;?>" value="<?php if($call->resolution_date_time != 0) echo date("g:i A",strtotime($call->resolution_date_time)); else echo '';?>" placeholder="Resolution Time" />                    
+                      <div class="form-group">
+				<input name="resolution_update_date_time" id="resolution_update_date_time" type="datetime-local" class="resolution_update_date_time form-control" style="width:250px"/>
+			</div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3">Patient Type</div>
                     <div class="col-md-6">
-                        <select class="patient_type" name="visit_type_<?php echo $call->call_id;?>" id="visit_type_<?php echo $call->call_id;?>" style="width:100px" class="form-control">
+                        <select class="patient_type" name="visit_type_<?php echo $call->call_id;?>" id="visit_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                                 <option value="OP"
                                 <?php if($call->ip_op == "OP") echo " selected "; ?>
@@ -131,7 +132,6 @@
 
 <script> 
 function setupUpdateCallModalData(callData) {
-    console.log(callData);
     const modal = $("#updateCallModal");
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
@@ -140,22 +140,28 @@ function setupUpdateCallModalData(callData) {
     modal.find(".language").val(callData.language_id);    
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
-    $(".resolution_date").Zebra_DatePicker();
-    $(".resolution_time").ptTimeSelect();
-    const resolutionMoment = moment(callData.resolution_date_time)
-    modal.find(".resolution_date").val(resolutionMoment.isValid()? resolutionMoment.format("DD-MMM-YYYY"): "");
-    modal.find(".resolution_time").val(resolutionMoment.isValid()? new Date(callData.resolution_date_time).toLocaleTimeString(): "");
+    //console.log(callData.resolution_date_time);
+    var res = callData.resolution_date_time.split(" ");
+    var dateval=res[0]+"T"+res[1];
+    modal.find("#resolution_update_date_time").val(dateval);
+   // $(".resolution_date").Zebra_DatePicker();
+   // $(".resolution_time").ptTimeSelect();
+    //const resolutionMoment = moment(callData.resolution_date_time)
+    //modal.find(".resolution_date").val(resolutionMoment.isValid()? resolutionMoment.format("DD-MMM-YYYY"): "");
+    //modal.find(".resolution_time").val(resolutionMoment.isValid()? new Date(callData.resolution_date_time).toLocaleTimeString(): "");
     const hospitals = buildHospitalOptions(userHospitals)
     modal.find(".updateHospitalSelect").html(hospitals? hospitals: buildEmptyOption("Hospital"));
-    modal.find(".updateHospitalSelect").val(callData.hospital_id)
+    modal.find(".updateHospitalSelect").val(callData.hospital_id);
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
 
     let departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
     departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
     modal.find(".updateDepartmentSelect").html(departmentOptions);
+    modal.find(".updateDepartmentSelect").val(callData.department_id);    
     registerHospitalChangeListener();
     registerOnUpdateFormSubmitted(callData);
+   
 }
 function dateNow(dateObject){
     const delimiter = "-";
@@ -178,6 +184,7 @@ function formatDate() {
 }
 function updateCallData(callData) {
     hideUpdateCallStatusMessage();
+    console.log(callData);
     $.ajax({
         url: 'update_call_api',
         data: callData,
@@ -215,13 +222,14 @@ function registerOnUpdateFormSubmitted(callData) {
         postData[`language_${callId}`] = modal.find(".language").val();
         postData[`call_category_${callId}`] = modal.find(".call_category").val();
         postData[`resolution_status_${callId}`] = modal.find(".resolution_status").val();
-        postData[`hospital_${callId}`] = modal.find(".hospital").val();
+        postData[`hospital_${callId}`] = modal.find(".updateHospitalSelect").val();
         postData[`visit_type_${callId}`] = modal.find(".patient_type").val();
         postData[`visit_id_${callId}`] = modal.find(".visit_id").val();
         postData[`note_${callId}`] = modal.find(".notes").val();
         postData[`group_${callId}`] = modal.find(".language").val();
-        postData[`resolution_time_${callId}`] = modal.find(".language").val();
-        postData[`resolution_date_${callId}`] = modal.find(".language").val();
+        postData[`resolution_date_time_${callId}`] = modal.find(".resolution_update_date_time").val();
+         postData[`department_id_${callId}`] = modal.find(".updateDepartmentSelect").val();
+        //postData[`resolution_date_${callId}`] = modal.find(".language").val();
         updateCallData(postData);   
     });
     modal.find(".closeUpdateModal").on("click", function() {
