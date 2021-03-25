@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div class="modal fade" id="updateCallModal" tabindex="-1" role="dialog" aria-labelledby="updateCallModal">
-    <div class="modal-dialog" role="document" style="width:90%">
+    <div class="modal-dialog" role="document" style="width:40%">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close closeUpdateModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -16,13 +16,13 @@
                 <div class="row">
                     <div class="col-md-3">Note</div>
                     <div class="col-md-6">
-                        <textarea name="note_<?php echo $call->call_id;?>" class="notes" rows="4" class="form-control" style="width:250px"><?php echo $call->note;?></textarea>
+                        <textarea name="note_<?php echo $call->call_id;?>" class="notes form-control" rows="4" class="form-control" style="width:250px"><?php echo $call->note;?></textarea>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3">Caller Type</div>
                     <div class="col-md-6">
-                        <select class="caller_type" name="caller_type_<?php echo $call->call_id;?>"  id="caller_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
+                        <select class="caller_type form-control" name="caller_type_<?php echo $call->call_id;?>"  id="caller_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($caller_type as $ct){ ?>
                                 <option value="<?php echo $ct->caller_type_id;?>"
@@ -35,7 +35,7 @@
                 <div class="row">
                     <div class="col-md-3">Language</div>
                     <div class="col-md-6">
-                        <select class="language" name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:250px" class="form-control">
+                        <select class="language form-control"  name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:250px">
                             <option value="">Select</option>
                             <?php foreach($language as $lng){ ?>
                                 <option value="<?php echo $lng->language_id;?>"
@@ -49,7 +49,7 @@
                 <div class="row">
                     <div class="col-md-3">Hospital </div>
                     <div class="col-md-6">
-                        <select class="updateHospitalSelect" style="width:250px" class="form-control">
+                        <select class="updateHospitalSelect form-control" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($all_hospitals as $hosp){ ?>
                                 <option value="<?php echo $hosp->hospital_id;?>"
@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-3">Department</div>
                     <div class="col-md-6">
-                        <select class="updateDepartmentSelect"  style="width:250px" class="form-control">
+                        <select class="updateDepartmentSelect form-control"  style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($department as $dept){ ?>
                                 <option value="<?php echo $dept->department_id;?>">
@@ -74,7 +74,7 @@
                 <div class="row">
                     <div class="col-md-3">Caller Category</div>
                     <div class="col-md-6">
-                        <select class="call_category" name="call_category_<?php echo $call->call_id;?>" id="call_category_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
+                        <select class="call_category form-control" name="call_category_<?php echo $call->call_id;?>" id="call_category_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($call_category as $cc){ ?>
                                 <option value="<?php echo $cc->call_category_id;?>"
@@ -87,7 +87,7 @@
                 <div class="row">
                     <div class="col-md-3">Resolution Status</div>
                     <div class="col-md-6">
-                        <select class="resolution_status" name="resolution_status_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
+                        <select class="resolution_status form-control" name="resolution_status_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                             <?php foreach($resolution_status as $rs){ ?>
                                 <option value="<?php echo $rs->resolution_status_id;?>"
@@ -103,7 +103,7 @@
                 <div class="row">
                     <div class="col-md-3">Patient Type</div>
                     <div class="col-md-6">
-                        <select class="patient_type" name="visit_type_<?php echo $call->call_id;?>" id="visit_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
+                        <select class="patient_type form-control" name="visit_type_<?php echo $call->call_id;?>" id="visit_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
                                 <option value="OP"
                                 <?php if($call->ip_op == "OP") echo " selected "; ?>
@@ -117,7 +117,7 @@
                 <div class="row">
                     <div class="col-md-3">Visit ID</div>
                     <div class="col-md-6">
-                        <input class="call_id_email form-control" readonly name="call_id_email" >
+                        <input class="call_id_email form-control" style="width:250px" readonly name="call_id_email" >
                     </div>
                 </div>
                 <div class="row updateCallStatus alert hidden" style="margin-left: 8px; margin-right: 8px;"></div>
@@ -131,7 +131,7 @@
 </div>
 
 <script> 
-function setupUpdateCallModalData(callData) {
+function setupUpdateCallModalData(callData,hospitalSelect) {
     const modal = $("#updateCallModal");
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
@@ -149,8 +149,8 @@ function setupUpdateCallModalData(callData) {
     //const resolutionMoment = moment(callData.resolution_date_time)
     //modal.find(".resolution_date").val(resolutionMoment.isValid()? resolutionMoment.format("DD-MMM-YYYY"): "");
     //modal.find(".resolution_time").val(resolutionMoment.isValid()? new Date(callData.resolution_date_time).toLocaleTimeString(): "");
-    const hospitals = buildHospitalOptions(userHospitals)
-    modal.find(".updateHospitalSelect").html(hospitals? hospitals: buildEmptyOption("Hospital"));
+    const hospitals_val = buildHospitalOptions(hospitalSelect);
+    modal.find(".updateHospitalSelect").html(hospitals_val? hospitals_val: buildEmptyOption("Hospital"));
     modal.find(".updateHospitalSelect").val(callData.hospital_id);
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
