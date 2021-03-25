@@ -7,6 +7,7 @@ class Helpline extends CI_Controller {
 		$this->load->model('masters_model');
 		$this->load->model('staff_model');
 		$this->load->model('helpline_model');
+		$this->load->model('hospital_model');
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
 		$user_id=$userdata['user_id'];
@@ -57,16 +58,18 @@ class Helpline extends CI_Controller {
 			$this->data['calls_count']=$this->helpline_model->get_detailed_report_count();
 			$this->data['caller_type']=$this->helpline_model->get_caller_type();
 			$this->data['language']=$this->helpline_model->get_language();
+			$this->data['department']=$this->hospital_model->get_department();
+			$this->data['updatable_helpline']=$this->helpline_model->get_helpline("update");
 			$this->data['call_category']=$this->helpline_model->get_call_category();
 			$this->data['resolution_status']=$this->helpline_model->get_resolution_status();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
+			$this->data['user_hospitals']=$this->staff_model->user_hospital($user['user_id']);
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
 			$this->data['add_sms_access']=$add_sms_access;
 			
 
 			//echo("<script>console.log('PHP: " . json_encode($this->data['calls_count']) . "');</script>");
-
 			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
 			$user_receiver_links = array();
 			if($user_receiver){
@@ -76,7 +79,7 @@ class Helpline extends CI_Controller {
 				'receiver' => $user_receiver,
 				'receiver_link' => $user_receiver_links
 			));
-
+			// var_dump($this->data);
 			$this->load->view('pages/helpline/report_detailed',$this->data);
 			$this->load->view('templates/footer');
 		}
@@ -182,6 +185,30 @@ class Helpline extends CI_Controller {
 		else show_404();
 	}
 
+	function update_call_api() {
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="Helpline Update"){
+					$access=1;
+			}
+		}
+		if($access==1){
+			$data = [];
+			if($this->helpline_model->update_call()) {
+				$data['status'] = true;
+				$data['msg']="Call Updated successfully";
+				$data['calls']=$this->helpline_model->get_calls();
+			}
+			else{
+				$data['status'] = false;
+				$data['msg']="Call could not be updated. Please try again.";
+			}
+			echo json_encode($data);
+		}
+	}
 	function update_call(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();

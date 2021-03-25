@@ -106,3 +106,10 @@ ALTER TABLE `patient_document_upload` CHANGE `insert_by_staff_id` `insert_by_sta
 ALTER TABLE `removed_patient_document_upload` CHANGE `insert_by_staff_id` `insert_by_staff_id` INT(11) NULL;
 
 ALTER TABLE `removed_patient_document_upload` CHANGE `removed_by_staff_id` `removed_by_staff_id` INT(11) NULL;
+
+ALTER TABLE `helpline_call`
+  ADD COLUMN `department_id` INT(3);
+
+ALTER TABLE `helpline_call_category`
+  ADD COLUMN `helpline_id` INT(3),
+  ADD COLUMN `status` TINYINT;

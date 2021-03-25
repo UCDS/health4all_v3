@@ -4,7 +4,6 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
-
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
@@ -104,10 +103,14 @@ input[type=number] {
 		font-size: 12px;
 	}
 </style>
-
 <script type="text/javascript">
 var user_details = <?php echo $user_details; ?>;
+var departments = <?php echo json_encode($department); ?>;
+var hospitals = <?php echo json_encode($all_hospitals); ?>;
+var userHospitals = <?php echo json_encode($user_hospitals); ?>;
+var updatableHelplines = <?php echo json_encode($updatable_helpline); ?>;
 var receiver = user_details.receiver;
+var callData = <?php echo json_encode($calls); ?>;
 var callDetails = {};
 var smsDetails = {};
 
@@ -173,7 +176,15 @@ $(function(){
 	-->
 
 	<?php
-			$page_no = 1;	
+			$page_no = 1;
+			foreach($defaultsConfigs as $default){	
+				// var_dump($default);	 
+		 	if($default->default_id=='pagination'){
+		 			$rowsperpage = $default->value;
+		 			$upper_rowsperpage = $default->upper_range;
+		 			$lower_rowsperpage = $default->lower_range;
+		 		}
+			}	
 			if($this->input->post('from_date')){
 				$from_date = date("d-M-Y",strtotime($this->input->post('from_date')));
 			}
@@ -188,7 +199,7 @@ $(function(){
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
 
-			<select name="helpline_id" style="width:150px" class="form-control">
+			<select name="helpline_id" id="helplineSelect" style="width:150px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
@@ -212,14 +223,6 @@ $(function(){
 			
 			<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
 			<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
-			<select name="call_category" style="width:150px" class="form-control">
-				<option value="">Category</option>
-				<?php foreach($call_category as $cc){ ?>
-					<option value="<?php echo $cc->call_category_id;?>"
-					<?php if($this->input->post('call_category') == $cc->call_category_id) echo " selected "; ?>									
-					><?php echo $cc->call_category;?></option>
-				<?php } ?>
-			</select>	
 			<select name="caller_type" style="width:120px" class="form-control">
 				<option value="">Caller</option>
 				<?php foreach($caller_type as $ct){ ?>
@@ -234,6 +237,20 @@ $(function(){
 					<option value="<?php echo $lng->language_id;?>"
 					<?php if($this->input->post('language') == $lng->	language_id) echo " selected "; ?>
 					><?php echo $lng->language;?></option>
+				<?php } ?>
+			</select>
+			<select id="hospitalSelect" name="helpline_hospital" style="width:100px" class="form-control">
+				<option value="">Hospital</option>
+			</select>
+			<select id="departmentSelect" name="helpline_department" style="width:100px" class="form-control">
+				<option value="">Department</option>
+			</select>
+			<select name="call_category" style="width:150px" class="form-control">
+				<option value="">Category</option>
+				<?php foreach($call_category as $cc){ ?>
+					<option value="<?php echo $cc->call_category_id;?>"
+					<?php if($this->input->post('call_category') == $cc->call_category_id) echo " selected "; ?>									
+					><?php echo $cc->call_category;?></option>
 				<?php } ?>
 			</select>
 			<select name="resolution_status" style="width:150px" class="form-control">
@@ -414,6 +431,8 @@ echo "</select></li>";
 				<th>Note</th>
 				<th>Caller Type</th>
 				<th>Language</th>
+				<th>Hospital</th>
+				<th>Department</th>
 				<th>Call Category</th>
 				<th>Resolution Status</th>
 				<!-- <th class="hidden">Resolution Time</th>
@@ -432,6 +451,16 @@ echo "</select></li>";
 						</td>
 						<td>
 							<?php echo $call->call_id;?>
+							<?php 
+							foreach($updatable_helpline as $updatable)
+							{ 							
+								if($updatable->helpline_id == $call->helpline_id) { ?>
+									<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">edit</button>
+							<?php
+									break;
+								}
+							} ?>
+							<button class="sendEmail" onClick="openSendEmailModal(this)" data-id="<?php echo $call->call_id;?>">Email</button>
 						</td>
 						<td>
 							<?php if($call->call_type == "incomplete") { ?>
@@ -462,19 +491,25 @@ echo "</select></li>";
 							</audio>
 							</small>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->note;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->caller_type;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->language;?>
 						</td>
-						<td>
+						<td >
+							<?php echo $call->hospital;?>
+						</td>
+						<td >
+							<?php echo $call->department;?>
+						</td>
+						<td >
 							<?php echo $call->call_category;?>
 						</td>
-						<td>
+						<td >
 							<?php echo $call->resolution_status;?>
 						</td>
 						<td class="hidden">
@@ -484,7 +519,10 @@ echo "</select></li>";
 						</td>
 						<td class="hidden">
 							<small>
-								<?php if($call->resolution_date_time != 0){
+								<?php 
+								
+								
+								if($call->resolution_date_time != 0){
 									$diff = date_diff(date_create($call->resolution_date_time),date_create($call->start_time));
 									if($diff->y != 0) echo $diff->y." Y, ".$diff->m." Months";
 									else if($diff->m != 0) echo $diff->m." Months, ".$diff->d." Days";
@@ -494,7 +532,7 @@ echo "</select></li>";
 									}
 								?>
 							</small>
-						</td>
+						</td class="hospital">
 						<!-- <td>
 							<?php echo $call->hospital;?>
 						</td>
@@ -741,7 +779,7 @@ echo "</select></li>";
 	 </div>
 	</div>
 </div>
-
+<?php include_once("update_call_modal.php") ?>
 <!-- Modal -->
 <div class="modal fade" id="smsModal" tabindex="-1" role="dialog" aria-labelledby="smsModalLabel">
   <div class="modal-dialog" role="document" style="width:90%">
@@ -1153,6 +1191,114 @@ function updateConnectto(){
 		$("#callModal-connectto-updated").html(display_text + ', ' + receiver.note + ', ' + receiver.helpline);
 	}
 }
+function setupHospitalDropdown() {
+	console.log("setupHospitalDropdown");
+	const selectedHelpline = $("#helplineSelect").val();
+	if(selectedHelpline > 0) {
+		onHelplineDropdownChanged(selectedHelpline);
+	}
+	
+	$("#helplineSelect").on("change", function() {	
+		const helplineId = $(this).val();
+		onHelplineDropdownChanged(helplineId);
+	})
+}
+function onHelplineDropdownChanged(helplineId) {
+	console.log("select changed");
+	const optionsHtml = getHospitalsForHelpline(helplineId);
+	$("#hospitalSelect").html(optionsHtml);	
+	onHospitalDropdownChanged();
+}
+
+function setupDepartmentDropdown() {
+	const selectedHospital = $("#hospitalSelect").val();
+	if(selectedHospital > 0) {
+		onHospitalDropdownChanged(selectedHospital);
+	}
+
+	
+	console.log("setupDepartmentDropdown");
+	$("#hospitalSelect").on("change", function() {
+		console.log("select changed");
+		const hospitalId = $(this).val();
+		onHospitalDropdownChanged(hospitalId);
+	})
+}
+
+function onHospitalDropdownChanged(hospitalId) {
+	const optionsHtml = getDepartmentOptionsForHospital(hospitalId);
+	$("#departmentSelect").html(optionsHtml);
+		
+}
+function getDepartmentOptionsForHelpline(helplineId) {
+	const helplineHospital = hospitals.filter(hospital => hospital.helpline_id == helplineId);
+	let optionsHtml = buildEmptyOption("Department");
+	if(helplineHospital.length > 0) {
+		const hospitalId = helplineHospital[0].hospital_id;
+		const deptOptions = getDepartmentOptionsForHospital(hospitalId);
+		deptOptions? optionsHtml = deptOptions: "";		
+	}
+	return optionsHtml;
+}
+
+function getHospitalsForHelpline(helplineId) {
+	const helplineHospitals = hospitals.filter(hospital => hospital.helpline_id == helplineId);
+	let optionsHtml = buildEmptyOption("Hospitals"); 
+	if(helplineHospitals.length > 0) {		
+		optionsHtml += helplineHospitals.map(hospital => {
+			return `	<option value="${hospital.hospital_id}">
+							${hospital.hospital}
+						</option>`;
+		});
+		return optionsHtml;
+	}
+	return optionsHtml;
+}
+function getDepartmentOptionsForHospital(hospitalId) {
+	const helplineDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
+	let optionsHtml = buildEmptyOption("Department"); 
+	if(helplineDepartments.length > 0) {		
+		optionsHtml += helplineDepartments.map(dept => {
+			return `	<option value="${dept.department_id}">
+							${dept.department}
+						</option>`;
+		});
+		return optionsHtml;
+	}
+	return optionsHtml;
+}
+function buildHospitalOptions(hospitals = []) {
+	if(hospitals && hospitals.length > 0) {
+		let optionsHtml = buildEmptyOption("Select"); 
+		optionsHtml += hospitals.map(hospital => {
+			return `	<option value="${hospital.hospital_id}">
+							${hospital.hospital}
+						</option>`;
+		});
+		return optionsHtml;
+	} else {
+		return null;
+	}
+}
+function buildEmptyOption(optionName = "Select") {
+	return `<option value="" selected>
+					${optionName}
+			</option>`;
+
+}
+function openEditModal(e) {
+	const callId = $(e).attr('data-id');
+	const callArray = callData.filter((call) => call.call_id == callId);
+	if(callArray.length > 0) {
+		$("#updateCallModal").modal("show");
+		setupUpdateCallModalData(callArray[0])
+	}
+}
+function openSendEmailModal(e) {
+	const callId = $(this).attr('data-id');
+	// $("#updateCallModal").modal("show");
+
+}
 
 function revertConnecto(){
 	callDetails.app_id = receiver.app_id;
@@ -1218,4 +1364,17 @@ $(function(){
 		
 	});
 });
+$(document).ready(function() {
+	setupHospitalDropdown();
+	setupDepartmentDropdown();
+	var hospital = "<?php echo $this->input->post('helpline_hospital')?>";
+	if(hospital != ""){
+		$("#hospitalSelect").val(hospital);
+		setupDepartmentDropdown();
+	}
+	var department = "<?php echo $this->input->post('helpline_department')?>";
+	if(department != ""){
+		$("#departmentSelect").val(department);
+	}
+})
 </script>
