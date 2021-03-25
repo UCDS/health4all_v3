@@ -29,7 +29,7 @@ function showImageHereFunc() {
   if (total_file <= 0){
   	return;
   }
-  
+  $("body").addClass("loading"); 
   for(var i=0;i<total_file;i++) { 
 	document.getElementById("imageIndex").value=i;
 	document.getElementById("globalImageIndex").value=index;
@@ -51,7 +51,8 @@ function showImageHereFunc() {
         var gi =  JSON.parse(JSON.stringify(globalIndex)); 
         xhr.upload.onprogress = function(e) {
            var percentValue = Math.floor(e.loaded / e.total *100);
-           var percentCompleted = percentValue + '%';
+           if(percentValue <= 100){
+           	var percentCompleted = percentValue + '%';
     	    
     	            
     	              $("#progressBar"+gi).animate({
@@ -63,7 +64,7 @@ function showImageHereFunc() {
     	                    $("#percent"+gi).text(percentCompleted);
     	                }
     	            });
-    	      
+    	     }
     	          
         };
         return xhr;
@@ -78,17 +79,20 @@ function showImageHereFunc() {
             success: function (data) {        
          	$("#PatientDoc"+data.globalImageIndex).show();
                $("#PatientDocProgress"+data.globalImageIndex).hide();
+               $("body").removeClass("loading");
+               document.getElementById("uploadImageFile").value = ""; 
                bootbox.alert("Document uploaded successfully");
             },
              error: function(data) {
-          	bootbox.alert(data.responseJSON.messages);
           	$("#PatientDocProgress"+data.responseJSON.globalImageIndex).hide();
           	$("#PatientDoc"+data.responseJSON.globalImageIndex).hide();
+          	$("body").removeClass("loading");
+          	document.getElementById("uploadImageFile").value = ""; 
+          	bootbox.alert(data.responseJSON.messages);
         }
           });         
     index = index + 1;
-  }
-  document.getElementById("uploadImageFile").value = "";     
+  }    
         
 }
 
