@@ -108,9 +108,3 @@ ALTER TABLE `helpline_call`
 
 INSERT INTO `defaults` (`default_id`, `default_tilte`, `default_description`, `default_type`, `default_unit`, `lower_range`, `upper_range`, `value`) VALUES ('pagination', 'Pagination', 'Default number of rows to be loaded for reports', 'Numeric', NULL, '50', '200', '50');
 
-ALTER TABLE `helpline_call`
-  ADD COLUMN `department_id` INT(3);
-
-ALTER TABLE `helpline_call_category`
-  ADD COLUMN `helpline_id` INT(3),
-  ADD COLUMN `status` TINYINT;
