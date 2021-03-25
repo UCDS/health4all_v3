@@ -343,6 +343,10 @@ class Register extends CI_Controller {
 		$document_link = $this->input->post('document_link');
 		if ($remove_spaces == "TRUE"){
 			$document_link = str_replace(' ', '_', $document_link);
+			$document_link = str_replace('<', '_', $document_link);
+			$document_link = str_replace('>', '_', $document_link);
+			$document_link = str_replace('%', '_', $document_link);
+			$document_link = str_replace('#', '_', $document_link);
 		}
 		$document_link =  $patient_id."_".$document_link;
 		if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
