@@ -428,7 +428,6 @@ echo "</select></li>";
 				<th>Call</th>
 				<th>Customer</th>
 				<th>Team Member @ Helpline</th>
-				<th>Note</th>
 				<th>Caller Type</th>
 				<th>Language</th>
 				<th>Hospital</th>
@@ -460,7 +459,7 @@ echo "</select></li>";
 									break;
 								}
 							} ?>
-							<button class="sendEmail" onClick="openSendEmailModal(this)" data-id="<?php echo $call->call_id;?>">Email</button>
+							<button class="sendEmail btn btn-primary btn-sm" onClick="openSendEmailModal(this)" disabled data-id="<?php echo $call->call_id;?>">Email</button>
 						</td>
 						<td>
 							<?php if($call->call_type == "incomplete") { ?>
@@ -490,18 +489,16 @@ echo "</select></li>";
 								Your browser does not support the audio element.
 							</audio>
 							</small>
-						</td>
-						<td >
 							<?php echo $call->note;?>
-						</td>
-						<td >
+						</td>						
+						<td>
 							<?php echo $call->caller_type;?>
 						</td>
 						<td >
 							<?php echo $call->language;?>
 						</td>
 						<td >
-							<?php echo $call->hospital;?>
+							<?php echo $call->hospital_short_name;?>
 						</td>
 						<td >
 							<?php echo $call->department;?>
@@ -1247,7 +1244,7 @@ function getHospitalsForHelpline(helplineId) {
 	if(helplineHospitals.length > 0) {		
 		optionsHtml += helplineHospitals.map(hospital => {
 			return `	<option value="${hospital.hospital_id}">
-							${hospital.hospital}
+							${hospital.hospital_short_name}
 						</option>`;
 		});
 		return optionsHtml;
@@ -1272,7 +1269,7 @@ function buildHospitalOptions(hospitals = []) {
 		let optionsHtml = buildEmptyOption("Select"); 
 		optionsHtml += hospitals.map(hospital => {
 			return `	<option value="${hospital.hospital_id}">
-							${hospital.hospital}
+							${hospital.hospital_short_name}
 						</option>`;
 		});
 		return optionsHtml;
@@ -1288,10 +1285,11 @@ function buildEmptyOption(optionName = "Select") {
 }
 function openEditModal(e) {
 	const callId = $(e).attr('data-id');
-	const callArray = callData.filter((call) => call.call_id == callId);
+	var callArray = callData.filter((call) => call.call_id == callId);
+	var hospitalSelect = hospitals.filter((hospital) =>  hospital.helpline_id == callArray[0].helpline_id);
 	if(callArray.length > 0) {
 		$("#updateCallModal").modal("show");
-		setupUpdateCallModalData(callArray[0])
+		setupUpdateCallModalData(callArray[0],hospitalSelect);
 	}
 }
 function openSendEmailModal(e) {
