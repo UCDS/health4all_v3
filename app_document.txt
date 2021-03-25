@@ -1,11 +1,24 @@
 # https://health4all.online/helpline/detailed_report
 
 ##Listing of Call Category: 
-  In form selection: based selection of Helpline, list only call categories for the specific helpline
+  In form selection: based on selection of Helpline, list only call categories for the specific helpline
   In Edit Call Modal: based on the Helpline of the call, list only call categories for the specific helpline AND where helpline_call_category.status = 1
   
 ##Listing of Hospital 
-  In Edit Call Modal: based on the Helpline of the call, list hospital.hospital_short_name WHERE hospital.helpline_id = helpline.helpline_id
+  In Edit Call Modal: show list of hospital.hospital_short_name WHERE helpline_call.to_number = helpline.helpline AND helpline.helpline_id = hospital.helpline_id
+
+##Report Fields (Label - Field)
+  Serial number displayed as #
+  Call ID - <helpline_call.call_id>
+  Call - <call direction icon> <time length of call> <date and time of call>
+  Team Member @ Helpline - Note - <Display Name - > <hepline name and number> <audio api> <helpline_call.note>
+  Caller Type - 
+  Language - 
+  Hospital - <hospital.hospital_short_name>
+  Department - 
+  Call Category -
+  Resolution Status -
+  Emails - 
 
 # Improving Custom Form to select customised Visit Types/Names specific to each hospital
 
