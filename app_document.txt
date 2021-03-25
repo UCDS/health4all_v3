@@ -1,3 +1,7 @@
+#Listing of Call Category in https://health4all.online/helpline/detailed_report
+  In form selection: based selection of Helpline, list only call categories for the specific helpline
+  In Edit Call Modal: based on the Helpline of the call, list only call categories for the specific helpline AND where helpline_call_category.status = 1
+
 # Improving Custom Form to select customised Visit Types/Names specific to each hospital
 
 ##DB
