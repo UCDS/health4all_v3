@@ -454,7 +454,7 @@ echo "</select></li>";
 							foreach($updatable_helpline as $updatable)
 							{ 							
 								if($updatable->helpline_id == $call->helpline_id) { ?>
-									<button class="editCall" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">Update</button>
+									<button class="editCall btn btn-primary btn-sm" onClick="openEditModal(this)" data-id="<?php echo $call->call_id;?>" style="margin-bottom: 8px">Update</button>
 							<?php
 									break;
 								}
