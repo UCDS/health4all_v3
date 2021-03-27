@@ -113,3 +113,12 @@ ALTER TABLE `helpline_call`
 ALTER TABLE `helpline_call_category`
   ADD COLUMN `helpline_id` INT(3),
   ADD COLUMN `status` TINYINT;
+  
+  
+ALTER TABLE `visit_name` ADD `hospital_id` INT NULL AFTER `visit_name`, ADD `inuse` TINYINT(1) NULL COMMENT 'Value 1 indicates that visit type in use and 0 indicates value not in use' AFTER `hospital_id`;
+
+CREATE TABLE `appointment_status` ( `id` INT NOT NULL AUTO_INCREMENT , `hospital_id` INT NOT NULL , `appointment_status` VARCHAR(50) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+ALTER TABLE `patient_visit` ADD `appointment_status_id` INT NULL AFTER `temp_visit_id`, ADD `appointment_status_update_by` INT NULL AFTER `appointment_status_id`, ADD `appointment_status_update_time` DATETIME NULL AFTER `appointment_status_update_by`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_status', 'appointment_status', 'Status of the appointments');

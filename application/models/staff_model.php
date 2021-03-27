@@ -77,6 +77,19 @@ class Staff_model extends CI_Model{
 		$query=$this->db->get();
 		return $query->result();
 	}
+	
+	//get_appointment_status() selects the clinical departments from the database and returns the result
+	function get_appointment_status(){
+		$hospital=$this->session->userdata('hospital');
+		if(!!$hospital){
+			$this->db->where('hospital_id',$hospital['hospital_id']);
+		}		
+		
+		$this->db->select("id,appointment_status")->from("appointment_status");
+		$query=$this->db->get();
+		return $query->result();
+	}
+	
 	function get_areas(){
 		$hospital=$this->session->userdata('hospital');
 		if(!!$hospital){
@@ -234,6 +247,9 @@ class Staff_model extends CI_Model{
 	}
 	//get_visit_name() selects the visit names from the database and returns the result
 	function get_visit_name(){
+		$hospital = $this->session->userdata('hospital');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$this->db->where('inuse',1);
 		$this->db->select("visit_name_id,visit_name")->from("visit_name");
 		$query=$this->db->get();
 		return $query->result();

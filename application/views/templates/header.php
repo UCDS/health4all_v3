@@ -339,6 +339,9 @@
 			if($f->user_function=="create_appointment"){ ?>	
                                 <li><a href="<?php echo base_url()."reports/appointment";?>">Registrations/Appointments</a></li>
                         <?php	}
+                        if($f->user_function=="appointment_status"){ ?>	
+                                <li><a href="<?php echo base_url()."reports/appointments_status";?>">Appointment Status</a></li>
+                        <?php	}
 			if($f->user_function=="doctor_patient_list"){ ?>
 				<li><a href="<?php echo base_url()."reports/doctor_patient_list";?>">Doctor Patient List</a></li>	
 			<?php	}
