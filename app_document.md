@@ -4,20 +4,37 @@
   
 ## DB
     INSERT INTO user_function(user_function) VALUE user_function (helpline_session_plan)
-    In settings: let users add, edit, delete or view based on user access set
+    In settings: let users add, delete or view based on user access set
     CREATE Tables -> helpline_session, helpline_session_role, helpline_receiver_language, helpline_session_plan
   
-## Form selection fields: Helpline, Helpline Session, Session Role, Weekday, Radio Buttion (Summary or Detailed)
+## Form selection fields: Helpline, Helpline Session, Session Role, Weekday
+    Load report only click of "Go" Button
+    Provide "Add" button next to Form "Go" Button for those with user_function->helpline_session_splan->add = 1
+    On Click of "Add" button open modal to receivers 
+    
   
 ### Summary Report Fields (Label - Field) (apply default sort and filter)
     Serial number displayed as #
     Helpline - helpline.helpline
-    Session - helpline_session.session_name
+    Session - helpline_session.session_name (WHERE helpline_session.session_status = 1)
     Role - helpline_session_role.helpline_session_role
-    Weekday - Count of helpline_session_plan.receiver_id for particular helpline, helpline_session, helpline_session_role, weekday 
+    Weekday Team Count - Count of helpline_session_plan.receiver_id -> Group By helpline, helpline_session, helpline_session_role, weekday 
+    -> on click of Count, show below clicked row, 
+        helpline_receiver.full_name, 
+        Languages (concacted with comma seperator and ordered helpline_receiver_language.proficiency DESC), 
+        Delete button for those with user_function->helpline_session_splan->delete = 1
+        -> on click of Delete button reload page with previous settings
+
+### Form for Add Receiver Modal
+    helpline_session_plan.receiver_id -> Select using Ajax helpline_receiver.full_name concated with heline_receiver.phone and helpline_receiver.email like it is done in               https://health4all.online/helpline/helpline_receivers_form 
+    helpline_session.weekday -> Display list by Weekday full name
+    helpline_session_plan.helpline_session_id -> Select helpline_session.session_name WHERE helpline_session.weekday = selected Weekday AND helpline_session.session_status = 1
+    helpline_session_plan.helpline_session_role_id -> Select helpline_session_role.helpline_session_role
+    -> on click of Submit, 
+        Insert row into helpline_session_plan
+        Reload Modal with Success Message " Team Member Added to Session Successfully" with empty fields
+        Click Close button to close Modal and reload the Main Form with existing form settings.
     
-    
-  
   
 # https://health4all.online/helpline/detailed_report
 
