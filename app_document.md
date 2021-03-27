@@ -84,14 +84,10 @@
     Resolution Status -
     Emails - 
 
-# Improving Custom Form to select customised Visit Types/Names specific to each hospital
+# Custom Form to Register Patients
+    https://health4all.online/register/custom_form/
 
-## DB
-    ALTER TABLE visit_name - add fields -> hospital_id, use(1 comment for in use and 0 for not in use)
-  
-## Improve Form https://health4all.online/register/custom_form/
-  Visit Name drop down list criteria in the form: Select visit_name list WHERE visit_name.hospital = current_hospital AND visit_name.use = 1
-  
+    Visit Type: Select visit_name list WHERE visit_name.hospital = current_hospital AND visit_name.use =  
   
 # Appointemnts Status - Form/Report to update checkin status at Gate/Entry for apppointments
 
