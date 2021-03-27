@@ -8,21 +8,31 @@
     In settings: let users add, delete or view based on user access set
     CREATE Tables -> helpline_session, helpline_session_role, helpline_receiver_language, helpline_session_plan
   
-## Form selection fields: Helpline, Helpline Session, Session Role, Weekday
-    Load report only click of "Go" Button
-    Provide "Add" button next to Form "Go" Button for those with user_function->helpline_session_splan->add = 1
-    On Click of "Add" button open modal to receivers 
+## Form selection fields (Placeholder - Field -> Display List)
+    Helpline - helpline.helpline_id -> helpline.helpline
+    Weekday - 1 to 7 -> Monday to Sunday
+    Role - helpline_session_role.helpline_session_role_id -> helpline_session_role.helpline_session_role
+    Session - helpline_session.helpline_session_id -> helpline_session.session_name (WHERE helpline_session.session_status = 1)
     
-  
-### Summary Report Fields (Label - Field) (apply default sort and filter)
+    
+    Load report on click of "Go" Button -> Display report run date and time below Go Button
+    Provide "Add" button next to Form "Go" Button for those with user_function->helpline_session_splan->add = 1
+    On Click of "Add" button open modal to add receiver_id and additional details  to helpline_session_plan table
+      
+### Report Fields (Column Heading - Display Field) (apply default sort and filter)
     Serial number displayed as #
     Helpline - helpline.helpline
-    Session - helpline_session.session_name (WHERE helpline_session.session_status = 1)
+    Weekday  - helpline_session.weekday (1 to 7 AS Monday to Sunday)
     Role - helpline_session_role.helpline_session_role
-    Weekday Team Count - Count of helpline_session_plan.receiver_id -> Group By helpline, helpline_session, helpline_session_role, weekday 
-    -> on click of Count, show below clicked row, 
-        helpline_receiver.full_name, 
-        Languages (concacted with comma seperator and ordered helpline_receiver_language.proficiency DESC), 
+    Session - helpline_session.session_name (WHERE helpline_session.session_status = 1)
+    Team Count - Count of helpline_session_plan.receiver_id 
+        -> WHERE helpline_session_plan.soft_deleted = 0
+        -> GROUP BY helpline.helpline, weekday, helpline_session_role.helpline_session_role, helpline_session.session_name 
+        -> ORDER BY helpline.helpline, weekday, helpline_session_role.helpline_session_role
+        
+    On click of Count, show below the clicked row, 
+        Team Member - helpline_receiver.full_name
+        Languages - concacted with comma seperator and ordered helpline_receiver_language.proficiency DESC), 
         Delete button for those with user_function->helpline_session_splan->delete = 1
         -> on click of Delete button reload page with previous settings
 
