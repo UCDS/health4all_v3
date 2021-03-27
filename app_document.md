@@ -118,7 +118,7 @@
     Display and update appointment_status_update_by, appointment_status_update_time
     Display button "Update" 
     if patient_visit.appointment_status_id = (NULL OR 0) AND user access to appoinment_status user function = add
-    if patient_visit.appointment_status_id = (NULL OR 0) AND user access to appoinment_status user function = edit
+    if user access to appoinment_status user function = edit
     else do not display "Update"
     
     Button "Update" action
