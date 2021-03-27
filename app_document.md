@@ -9,15 +9,15 @@
     CREATE Tables -> helpline_session, helpline_session_role, helpline_receiver_language, helpline_session_plan
   
 ## Form selection fields (Placeholder - Field -> Display List)
-    Helpline - helpline.helpline_id -> helpline.helpline
-    Weekday - 1 to 7 -> Monday to Sunday
-    Role - helpline_session_role.helpline_session_role_id -> helpline_session_role.helpline_session_role
-    Session - helpline_session.helpline_session_id -> helpline_session.session_name (WHERE helpline_session.session_status = 1)
-    
-    
-    Load report on click of "Go" Button -> Display report run date and time below Go Button
-    Provide "Add" button next to Form "Go" Button for those with user_function->helpline_session_splan->add = 1
-    On Click of "Add" button open modal to add receiver_id and additional details  to helpline_session_plan table
+   Helpline - helpline.helpline_id -> helpline.helpline
+   Weekday - 1 to 7 -> Monday to Sunday
+   Role - helpline_session_role.helpline_session_role_id -> helpline_session_role.helpline_session_role
+   Session - helpline_session.helpline_session_id -> helpline_session.session_name (WHERE helpline_session.session_status = 1)
+     
+   Load report on click of "Go" Button -> Display report run date and time below Go Button
+  
+   Provide "Add" button next to Form "Go" Button for those with user_function->helpline_session_splan->add = 1
+   On Click of "Add" button open modal to add receiver_id and additional details  to helpline_session_plan table
       
 ### Report Fields (Column Heading - Display Field) (apply default sort and filter)
     Serial number displayed as #
@@ -30,25 +30,25 @@
         -> GROUP BY helpline.helpline, weekday, helpline_session_role.helpline_session_role, helpline_session.session_name 
         -> ORDER BY helpline.helpline, weekday, helpline_session_role.helpline_session_role
         
-    #### On click of Team Count Value, show below the clicked row (Column Heading - Display Field) 
-         Serial number displayed as #
-         Team Member - helpline_receiver.full_name
-         Languages - concacted with comma seperator (ORDER BY helpline_receiver_language.proficiency DESC)
-         Delete Button (for those with user_function->helpline_session_splan->delete = 1)
-            SELECT helpline_receiver.full_name, GROUP_CONCAT(language.language)
-            FROM hepline_session_plan
-            JOIN helpline_receiver ON helpline_session_plan.receiver_id = helpline_receiver.receiver_id
-            JOIN helpline_receiver_language ON 
-            JOIN language ON helpline_reiver_language.language_id = and language.language_id
-            WHERE helpline_session_plan.helpline_session_id = <helpline_session_id selected> AND helpline_session_plan.soft_deleted = 0
+#### On click of Team Count Value, show below the clicked row (Column Heading - Display Field) 
+     Serial number displayed as #
+     Team Member - helpline_receiver.full_name
+     Languages - concacted with comma seperator (ORDER BY helpline_receiver_language.proficiency DESC)
+     Delete Button (for those with user_function->helpline_session_splan->delete = 1)
+        SELECT helpline_receiver.full_name, GROUP_CONCAT(language.language)
+        FROM hepline_session_plan
+        JOIN helpline_receiver ON helpline_session_plan.receiver_id = helpline_receiver.receiver_id
+        JOIN helpline_receiver_language ON 
+        JOIN language ON helpline_reiver_language.language_id = and language.language_id
+        WHERE helpline_session_plan.helpline_session_id = <helpline_session_id selected> AND helpline_session_plan.soft_deleted = 0
             
-    #### On click of Delete button for the Team Member row
-         UPDATE 
-         hepline_session_plan.soft_delete = 1,
-         hepline_session_plan.soft_deleted_by_staff_id = session[staff_id}
-         hepline_session_plan.soft_deleted_by_date_time = delete date and time
+#### On click of Delete button for the Team Member row
+     UPDATE 
+     hepline_session_plan.soft_delete = 1,
+     hepline_session_plan.soft_deleted_by_staff_id = session[staff_id}
+     hepline_session_plan.soft_deleted_by_date_time = delete date and time
          
-         Reload page with previous settings
+     Reload page with previous settings
 
 ### Form for Add Receiver Modal
     helpline_session_plan.receiver_id -> Select using Ajax helpline_receiver.full_name concated with heline_receiver.phone and helpline_receiver.email like it is done in               https://health4all.online/helpline/helpline_receivers_form 
