@@ -706,7 +706,7 @@ class Register extends CI_Controller {
 					$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
 					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
-					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($patient_id);
+					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
 					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
 				}
 				$this->load->view('pages/update_patients',$this->data);
@@ -731,7 +731,7 @@ class Register extends CI_Controller {
 						$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
 					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
-					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($patient_id);
+					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
 					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
 				}
 				$this->load->view('pages/update_patients',$this->data);
