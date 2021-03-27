@@ -295,6 +295,80 @@ class Reports extends CI_Controller {
 		
 	}
 	
+	public function appointments_status($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
+	{
+	       if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="appointment_status"){
+				$access=1;
+				
+				if($function->add=="1"){
+					$this->data['appointment_status_add']=1;
+				}
+				else{
+					$this->data['appointment_status_add']=0;
+				}
+				if($function->edit=="1"){
+					$this->data['appointment_status_edit']=1;					
+				}
+				else{
+					$this->data['appointment_status_edit']=0;
+					
+				}
+			}
+		}
+		if($access==1){
+		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		$this->data['title']="Appointment Status";
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->data['updated']=false;
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		if($this->input->post('visit_id')){ 
+			if($this->reports_model->update_appointment_status()){$this->data['updated']=true;}
+		}
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+		$this->data['report_count']=$this->reports_model->get_appointment_status_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
+		$this->data['report']=$this->reports_model->get_appointment_status($this->data['rowsperpage']);		
+		$this->form_validation->set_rules('from_date', 'From Date',
+		'trim|required|xss_clean');
+	    $this->form_validation->set_rules('to_date', 'To Date', 
+	    'trim|required|xss_clean');
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/appointment_status',$this->data);
+		}
+		else{
+			$this->load->view('pages/appointment_status',$this->data);
+		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
 	public function doctor_patient_list($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
 		if($this->session->userdata('logged_in')){

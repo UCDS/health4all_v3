@@ -155,13 +155,9 @@ input[type=number] {
 	
 	?>
 <div class="row">
-		<h4>Registrations / Appointments</h4>	
-		<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
+		<h4>Status of Appointments</h4>	
+		<?php echo form_open("reports/appointments_status",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
 			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
-                        Search by : <select name="dateby" id="dateby" class="form-control">   
-                        <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option> 
-                        <option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>          
-                        </select>
                       
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
@@ -207,7 +203,24 @@ input[type=number] {
 				}
 				?>
 			</select>
+			<div class="form-group">
+				<select name="appointment_status_id" id="appointment_status_id" class="form-control">
+					<option value="">Appointment Status</option>
+					<?php 
+					foreach($all_appointment_status as $status){
+						echo "<option value='".$status->id."'";
+						if($this->input->post('appointment_status_id') && $this->input->post('appointment_status_id') == $status->id) echo " selected ";
+						echo ">".$status->appointment_status."</option>";
+					}
+					?>
+				</select>	                        
+			</div>	
+			  Phone : <input type="number" class="form-custom form-control" placeholder="Phone Number" name="phone" id="phone" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value= <?php if($this->input->post('phone')) { echo $this->input->post('phone');  } ?>  /> 
+			  H4All ID : <input type="number" class="form-custom form-control" placeholder="Health4All ID" name="h4allid" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value= <?php if($this->input->post('h4allid')) { echo $this->input->post('h4allid'); } ?>   /> 
+			  OP No : <input type="number" class="form-custom form-control" name="opno" placeholder="OP Number" id="opno" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value= <?php if($this->input->post('opno')) { echo $this->input->post('opno'); } ?> /> 
+			  Manual ID : <input type="number" class="form-custom form-control" name="manualid" placeholder="Manual ID" id="manualid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value= <?php if($this->input->post('manualid')) { echo $this->input->post('manualid'); } ?>  /> 
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
@@ -357,21 +370,19 @@ echo "</select></li>";
 	<thead>
 		<th>SNo</th>
 		<th>Patient ID</th>
+		<th>Patient ID Manual</th>
 		<th>OP No.</th>
-		<th>Registration Time</th>
 		<th>PatientInfo</th>
 		<th>Phone</th>
 		<th>Department</th>
-    		<th>Registered By</th>
-		<th>Doctor Consulted</th>
-		<th>Appointment With</th>
+		<th>Visit Name</th>
 		<th>Appointment Time</th>
-		<th>Consultation Summary Sent</th>
-		<th>Appointment Update By/Time</th>
- 		<th>Update Appointment</th>
- 		<th>Appointment Status</th>
+    		<th>Appointment Status</th>
     		<th>Appointment Status Update By/Time</th>
-		<th>View Summary</th>
+    		<th>Update Appointment Status</th>	
+    		<th>Registered  By/Time</th>   
+    		<th>Appointment Update By/Time</th> 			
+ 		
 	</thead>
 	<tbody>
 	<?php 
@@ -387,36 +398,28 @@ echo "</select></li>";
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
+		<td><?php echo $s->patient_id_manual;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
-		<td><?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
 		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse." / ";?> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;   ?></td>
 		<td><?php echo $s->phone;?></td>
 		<td><?php echo $s->department;?></td>
-    		<td><?php echo $s->volunteer;?></td>
-		<td><?php echo $s->doctor;?></td>
-		<td><?php echo $s->appointment_with;?></td>
+		<td><?php echo $s->visit_name;?></td>
 		<td><?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
 				{echo date("j M Y", strtotime("$s->appointment_date_time")).", ".date("h:i A.", strtotime("$s->appointment_date_time"));} 
 				else {echo $s->appointment_date_time="";}?></td>
-		<td><?php if(isset($s->summary_sent_time) && $s->summary_sent_time!="")
-				{echo date("j M Y", strtotime("$s->summary_sent_time")).", ".date("h:i A.", strtotime("$s->summary_sent_time"));}
-				else {echo $s->summary_sent_time="";};?></td>
-		<td><?php echo $s->appointment_update_by . ", "; 
+		<td><?php echo $s->appointment_status;?></td>
+		<td><?php echo $s->appointment_status_update_by_user . ", ";  if(isset($s->appointment_status_update_time) && $s->appointment_status_update_time!="") 
+				{echo date("j M Y", strtotime("$s->appointment_status_update_time")).", ".date("h:i A.", strtotime("$s->appointment_status_update_time"));} 
+				else {echo $s->appointment_status_update_time="";}?></td>		
+		<td><?php if(((!isset($s->appointment_status) and $s->appointment_status=="" and $s->appointment_status==0) and $appointment_status_add==1) or $appointment_status_edit==1) { echo '
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
+		'; }?></td>
+    		<td><?php echo $s->volunteer;?>,<?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
+    		<td><?php echo $s->appointment_update_by . ", "; 
 				if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
 				{echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
-		<td><?php if($s->signed==0 or $s->summary_sent_time=="") { echo '
-		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
-		'; }?></td>
-		<td><?php echo $s->appointment_status;?></td>
-		<td><?php echo $s->appointment_status_update_by_user . ", ".$s->appointment_status_update_time;  if(isset($s->appointment_status_update_time) && $s->appointment_status_update_time!="") 
-				{echo date("j M Y", strtotime("$s->appointment_status_update_time")).", ".date("h:i A.", strtotime("$s->appointment_status_update_time"));} 
-				else {echo $s->appointment_status_update_time="";}?></td>	
-		<td><button type="button" class="btn btn-success" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>View</button></td>
-		<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$s->visit_id));?>
-		<input type="text" class="sr-only" hidden value="<?php echo $s->visit_id;?>" form="select_patient_<?php echo $s->visit_id;?>" name="selected_patient" />
-		<input type="text" class="sr-only" hidden value="<?php echo $s->patient_id;?>" name="patient_id" />
-		</form>
+    		
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
@@ -568,7 +571,7 @@ echo "</select></li>";
 				</p>	
 			</div>	
 
-			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom')); ?>
+			<?php echo form_open("reports/appointments_status",array('role'=>'form','class'=>'form-custom')); ?>
 			<input type="hidden" name="appointment" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">
 			<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
@@ -576,53 +579,39 @@ echo "</select></li>";
 			<input type="hidden" name="from_time" value="<?php echo $this->input->post('from_time');?>">
 			<input type="hidden" name="to_time" value="<?php echo $this->input->post('to_time');?>">
 			<input type="hidden" name="dateby" value="<?php echo $this->input->post('dateby');?>">	
-			<input type="hidden" name="page_no" id="page_no" value='<?php echo $this->input->post('page_no');?>'>			
-			<input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>				
+			<input type="hidden" name="page_no" id="page_no" value='<?php echo $this->input->post('page_no');?>'>	
+			<input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>	
+			<input type="hidden" name="phone" id="phone" value='<?php echo $this->input->post('phone');?>'>		
+			<input type="hidden" name="h4allid" id="h4allid" value='<?php echo $this->input->post('h4allid');?>'>				
+			<input type="hidden" name="opno" id="opno" value='<?php echo $this->input->post('opno');?>'>				
+			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>						
 			<div class="form-group">
-				<label for="department">Department:</label>
-				<select name="department_id" id="department" class="form-control">
-					<option>Select Department</option>
+				<label for="Appointment Status">Appointment Status*:</label>
+				<select name="appointment_status_id_val" id="appointment_status_id" required class="form-control">
+					<option value="">Select Appointment Status</option>
 					<?php 
-					foreach($all_departments as $dept){
-						echo "<option value='".$dept->department_id."'";
-						if($s->department == $dept->department) echo " selected ";
-						echo ">".$dept->department."</option>";
+					foreach($all_appointment_status as $status){
+						echo "<option value='".$status->id."'";
+						if($s->appointment_status_id == $status->id) echo " selected ";
+						echo ">".$status->appointment_status."</option>";
 					}
 					?>
 				</select>	                        
 			</div>				
-			<div class="form-group">
-				<label for="helpline_doctor">Appointment With:</label>
-				<?php //var_dump($helpline_doctor); ?>
-				<select name="appointment_with" id="helpline_doctor" class="form-control">
-					<option value="NULL">Select Doctor</option>
-					<?php 
-					foreach($helpline_doctor as $doctor){
-						echo "<option value='".$doctor->staff_id."'";
-						if($s->appointment_with_id == $doctor->staff_id) echo " selected ";
-						echo ">".$doctor->helpline_doctor."</option>";
-					}
-					?>
-				</select>
-			</div>
 				
 			<div class="form-group">
-				<label for="appointment_time">Appointment Date-Time:</label>
-				<input name="appointment_time" type="datetime-local" 
-				       value="<?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
-						{echo date("Y-m-d\TH:i", strtotime("$s->appointment_date_time"));} 
-						else {echo $s->appointment_date_time="";}?>" 
+				<label for="appointment_status_time">Appointment Status Date-Time*:</label>
+				<input name="appointment_status_time" type="datetime-local" required
+				       value="<?php if(isset($s->appointment_status_update_time) && $s->appointment_status_update_time!="") 
+						{echo date("Y-m-d\TH:i", strtotime("$s->appointment_status_update_time"));} 
+						else {echo date("Y-m-d\TH:i");}?>" 
 				       		class="form-control">
 			</div>
-			
-			<div class="form-group">
-				<label for="summary_sent_time">Summary Sent Date-Time:</label>
-				<input name="summary_sent_time" type="datetime-local" class="form-control" >
-			</div>
 
-			<button type="submit" class="btn btn-default">Submit</button>
-			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
+<div style="text-align:center;margin-top:5px">
+			<button type="submit" class="btn btn-primary btn-sm"">Submit</button>
+			<button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+</div>
 			</form> 
 		</div>
 	</div>
