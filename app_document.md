@@ -1,4 +1,5 @@
-# Planning participants for Helpline Session https://health4all.online/helpline/session_plan
+# Planning participants for Helpline Session 
+    https://health4all.online/helpline/session_plan
     Method to be avalaible only with those having view acces for user_function -> helpline_session_plan
     Diplay view access to this method in Header under "Help" Menu with sub menu "Helpline Plan"
   
@@ -36,7 +37,8 @@
         Click Close button to close Modal and reload the Main Form with existing form settings.
     
   
-# https://health4all.online/helpline/detailed_report
+# Page to View and Update Helpline Call Details
+    https://health4all.online/helpline/detailed_report
 
 ## Listing of Call Category: 
     In form selection: based on selection of Helpline, list only call categories for the specific helpline
