@@ -61,7 +61,7 @@
         Click Close button to close Modal and reload the Main Form with existing form settings.
     
   
-# Page to View and Update Helpline Call Details
+# Helpline Call Details - View and Update
     https://health4all.online/helpline/detailed_report
 
 ## Listing of Call Category: 
@@ -98,11 +98,12 @@
     CREATE appointment_status table (id, hospital_id, appointment_status)
     INSERT INTO appointment_status(appointment_status) VALUE (Checked In, Registered, No Show, Cancelled)
 
-## Create New Report/Form View 
+## Form/Report to View and Update Appointment Status
     https://health4all.online/reports/appointment_status
     Set default Search by Appointments
     Add Form search option by Appointment Status, Phone and Manual Id
     Provide default Pagination
+    
     (Exlcude following columns from https://health4all.online/reports/appointment
     Doctor consulted, Appoinment with, Summary Sent, View Summary)
     Display visit_name
@@ -121,8 +122,6 @@
      Modal "Submit" action
       Update patient_visit.appointment_status_id, patient_visit.appointment_status_update_by, patient_visit.appointment_status_update_time
       
-  
-
 ## SMS feature to convey appointments
 
 ## SMS feature to convey appointment rescheduling
