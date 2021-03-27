@@ -31,7 +31,7 @@
     helpline_session_plan.helpline_session_id -> Select helpline_session.session_name WHERE helpline_session.weekday = selected Weekday AND helpline_session.session_status = 1
     helpline_session_plan.helpline_session_role_id -> Select helpline_session_role.helpline_session_role
     -> on click of Submit, 
-        Insert row into helpline_session_plan
+        Insert row into helpline_session_plan with created_by_staff_id and created_date_time values
         Reload Modal with Success Message " Team Member Added to Session Successfully" with empty fields
         Click Close button to close Modal and reload the Main Form with existing form settings.
     
