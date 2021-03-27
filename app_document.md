@@ -93,7 +93,7 @@
   Visit Name drop down list criteria in the form: Select visit_name list WHERE visit_name.hospital = current_hospital AND visit_name.use = 1
   
   
-# Appointemnts Status - New Report/Form to update appointment status, primarily to update chekin status at Gate/Entry for apppointments
+# Appointemnts Status - Form/Report to update checkin status at Gate/Entry for apppointments
 
 ## DB
     ALTER TABLE patient_visit - add fields -> appointment_status.id, appointment_status_update_by(comment-staff_id), appointment_status_update_time 
@@ -102,7 +102,8 @@
     CREATE appointment_status table (id, hospital_id, appointment_status)
     INSERT INTO appointment_status(appointment_status) VALUE (Checked In, Registered, No Show, Cancelled)
 
-## Create New Report/Form View https://health4all.online/reports/appointment_status
+## Create New Report/Form View 
+    https://health4all.online/reports/appointment_status
     Set default Search by Appointments
     Add Form search option by Appointment Status, Phone and Manual Id
     Provide default Pagination
