@@ -101,7 +101,12 @@
 ## Form/Report to View and Update Appointment Status
     https://health4all.online/reports/appointment_status
     Set default Search by Appointments
-    Add Form search option by Appointment Status, Phone and Manual Id
+    Default From and To Dates set to current date
+    Default From and To Times set to 12:00AM to 11:59PM
+    Addional Form search options:
+    Appointment Status, Health4All ID, OP Number, Manual ID and Phone and Manual Id
+    Department, Unit, Area, Visit Type (WHERE visit_type linked to hospital and use status = 1), Row per page
+    
     Provide default Pagination
     
     (Exlcude following columns from https://health4all.online/reports/appointment
