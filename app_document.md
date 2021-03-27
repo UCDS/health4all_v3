@@ -92,7 +92,8 @@
 # Appointemnts Status - Form/Report to update checkin status at Gate/Entry for apppointments
 
 ## DB
-    ALTER TABLE patient_visit - add fields -> appointment_status.id, appointment_status_update_by(comment-staff_id), appointment_status_update_time 
+    ALTER TABLE patient_visit - add fields -> appointment_status.id, appointment_status_update_by(comment-staff_id), 
+    appointment_status_update_time 
     ALTER TABLE visit_name - add fields -> hospital_id
     INSERT INTO user_function(user_function) VALUE user_function (appointments_status)
     CREATE appointment_status table (id, hospital_id, appointment_status)
@@ -104,7 +105,7 @@
     Default From and To Dates set to current date
     Default From and To Times set to 12:00AM to 11:59PM
     Addional Form search options:
-    Appointment Status, Health4All ID, OP Number, Manual ID and Phone and Manual Id
+    Appointment Status, Health4All ID, OP Number, Manual ID, Phone,
     Department, Unit, Area, Visit Type (WHERE visit_type linked to hospital and use status = 1), Row per page
     
     Provide default Pagination
