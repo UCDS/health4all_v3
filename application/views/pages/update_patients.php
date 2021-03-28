@@ -2792,11 +2792,13 @@ function openSmsModal(){
 
 <script>
 	$(function(){
-		selectize = $("#icd_code")[0].selectize;
-		selectize.on('change',function(){
-			var test = selectize.getOption(selectize.getValue());
-			console.log(test);
-		});
+		if (typeof $("#icd_code")[0] !== 'undefined') {
+			selectize = $("#icd_code")[0].selectize;
+			selectize.on('change',function(){
+				var test = selectize.getOption(selectize.getValue());
+				console.log(test);
+			});
+		}
 		$i=1;
 		$("#retrieve_prescription").click(function(){
 			<?php if(count($previous_prescription)==0) echo "alert('No prescriptions in the previous visit'); return;"; ?>
