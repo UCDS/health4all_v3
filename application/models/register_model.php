@@ -96,7 +96,7 @@ class Register_model extends CI_Model{
 	}
 	
 	function get_patient_visit_details($summary_link_patient_id,$summary_link_patient_visit_id){
-		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
+		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, pv.department_id,department.department,pv.hosp_file_no,
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,hospital.hospital_short_name	,helpline.helpline,
 		pv.appointment_time as appointment_date_time,
