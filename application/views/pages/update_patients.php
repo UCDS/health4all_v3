@@ -2595,6 +2595,20 @@ function openSmsModal(){
    										error : function(response) {  bootbox.alert("Link Generation failed"); }
    									});
    									break;
+   								case 'register/generate_appointment_sms':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $patient->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $patient->visit_id;?>";
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
    								
 							      }
 							}							
@@ -2642,6 +2656,20 @@ function openSmsModal(){
    									jsonData.patient_id = "<?php echo $patient->patient_id;?>";
    									jsonData.visit_id = "<?php echo $patient->visit_id;?>";
    									jsonData.report_download_url = json[key].report_download_url;
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_appointment_sms':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $patient->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $patient->visit_id;?>";
    									jsonData.template = json[key].template;
    									$.ajax({
    										url: target,

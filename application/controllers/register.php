@@ -277,6 +277,38 @@ class Register extends CI_Controller {
 		}
 	}
 	
+	function generate_appointment_sms(){
+	
+		if($this->session->userdata('logged_in')){
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			
+			$access=0;
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="Update Patients"){
+					$access=1;
+				}
+			}
+			if($access==1){
+				$map_link_sssihms = "https://goo.gl/maps/oLnx2MUvTrTjuKus7";
+				$result=$this->register_model->get_patient_visit_details($this->input->post('patient_id'),$this->input->post('visit_id'));
+				$val = $result[0];
+				//echo("<script>console.log('PHP: " . json_encode($this->data['result']) . "');</script>");
+				$basetemplate = $this->input->post('template');
+				$basetemplate = str_replace("{#Name#}",$val->name, $basetemplate);				
+				$basetemplate = str_replace("{#Department Name#}",$val->department, $basetemplate);
+				$convertedDateAndTime = date("j-M-Y h:i A", strtotime($val->appointment_date_time));
+				$basetemplate = str_replace("{#Date Time#}",$convertedDateAndTime, $basetemplate);
+				$basetemplate = str_replace("{#OP Number#}",$val->hosp_file_no, $basetemplate);
+				$basetemplate = str_replace("{#Map Link#}",$map_link_sssihms, $basetemplate);
+				header('Content-type: application/json');
+				$result=array();  
+            			$result['sms_content'] = $basetemplate; 
+				echo(json_encode($result));
+			}		
+		}
+	}
+	
+	
 	function notify_summary_download(){
 		$this->load->model('register_model');
 		$this->load->helper('form');
