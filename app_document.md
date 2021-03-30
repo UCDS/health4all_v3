@@ -88,7 +88,19 @@
     https://health4all.online/register/custom_form/
 
     Visit Type: Select visit_name list WHERE visit_name.hospital = current_hospital AND visit_name.use =  
-  
+
+# Appointments Summary Report
+
+## Form/Report to View Appointments Summary
+   View Link: Place under Header/Reports/Summary/ 
+   Report label: Appointments Summary (View Access if user_function -> appointment_status -> view = 1 )
+   Search Options: From Date(Appointment Date), To Date(Appointment Date), From Time, To Time, Department, Unit, Area, Visit Name(Multi Select - Default All Select), Appointment       Status(Multi Select - Default All Select), 
+   Group By Date, Department
+   
+   Display Visit Names as Columns and Total Column
+   Display Date Row Total
+   
+
 # Appointemnts Status - Form/Report to update checkin status at Gate/Entry for apppointments
 
 ## DB
