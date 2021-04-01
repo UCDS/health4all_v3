@@ -234,7 +234,45 @@ class Reports extends CI_Controller {
 		}
 		
 	}	
+	public function appointment_summary()
+	{
+            if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="appointment_status"){
+                            $access=1;
+                    }
+                }
+                if($access==1){
+		$this->data['title']="Appointment Summary";
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
 	
+		$this->data['report']=$this->reports_model->get_appointment_summary();	
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/appointment_summary',$this->data);
+		}
+		else{
+			$this->load->view('pages/appointment_summary',$this->data);
+		}
+		$this->load->view('templates/footer',$this->data);
+		}
+                }
+                else{
+                    show_404();
+                }
+            }
+    
 	public function appointment($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
 	       if($this->session->userdata('logged_in')){
@@ -328,11 +366,11 @@ class Reports extends CI_Controller {
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
 		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
-		$this->load->view('templates/header',$this->data);
-		$this->load->helper('form');
-		$this->load->library('form_validation');
-		$this->data['updated']=false;
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->load->view('templates/header',$this->data);
+	        $this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->data['updated']=false;		
 		if($this->input->post('visit_id')){ 
 			if($this->reports_model->update_appointment_status()){$this->data['updated']=true;}
 		}

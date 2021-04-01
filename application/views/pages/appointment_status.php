@@ -379,10 +379,7 @@ echo "</select></li>";
 		<th>Appointment Time</th>
     		<th>Appointment Status</th>
     		<th>Appointment Status Update By/Time</th>
-    		<th>Update Appointment Status</th>	
-    		<th>Registered  By/Time</th>   
-    		<th>Appointment Update By/Time</th> 			
- 		
+    		<th>Update Appointment Status</th>			
 	</thead>
 	<tbody>
 	<?php 
@@ -414,11 +411,6 @@ echo "</select></li>";
 		<td><?php if(((!isset($s->appointment_status) and $s->appointment_status=="" and $s->appointment_status==0) and $appointment_status_add==1) or $appointment_status_edit==1) { echo '
 		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $sno .'">Update</button>
 		'; }?></td>
-    		<td><?php echo $s->volunteer;?>,<?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
-    		<td><?php echo $s->appointment_update_by . ", "; 
-				if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
-				{echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));} 
-				else {echo $s->appointment_update_time="";}?></td>
     		
 	</tr>
 	<?php $sno++;}	?>

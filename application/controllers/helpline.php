@@ -43,9 +43,9 @@ class Helpline extends CI_Controller {
 			$this->load->library('form_validation');
 			$user=$this->session->userdata('logged_in');
 			$this->data['user_id']=$user['user_id'];
-			$this->data['title']="HelpLine Calls - Detailed Report";
-			$this->load->view('templates/header',$this->data);
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");		 
+			$this->data['title']="HelpLine Calls - Detailed Report";		
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
+			$this->load->view('templates/header',$this->data);	 
 		 	foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
