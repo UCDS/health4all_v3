@@ -275,7 +275,13 @@
 				if($f->user_function=="OP Summary"){ ?>
                                             <li><a href="<?php echo base_url()."reports/op_summary";?>">OP Summary</a></li>
 				<?php	}
+				
+				if($f->user_function=="appointment_status"){ ?>
+                                            <li><a href="<?php echo base_url()."reports/appointment_summary";?>">Appointment Summary</a></li>
+				<?php	}
                                 }
+                                
+                                
 				foreach($functions as $f){
 					if($f->user_function=="IP Summary"){ ?>
 						  <li><a href="<?php echo base_url()."reports/ip_summary";?>">IP Summary</a></li>

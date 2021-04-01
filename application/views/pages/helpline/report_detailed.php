@@ -293,7 +293,7 @@ $(function(){
 	}
 	$tmp_count = 0;
 	foreach($calls_count as $count){
-		$tmp_count = $tmp_count + $count->count;
+		$tmp_count = $tmp_count + 1;
 	}
 	$total_records = $tmp_count;		
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
