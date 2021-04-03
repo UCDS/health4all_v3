@@ -1,3 +1,24 @@
+# Distric, State and Country mapping for Pateints 
+    https://health4all.online/user_panel/form_layout
+    Remove State and Country Check Boxes from Patient Info List
+    
+    https://health4all.online/register/custom_form/
+    Select District by searching matching District(District Alias) values or by State Values. 
+    Display List by <District, State> values and matched values first sorted by District and then State
+    
+    https://health4all.online/register/update_patients
+    When District Value is already available, display <District, State> in District Text Box
+    When District Value is 0 or NULL:
+    Select District by searching matching District(District Alias) values or by State Values. 
+    Display List by <District, State> values and matched values first sorted by District and then State
+    
+    Test rest of the fields are properly updated in this form.
+    
+    https://health4all.online/op_ip_report/op_ip_summary_report
+    Add State filter in search form and Move State and District Filters just bebore Submit Button
+    Rename Search to Submit Button
+    In report table: Group By State and District
+    
 # Planning participants for Helpline Session 
     https://health4all.online/helpline/session_plan
     Method to be avalaible only with those having view acces for user_function -> helpline_session_plan
