@@ -1,4 +1,4 @@
-# Distric, State and Country mapping for Pateints 
+# District, State and Country mapping for Pateints 
     https://health4all.online/user_panel/form_layout
     Remove State and Country Check Boxes from Patient Info List
     
