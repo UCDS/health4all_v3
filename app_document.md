@@ -17,7 +17,7 @@
     https://health4all.online/op_ip_report/op_ip_summary_report
     Add State filter in search form and Move State and District Filters just bebore Submit Button
     Rename Search to Submit Button
-    In report table: Group By State and District
+    In report table: Group By State and District (show State and District columns)
     
 # Planning participants for Helpline Session 
     https://health4all.online/helpline/session_plan
