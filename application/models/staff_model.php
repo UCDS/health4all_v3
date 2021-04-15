@@ -128,7 +128,19 @@ class Staff_model extends CI_Model{
 	}
 	//get_district() selects the districts from the database and returns the result
 	function get_district(){
-		$this->db->select("district_id,district")->from("district");
+		$this->db->select("district_id,district,state.state_id,state.state,district_alias,CONCAT(district,'-',state.state) as custom_data",FALSE)
+		->from("district")
+		->join('state', 'district.state_id=state.state_id');
+		$this->db->order_by('district','ASC');
+		$query=$this->db->get();
+		return $query->result();
+	}
+	
+	//get_states() selects the districts from the database and returns the result
+	function get_states(){
+		$this->db->select("state_id,state",FALSE)
+		->from("state");
+		 $this->db->order_by('state','ASC');
 		$query=$this->db->get();
 		return $query->result();
 	}

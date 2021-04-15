@@ -135,6 +135,7 @@ $(function(){
 				}
 			}
 		});
+		
   }); 
   //create function for  for Excel report
   function fnExcelReport() {
@@ -167,6 +168,40 @@ $(function(){
            $('#from_time').ptTimeSelect();
 			$('#to_time').ptTimeSelect();
         });
+       
+        function onchange_state_dropdown(dropdownobj) {       	
+		const stateID = dropdownobj.value;
+		onHospitalDropdownChanged(stateID);		
+	}
+	
+	function onHospitalDropdownChanged(stateID) {
+		var optionsHtml = getDistrictOptionsState(stateID);
+		$("#district").html(optionsHtml);
+		
+	}
+	
+	function getDistrictOptionsState(stateID) {
+		var all_districts = JSON.parse('<?php echo json_encode($all_districts); ?>'); 
+		var selected_districts = all_districts.filter(all_districts => all_districts.state_id == stateID);
+		let optionsHtml = buildEmptyOption("District");
+		if(selected_districts.length > 0) {
+			optionsHtml += selected_districts.map(selected_districts => {
+					return `	<option value="${selected_districts.district_id}">
+							${selected_districts.district}
+						</option>`;
+		});
+			
+		}
+		return optionsHtml;
+	}
+	function buildEmptyOption(optionName = "Select") {
+		return `<option value="" selected>
+					${optionName}
+			</option>`;
+
+	}	
+
+
 		
     </script>
 
@@ -213,18 +248,35 @@ $(function(){
 			
 			<div class="container" style="padding-top:20px;">
 				<div class="row">
+				
+				<div class="col-md-2">
+						<select name="state" id="state" class="form-control" onchange='onchange_state_dropdown(this)'>
+							<option value="" >State</option>
+							<?php 
+							foreach($all_states as $state){
+								echo "<option value='".$state->state_id."'";
+								if($this->input->post('state') && $this->input->post('state') == $state	->state_id) echo " selected ";
+								echo ">".$state->state."</option>";
+							}
+							?>
+							
+						</select>
+					</div>
+					
 					<div class="col-md-2">
 						<select name="district" id="district" class="form-control" >
 							<option value="" >District</option>
-							<?php 
-							foreach($all_districts as $dist){
-								echo "<option value='".$dist->district_id."'";
-								if($this->input->post('district') && $this->input->post('district') == $dist->district_id) echo " selected ";
-								echo ">".$dist->district."</option>";
-							}
-							?>
 						</select>
 					</div>
+					<script>
+					
+					onchange_state_dropdown(document.getElementById("state"));
+					var district = "<?php echo $this->input->post('district')?>";
+					if(district != ""){
+						$("#district").val(district);
+					}
+					
+					</script>
 					<div class="col-md-2">
 							<select name="department" id="department" class="form-control" style="width:100%">
 								<option value="">Department</option>
@@ -261,7 +313,12 @@ $(function(){
 								?>
 							</select>
 						</div>
-						<div class="col-md-2">
+						
+					</div> 
+			</div>
+	<div class="container" style="padding-top:20px;">
+		<div class="row">
+				<div class="col-md-2">
 							<select name="visit_name" id="visit_name" class="form-control" style="width:100%" >
 								<option value="">Visit Type</option>
 								<?php 
@@ -273,13 +330,16 @@ $(function(){
 								?>
 							</select>
 						</div>
+						
 						<div class="col-md-1">
 							<div class="form-group">
-								<input class="btn btn-sm btn-primary" type="submit" value="Search" />
+							
+								<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 							</div>
 						</div>
-					</div> 
-			</div>
+		</div>
+	</div>				
+				
 	<br />
 	</form>
         <!--table is displayed only when there is atleast one registration is done-->
@@ -308,6 +368,7 @@ $(function(){
 				<thead>
 					<tr>
 						<th style="text-align:center" rowspan="2">S.no</th>
+						<th style="text-align:center" rowspan="2">State</th>
 						<th style="text-align:center" rowspan="2">District</th>
 						<th style="text-align:center" colspan="3"><=14 Years</th>
 						<th style="text-align:center" colspan="3">14 to 30 Years</th>
@@ -346,7 +407,8 @@ $(function(){
 				<tr>
 							<!--data is retrieved from database to the html table-->
 					<td><?php echo $s_no++; ?></td>
-					<td><?php echo $s->district; ?></td>
+					<td><?php echo $s->state; ?></td>
+					<td><?php echo $s->district; ?></td>					
 					<td class="text-right"><?php echo $s->mchild;?></td>
 					<td class="text-right"><?php echo $s->fchild;?></td>
 					<td class="text-right"><?php echo $s->child;?></td>
@@ -383,6 +445,7 @@ $(function(){
 				}
 				?>
 					<tfoot>
+						<th></th>
 						<th></th>
 						<th>Total </th>
 						<th class="text-right" ><?php echo $total_mchild;?></th>

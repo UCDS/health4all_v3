@@ -16,20 +16,10 @@
 				$(".alert-info").hide();
 			var id=$(this).attr('id');
 			if($(this).is(":checked")){
-				if(id == 'district' || id== 'state' || id == 'country') {
-					$('#district,#state,#country').prop("checked",true);
-					$('.district,.state,.country').show();
-				}else {
-					$("."+id).show();
-				}
+				$("."+id).show();				
 			}
-			else{
-				if(id == 'district' || id== 'state' || id == 'country') {
-					$('#district,#state,#country').prop("checked",false);
-					$('.district,.state,.country').hide();
-				}else {
-					$("."+id).hide();
-				}
+			else{				
+				$("."+id).hide();				
 			}
 		});
 		$("#save-form").click(function(e){
@@ -815,17 +805,7 @@
 				</li>
 				<li>  
 					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="country" class="checklist" />Country</label>
-					</div>
-				</li>
-				<li>  
-					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="district" class="checklist" />District</label>
-					</div>
-				</li>
-				<li>  
-					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="state" class="checklist" />State</label>
 					</div>
 				</li>
 				<li>  

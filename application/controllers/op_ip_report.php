@@ -29,10 +29,11 @@ class Op_Ip_report extends CI_Controller {
 			}
 			if($access==1){
 				$this->load->helper('form');                
-				$this->data['all_districts']=$this->staff_model->get_district();    
+				$this->data['all_districts']=$this->staff_model->get_district();   
+				$this->data['all_states']=$this->staff_model->get_states();    
 				$this->data['departments']=$this->staff_model->get_department();    
 				$this->data['units']=$this->staff_model->get_unit();                
-				 $this->data['areas']=$this->staff_model->get_area();               
+				$this->data['areas']=$this->staff_model->get_area();               
 				$this->data['visit_names']=$this->staff_model->get_visit_name();               
 				$this->data['title']="District Wise OP/IP Summary";
 				$this->load->view('templates/header',$this->data);
