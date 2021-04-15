@@ -1,8 +1,8 @@
 # District, State and Country mapping for Pateints 
-    DB: add field summary_header in table visit_name
+    DB: add field summary_header (tiny int, 0 by default, 1 for active or use status) in table visit_name
     In Print Summary: 
     
-    IF patient_visit.visit_name_id is not equal to 0 or NULL,
+    IF patient_visit.visit_name_id is not equal to 0 or NULL AND visit_name.summary_header=1
     then replace header "Consultation Summary" and Label "Consultation Date" with "visit_name.visit_name"
     WHERE patient_visit.visit_name_id=visit_name.visit_name_id
     
