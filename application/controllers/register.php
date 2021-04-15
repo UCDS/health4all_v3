@@ -85,6 +85,7 @@ class Register extends CI_Controller {
 			if($access==1){
 			$transaction = $this->transaction_condition();
 			//Load data required for the select options in views.
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			$this->data['id_proof_types']=$this->staff_model->get_id_proof_type();
 			$this->data['occupations']=$this->staff_model->get_occupations();
 			$this->data['departments']=$this->staff_model->get_department();

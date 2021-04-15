@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>assets/css/main.css" media="print" >
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css">
@@ -13,11 +15,17 @@
 .form-field{
 	min-height:50px;
 }
+.selectize-control.repositories .selectize-dropdown > div {
+		border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.selectize-control {
+	display: inline-grid;
+}
 </style>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 <script type="text/javascript">
-$(function(){
+$(function(){	
 	$(".date").Zebra_DatePicker();
 	$(".time").timeEntry();
 	
@@ -60,6 +68,8 @@ $(function(){
 		window.addEventListener('popstate', function () {
     	history.pushState(null, null, document.URL);
 	});
+	
+	
 });
 function DaysInMonth(Y, M) {
     	with (new Date(Y, M, 1, 12)) {
@@ -86,6 +96,33 @@ function getAge(dateString) {
    document.getElementsByName("age_months")[0].value=m;
    document.getElementsByName("age_days")[0].value=d;
    */
+}
+
+function initDistrictSelectize(){
+        var districts = JSON.parse('<?php echo json_encode($districts); ?>');
+	var selectize = $('#district_id').selectize({
+	    valueField: 'district_id',
+	    labelField: 'custom_data',
+	    searchField: ['district','district_alias','state'],
+	    options: districts,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+		},
+
+	});
+	if($('#district_id').attr("data-previous-value")){
+		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
+	}
 }
 <!-- Scripts for printing output table -->
 function printDiv(i)
@@ -380,23 +417,19 @@ pri.print();
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">District<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<select name="district" id="district" class="form-control" <?php if($field->mandatory) echo "required"; ?> style="width:200px;">
-						<option value="">--Select--</option>
-
-						<?php /* 						
-						foreach($districts_codes as $district){
-							echo "<option value='".$district->place_code."'";
-							if($district->place_code==$this->session->userdata('district_id')) echo " selected ";
-							echo ">".$district->place_name."</option>";
-						} */
-                                                foreach($districts as $district){
-							echo "<option value='".$district->district_id."'";
-							if($patient) if($district->district_id==$patient->district_id) echo " selected ";
-							echo ">".$district->district."</option>";
-						}
-						?>
+						<select id="district_id" name="district" style="width: 250px;display: inline-grid;" class="" placeholder="       --Enter district--                      ">
+							<option value="">        --Enter district--                       </option>
+						
 						</select>
 						</div>
+						<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+						<script>
+						var patient = JSON.parse('<?php echo json_encode($patient); ?>'); 
+						$('#district_id').attr("data-previous-value", patient['district_id']);
+						initDistrictSelectize();
+	
+						</script>
+						
 					</div>
 				<?php 
 					break;
@@ -1014,6 +1047,7 @@ pri.print();
 						<div class="form-group">
 						<label class="control-label">Visit Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
 						<select name="visit_name" class="form-control" <?php if($field->mandatory) echo "required"; ?>>
+						<option value="">--Select--</option>
 						<?php foreach($visit_names as $visit_name){ ?>
 						<option value="<?php echo $visit_name->visit_name_id;?>"
                                                 <?php if($update && $patient->visit_name_id == $visit_name->visit_name_id){ 

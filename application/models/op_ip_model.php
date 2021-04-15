@@ -59,6 +59,10 @@ function get_dist_summary(){
 		if($this->input->post('district')){
 				$this->db->where('patient.district_id',$this->input->post('district'));
 		}
+		
+		if($this->input->post('state')){
+				$this->db->where('state.state_id',$this->input->post('state'));
+		}
 		if($this->input->post('area')){
 			$this->db->select('IF(area!="",area,0) area',false);
 			$this->db->where('patient_visit.area',$this->input->post('area'));
@@ -66,7 +70,7 @@ function get_dist_summary(){
 		else{
 			$this->db->select('"0" as area',false);
 		}
-		$this->db->select("          department 'department', district.district 'district',   district.district_id, district.latitude , district.longitude,
+		$this->db->select("state.state,district.state_id as state_id,department 'department', district.district 'district',   district.district_id, district.latitude , district.longitude,
           SUM(CASE WHEN 1  THEN 1 ELSE 0 END) 'total',
 		SUM(CASE WHEN gender = 'F'  THEN 1 ELSE 0 END) 'female',
 	    SUM(CASE WHEN gender = 'M'  THEN 1 ELSE 0 END) 'male',	
@@ -88,9 +92,10 @@ function get_dist_summary(){
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->join('district','patient.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
-		 ->group_by('district')->order_by('total','desc');
+		 ->group_by('district')->order_by('state.state,district.district ','asc');
 		 
 		$resource=$this->db->get();
 		
