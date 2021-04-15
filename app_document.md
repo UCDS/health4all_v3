@@ -1,4 +1,19 @@
 # District, State and Country mapping for Pateints 
+    DB: add field summary_header in table visit_name
+    In Print Summary: 
+    
+    IF patient_visit.visit_name_id is not equal to 0 or NULL,
+    then replace header "Consultation Summary" and Label "Consultation Date" with "visit_name.visit_name"
+    WHERE patient_visit.visit_name_id=visit_name.visit_name_id
+    
+    In signature
+    IF patient_visit.signed_consultation is not equal to 0 or NULL AND 
+    IF staff.ima_registration_number is equal to 0 or NULL,
+    then do not print label (Regd No: )
+    
+    
+    
+# District, State and Country mapping for Pateints 
     https://health4all.online/user_panel/form_layout
     Remove State and Country Check Boxes from Patient Info List
     
