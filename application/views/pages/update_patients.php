@@ -134,6 +134,12 @@
 		.selectize-control.repositories.loading::before {
 			opacity: 0.4;
 		}
+		.selectize_district{
+			display: inline-grid;
+		}
+		
+		
+	
 </style>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
@@ -236,6 +242,32 @@ function openSmsModal(){
 
 </script>
 <script type="text/javascript">
+function initDistrictSelectize(){
+        var districts = JSON.parse('<?php echo json_encode($districts); ?>');
+	var selectize = $('#district_id').selectize({
+	    valueField: 'district_id',
+	    labelField: 'custom_data',
+	    searchField: ['district','district_alias','state'],
+	    options: districts,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+		},
+
+	});
+	if($('#district_id').attr("data-previous-value")){
+		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
+	}
+}
     $(document).ready(function() {
   $("input:radio[name=mlc_radio]").click(function() {
       if($('input[name=mlc_radio]:checked').val()=='-1'){          
@@ -740,17 +772,15 @@ function openSmsModal(){
 			</div>
                         <div class="col-md-4 col-xs-6">
 				<label class="control-label">District</label>
-                                <?php if($f->edit==1 && empty($patient->district_id)) { ?>
-				<select name="district" class="form-control">
-				<option value="">--Select--</option>
-				<?php  						
-				foreach($districts as $district){
-					echo "<option value='".$district->district_id."'";
-					if($patient) if($district->district_id==$patient->district_id) echo " selected ";
-					echo ">".$district->district."</option>";
-				}
-				?>
+                                <?php if($f->edit==1) { ?>
+				<select name="district_id" id="district_id" class="selectize_district" style="width:250px">
+				<option value="">--Enter district-- </option>				
 				</select>
+				<script>
+					var patient = JSON.parse('<?php echo json_encode($patient); ?>'); 
+					$('#district_id').attr("data-previous-value", patient['district_id']);
+					initDistrictSelectize();	
+				</script>
                                 <?php }else{
                                     foreach($districts as $district){
                                         if($district->district_id==$patient->district_id){
@@ -776,7 +806,7 @@ function openSmsModal(){
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Id Proof Type</label>
                                 <?php if($f->edit==1 && empty($patient->id_proof_type_id)){ ?>
-				<select name="id_proof_type" class="form-control">
+				<select name="id_proof_type_id" class="form-control">
 				<option value="">--Select--</option>
 				<?php 
 				foreach($id_proof_types as $id_proof_type){
@@ -797,12 +827,12 @@ function openSmsModal(){
 			</div>
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Id Proof No</label>
-				<input type="text" name="id_proof_no" id="id_proof_no" class="form-control" value="<?php if($patient) echo $patient->id_proof_number;?>" <?php if($f->edit==1 && empty($patient->id_proof_type_id)) echo ''; else echo ' readonly'; ?>/>				
+				<input type="text" name="id_proof_number" id="id_proof_no" class="form-control" value="<?php if($patient) echo $patient->id_proof_number;?>" <?php if($f->edit==1 && empty($patient->id_proof_type_id)) echo ''; else echo ' readonly'; ?>/>				
 			</div>
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Occupation</label>
                                 <?php if($f->edit==1 && empty($patient->occupation_id)){?>
-				<select name="occupation" class="form-control">
+				<select name="occupation_id" class="form-control">
 				<option value="">--Select--</option>
 				<?php 
 				foreach($occupations as $occupation){
