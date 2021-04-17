@@ -338,13 +338,14 @@ function registerOnUpdateFormSubmitted(callData) {
             		label: 'Yes',
             		className: 'btn-success'
         		},
-        	cancel: {
+        		cancel: {
             		label: 'No',
             		className: 'btn-danger'
         		}
     		},
     		callback: function (result) {
-        		if(result){
+    			bootbox.hideAll();
+        		if(result){        		 	
         			modal.modal('hide');
         			$(this).data('modal', null);	
         			if(isupdatedOnce){    
