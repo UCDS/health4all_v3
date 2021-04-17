@@ -250,7 +250,7 @@ $(function(){
 				<div class="row">
 				
 				<div class="col-md-2">
-						<select name="state" id="state" class="form-control" onchange='onchange_state_dropdown(this)'>
+						<select name="state" id="state" style="width: 100%;" class="form-control" onchange='onchange_state_dropdown(this)'>
 							<option value="" >State</option>
 							<?php 
 							foreach($all_states as $state){
@@ -264,7 +264,7 @@ $(function(){
 					</div>
 					
 					<div class="col-md-2">
-						<select name="district" id="district" class="form-control" >
+						<select name="district" style="width: 100%;" id="district" class="form-control" >
 							<option value="" >District</option>
 						</select>
 					</div>

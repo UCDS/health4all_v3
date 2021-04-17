@@ -1288,7 +1288,7 @@ function openEditModal(e) {
 	var callArray = callData.filter((call) => call.call_id == callId);
 	var hospitalSelect = hospitals.filter((hospital) =>  hospital.helpline_id == callArray[0].helpline_id);
 	if(callArray.length > 0) {
-		$("#updateCallModal").modal("show");
+		$('#updateCallModal').modal({backdrop: 'static', keyboard: false});  
 		setupUpdateCallModalData(callArray[0],hospitalSelect);
 	}
 }

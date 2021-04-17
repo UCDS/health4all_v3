@@ -1056,7 +1056,7 @@ class Register_model extends CI_Model{
 		}
 		//Build the query to retrieve the patient records based on the search query.
 		$this->db->select("patient.*,patient_visit.*,CONCAT(patient.first_name,' ',patient.last_name) name,
-		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,staff.ima_registration_number as ima_registration_number,designation",false)
+		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,staff.ima_registration_number as ima_registration_number,designation,IFNULL(visit_name.summary_header,0) as summary_header,visit_name.visit_name",false)
 		->from('patient')
 		->join('patient_visit','patient.patient_id=patient_visit.patient_id')
                 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')

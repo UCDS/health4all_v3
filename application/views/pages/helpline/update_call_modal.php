@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-3">Caller Category</div>
+                    <div class="col-md-3">Call Category</div>
                     <div class="col-md-6">
                         <select class="call_category form-control" name="call_category_<?php echo $call->call_id;?>" id="call_category_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
@@ -131,8 +131,12 @@
 </div>
 
 <script> 
+
+var modalData;
+var isupdatedOnce = false;
 function setupUpdateCallModalData(callData,hospitalSelect) {
     const modal = $("#updateCallModal");
+    modalData = callData;
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
     modal.find(".notes").val(callData.note);
@@ -182,7 +186,7 @@ function dateNow(dateObject){
 function formatDate() {
 
 }
-function updateCallData(callData) {
+function updateCallData(callData) {   
     hideUpdateCallStatusMessage();
     console.log(callData);
     $.ajax({
@@ -195,6 +199,7 @@ function updateCallData(callData) {
                 if(data.status) {
                     $(".updateCallStatus").html(data.msg);
                     $(".updateCallStatus").removeClass("hidden").addClass("alert-info");
+                    isupdatedOnce = true;
                 } else {
                     $(".updateCallStatus").html(data.msg);
                     $(".updateCallStatus").removeClass("hidden").addClass("alert-danger");
@@ -218,23 +223,130 @@ function registerOnUpdateFormSubmitted(callData) {
         const postData = {};
         const callId = callData.call_id;
         postData["call"] = [callId];
-        postData[`caller_type_${callId}`] = modal.find(".caller_type").val();
-        postData[`language_${callId}`] = modal.find(".language").val();
-        postData[`call_category_${callId}`] = modal.find(".call_category").val();
-        postData[`resolution_status_${callId}`] = modal.find(".resolution_status").val();
-        postData[`hospital_${callId}`] = modal.find(".updateHospitalSelect").val();
-        postData[`visit_type_${callId}`] = modal.find(".patient_type").val();
-        postData[`visit_id_${callId}`] = modal.find(".visit_id").val();
-        postData[`note_${callId}`] = modal.find(".notes").val();
+        postData[`caller_type_${callId}`] = modalData.caller_type_id = modal.find(".caller_type").val();
+        postData[`language_${callId}`] = modalData.language_id =modal.find(".language").val();
+        postData[`call_category_${callId}`] = modalData.call_category_id = modal.find(".call_category").val();
+        postData[`resolution_status_${callId}`] = modalData.resolution_status_id = modal.find(".resolution_status").val();
+        postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
+        postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
+        postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
+        postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
         postData[`group_${callId}`] = modal.find(".language").val();
-        postData[`resolution_date_time_${callId}`] = modal.find(".resolution_update_date_time").val();
-         postData[`department_id_${callId}`] = modal.find(".updateDepartmentSelect").val();
-        //postData[`resolution_date_${callId}`] = modal.find(".language").val();
+        postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
+        postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
         updateCallData(postData);   
     });
-    modal.find(".closeUpdateModal").on("click", function() {
-        modal.modal('hide');
-        window.location.reload();
+    modal.find(".closeUpdateModal").on("click", function(e) {
+    	e.preventDefault();
+    	var changed = false;
+    	if (modal.find(".notes").val() && !changed) {
+    		if (modal.find(".notes").val() !== modalData.note){
+    			changed = true;
+    			console.log("notes");
+    		}  
+    	}
+    	
+    	if (modal.find(".caller_type").val() && !changed) {
+    		if (modal.find(".caller_type").val() !== modalData.caller_type_id){
+    			changed = true;
+    			console.log("caller_type");
+    		}
+    	} 
+    	 
+    	if (modal.find(".language").val() && !changed) {
+    		if (modal.find(".language").val() !== modalData.language_id){
+    			changed = true;
+    			console.log("language");
+    		}  
+    	}
+    	
+    	if (modal.find(".call_category").val() && !changed) {
+    		if (modal.find(".call_category").val() !== modalData.call_category_id){
+    			changed = true;
+    			console.log("call_category");
+    		}  
+    	}
+    	
+    	if (modal.find(".resolution_status").val() && !changed) {
+    		if (modal.find(".resolution_status").val() !== modalData.resolution_status_id){
+    			changed = true;
+    			console.log("resolution_status");
+    		} 
+    	}
+    	if(isupdatedOnce){
+    		var dateval=modalData.resolution_date_time;
+    	} else { 
+    		var res = modalData.resolution_date_time.split(" ");
+    		var time = res[1].split(":");
+    		var dateval=res[0]+"T"+time[0]+":"+time[1];
+    		
+    	}
+    	if (modal.find(".resolution_update_date_time").val() && !changed) {
+    		if (modal.find(".resolution_update_date_time").val() !== dateval){
+    			changed = true;			
+    			console.log("resolution_update_date_time");
+    		} 
+    	}
+    	
+    	if (modal.find(".updateHospitalSelect").val() && !changed) {
+    		if (modal.find(".updateHospitalSelect").val() !== modalData.hospital_id){
+    			changed = true;
+    			console.log("updateHospitalSelect");
+    		} 
+    	}
+    	
+    	if (modal.find(".patient_type").val() && !changed) {
+    		if (modal.find(".patient_type").val() !== modalData.ip_op){
+    			changed = true;
+    			console.log("patient_type");
+    		} 
+    	}
+    	
+    	if (modal.find(".visit_id").val() && !changed) {
+    		if (modal.find(".visit_id").val() !== modalData.visit_id){
+    			changed = true;
+    			console.log("visit_id");
+    		} 
+    	
+    	}
+    	
+    	if(modal.find(".updateDepartmentSelect").val() && !changed) {
+    		if (modal.find(".updateDepartmentSelect").val() !== modalData.department_id){
+    			changed = true;
+    			console.log("updateDepartmentSelect");
+    		} 
+    	}
+    	
+    	if(changed){
+    		bootbox.confirm({
+    		message: "You have not saved changes. Do you want to close this page ? ",
+    		buttons: {
+        		confirm: {
+            		label: 'Yes',
+            		className: 'btn-success'
+        		},
+        	cancel: {
+            		label: 'No',
+            		className: 'btn-danger'
+        		}
+    		},
+    		callback: function (result) {
+        		if(result){
+        			modal.modal('hide');	
+        			if(isupdatedOnce){    
+    	 				window.location.reload();
+    				}
+        		}
+    		}
+	});
+    	} else {
+    		modal.modal('hide');
+    		if(isupdatedOnce){    
+    	 		window.location.reload();
+    		}
+    	}
+    	
+    	
     })
 }
 
