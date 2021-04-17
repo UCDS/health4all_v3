@@ -7,7 +7,7 @@
     WHERE patient_visit.visit_name_id=visit_name.visit_name_id
     
     IF patient_visit.visit_name_id is not equal to 0 or NULL AND visit_name.summary_header=1
-    then replace Label "Consultation Date" with "visit_name.visit_name" . "Date"
+    then replace Label "Consultation Date" with "Date"
     WHERE patient_visit.visit_name_id=visit_name.visit_name_id
     
     In signature
