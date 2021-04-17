@@ -1,4 +1,4 @@
-# District, State and Country mapping for Pateints 
+# Print Summary - Patient Visit
     DB: add field summary_header (tiny int, 0 by default, 1 for active or use status) in table visit_name
     In Print Summary: 
     
