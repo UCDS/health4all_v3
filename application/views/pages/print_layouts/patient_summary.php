@@ -75,8 +75,12 @@
 				<span ><b>
 					<?php if($patient->summary_header == 0) { ?> 
 						<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY</b></span>
-					<?php  } ?> 
 					
+					<?php  } else {?>
+					
+					<?php  echo $patient->visit_name;?></b></span>
+					 
+					<?php  }?>
 				</div>
 				
 				</td></tr>
@@ -86,23 +90,22 @@
 				<b><?php 
 					if($patient->visit_type == "OP") 
 						if($patient->summary_header == 1) {
-							echo $patient->visit_name;
+							echo "Date:";
 						} else {	
 							echo "Consultation Date:"; 
 						}
-					else 
-					if($patient->summary_header == 1) {
-							echo $patient->visit_name;							
-						} else {	
-							echo "Admit Date:"; 
+					else {
+						echo "Admit Date:"; 
 						
-						} ?>  </b> <?php 
+					     }
+						?>  </b> <?php 
 						if($patient->appointment_time === NULL){
 						echo date("d-M-Y",strtotime($patient->admit_date)); echo " ".date("g:i A",strtotime($patient->admit_time));
 						}else{
 						echo date("d-M-Y", strtotime("$patient->appointment_time"))." ".date("h:i A", strtotime("$patient->appointment_time"));
 						
 						}
+					
 						?>
 						<br/>
 						<?php

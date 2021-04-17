@@ -141,7 +141,13 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     modal.find(".callId").html(callData.call_id);
     modal.find(".notes").val(callData.note);
     modal.find(".caller_type").val(callData.caller_type_id);
-    modal.find(".language").val(callData.language_id);    
+    //modal.find(".language").val(callData.language_id); 
+    if (callData.language_id!=0){
+    	modal.find(".language").val(callData.language_id);
+    }
+    else{
+    	modalData.language_id = "";
+    }   
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
     //console.log(callData.resolution_date_time);
@@ -162,7 +168,12 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     let departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
     departmentOptions = departmentOptions? departmentOptions: buildEmptyOption("Department");
     modal.find(".updateDepartmentSelect").html(departmentOptions);
-    modal.find(".updateDepartmentSelect").val(callData.department_id);    
+    if (callData.department_id!=0){
+    	modal.find(".updateDepartmentSelect").val(callData.department_id);
+    }
+    else{
+    	modalData.department_id = "";
+    }   
     registerHospitalChangeListener();
     registerOnUpdateFormSubmitted(callData);
    
@@ -239,68 +250,70 @@ function registerOnUpdateFormSubmitted(callData) {
     modal.find(".closeUpdateModal").on("click", function(e) {
     	e.preventDefault();
     	var changed = false;
-    	if (modal.find(".notes").val() && !changed) {
-    		if (modal.find(".notes").val() !== modalData.note){
-    			changed = true;
-    			console.log("notes");
-    		}  
+    	
+    	if ((modal.find(".notes").val() !== modalData.note) && !changed){
+    		changed = true;
+    		console.log("notes");
+    	}  
+    	
+    	
+    	
+    	if ((modal.find(".caller_type").val() !== modalData.caller_type_id) && !changed){
+    		changed = true;    		
+    		console.log("caller_type");
     	}
     	
-    	if (modal.find(".caller_type").val() && !changed) {
-    		if (modal.find(".caller_type").val() !== modalData.caller_type_id){
-    			changed = true;
-    			console.log("caller_type");
-    		}
-    	} 
     	 
-    	if (modal.find(".language").val() && !changed) {
-    		if (modal.find(".language").val() !== modalData.language_id){
-    			changed = true;
-    			console.log("language");
-    		}  
-    	}
+    
+    	if ((modal.find(".language").val() !== modalData.language_id) && !changed){
+    		changed = true;
+    		console.log("language");
+    	}  
     	
-    	if (modal.find(".call_category").val() && !changed) {
-    		if (modal.find(".call_category").val() !== modalData.call_category_id){
-    			changed = true;
-    			console.log("call_category");
-    		}  
-    	}
     	
-    	if (modal.find(".resolution_status").val() && !changed) {
-    		if (modal.find(".resolution_status").val() !== modalData.resolution_status_id){
-    			changed = true;
-    			console.log("resolution_status");
-    		} 
-    	}
+    	
+    	if ((modal.find(".call_category").val() !== modalData.call_category_id) && !changed){
+    		changed = true;
+    		console.log("call_category");
+    	}  
+    	
+    	
+    	
+    	if ((modal.find(".resolution_status").val() !== modalData.resolution_status_id) && !changed){
+    		changed = true;
+    		console.log("resolution_status");
+    	} 
+    	
+    	
     	if(isupdatedOnce){
     		var dateval=modalData.resolution_date_time;
     	} else { 
     		var res = modalData.resolution_date_time.split(" ");
     		var time = res[1].split(":");
-    		var dateval=res[0]+"T"+time[0]+":"+time[1];
+    		var dateval=res[0]+"T"+time[0]+":"+time[1]+":00";
     		
     	}
     	if (modal.find(".resolution_update_date_time").val() && !changed) {
-    		if (modal.find(".resolution_update_date_time").val() !== dateval){
+    		var valModal = modal.find(".resolution_update_date_time").val();
+    		if ( valModal !== dateval){
     			changed = true;			
     			console.log("resolution_update_date_time");
     		} 
     	}
     	
-    	if (modal.find(".updateHospitalSelect").val() && !changed) {
-    		if (modal.find(".updateHospitalSelect").val() !== modalData.hospital_id){
-    			changed = true;
-    			console.log("updateHospitalSelect");
-    		} 
-    	}
     	
-    	if (modal.find(".patient_type").val() && !changed) {
-    		if (modal.find(".patient_type").val() !== modalData.ip_op){
-    			changed = true;
-    			console.log("patient_type");
-    		} 
-    	}
+    	if ((modal.find(".updateHospitalSelect").val() !== modalData.hospital_id) && !changed){
+    		changed = true;
+    		console.log("updateHospitalSelect");
+    	} 
+    	
+    	
+   
+    	if ((modal.find(".patient_type").val() !== modalData.ip_op) && !changed){
+    		changed = true;
+    		console.log("patient_type");
+    	} 
+    	
     	
     	if (modal.find(".visit_id").val() && !changed) {
     		if (modal.find(".visit_id").val() !== modalData.visit_id){
@@ -310,12 +323,12 @@ function registerOnUpdateFormSubmitted(callData) {
     	
     	}
     	
-    	if(modal.find(".updateDepartmentSelect").val() && !changed) {
-    		if (modal.find(".updateDepartmentSelect").val() !== modalData.department_id){
-    			changed = true;
-    			console.log("updateDepartmentSelect");
-    		} 
-    	}
+    	
+    	if ((modal.find(".updateDepartmentSelect").val() !== modalData.department_id) && !changed){
+    		changed = true;
+    		console.log("updateDepartmentSelect");
+    	} 
+    	
     	
     	if(changed){
     		bootbox.confirm({
@@ -332,7 +345,8 @@ function registerOnUpdateFormSubmitted(callData) {
     		},
     		callback: function (result) {
         		if(result){
-        			modal.modal('hide');	
+        			modal.modal('hide');
+        			$(this).data('modal', null);	
         			if(isupdatedOnce){    
     	 				window.location.reload();
     				}
@@ -341,6 +355,7 @@ function registerOnUpdateFormSubmitted(callData) {
 	});
     	} else {
     		modal.modal('hide');
+    		$(this).data('modal', null);
     		if(isupdatedOnce){    
     	 		window.location.reload();
     		}
