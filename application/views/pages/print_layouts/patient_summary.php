@@ -14,6 +14,9 @@
 			td{
 				padding:3px;
 			}
+			th{
+				text-align:center;
+			}
 			table {
 				border-collapse:collapse;
 				border-spacing:0;
