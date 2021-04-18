@@ -123,4 +123,6 @@ ALTER TABLE `patient_visit` ADD `appointment_status_id` INT NULL AFTER `temp_vis
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_status', 'appointment_status', 'Status of the appointments');
 
+ALTER TABLE `district` ADD `district_alias` TEXT NOT NULL AFTER `district`;
+
 ALTER TABLE `visit_name` ADD `summary_header` TINYINT NOT NULL DEFAULT '0' AFTER `inuse`;
