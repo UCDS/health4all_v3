@@ -358,11 +358,11 @@ echo "</select></li>";
 		<th>SNo</th>
 		<th>Patient ID</th>
 		<th>OP No.</th>
-		<th>Registration Time</th>
 		<th>PatientInfo</th>
+		<th>Address</th>
 		<th>Phone</th>
 		<th>Department</th>
-    		<th>Registered By</th>
+    		<th>Registered By/Time</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
 		<th>Appointment Time</th>
@@ -388,11 +388,13 @@ echo "</select></li>";
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
-		<td><?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
-		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse." / ";?> <?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;   ?></td>
+		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
+		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
+		if (!!$s->district) echo "<br/>, ".$s->district." District";
+		if (!!$s->state) echo ", ".$s->state;   ?></td>
 		<td><?php echo $s->phone;?></td>
 		<td><?php echo $s->department;?></td>
-    		<td><?php echo $s->volunteer;?></td>
+    		<td><?php echo $s->volunteer;?> , <?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
 		<td><?php echo $s->doctor;?></td>
 		<td><?php echo $s->appointment_with;?></td>
 		<td><?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 

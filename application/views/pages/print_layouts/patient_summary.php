@@ -73,8 +73,14 @@
 				<td colspan="3">
 				<div style="float:middle;text-align:center">
 				<span ><b>
-					<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY</b></span>
+					<?php if($patient->summary_header == 0) { ?> 
+						<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY</b></span>
 					
+					<?php  } else {?>
+					
+					<?php  echo $patient->visit_name;?></b></span>
+					 
+					<?php  }?>
 				</div>
 				
 				</td></tr>
@@ -83,15 +89,23 @@
 				<div style="float:left;text-align:left;left:auto;">
 				<b><?php 
 					if($patient->visit_type == "OP") 
-						echo "Consultation"; 
-					else 
-						echo "Admit";?> Date: </b> <?php 
+						if($patient->summary_header == 1) {
+							echo "Date:";
+						} else {	
+							echo "Consultation Date:"; 
+						}
+					else {
+						echo "Admit Date:"; 
+						
+					     }
+						?>  </b> <?php 
 						if($patient->appointment_time === NULL){
 						echo date("d-M-Y",strtotime($patient->admit_date)); echo " ".date("g:i A",strtotime($patient->admit_time));
 						}else{
 						echo date("d-M-Y", strtotime("$patient->appointment_time"))." ".date("h:i A", strtotime("$patient->appointment_time"));
 						
 						}
+					
 						?>
 						<br/>
 						<?php
@@ -428,7 +442,12 @@
 			<br />
 			<br />
 				<b>
-				<?php echo $patient->doctor_name." (Regd No: ". $patient->ima_registration_number .")<br />".$patient->designation; ?>
+				<?php if(!!$patient->ima_registration_number){ ?>
+					<?php echo $patient->doctor_name." (Regd No: ". $patient->ima_registration_number .")<br />".$patient->designation; 
+				
+				} else { ?>
+					<?php echo $patient->doctor_name."<br />".$patient->designation; 
+				 } ?>
 				</b>
 			</td>
 			<?php } else { ?>

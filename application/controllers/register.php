@@ -252,26 +252,27 @@ class Register extends CI_Controller {
 				}
 			}
 			if($access==1){
-				
 				$downloadurl = $this->input->post('summary_download_link');				
 				$key = $this->register_model->insert_update_summary_link($this->input->post('summary_link_patient_id'),$this->input->post('summary_link_patient_visit_id'),$this->input->post('summary_link_contents'));
 				$result=$this->register_model->get_patient_visit_details($this->input->post('summary_link_patient_id'),$this->input->post('summary_link_patient_visit_id'));
 				$val = $result[0];
 				//echo("<script>console.log('PHP: " . json_encode($this->data['result']) . "');</script>");
 				$basetemplate = $this->input->post('summary_link_sms');
-				$basetemplate = str_replace("{#PatientName#}",$val->name, $basetemplate);				
-				$basetemplate = str_replace("{#HospitalShortName#}",$val->hospital_short_name, $basetemplate);
-				$basetemplate = str_replace("{#HelpLineNumber#}",$val->helpline, $basetemplate);
-				$basetemplate = str_replace("{#DownloadLink#}",$downloadurl.$key, $basetemplate);
+				$basetemplate = str_replace("{#patient_name#}",$val->name, $basetemplate);			
+				$basetemplate = str_replace("{#patient_id#}",$val->patient_id, $basetemplate);
+				$basetemplate = str_replace("{#op_number#}",$val->hosp_file_no, $basetemplate);		
+				$basetemplate = str_replace("{#hospital#}",$val->hospital_short_name, $basetemplate);
+				$basetemplate = str_replace("{#helpline_number#}",$val->helpline, $basetemplate);
+				$basetemplate = str_replace("{#download_link#}",$downloadurl.$key, $basetemplate);
 				if ($val->signed=="0"){
-					$basetemplate = str_replace("{#DoctorName#}","Doctor", $basetemplate);
+					$basetemplate = str_replace("{#doctor_name#}","Doctor", $basetemplate);
 					$convertedDate = date("j-M-Y", strtotime($val->admit_date));
 					$convertedTime = date("h:i A", strtotime($val->admit_time));
-					$basetemplate = str_replace("{#RegOrApptDate#}",$convertedDate." ".$convertedTime, $basetemplate);
+					$basetemplate = str_replace("{#appointment_date#}",$convertedDate." ".$convertedTime, $basetemplate);
 				}else{
-					$basetemplate = str_replace("{#DoctorName#}",$val->doctor, $basetemplate);
+					$basetemplate = str_replace("{#doctor_name#}",$val->doctor, $basetemplate);
 					$convertedDateAndTime = date("j-M-Y h:i A", strtotime($val->appointment_date_time));
-					$basetemplate = str_replace("{#RegOrApptDate#}",$convertedDateAndTime, $basetemplate);
+					$basetemplate = str_replace("{#appointment_date#}",$convertedDateAndTime, $basetemplate);
 				}
 				echo $basetemplate;
 			}		
@@ -293,14 +294,13 @@ class Register extends CI_Controller {
 				$map_link_sssihms = "https://goo.gl/maps/oLnx2MUvTrTjuKus7";
 				$result=$this->register_model->get_patient_visit_details($this->input->post('patient_id'),$this->input->post('visit_id'));
 				$val = $result[0];
-				//echo("<script>console.log('PHP: " . json_encode($this->data['result']) . "');</script>");
 				$basetemplate = $this->input->post('template');
-				$basetemplate = str_replace("{#Name#}",$val->name, $basetemplate);				
-				$basetemplate = str_replace("{#Department Name#}",$val->department, $basetemplate);
+				$basetemplate = str_replace("{#patient_name#}",$val->name, $basetemplate);				
+				$basetemplate = str_replace("{#department#}",$val->department, $basetemplate);
 				$convertedDateAndTime = date("j-M-Y h:i A", strtotime($val->appointment_date_time));
-				$basetemplate = str_replace("{#Date Time#}",$convertedDateAndTime, $basetemplate);
-				$basetemplate = str_replace("{#OP Number#}",$val->hosp_file_no, $basetemplate);
-				$basetemplate = str_replace("{#Map Link#}",$map_link_sssihms, $basetemplate);
+				$basetemplate = str_replace("{#appointment_date#}",$convertedDateAndTime, $basetemplate);
+				$basetemplate = str_replace("{#op_number#}",$val->hosp_file_no, $basetemplate);
+				//$basetemplate = str_replace("{#Map Link#}",$map_link_sssihms, $basetemplate);
 				header('Content-type: application/json');
 				$result=array();  
             			$result['sms_content'] = $basetemplate; 
@@ -328,11 +328,12 @@ class Register extends CI_Controller {
 			$result=$this->register_model->get_patient_visit_details($this->input->post('patient_id'),$this->input->post('visit_id'));
 			$val = $result[0];
 			$basetemplate = $this->input->post('template');
-			$basetemplate = str_replace("{#PatientName#}",$val->name, $basetemplate);	
+			$basetemplate = str_replace("{#patient_name#}",$val->name, $basetemplate);	
 			$basetemplate = str_replace("{#patient_id#}","ID ".$val->patient_id, $basetemplate);			
-			$basetemplate = str_replace("HospitalShortName#}",$val->hospital_short_name, $basetemplate);
-			$basetemplate = str_replace("{#Phone",$val->helpline, $basetemplate);
-			$basetemplate = str_replace("{#link#}",$downloadurl.$key, $basetemplate);
+			$basetemplate = str_replace("{#hospital#}",$val->hospital_short_name, $basetemplate);
+			$basetemplate = str_replace("{#helpline_number#}",$val->helpline, $basetemplate);
+			$basetemplate = str_replace("{#op_number#}",$val->hosp_file_no, $basetemplate);
+			$basetemplate = str_replace("{#upload_link#}",$downloadurl.$key, $basetemplate);
 			header('Content-type: application/json');
 			$result=array();  
             		$result['sms_content'] = $basetemplate; 

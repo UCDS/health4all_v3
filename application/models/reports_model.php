@@ -599,10 +599,12 @@ function get_op_detail_with_idproof(){
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
 		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
 		appointment_update_time,  
-		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status",false);
+		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
 		 ->join('area','pv.area=area.area_id','left')
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
@@ -694,6 +696,8 @@ function get_op_detail_with_idproof(){
 		$this->db->select("count(*) as count",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
 		 ->join('department','pv.department_id=department.department_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
 		 ->join('area','pv.area=area.area_id','left')
