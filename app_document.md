@@ -123,6 +123,9 @@
     Call Category -
     Resolution Status -
     Emails - 
+    
+ ## SMS Modal
+    Sort SMS Templates list by Alpha Ascending
 
 # Custom Form to Register Patients
     https://health4all.online/register/custom_form/
