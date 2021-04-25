@@ -147,6 +147,7 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     }
     else{
     	modalData.language_id = "";
+    	modal.find(".language").val("");
     }   
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
@@ -173,6 +174,7 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     }
     else{
     	modalData.department_id = "";
+    	modal.find(".updateDepartmentSelect").val("");
     }   
     registerHospitalChangeListener();
     registerOnUpdateFormSubmitted(callData);
