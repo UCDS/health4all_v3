@@ -10,8 +10,8 @@ var opt = {
   margin:       0.5,
   filename:     'ConsultationSummary.pdf',
   image:        { type: 'jpeg', quality: 1 },
-  html2canvas:  { scale:  1 },
-  jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  html2canvas:  { scale:  2 },
+  jsPDF:        { unit: 'in', format: 'a3', orientation: 'portrait' }
 };
 html2pdf(element, opt);
 
@@ -29,17 +29,17 @@ $.ajax({
 <style>
 tr {page-break-inside: avoid}
 .float_center {
-  float: right;
-
-  position: relative;
-  left: -50%; /* or right 50% */
-  text-align: left;
+  margin: 0 auto;
+}
+.container {
+  display: flex;
+  justify-content: center;
 }
 </style>
 <?php if(isset($result) && count($result)>0) { ?>
 </style>
 <title><?php echo $title;?></title>
-<div>
+<div class="container">
 <button class="btn btn-md btn-primary float_center" type="button" onclick="downloadPDF()">Save to Device</button>
 <br/>
 </div>
@@ -49,7 +49,7 @@ tr {page-break-inside: avoid}
 echo base64_decode($result[0]->summary_link_contents);
 ?>
 </div>
-<div>
+<div class="container">
 <br/>
 <button class="btn btn-md btn-primary float_center" type="button" onclick="downloadPDF()">Save to Device</button>
 </div>
