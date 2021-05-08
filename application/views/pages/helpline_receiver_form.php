@@ -27,7 +27,7 @@ $(function(){
 			$('#helpline_receiver_link').val(helpline_receiver_link);
 		}
 
-		$('#phone').attr('disabled', 'disabled');
+		//$('#phone').attr('disabled', 'disabled');
 		$('#user_id').attr("data-previous-value", helpline_receiver['user_id']);
 
 	}
@@ -142,8 +142,8 @@ function initUserSelectize(){
 
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
-						<label for="phone">Phone<font style="color:red">*</font><img src="<?php echo base_url();?>assets/images/information-icon.png" class="info_icon" title="If Mobile, Please input only 10 digit mobile number. If Landline, then ignore initial zero & enter following digits" data-toggle="tooltip"/></label>
-						<input type="text" maxlength="10" class="form-control" placeholder="Enter Phone (10 Digits)" id="phone" name="phone" required/>
+						<label for="phone">Phone<font style="color:red">*</font><img src="<?php echo base_url();?>assets/images/information-icon.png" class="info_icon" title="If it is an Indian Mobile, Please add 0 as prefix." data-toggle="tooltip"/></label>
+						<input type="text"  class="form-control" placeholder="Enter Phone" id="phone" name="phone" required/>
 					</div>
 				</div>
 
