@@ -1184,7 +1184,7 @@ class Helpline_model extends CI_Model{
             $helpline_receiver['short_name'] = $this->input->post('short_name');							
         }																
 		if($this->input->post('phone')){														
-            $helpline_receiver['phone'] = '0' . $this->input->post('phone');							
+            $helpline_receiver['phone'] = $this->input->post('phone');							
         }
 		if($this->input->post('email')){														
             $helpline_receiver['email'] = $this->input->post('email');							
