@@ -4,9 +4,11 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/viewer.min.js"></script>
 <!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/Chart.min.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
+<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/viewer.min.css">
 <!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
@@ -61,6 +63,29 @@
     .prescription .drug_available_class{
     	background: #6DF48F;
     	font-weight: bold;
+    }
+      .pictures {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .pictures > li {
+      border: 1px solid transparent;
+      float: left;
+      height: calc(100% / 3);
+      margin: 0 -1px -1px 0;
+      overflow: hidden;
+      width: calc(100% / 3);
+    }
+
+    .pictures > li > img {
+      cursor: zoom-in;
+      width: 100%;
+    }
+    .viewer-title {
+    	font-weight: bold;
+    	color: #fff;
     }
 </style>
 <style>
@@ -239,7 +264,19 @@ function openSmsModal(){
 	$('#smsModal-templatewithname-dropdown').show();	
 	$("#smsModal").modal({ keyboard: false, backdrop: 'static' });
 }
-
+ window.addEventListener('DOMContentLoaded', function () {
+      var galley = document.getElementById('galley');
+      var viewer;
+  	document.getElementById('btnPreviewImages').addEventListener('click', function () {
+          viewer = new Viewer(galley, {
+            hidden: function () {
+            viewer.destroy();
+          },
+          });
+          viewer.show();
+        });     
+    });
+    
 </script>
 <script type="text/javascript">
 function initDistrictSelectize(){
@@ -306,9 +343,10 @@ function initDistrictSelectize(){
 		var type = $(e.relatedTarget).data('type');
 		var doc_date = $(e.relatedTarget).data('date');
 		var record_id = $(e.relatedTarget).data('recordid');
+		var shortname = $(e.relatedTarget).data('shortname');
 		//populate the textbox
 		$(e.currentTarget).find('input[name="edit_document_link"]').val(id);
-		$(e.currentTarget).find('label[id="filelink"]').html(id);
+		$(e.currentTarget).find('label[id="filelink"]').html(shortname);
 		$(e.currentTarget).find('input[id="edit_note"]').val(note);
 		$(e.currentTarget).find('input[id="edit_record_id"]').val(record_id);
 		
@@ -2323,6 +2361,7 @@ function initDistrictSelectize(){
 			<?php if($patient_document_add_access==1) echo '
 		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $patient->patient_id .'">Add</button>
 		'; ?>
+		<button type="button" class="btn btn-info" id="btnPreviewImages">Preview Documents (Only images)</button>
 	        </h4>			
 			<table class="table table-striped table-bordered" id="detailed_table" >
 				<thead>
@@ -2348,19 +2387,21 @@ function initDistrictSelectize(){
 		                	<?php 
 		                    	// Display document icon with document hyper link only if document link is available in DB
 		                    	if(isset($document->document_link) && $document->document_link!="") {echo "<a href=" . base_url() . "register/display_document/".$document->document_link . 
-		                    	" target=\"_blank\"><i class=\"fa fa-file\" style=\"font-size:24px;color:rgb(236, 121, 121)\"></i></a>";}
+		                    	" target=\"_blank\"><i class=\"fa fa-file\" style=\"font-size:24px;color:rgb(236, 121, 121)\"></i></a>"; echo "<br/>".explode("_",$document->document_link,2)[1];}
 		                        else {echo "";}
 			                ?>
 		                </td>
 					    <!--<td>
 						    <a href="<?php echo base_url()."register/edit_document/".$patient->patient_id."/". $document->document_link;?>" class="btn btn-primary">Edit</a>
 	    	            </td> -->
-	    	            <?php if($patient_document_edit_access==1) echo "
+	    	            <?php if($patient_document_edit_access==1) { 	    	          
+	    	            $doc_short_val = explode("_",$document->document_link,2)[1]; 
+	    	            echo "
 						<td style=\"text-align:center;\">
 
-						<button type=\"button\" id=\"editButton\" class=\"btn btn-info\" data-target=\"#myModalEdit_\" data-toggle=\"modal\" data-recordid=$document->id data-id=$document->document_link data-note=\"$document->note\" data-date=$document->document_date data-type=$document->document_type_id>Edit </button>
-						</td>"
-						?>
+						<button type=\"button\" id=\"editButton\" class=\"btn btn-info\" data-target=\"#myModalEdit_\" data-toggle=\"modal\" data-recordid=$document->id data-id=$document->document_link data-shortname=$doc_short_val data-note=\"$document->note\" data-date=$document->document_date data-type=$document->document_type_id>Edit </button>
+						</td>";
+						 } ?>
 						<?php if($patient_document_remove_access==1) echo "
 						<td style=\"text-align:center;\">
 
@@ -2846,6 +2887,50 @@ function initDistrictSelectize(){
 	</div>
 	</div>
 </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalPreviewImages" role="dialog" aria-labelledby="modalLabel" tabindex="-1">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Viewer</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="galley">
+              <ul class="pictures">
+              		<?php 
+              		$imagePresent = 0;
+              		$link_base_doc = base_url()."assets/patient_documents";
+			foreach($functions as $f){ 
+				if($f->user_function == "patient_document_upload" && ($f->add==1 || $f->view ==1 || $f->edit==1 || $f->remove==1)) {
+				
+			 	foreach($patient_document_upload as $document){ 
+			if(isset($document->document_link) && $document->document_link!="" && strpos(strtolower($document->document_link),'.pdf') == false) { $imagePresent = 1;?>
+                <li><img data-original="<?php echo $link_base_doc."/".$document->document_link;?>" src="<?php echo $link_base_doc."/".$document->document_link;?>" alt="<?php echo explode("_",$document->document_link,2)[1];?>"></li>
+                <?php 		} 
+                	}
+                   }
+                 } 
+                 if ($imagePresent == 0 ){
+                   echo '<script type="text/javascript">' . 
+      'document.getElementById("btnPreviewImages").style.display="none";' .
+      '</script>';
+                 }
+                ?>
+              </ul>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      
 		<?php } ?>
 
 <script>
