@@ -169,6 +169,11 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 <script type="text/javascript">
+
+function escapeSpecialChars(str) {
+    return str.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+}
+
 var smsDetails = {};
 var user_details = <?php echo $user_details; ?>;
 var receiver = user_details.receiver;
@@ -280,7 +285,7 @@ function openSmsModal(){
 </script>
 <script type="text/javascript">
 function initDistrictSelectize(){
-        var districts = JSON.parse('<?php echo json_encode($districts); ?>');
+        var districts = JSON.parse(escapeSpecialChars('<?php echo json_encode($districts); ?>'));
 	var selectize = $('#district_id').selectize({
 	    valueField: 'district_id',
 	    labelField: 'custom_data',
@@ -815,7 +820,7 @@ function initDistrictSelectize(){
 				<option value="">--Enter district-- </option>				
 				</select>
 				<script>
-					var patient = JSON.parse('<?php echo json_encode($patient); ?>'); 
+					var patient = JSON.parse(escapeSpecialChars('<?php echo json_encode($patient); ?>')); 
 					$('#district_id').attr("data-previous-value", patient['district_id']);
 					initDistrictSelectize();	
 				</script>
@@ -2616,7 +2621,7 @@ function initDistrictSelectize(){
 		
 			var smstemplate='<?php echo json_encode($sms_templates); ?>';
 			var inputF = document.getElementById("smsModal-template");
-			var json=JSON.parse(smstemplate);
+			var json=JSON.parse(escapeSpecialChars(smstemplate));
 
 			function setSmsTemplate(helpline_id){	
 				smsDetails.templateName=$('#smsModal-templatewithname-dropdown').val();
@@ -3181,7 +3186,7 @@ function initDistrictSelectize(){
 
 	}
 
-	var defaultsConfigs = JSON.parse('<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>');
+	var defaultsConfigs = JSON.parse(escapeSpecialChars('<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>'));
 	var defaultsConfigsObj = {};
 	defaultsConfigs.map(function(dc){
 		defaultsConfigsObj[dc.default_id] = dc;
@@ -3536,7 +3541,7 @@ function initDistrictSelectize(){
 		});
 
 		// prescription dropdown selectize
-		mergeDrugsAvailableToDrugs({drugs: JSON.parse('<?php echo json_encode($drugs); ?>'), drugs_available: JSON.parse('<?php echo json_encode($drugs_available); ?>')});
+		mergeDrugsAvailableToDrugs({drugs: JSON.parse(escapeSpecialChars('<?php echo json_encode($drugs); ?>')), drugs_available: JSON.parse(escapeSpecialChars('<?php echo json_encode($drugs_available); ?>'))});
 		initPrescriptionDrugSelectize();
 
 		initUpdatePatientValidations();
@@ -3758,7 +3763,7 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
-		var valHospital = JSON.parse('<?php echo json_encode($staff_hospital); ?>');		
+		var valHospital = JSON.parse(escapeSpecialChars('<?php echo json_encode($staff_hospital); ?>'));		
 		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');
 			
 		
