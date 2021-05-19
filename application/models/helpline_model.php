@@ -1237,7 +1237,7 @@ class Helpline_model extends CI_Model{
            'LOWER(full_name)'=>strtolower($query), 
            'phone'=>$query,
         );
-		$this->db->select("receiver_id, phone, full_name")
+		$this->db->select("receiver_id, phone, full_name, email")
 			->from("helpline_receiver")
 			->or_like($search, 'both');
 		$query=$this->db->get();
@@ -1252,6 +1252,143 @@ class Helpline_model extends CI_Model{
 	function get_helpline_receiver_links_by_doctor($doctor="", $helpline=""){
 		$query = $this->db->query("SELECT full_name, phone, category, app_id FROM helpline_receiver_link JOIN helpline ON helpline_receiver_link.helpline_id = helpline.helpline_id JOIN helpline_receiver ON helpline_receiver.receiver_id = helpline_receiver_link.receiver_id WHERE activity_status = 1 AND helpline.helpline = '".$helpline."' AND doctor = '".($doctor == "1" ? 1 : 0)."' GROUP BY helpline_receiver_link.receiver_id");
 		return $query->result();
+	}
+	
+	function get_helpline_session_role(){
+		$user = $this->session->userdata('logged_in');
+		$this->db->select("helpline_session_role.helpline_session_role_id, helpline_session_role")
+		->from('helpline_session_role');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_helpline_session(){
+		$user = $this->session->userdata('logged_in');
+		$this->db->select("helpline_session.helpline_session_id as helpline_session_id, helpline_session.helpline_id as helpline_id, session_name, monthday, weekday, from_time, to_time, session_status");
+		$this->db->from('helpline_session');
+		$this->db->join('helpline', 'helpline.helpline_id =  helpline_session.helpline_id');
+		$this->db->where('helpline_session.session_status = 1');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_helpline_session_report(){
+		if ($this->input->post('weekday')) {
+	       echo("<script>console.log('PHP: weekday " . json_encode($this->input->post('weekday')) . "');</script>");
+			$this->db->where('hs.weekday',$this->input->post('weekday'));
+		} 
+		if ($this->input->post('helpline')) {
+			$this->db->where('hs.helpline_id',$this->input->post('helpline'));
+		}
+		if ($this->input->post('role')){
+			$this->db->where('hsp.helpline_session_role_id', $this->input->post('role'));
+		}
+		if ($this->input->post('session_name')){
+			$this->db->where('hs.helpline_session_id',$this->input->post('session_name'));
+		}
+
+		$this->db->select("helpline_session_plan_id, helpline.helpline_id as helpline_id, hs.helpline_session_id as helpline_session_id, weekday, helpline, helpline.note as note, helpline_session_role, session_name, count(hsp.receiver_id) as count_receiver_id");
+		$this->db->from('helpline_session_plan as hsp');
+		$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
+		$this->db->join('helpline_session_role as role', 'hsp.helpline_session_role_id =role.helpline_session_role_id');
+		$this->db->join('helpline', 'helpline.helpline_id= hs.helpline_id');
+		$this->db->where('hs.session_status = 1');
+		$this->db->where('hsp.soft_deleted = 0');
+		// $this->db->group_by('hs.helpline_id');
+		 $this->db->group_by('hs.helpline_session_id');
+		 $this->db->order_by('hs.weekday');
+		// $this->db->group_by('hsp.helpline_session_role_id');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function insert_session_plan() {
+		if ($this->input->post('session_role_id')) {
+		   $session_role_id= $this->input->post('session_role_id');
+		}
+		if ($this->input->post('session_name_modal')) {
+		 $session_id=$this->input->post('session_name_modal');
+		}
+		if($this->input->post('receiver_id')){
+		 $receiver_id=$this->input->post('receiver_id');
+		}
+
+	       echo("<script>console.log('PHP: " . json_encode($this->input->post('session_name_modal')) . "');</script>");
+
+		$this->db->select("helpline_session_plan_id");
+		$this->db->where('helpline_session_id', $session_id);
+	 	$this->db->where('receiver_id', $receiver_id);
+		$this->db->where('helpline_session_role_id', $session_role_id);	
+		$this->db->where('soft_deleted = 0');
+		$this->db->from('helpline_session_plan');
+		$query = $this->db->get();
+	       echo("<script>console.log('PHP: " . json_encode($query->result()) . "');</script>");
+	       echo("<script>console.log('PHP: num_rows " . json_encode($query->num_rows()) . "');</script>");
+	    	if ($query->num_rows() > 0) {
+	       echo("<script>console.log('PHP: In num_rows  < 0" . json_encode($query->num_rows()) . "');</script>");
+				return false;
+		}
+
+		$data=array(
+			'receiver_id'=>$this->input->post("receiver_id"),
+			'helpline_session_id'=>$this->input->post("session_name_modal"),
+			'helpline_session_role_id'=>$this->input->post("session_role_id"),
+			'created_by_staff_id'=>$this->session->userdata("logged_in")['staff_id'],
+			'create_date_time'=>date("Y-m-d H:i:s"),
+			'soft_deleted'=>0
+		);
+
+
+		// check if the combination of receiver_id and session_id already exists or not.
+		$this->db->trans_start();
+		$this->db->insert('helpline_session_plan',$data);
+		$this->db->trans_complete();
+		if($this->db->trans_status()===TRUE){
+			return true;
+		}
+		else {
+			$this->db->trans_rollback();
+			return false;
+		}
+
+	       echo("<script>console.log('PHP: " . json_encode($session_role_id) . "');</script>");
+	}
+
+	function get_helpline_receiver_report($helpline_session_id) {
+		echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
+			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, hsp.helpline_session_plan_id as helpline_session_plan_id,  hs.session_name as session_name");
+			$this->db->select("(SELECT GROUP_CONCAT(language.language) as languages FROM helpline_receiver JOIN helpline_receiver_language on helpline_receiver_language.receiver_id = helpline_receiver.receiver_id JOIN language on language.language_id = helpline_receiver_language.language_id WHERE helpline_receiver.receiver_id = hsp.receiver_id ORDER BY helpline_receiver_language.proficiency) as languages ");
+			$this->db->from('helpline_session_plan as hsp');
+			$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
+			$this->db->join('helpline_receiver', 'hsp.receiver_id = helpline_receiver.receiver_id');
+			$this->db->where('hs.session_status = 1');
+			$this->db->where('hsp.soft_deleted = 0');
+			$this->db->where('hs.helpline_session_id', $helpline_session_id);
+			$query = $this->db->get();
+
+		return $query->result();
+	}
+
+	function delete_helpline_session_plan_id($helpline_session_plan_id) {
+		$helpline_session_plan_id = $this->input->post('helpline_update_session_plan_id');
+		echo("<script>console.log('PHP: Model " . json_encode($helpline_session_plan_id) . "');</script>");
+		$this->db->trans_start();
+		// UPDATE `helpline_session_plan` SET `soft_deleted` = '1' WHERE `helpline_session_plan`.`helpline_session_plan_id` = 5;
+		$this->db->set('helpline_session_plan.soft_deleted', 1);
+		$this->db->set('soft_deleted_by_staff_id', $this->session->userdata("logged_in")['staff_id']);
+	 	$this->db->set('soft_deleted_by_date_time', date("Y-m-d H:i:s"));
+		$this->db->where('helpline_session_plan.helpline_session_plan_id', $helpline_session_plan_id);
+		$this->db->update('helpline_session_plan');
+		$this->db->trans_complete();
+		if($this->db->trans_status()===TRUE){
+			return true;
+		}
+		else {
+			$this->db->trans_rollback();
+			return false;
+		}
+
+
 	}
 }
 ?>
