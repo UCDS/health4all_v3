@@ -316,12 +316,6 @@ echo "</select></li>";
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
-		<?php echo form_open('helpline/session_plan',array('role'=>'form','id'=>'back_helpline_session_plan'));?>
-		<input type="text" class="sr-only" hidden value="helpline_session_id" name="helpline_session_id" />
-		<input type="number" class="sr-only" hidden name="rows_per_page" value=50 />
-		<!--<button type="button" class="btn btn-info" required name="submit" >Back</button>--!>
-		<input class="btn btn-sm btn-primary" type="submit" value="Back"/>
-		</form>
 </div>
 <div style='padding: 0px 2px;'>
 
@@ -432,8 +426,14 @@ echo "</select></li>";
 	No Helpline Receivers to delete.
 <?php }  ?>
 </div>
-
-
+<div class="row">
+		<?php echo form_open('helpline/session_plan',array('role'=>'form','id'=>'back_helpline_session_plan'));?>
+		<input type="text" class="sr-only" hidden value="helpline_session_id" name="helpline_session_id" />
+		<input type="number" class="sr-only" hidden name="rows_per_page" value=50 />
+		<!--<button type="button" class="btn btn-info" required name="submit" >Back</button>--!>
+		<input class="btn btn-sm btn-primary" type="submit" value="Back"/>
+		</form>
+</div>
 <script type="text/javascript">
 /*
 document.getElementById("deletebtn").addEventListener("click", function(e) {
