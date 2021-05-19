@@ -106,6 +106,10 @@ function fnExcelReport() {
 				<label><input type ="radio" name="trend_type" class ="form-control" value="Day" checked > Daily</label>
                 <label><input type="radio" name="trend_type" class ="form-control" value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
                 <label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label><br>
+                Search by : <select name="dateby" id="dateby" class="form-control">   
+                        <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option> 
+                        <option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>          
+                        </select>
                 From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
                 To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
                 <select name="department" id="department" class="form-control">
@@ -139,7 +143,7 @@ function fnExcelReport() {
                  ?>
                 </select>
                 <select name="visit_name" id="visit_name" class="form-control" >
-                <option value="">All</option>
+                <option value="">Visit Type</option>
                 <?php 
                 foreach($visit_names as $v){
                     echo "<option value='".$v->visit_name_id."'";
@@ -165,11 +169,13 @@ function fnExcelReport() {
 	<thead>
 	<tr>
 		<th style="text-align:center" rowspan="2">Date</th>
-		<th style="text-align:center" rowspan="1" colspan="4">Total Visits</th>
+		<th style="text-align:center" rowspan="1" colspan="6">Total Visits</th>
 	</tr>
 	<tr>
 		<th style="text-align:center">Male</th>
                 <th style="text-align: center">Female</th>
+                <th style="text-align: center">Others</th>
+                <th style="text-align: center">Not Specified</th>
                 <th style="text-align: center">Total</th>
                 <th style="text-align: center">Signed Consultation</th>
 	</tr>
@@ -179,6 +185,8 @@ function fnExcelReport() {
         // Simple total
 	$total_male=0;
 	$total_female=0;
+	$total_others=0;
+	$total_notspecified=0;
 	$total=0;
         $total_signed_consultation = 0;
         // To calculate average of visits made by patients in the given date range.
@@ -192,6 +200,8 @@ function fnExcelReport() {
         $median_count_per_day = array();
         $median_male = 0;
         $median_female = 0;
+        $median_others=0;
+	$median_notspecified=0;
         $median_total = 0;
         $median_signed_consultation = 0;
         
@@ -216,17 +226,23 @@ function fnExcelReport() {
 		<td><?php echo $date;?></td>
 		<td class="text-right"><?php echo $s->male;?></td>
 		<td class="text-right"><?php echo $s->female;?></td>
+		<td class="text-right"><?php echo $s->others;?></td>
+		<td class="text-right"><?php echo $s->not_specified;?></td>
 		<td class="text-right"><?php echo $s->total;?></td>
                 <td class="text-right"><?php echo $s->signed_consultation;?></td>
 	</tr>
 	<?php
 	$total_male += $s->male;
         $total_female += $s->female;
+        $total_others += $s->others;
+        $total_notspecified += $s->not_specified; 
         $total_signed_consultation += $s->signed_consultation;
 	$total += $s->total; 
         // Preparing an array of number of visits per day to sort and find the median.
         $male_count_per_day[$number_of_records] = $s->male;
         $female_count_per_day[$number_of_records] = $s->female;
+        $others_count_per_day[$number_of_records] = $s->others;
+        $not_specified_count_per_day[$number_of_records] = $s->not_specified;
         $total_count_per_day[$number_of_records] = $s->total;
         $total_signed_consultation_per_day[$number_of_records] = $s->signed_consultation;
         $number_of_records++;        
@@ -238,8 +254,10 @@ function fnExcelReport() {
 		<th>Total </th>
 		<th class="text-right" ><?php echo number_format($total_male);?></th>
 		<th class="text-right" ><?php echo number_format($total_female);?></th>
+		<th class="text-right" ><?php echo number_format($total_others);?></th>
+		<th class="text-right" ><?php echo number_format($total_notspecified);?></th>
 		<th class="text-right" ><?php echo number_format($total);?></th>
-                <th class="text-right" ><?php echo number_format($total_signed_consultation);?></th>
+               <th class="text-right" ><?php echo number_format($total_signed_consultation);?></th>
 	</tr>
         <tr>
             <?php
@@ -268,6 +286,8 @@ function fnExcelReport() {
                 <th>Median</th>
                 <th class="text-right"><?php echo round(median($male_count_per_day)); ?></th>
                 <th class="text-right"><?php echo round(median($female_count_per_day)); ?></th>
+                <th class="text-right"><?php echo round(median($others_count_per_day)); ?></th>
+                <th class="text-right"><?php echo round(median($not_specified_count_per_day)); ?></th>
                 <th class="text-right"><?php echo round(median($total_count_per_day)); ?></th>
                 <th class="text-right"><?php echo round(median($total_signed_consultation_per_day)); ?></th>
         </tr>
@@ -275,6 +295,8 @@ function fnExcelReport() {
                 <th>Average</th>
                 <th class="text-right"><?php echo round(($total_male/$number_of_records)); ?></th>
                 <th class="text-right"><?php echo round(($total_female/$number_of_records));?></th>
+                <th class="text-right"><?php echo round(($total_others/$number_of_records));?></th>
+                <th class="text-right"><?php echo round(($total_notspecified/$number_of_records));?></th>
                 <th class="text-right"><?php echo round(($total/$number_of_records));?></th>
                 <th class="text-right"><?php echo round(($total_signed_consultation/$number_of_records));?></th>
         </tr>
@@ -284,10 +306,10 @@ function fnExcelReport() {
 	<thead>
 	<tr>
 		<th style="text-align:center" rowspan="2">Date</th>
-		<th style="text-align:center" rowspan="1" colspan="4">Total Visits</th>
+		<th style="text-align:center" rowspan="1" colspan="6">Total Visits</th>
 	</tr>
 	<tr>
-		<th style="text-align:center">Male</th><th style="text-align: center">Female</th><th style="text-align: center">Total</th><th style="text-align: center">Signed Consultation</th>
+		<th style="text-align:center">Male</th><th style="text-align: center">Female</th><th style="text-align: center">Others</th><th style="text-align: center">Not Specified</th><th style="text-align: center">Total</th><th style="text-align: center">Signed Consultation</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -304,10 +326,14 @@ function fnExcelReport() {
         // To calculate median of visits made by patients in the given date range.
         $male_count_per_day = array();
         $female_count_per_day = array();
+        $others_count_per_day = array();
+        $not_specified_count_per_day = array();
         $total_signed_consultation_per_day= array();
         $total_count_per_day= array();
         $median_male = 0;
         $median_female = 0;
+        $median_others = 0;
+        $median_not_specified = 0;
         $median_total = 0;
         $median_signed_consultation = 0;
 
@@ -332,6 +358,8 @@ function fnExcelReport() {
 		<td><?php echo $date;?></td>
 		<td class="text-right"><?php echo $s->male;?></td>
 		<td class="text-right"><?php echo $s->female;?></td>
+		<td class="text-right"><?php echo $s->others;?></td>
+		<td class="text-right"><?php echo $s->not_specified;?></td>
 		<td class="text-right"><?php echo $s->total;?></td>
                 <td class="text-right"><?php echo $s->signed_consultation;?></td>
 	</tr>
@@ -339,10 +367,14 @@ function fnExcelReport() {
         
 	$total_male+=$s->male;
 	$total_female+=$s->female;
+	$total_others+=$s->others;
+	$total_notspecified+=$s->not_specified;
 	$total+=$s->total; 
         // Preparing an array of number of visits per day to sort and find the median.
         $male_count_per_day[$number_of_records] = $s->male;
         $female_count_per_day[$number_of_records] = $s->female;
+        $others_count_per_day[$number_of_records] = $s->others;
+        $not_specified_count_per_day[$number_of_records] = $s->not_specified;
         $total_count_per_day[$number_of_records] = $s->total;
         $total_signed_consultation_per_day[$number_of_records] = $s->signed_consultation;
         $number_of_records++;        
@@ -354,6 +386,8 @@ function fnExcelReport() {
 		<th>Total </th>
 		<th class="text-right" ><?php echo number_format($total_male);?></th>
 		<th class="text-right" ><?php echo number_format($total_female);?></th>
+		<th class="text-right" ><?php echo number_format($total_others);?></th>
+		<th class="text-right" ><?php echo number_format($total_notspecified);?></th>
 		<th class="text-right" ><?php echo number_format($total);?></th>
                 <th class="text-right" ><?php echo number_format($total_signed_consultation);?></th>
 	</tr>
@@ -361,6 +395,8 @@ function fnExcelReport() {
                 <th>Median</th>
                 <th class="text-right"><?php echo round(median($male_count_per_day)); ?></th>
                 <th class="text-right"><?php echo round(median($female_count_per_day)); ?></th>
+                <th class="text-right"><?php echo round(median($others_count_per_day)); ?></th>
+                <th class="text-right"><?php echo round(median($not_specified_count_per_day)); ?></th>
                 <th class="text-right"><?php echo round(median($total_count_per_day)); ?></th>
                 <th class="text-right"><?php echo round(median($total_signed_consultation_per_day)); ?></th>
         </tr>
@@ -368,6 +404,8 @@ function fnExcelReport() {
                 <th>Average</th>
                 <th class="text-right"><?php echo round(($total_male/$number_of_records)); ?></th>
                 <th class="text-right"><?php echo round(($total_female/$number_of_records));?></th>
+                <th class="text-right"><?php echo round(($total_others/$number_of_records));?></th>
+                <th class="text-right"><?php echo round(($total_notspecified/$number_of_records));?></th>
                 <th class="text-right"><?php echo round(($total/$number_of_records));?></th>
                 <th class="text-right"><?php echo round(($total_signed_consultation/$number_of_records));?></th>
         </tr>
