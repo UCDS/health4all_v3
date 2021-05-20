@@ -572,21 +572,13 @@ class Helpline extends CI_Controller {
 	}
 
 	function session_plan(){
-		echo("<script>console.log('PHP: " . "');</script>");
 		if(!$this->session->userdata('logged_in')){
-		echo("<script>console.log('PHP: " . "');</script>");
 			show_404();
 		}
 		$access=0;
-		$add_sms_access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="helpline_session_plan"){
 				$access=1;
-			}
-			// Fetch user functions and check if the user has 
-			// access to documentation access rights
-			if($function->user_function=="sms"){
-				if ($function->add==1) $add_sms_access=1;
 			}
 		}
 
@@ -596,16 +588,7 @@ class Helpline extends CI_Controller {
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="Helpline Session Plan";
 			$this->data['helpline']=$this->helpline_model->get_helpline();
-			echo("<script>console.log('PHP: " . json_encode($this->data['helpline'] ). "');</script>");
-			$this->data['weekdays']=array(
-						array( 'weekday_id'   => '1' , 'val'   => 'Monday' ),
-						array( 'weekday_id'   => '2' , 'val'   => 'Tuesday' ),
-						array( 'weekday_id'   => '3' , 'val'   => 'Wednesday' ),
-						array( 'weekday_id'   => '4' , 'val'   => 'Thursday'),
-						array( 'weekday_id'   => '5' , 'val'   => 'Friday' ),
-						array( 'weekday_id'   => '6' , 'val'   => 'Saturday' ),
-						array( 'weekday_id'   => '7' , 'val'   => 'Sunday' )
-							);
+			$this->data['weekdays']=$this->helpline_model->get_weekdays();
 
 			$this->data['helpline_session_role']=$this->helpline_model->get_helpline_session_role();
 			//$this->data['helpline_sessions']='SSSOG'; //$this->helpline_model->get_helpline_session();
@@ -624,28 +607,25 @@ class Helpline extends CI_Controller {
 				}
 			}
 			if ($this->input->post('receiver_id')) {
-			echo("<script>console.log('Submit Modal: " . json_encode($this->data['user_id']) . "');</script>");
-				// $this->data['updated']=false;
+				// Modal addition
 				if($this->helpline_model->insert_session_plan()) {
+				// insertion succeded.
 				}
 				else {
+				// insertion failed.
 				header('HTTP/1.1 500 Internal Server');
  			       header('Content-Type: application/json; charset=UTF-8');
 				echo json_encode(array('message' => 'error')) ;
 				}
 			}
 			else {
-				echo("<script>console.log('Submit Modal Failed: " . json_encode($this->input->post('receiver_id')) . "');</script>");
 			}
 
-			echo("<script>console.log('Go: weekday" . json_encode($this->input->post('weekday')) . "');</script>");
 			if ($this->input->post('rows_per_page')) {
-			echo("<script>console.log('Go: " . json_encode($this->input->post('weekday')) . "');</script>");
-			$this->data['report'] = $this->helpline_model->get_helpline_session_report();
-			echo("<script>console.log('Go: " . json_encode($this->data['report']) . "');</script>");
+				// The submit for the current search has been entered.
+				$this->data['report'] = $this->helpline_model->get_helpline_session_report();
 			}
 			else {
-			echo("<script>console.log('Go failed: " . json_encode($this->input->post('weekday')) . "');</script>");
 			// $this->data['report'] = $this->helpline_model->get_helpline_session_report();
 
 			}
@@ -659,7 +639,6 @@ class Helpline extends CI_Controller {
 			$this->load->view('templates/footer');
 		}
 		else {
-			echo("<script>console.log('PHP: " . json_encode($this->data['user_id']) . "');</script>");
 			show_404();
 		}
 
@@ -681,9 +660,7 @@ class Helpline extends CI_Controller {
 			$this->data['title']="HelpLine Receivers -Sessions";
 			$helpline_session_id = $this->input->post('helpline_session_id');
 			$helpline_session_plan_id = $this->input->post('helpline_session_plan_id');
-			echo("<script>console.log('helpline session id: " . json_encode($helpline_session_id) . json_encode($helpline_session_plan_id) . "');</script>");
 			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id);
-			echo("<script>console.log('Go: " . json_encode($this->data['report']) . "');</script>");
 			$this->load->view('templates/header',$this->data);
 			$this->load->helper('form');
 			$this->load->library('form_validation');
@@ -695,14 +672,15 @@ class Helpline extends CI_Controller {
 					$this->data['lower_rowsperpage']= $default->lower_range;
 				}
 			}
-			echo("<script>console.log('Go: helpline_session_plan " . json_encode($this->input->post('helpline_update_session_plan_id')) . "');</script>");
 			if ($this->input->post('helpline_update_session_plan_id')) {
+				// delete request
 				if ($this->helpline_model->delete_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'))) {
-					$this->data['deleted'] = true;
-					echo("<script>console.log('Go: Passed " . json_encode($this->input->post('helpline_update_session_plan_id')) . "');</script>");
 			}
 			else {
-			echo("<script>console.log('Go: Failed " . json_encode($this->input->post('helpline_update_session_plan_id')) . "');</script>");
+			//	deletion failed
+				header('HTTP/1.1 500 Internal Server');
+ 			       header('Content-Type: application/json; charset=UTF-8');
+				echo json_encode(array('message' => 'error')) ;
 			}
 			}
 			else {
@@ -714,11 +692,9 @@ class Helpline extends CI_Controller {
 			else {
 				$this->load->view('pages/helpline/update_session_plan',$this->data);
 			}
-			// $this->load->view('pages/helpline/update_session_plan',$this->data);
 			$this->load->view('templates/footer');
 		}
 		else {
-			echo("<script>console.log('PHP: " . json_encode($this->data['user_id']) . "');</script>");
 			show_404();
 
 		}

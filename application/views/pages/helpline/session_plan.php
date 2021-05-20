@@ -226,11 +226,10 @@ input[type=number] {
 			<select name="weekday" id="weekday" class="form-control" >
 				<option value="">Helpline Weekday</option>
 				<?php 
-				foreach($weekdays as $weekday){
-					$weekday = (object) $weekday;
-				echo "<option value='".$weekday->weekday_id."'";
-				if ($this->input->post('weekday') && $this->input->post('weekday') == $weekday->weekday_id) { echo "selected";} 
-					echo ">".$weekday->val."</option>";
+				foreach($weekdays as $key=>$val){
+				echo "<option value='".$key."'";
+				if ($this->input->post('weekday') && $this->input->post('weekday') == $key) { echo "selected";} 
+					echo ">".$val."</option>";
 				}
 				?>
 			</select>
@@ -421,23 +420,7 @@ echo "</select></li>";
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->helpline.'-'.$s->note;?></td>
-		<td><?php switch($s->weekday) {
-			case 1: echo "Monday";
-				break;
-			case 2: echo "Tuesday";
-				break;
-			case 3: echo "Wednesday";
-				break;
-			case 4: echo "Thursday";
-				break;
-			case 5: echo "Friday";
-				break;
-			case 6: echo "Saturday";
-				break;
-			default:
-				echo "Sunday";
-			
-		}?></td>
+		<td><?php echo $weekdays[$s->weekday]; ?></td>
 		<td><?php echo $s->helpline_session_role;?></td>
 		<td><?php echo $s->session_name;?></td>
 		<td><button type="button" class="btn btn-success" autofocus onclick="$('#select_helpline_<?php echo $s->helpline_session_id;?>').submit()"><?php echo $s->count_receiver_id ?></button></td>
@@ -645,13 +628,11 @@ function buildEmptyOption(optionName = "Select") {
 }
 
 function gethelplineSession(){
-	console.log(helpline_sessions);
+	 // console.log(helpline_sessions);
 	var weekday_id = document.getElementById("weekday_modal").value;
 	const helpline_Sessions = helpline_sessions.filter(session => session.weekday == weekday_id);
 	var helpline = document.getElementById("helpline_modal").value;
-	console.log("helpline value ");
-	console.log(helpline);
-	console.log(helpline_Sessions);
+	// console.log(helpline);
 	const helplineSessions = helpline_Sessions.filter(session => session.helpline_id == helpline);
 	let optionsHtml = buildEmptyOption("Helpline Session");
 	if (helplineSessions.length > 0) {
@@ -677,21 +658,16 @@ setupSessionNameDropDown();});
 
 function setupDefaultWeekDayDropDown(){
 	let optionsHtml = buildEmptyOption("Weekdays");
-	if (weekdays.length > 0) {
-		optionsHtml += weekdays.map(weekday => {
-			return `	<option value="${weekday.weekday_id}">
-							${weekday.val}
-						</option>`;
-		});
-		return optionsHtml;
+	var keys = Object.keys(weekdays);
+	for (i = 0 ; i < keys.length ; i++) {
+		optionsHtml +=  `	<option value="${keys[i]}">
+							${weekdays[keys[i]]}
+						</option>`; 
 	}
 	return optionsHtml;
 }
 function setupWeekdayDropdown(){
-	console.log(weekdays);
-	for (i = 0; i < weekdays.length; i++) {
-	console.log(weekdays[i].weekday_id);
-	}
+	// console.log(weekdays);
 	const optionsHtml = setupDefaultWeekDayDropDown();
 	$("#weekday_modal").html(optionsHtml);
 	$("#weekday_modal").on("change", function() {
@@ -733,8 +709,6 @@ var role = document.getElementById("session_role_id").value;
 var weekday_modal = document.getElementById("weekday_modal").value;
 var session = document.getElementById("session_name_modal").value;
 
-console.log("In add modal submit");
-console.log(helpline.length);
 
 if (helpline.length === 0 || receiver.length === 0 || role.length === 0 || weekday_modal.length === 0 || session.length === 0) {
 	bootbox.alert("Please fill all the values");
@@ -753,7 +727,6 @@ success: function(response) {
 		var $select = $("#receiver_id").selectize();
 		var control = $select[0].selectize;
 		control.clear();
-		console.log("I am here");
 
 		},
 error: function(response) {
@@ -776,7 +749,7 @@ $("#addModalForm").trigger("reset");
 });
 
 $(document).ready(function() {
-	console.log(helpline_sessions);
+	console.log("document ready");
 	setupWeekdayDropdown();
 })
 </script>

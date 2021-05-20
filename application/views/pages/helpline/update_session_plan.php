@@ -447,7 +447,7 @@ function delete_helpline_receiver(e) {
 	e.preventDefault();
 	var event_prop = e;
 	bootbox.confirm({
-    		message: "Do you really wante to delete the Receiver ?" ,
+    		message: "Do you really want to delete the Receiver ?" ,
     		buttons: {
         		confirm: {
             		label: 'Yes',
@@ -485,6 +485,7 @@ function delete_helpline_receiver(e) {
 					location.reload()
 				},
 			    error: function (error) {
+				   bootbox.alert('Deletion Failed');
 				    // show error notification here...
 					$(event_prop.target).prop("disabled", false);
 				}
