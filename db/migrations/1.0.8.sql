@@ -128,6 +128,8 @@ ALTER TABLE `district` ADD `district_alias` TEXT NOT NULL AFTER `district`;
 ALTER TABLE `visit_name` ADD `summary_header` TINYINT NOT NULL DEFAULT '0' AFTER `inuse`;
 
 
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'helpline_session_plan', 'Helpline session plan', 'To show/hide Helpline session plan menu item');
+
 CREATE TABLE `helpline_session_role` ( 
 	`helpline_session_role_id` INT NOT NULL AUTO_INCREMENT, 
 	`helpline_session_role` VARCHAR(50) NOT NULL COMMENT 'Call Receiving Support' ,
