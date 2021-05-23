@@ -128,8 +128,6 @@ ALTER TABLE `district` ADD `district_alias` TEXT NOT NULL AFTER `district`;
 ALTER TABLE `visit_name` ADD `summary_header` TINYINT NOT NULL DEFAULT '0' AFTER `inuse`;
 
 
-ALTER TABLE `helpline_receiver` ADD `note` VARCHAR(50) NOT NULL AFTER `activity_status`;
-
 CREATE TABLE `helpline_session_role` ( 
 	`helpline_session_role_id` INT NOT NULL AUTO_INCREMENT, 
 	`helpline_session_role` VARCHAR(50) NOT NULL COMMENT 'Call Receiving Support' ,
