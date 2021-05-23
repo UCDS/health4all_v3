@@ -27,7 +27,7 @@ $(function(){
 			$('#helpline_receiver_link').val(helpline_receiver_link);
 		}
 
-		//$('#phone').attr('disabled', 'disabled');
+		$('#phone').attr('disabled', 'disabled');
 		$('#user_id').attr("data-previous-value", helpline_receiver['user_id']);
 
 	}
