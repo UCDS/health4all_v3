@@ -160,3 +160,10 @@ CREATE TABLE `helpline_session_plan` (
 	`soft_deleted_by_staff_id` INT NOT NULL , 
 	`soft_deleted_by_date_time` INT NOT NULL , PRIMARY KEY (`helpline_session_plan_id`)) ENGINE = InnoDB;
 
+CREATE TABLE `helpline_receiver_language` ( 
+      `helpline_receiver_language_id` int(11) NOT NULL AUTO_INCREMENT,
+       `language_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `proficiency` tinyint(4) NOT NULL,  
+   PRIMARY KEY (`helpline_receiver_language_id`)) ENGINE = InnoDB
+
