@@ -1297,7 +1297,7 @@ class Helpline_model extends CI_Model{
 		// $this->db->group_by('hs.helpline_id');
 		 $this->db->group_by('hs.helpline_session_id');
 		 $this->db->order_by('hs.weekday');
-		// $this->db->group_by('hsp.helpline_session_role_id');
+		 $this->db->group_by('hsp.helpline_session_role_id');
 		$query = $this->db->get();
 		return $query->result();
 	}

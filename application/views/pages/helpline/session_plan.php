@@ -584,7 +584,7 @@ echo "</select></li>";
 				<option value="">Select Session Role</option>
 				<?php 
 				foreach($helpline_session_role as $session_role){
-				echo "<option value='".$role->helpline_session_role_id."' class='".$role->helpline_session_role_id."'";
+				echo "<option value='".$session_role->helpline_session_role_id."' class='".$session_role->helpline_session_role_id."'";
 				echo ">".$session_role->helpline_session_role."</option>";
 				}
 				?>
