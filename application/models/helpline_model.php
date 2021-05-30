@@ -367,7 +367,7 @@ class Helpline_model extends CI_Model{
 	}
 	function get_call_category(){
 		$this->db->select('*')->from('helpline_call_category');
-		$this->db->where('status',1);
+		$this->db->order_by('call_category','ASC');
 		$query = $this->db->get();
 		return $query->result();
 	}
