@@ -1202,8 +1202,109 @@ function get_op_detail_with_idproof(){
     
 	}
 
-	
-	function get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type=0,$outcome=0){
+	function get_ip_detail_count($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type = 0, $outcome = 0)
+	{
+		$hospital = $this->session->userdata('hospital');
+		if ($this->input->post('from_date') && $this->input->post('to_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+		} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+			$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+			$to_date = $from_date;
+		} else if ($from_date == '0' && $to_date == '0') {
+			$from_date = date("Y-m-d");
+			$to_date = $from_date;
+		}
+		if ($this->input->post('from_time') && $this->input->post('to_time')) {
+			$from_time = date("H:i", strtotime($this->input->post('from_time')));
+			$to_time = date("H:i", strtotime($this->input->post('to_time')));
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		} else if ($this->input->post('from_time') || $this->input->post('to_time')) {
+			if ($this->input->post('from_time')) {
+				$from_time = $this->input->post('from_time');
+				$to_time = '23:59';
+			} else {
+				$from_time = '00:00';
+				$to_time = $this->input->post('to_time');
+			}
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		} else {
+			$this->db->where("(admit_time BETWEEN '00:00' AND '23:59')");
+		}
+		if (($visit_name != '-1' && $visit_name != '0') || $this->input->post('visit_name')) {
+			if ($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
+			$this->db->where('patient_visit.visit_name_id', $visit_name);
+		}
+		if ($department != '-1' || $this->input->post('department')) {
+			if ($this->input->post('department')) $department = $this->input->post('department');
+			$this->db->where('department.department_id', $department);
+		}
+		if (!!$unit || $this->input->post('unit')) {
+			if ($this->input->post('unit')) $unit = $this->input->post('unit');
+			$this->db->select('IF(unit!="",unit,0) unit', false);
+			$this->db->where('patient_visit.unit', $unit);
+		} else {
+			$this->db->select('"0" as unit_id', false);
+		}
+		if (!!$area || $this->input->post('area')) {
+			if ($this->input->post('area')) $area = $this->input->post('area');
+			$this->db->select('IF(area!="",area,0) area', false);
+			$this->db->where('patient_visit.area', $area);
+		} else {
+			$this->db->select('"0" as area', false);
+		}
+		if ($gender != '0') {
+			$this->db->where('gender', $gender);
+		}
+		if ($from_age != '0' && $to_age != '0') {
+			$this->db->where('age_years>=', $from_age, false);
+			$this->db->where('age_years<=', $to_age, false);
+		}
+		if ($from_age != '0' && $to_age == '0') {
+			$this->db->where('age_years<=', $from_age, false);
+		}
+		if ($from_age == '0' && $to_age != '0') {
+			$this->db->where('age_years>=', $to_age, false);
+		}
+		if (!!$outcome || $this->input->post('outcome_type')) {
+			if ($this->input->post('outcome_type')) $outcome = $this->input->post('outcome_type');
+			if ($outcome == "Unupdated") {
+				$this->db->where_not_in('outcome', array('Death', 'Absconded', 'Discharge', 'LAMA'));
+			} else $this->db->where('outcome', $outcome);
+		}
+		if ($date_type == 0) {
+			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		} else {
+			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
+		}
+
+		$this->db->select("count(*) as count", false);
+		$this->db->from('patient_visit')->join('patient', 'patient_visit.patient_id=patient.patient_id')
+		->join('department', 'patient_visit.department_id=department.department_id', 'left')
+		->join('unit', 'patient_visit.unit=unit.unit_id', 'left')
+		->join('area', 'patient_visit.area=area.area_id', 'left')
+		->join('mlc', 'patient_visit.visit_id=mlc.visit_id', 'left')
+		->join('hospital', 'patient_visit.hospital_id=hospital.hospital_id', 'left')
+		->where('patient_visit.hospital_id', $hospital['hospital_id'])
+		->where('visit_type', 'IP')
+		->order_by('hosp_file_no', 'ASC');
+		$resource = $this->db->get();
+		return $resource->result();
+	}
+
+	function get_ip_detail($default_rowsperpage,$department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type = 0, $outcome = 0){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		} else {
+			$page_no = 1;
+		}
+		if ($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		} else {
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no - 1)  * $rows_per_page;
+
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
@@ -1299,6 +1400,7 @@ function get_op_detail_with_idproof(){
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','IP')
 		 ->order_by('hosp_file_no','ASC');
+		$this->db->limit($rows_per_page, $start);
 		$resource=$this->db->get();
 		return $resource->result();
 	}
