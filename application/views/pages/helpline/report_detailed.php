@@ -1348,7 +1348,7 @@ function openEditModal(e) {
 	const callId = $(e).attr('data-id');
 	var callArray = callData.filter((call) => call.call_id == callId);
 	var hospitalSelect = hospitals.filter((hospital) =>  hospital.helpline_id == callArray[0].helpline_id);
-	var callCategorySelect = callCategory.filter((callCategory) =>  callCategory.helpline_id == callArray[0].helpline_id);
+	var callCategorySelect = callCategory.filter((callCategory) =>  callCategory.helpline_id == callArray[0].helpline_id && callCategory.status == 1);
 	if(callArray.length > 0) {
 		$('#updateCallModal').modal({backdrop: 'static', keyboard: false});  
 		setupUpdateCallModalData(callArray[0],hospitalSelect,callCategorySelect);
