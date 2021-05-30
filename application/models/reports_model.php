@@ -1158,6 +1158,7 @@ function get_op_detail_with_idproof(){
 			$from_timestamp = $from_date." ".$from_time;
 			$to_timestamp = $to_date." ".$to_time;
 			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+			$this->db->order_by('UNIX_TIMESTAMP(appointment_time)','ASC');
 		}
 		
 		if($this->input->post('visit_name')){
@@ -1206,13 +1207,13 @@ function get_op_detail_with_idproof(){
 		$user_staff_id = $this->session->userdata('logged_in')['staff_id'];
 		
 		$where = "pv.hospital_id = $current_hospital
-			  AND visit_type = 'OP'
-			  AND (admit_date BETWEEN '$from_date' AND '$to_date')
-			  AND (pv.appointment_with = $user_staff_id OR pv.signed_consultation = $user_staff_id)";
+			  AND visit_type = 'OP'";
+			  //AND (admit_date BETWEEN '$from_date' AND '$to_date')
+			  //AND (pv.appointment_with = $user_staff_id OR pv.signed_consultation = $user_staff_id)";
 		$this->db->where($where);
 		
-		$this->db->order_by('admit_date','ASC');
-		$this->db->order_by('admit_time','ASC');
+		//$this->db->order_by('admit_date','ASC');
+		//$this->db->order_by('admit_time','ASC');
 		
 		$resource=$this->db->get();
 		return $resource->result();
