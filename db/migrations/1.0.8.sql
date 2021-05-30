@@ -159,6 +159,8 @@ CREATE TABLE `helpline_session_plan` (
 	`soft_deleted` TINYINT NOT NULL , 
 	`soft_deleted_by_staff_id` INT NOT NULL , 
 	`soft_deleted_by_date_time` INT NOT NULL , PRIMARY KEY (`helpline_session_plan_id`)) ENGINE = InnoDB;
+	
+ALTER TABLE `helpline_call` ADD `district_id` INT NULL COMMENT 'Stores the district on which call came from' AFTER `language_id`;
 
 CREATE TABLE `helpline_receiver_language` ( 
       `helpline_receiver_language_id` int(11) NOT NULL AUTO_INCREMENT,

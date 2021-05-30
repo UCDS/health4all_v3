@@ -414,11 +414,13 @@ echo "</select></li>";
 		<td><?php echo $s->appointment_status_update_by_user . ", ".$s->appointment_status_update_time;  if(isset($s->appointment_status_update_time) && $s->appointment_status_update_time!="") 
 				{echo date("j M Y", strtotime("$s->appointment_status_update_time")).", ".date("h:i A.", strtotime("$s->appointment_status_update_time"));} 
 				else {echo $s->appointment_status_update_time="";}?></td>	
-		<td><button type="button" class="btn btn-success" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>View</button></td>
+		<td><button type="button" class="btn btn-success" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>View</button>
 		<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$s->visit_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->visit_id;?>" form="select_patient_<?php echo $s->visit_id;?>" name="selected_patient" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->patient_id;?>" name="patient_id" />
 		</form>
+		</td>
+		
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>

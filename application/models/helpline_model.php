@@ -104,6 +104,7 @@ class Helpline_model extends CI_Model{
 				'call_id'=>$call,
 				'caller_type_id'=>$this->input->post("caller_type_".$call),
 				'language_id'=>$this->input->post("language_".$call),
+				'district_id'=>$this->input->post("district_id_".$call),
 				'call_category_id'=>$this->input->post("call_category_".$call),
 				'resolution_status_id'=>$this->input->post("resolution_status_".$call),
 				'hospital_id'=>$this->input->post("hospital_".$call),
@@ -366,6 +367,7 @@ class Helpline_model extends CI_Model{
 	}
 	function get_call_category(){
 		$this->db->select('*')->from('helpline_call_category');
+		$this->db->where('status',1);
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -453,8 +455,14 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('call_type')){
 			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
 		}
+		if($this->input->post('state')){
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}		
+		if($this->input->post('district')){
+			$this->db->where('helpline_call.district_id',$this->input->post('district'));
+		}
 		$this->db->select("*, helpline_receiver.short_name as short_name, helpline_call.call_id, helpline_call.call_group_id, helpline_call.note,count(helpline_email_id) email_count, helpline.note as line_note,helpline.helpline_id,IFNULL(hospital.hospital_id,'') as hospital_id ,IFNULL(helpline_caller_type.caller_type_id,'') as caller_type_id,IFNULL(helpline_call_category.call_category_id,'') as call_category_id,
-		IFNULL(helpline_resolution_status.resolution_status_id,'') as resolution_status_id,IFNULL(language.language_id,'') as language_id ,IFNULL(helpline_call.department_id,'') as department_id",FALSE)
+		IFNULL(helpline_resolution_status.resolution_status_id,'') as resolution_status_id,IFNULL(language.language_id,'') as language_id ,IFNULL(helpline_call.department_id,'') as department_id, IFNULL(district.district_id,'') as district_id,IFNULL(district.district,'') as district,IFNULL(state.state,'') as state",FALSE)
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
@@ -467,6 +475,8 @@ class Helpline_model extends CI_Model{
 		->join('helpline_email','helpline_call.call_id = helpline_email.call_id','left')
 		->join('language','helpline_call.language_id = language.language_id','left')
 		->join('department', 'department.department_id = helpline_call.department_id','left')
+		->join('district', 'district.district_id = helpline_call.district_id','left')
+		->join('state', 'district.state_id= state.state_id','left')
 		->group_by('helpline_call.call_id')
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
 		->where('user_helpline_link.user_id', $user['user_id'])
@@ -535,6 +545,12 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('call_type')){
 			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
 		}
+		if($this->input->post('state')){
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}		
+		if($this->input->post('district')){
+			$this->db->where('helpline_call.district_id',$this->input->post('district'));
+		}
 		$this->db->select('count(*) as count')
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
@@ -548,6 +564,8 @@ class Helpline_model extends CI_Model{
 		->join('helpline_email','helpline_call.call_id = helpline_email.call_id','left')
 		->join('language','helpline_call.language_id = language.language_id','left')
 		->join('department', 'department.department_id = helpline_call.department_id','left')
+		->join('district', 'district.district_id = helpline_call.district_id','left')
+		->join('state', 'district.state_id= state.state_id','left')
 		->group_by('helpline_call.call_id')
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
 		->where('user_helpline_link.user_id', $user['user_id'])

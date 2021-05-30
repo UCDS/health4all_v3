@@ -85,6 +85,10 @@ $(document).ready(function(){$("#from_date").datepicker({
 <div class="row">
 		<h4>Doctor Patient List</h4>	
 		<?php echo form_open("reports/doctor_patient_list",array('role'=>'form','class'=>'form-custom')); ?> 
+		 	Search by : <select name="dateby" id="dateby" class="form-control">   
+		 	<option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>
+                       <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option>                             
+                       </select>
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 	                From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
@@ -193,11 +197,13 @@ $(document).ready(function(){$("#from_date").datepicker({
 				if(isset($s->appointment_update_time) && $s->appointment_update_time!="") 
 				{echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));} 
 				else {echo $s->appointment_update_time="";}?></td>
-		<td><button type="button" class="btn btn-primary" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>Update</button></td>
+		<td><button type="button" class="btn btn-primary" onclick="$('#select_patient_<?php echo $s->visit_id;?>').submit()" autofocus>Update</button>
 		<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$s->visit_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->visit_id;?>" form="select_patient_<?php echo $s->visit_id;?>" name="selected_patient" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->patient_id;?>" name="patient_id" />
 		</form>
+		</td>
+		
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
