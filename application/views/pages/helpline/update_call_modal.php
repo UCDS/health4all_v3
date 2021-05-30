@@ -47,15 +47,25 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-3">District</div>
+                    <div class="col-md-6">
+                       <select name="district_id" id="district_id" class="selectize_district" style="width:250px">
+				<option value="">--Enter district-- </option>				
+			</select>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-3">Hospital </div>
                     <div class="col-md-6">
                         <select class="updateHospitalSelect form-control" style="width:250px" class="form-control">
                             <option value="">Select</option>
+                            <!--
                             <?php foreach($all_hospitals as $hosp){ ?>
                                 <option value="<?php echo $hosp->hospital_id;?>"
                                 <?php if($call->hospital_id == $hosp->hospital_id) echo " selected "; ?>
                                 ><?php echo $hosp->hospital;?></option>
                             <?php } ?>
+                            -->
                         </select>
                     </div>
                 </div>
@@ -64,10 +74,10 @@
                     <div class="col-md-6">
                         <select class="updateDepartmentSelect form-control"  style="width:250px" class="form-control">
                             <option value="">Select</option>
-                            <?php foreach($department as $dept){ ?>
+                           <!-- <?php foreach($department as $dept){ ?>
                                 <option value="<?php echo $dept->department_id;?>">
                                 <?php echo $dept->department;?></option>
-                            <?php } ?>
+                            <?php } ?> -->
                         </select>
                     </div>
                 </div>
@@ -76,11 +86,13 @@
                     <div class="col-md-6">
                         <select class="call_category form-control" name="call_category_<?php echo $call->call_id;?>" id="call_category_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
                             <option value="">Select</option>
+                            <!--
                             <?php foreach($call_category as $cc){ ?>
                                 <option value="<?php echo $cc->call_category_id;?>"
                                 <?php if($call->call_category_id == $cc->call_category_id) echo " selected "; ?>
                                 ><?php echo $cc->call_category;?></option>
                             <?php } ?>
+                            -->
                         </select>
                     </div>
                 </div>
@@ -134,7 +146,35 @@
 
 var modalData;
 var isupdatedOnce = false;
-function setupUpdateCallModalData(callData,hospitalSelect) {
+function initDistrictSelectize(){
+        var districts = JSON.parse('<?php echo json_encode($districts); ?>');
+	var selectize = $('#district_id').selectize({
+	    valueField: 'district_id',
+	    labelField: 'custom_data',
+	    searchField: ['district','district_alias','state'],
+	    options: districts,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+		},
+
+	});
+	selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
+	
+	
+}
+
+function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect) {
+   
     const modal = $("#updateCallModal");
     modalData = callData;
     hideUpdateCallStatusMessage();
@@ -149,6 +189,8 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     	modalData.language_id = "";
     	modal.find(".language").val("");
     }   
+    const callCategorySelectVal = buildCallCategoryOptions(callCategorySelect);
+    modal.find(".call_category").html(callCategorySelectVal ? callCategorySelectVal: buildEmptyOption("Call Category"));
     modal.find(".call_category").val(callData.call_category_id);
     modal.find(".resolution_status").val(callData.resolution_status_id);
     //console.log(callData.resolution_date_time);
@@ -161,7 +203,7 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     //modal.find(".resolution_date").val(resolutionMoment.isValid()? resolutionMoment.format("DD-MMM-YYYY"): "");
     //modal.find(".resolution_time").val(resolutionMoment.isValid()? new Date(callData.resolution_date_time).toLocaleTimeString(): "");
     const hospitals_val = buildHospitalOptions(hospitalSelect);
-    modal.find(".updateHospitalSelect").html(hospitals_val? hospitals_val: buildEmptyOption("Hospital"));
+    modal.find(".updateHospitalSelect").html(hospitals_val ? hospitals_val: buildEmptyOption("Hospital"));
     modal.find(".updateHospitalSelect").val(callData.hospital_id);
     modal.find(".patient_type").val(callData.ip_op);
     modal.find(".visit_id").val(callData.visit_id);    
@@ -176,6 +218,8 @@ function setupUpdateCallModalData(callData,hospitalSelect) {
     	modalData.department_id = "";
     	modal.find(".updateDepartmentSelect").val("");
     }   
+    $('#district_id').attr("data-previous-value", callData.district_id);
+    initDistrictSelectize();
     registerHospitalChangeListener();
     registerOnUpdateFormSubmitted(callData);
    
@@ -245,6 +289,7 @@ function registerOnUpdateFormSubmitted(callData) {
         postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
         postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
         postData[`group_${callId}`] = modal.find(".language").val();
+        postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
         postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
         postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
         updateCallData(postData);   
@@ -258,6 +303,10 @@ function registerOnUpdateFormSubmitted(callData) {
     		console.log("notes");
     	}  
     	
+    	if ((modal.find("#district_id").val() !== modalData.district_id) && !changed){
+    		changed = true;
+    		console.log("district_id");
+    	} 
     	
     	
     	if ((modal.find(".caller_type").val() !== modalData.caller_type_id) && !changed){

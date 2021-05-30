@@ -171,10 +171,10 @@ $(function(){
        
         function onchange_state_dropdown(dropdownobj) {       	
 		const stateID = dropdownobj.value;
-		onHospitalDropdownChanged(stateID);		
+		populateDistricts(stateID);		
 	}
 	
-	function onHospitalDropdownChanged(stateID) {
+	function populateDistricts(stateID) {
 		var optionsHtml = getDistrictOptionsState(stateID);
 		$("#district").html(optionsHtml);
 		

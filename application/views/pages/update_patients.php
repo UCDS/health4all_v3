@@ -4,11 +4,11 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/viewer.min.js"></script>
+<!-- < <script type="text/javascript" src="<?php echo base_url();?>assets/js/viewer.min.js"></script> -->
 <!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/Chart.min.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
-<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/viewer.min.css">
+<!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/viewer.min.css"> -->
 <!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
@@ -64,7 +64,7 @@
     	background: #6DF48F;
     	font-weight: bold;
     }
-      .pictures {
+   /*   .pictures {
       list-style: none;
       margin: 0;
       padding: 0;
@@ -86,7 +86,7 @@
     .viewer-title {
     	font-weight: bold;
     	color: #fff;
-    }
+    } */
 </style>
 <style>
 	.row{
@@ -269,11 +269,11 @@ function openSmsModal(){
 	$('#smsModal-templatewithname-dropdown').show();	
 	$("#smsModal").modal({ keyboard: false, backdrop: 'static' });
 }
- window.addEventListener('DOMContentLoaded', function () {
-      var galley = document.getElementById('galley');
+ /*window.addEventListener('DOMContentLoaded', function () {
+      var gallery = document.getElementById('gallery');
       var viewer;
   	document.getElementById('btnPreviewImages').addEventListener('click', function () {
-          viewer = new Viewer(galley, {
+          viewer = new Viewer(gallery, {
             hidden: function () {
             viewer.destroy();
           },
@@ -281,6 +281,8 @@ function openSmsModal(){
           viewer.show();
         });     
     });
+    
+  */  
     
 </script>
 <script type="text/javascript">
@@ -2366,7 +2368,9 @@ function initDistrictSelectize(){
 			<?php if($patient_document_add_access==1) echo '
 		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_' . $patient->patient_id .'">Add</button>
 		'; ?>
-		<button type="button" class="btn btn-info" id="btnPreviewImages">Preview Documents (Only images)</button>
+		 <!-- 
+		 <button type="button" class="btn btn-info" id="btnPreviewImages">Preview Documents (Only images)</button> 
+		 -->
 	        </h4>			
 			<table class="table table-striped table-bordered" id="detailed_table" >
 				<thead>
@@ -2893,8 +2897,9 @@ function initDistrictSelectize(){
 	</div>
 </div>
 
-
+     
     <!-- Modal -->
+          <!--
     <div class="modal fade" id="modalPreviewImages" role="dialog" aria-labelledby="modalLabel" tabindex="-1">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -2905,7 +2910,7 @@ function initDistrictSelectize(){
             </button>
           </div>
           <div class="modal-body">
-            <div id="galley">
+            <div id="gallery">
               <ul class="pictures">
               		<?php 
               		$imagePresent = 0;
@@ -2932,10 +2937,11 @@ function initDistrictSelectize(){
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
+         
         </div>
       </div>
     </div>
-      
+       -->
 		<?php } ?>
 
 <script>

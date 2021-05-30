@@ -56,6 +56,8 @@ class Helpline extends CI_Controller {
 			}
 			$this->data['calls']=$this->helpline_model->get_detailed_report($this->data['rowsperpage']);
 			$this->data['calls_count']=$this->helpline_model->get_detailed_report_count();
+			$this->data['all_states']=$this->masters_model->get_data("states");
+			$this->data['districts']=$this->staff_model->get_district();
 			$this->data['caller_type']=$this->helpline_model->get_caller_type();
 			$this->data['language']=$this->helpline_model->get_language();
 			$this->data['department']=$this->hospital_model->get_department();

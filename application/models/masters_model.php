@@ -519,7 +519,7 @@ staff.ima_registration_number,			staff_category.staff_category_id,staff_category
 			$this->db->select("district_id,district")->from("district");
 		}
 		else if($type=="states"){
-			$this->db->select("state_id,state")->from("state");
+			$this->db->select("state_id,state")->from("state")->order_by('state');
 		}
 		else if($type=="state_codes"){
 			if( $this->input->post('country') != null && strlen($this->input->post('country')) > 0)

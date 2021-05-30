@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
@@ -108,6 +109,7 @@ var user_details = <?php echo $user_details; ?>;
 var departments = <?php echo json_encode($department); ?>;
 var hospitals = <?php echo json_encode($all_hospitals); ?>;
 var userHospitals = <?php echo json_encode($user_hospitals); ?>;
+var callCategory = <?php echo json_encode($call_category); ?>;
 var updatableHelplines = <?php echo json_encode($updatable_helpline); ?>;
 var receiver = user_details.receiver;
 var callData = <?php echo json_encode($calls); ?>;
@@ -199,7 +201,7 @@ $(function(){
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
 
-			<select name="helpline_id" id="helplineSelect" style="width:150px" class="form-control">
+			<select name="helpline_id" id="helplineSelect" style="width:170px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
@@ -207,7 +209,7 @@ $(function(){
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
 			</select>
-			<select name="call_direction" style="width:120px" class="form-control">
+			<select name="call_direction" style="width:130px" class="form-control">
 					<option value="">Call Direction</option>
 					<option <?php if($this->input->post('call_direction') == "incoming") echo " selected "; ?> value="incoming">Incoming calls</option>
 					<option <?php if($this->input->post('call_direction') == "outbound-dial") echo " selected "; ?> value="outbound-dial">Outgoing calls</option>
@@ -239,6 +241,17 @@ $(function(){
 					><?php echo $lng->language;?></option>
 				<?php } ?>
 			</select>
+			<select name="state" id="state" style="width:120px" class="form-control" onchange='onchange_state_dropdown(this)'>
+				<option value="">State</option>
+				<?php foreach($all_states as $state){ ?>
+					<option value="<?php echo $state->state_id;?>"
+					<?php if($this->input->post('state') && $this->input->post('state') == $state->state_id) echo " selected "; ?>
+					><?php echo $state->state;?></option>
+				<?php } ?>
+			</select>
+			<select name="district" id="district" style="width:120px" class="form-control">
+				<option value="">District</option>
+			</select>
 			<select id="hospitalSelect" name="helpline_hospital" style="width:100px" class="form-control">
 				<option value="">Hospital</option>
 			</select>
@@ -263,6 +276,7 @@ $(function(){
 			</select>
 			<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
 			 Rows per page : <input type="number" class="rows_per_page" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			 <br />
 			<input type="submit" value="Go" name="submitBtn" class="btn btn-primary btn-sm" />
 			<button type="button" class="btn btn-primary btn-sm call_button" onclick="openCallModal()" style="display: none;"><i class="fa fa-phone" style="padding-right: 5px;"></i> Call</button>
 			<?php if ($add_sms_access==1){ ?>
@@ -430,6 +444,7 @@ echo "</select></li>";
 				<th>Team Member @ Helpline</th>
 				<th>Caller Type</th>
 				<th>Language</th>
+				<th>District, State</th>
 				<th>Hospital</th>
 				<th>Department</th>
 				<th>Call Category</th>
@@ -496,6 +511,13 @@ echo "</select></li>";
 						</td>
 						<td >
 							<?php echo $call->language;?>
+						</td>
+						<td >
+						
+							<?php if($call->district && $call->state) {
+							echo $call->district.", ".$call->state;
+							}
+							 ?>
 						</td>
 						<td >
 							<?php echo $call->hospital_short_name;?>
@@ -908,6 +930,31 @@ echo "</select></li>";
 
 <script type="text/javascript">
 
+
+function onchange_state_dropdown(dropdownobj) {       	
+	const stateID = dropdownobj.value;
+	populateDistricts(stateID);		
+}
+	
+function populateDistricts(stateID) {
+	var optionsHtml = getDistrictOptionsState(stateID);
+	$("#district").html(optionsHtml);		
+}
+	
+function getDistrictOptionsState(stateID) {
+	var all_districts = JSON.parse('<?php echo json_encode($districts); ?>'); 
+	var selected_districts = all_districts.filter(all_districts => all_districts.state_id == stateID);
+	let optionsHtml = buildEmptyOption("District");
+	if(selected_districts.length > 0) {
+		optionsHtml += selected_districts.map(selected_districts => {
+				return `	<option value="${selected_districts.district_id}">
+						${selected_districts.district}
+					</option>`;
+	   });
+			
+        }
+	return optionsHtml;
+}
 function display_emails(callId){
 	$("#emailModalBody").html($(".emails_sent_"+callId).html());
 }
@@ -1277,6 +1324,20 @@ function buildHospitalOptions(hospitals = []) {
 		return null;
 	}
 }
+
+function buildCallCategoryOptions(callCategory = []) {
+	if(callCategory && callCategory.length > 0) {
+		let optionsHtml = buildEmptyOption("Select"); 
+		optionsHtml += callCategory.map(callCategory => {
+			return `	<option value="${callCategory.call_category_id}">
+							${callCategory.call_category}
+						</option>`;
+		});
+		return optionsHtml;
+	} else {
+		return null;
+	}
+}
 function buildEmptyOption(optionName = "Select") {
 	return `<option value="" selected>
 					${optionName}
@@ -1287,9 +1348,10 @@ function openEditModal(e) {
 	const callId = $(e).attr('data-id');
 	var callArray = callData.filter((call) => call.call_id == callId);
 	var hospitalSelect = hospitals.filter((hospital) =>  hospital.helpline_id == callArray[0].helpline_id);
+	var callCategorySelect = callCategory.filter((callCategory) =>  callCategory.helpline_id == callArray[0].helpline_id);
 	if(callArray.length > 0) {
 		$('#updateCallModal').modal({backdrop: 'static', keyboard: false});  
-		setupUpdateCallModalData(callArray[0],hospitalSelect);
+		setupUpdateCallModalData(callArray[0],hospitalSelect,callCategorySelect);
 	}
 }
 function openSendEmailModal(e) {
@@ -1375,4 +1437,10 @@ $(document).ready(function() {
 		$("#departmentSelect").val(department);
 	}
 })
+
+	onchange_state_dropdown(document.getElementById("state"));
+	var district = "<?php echo $this->input->post('district')?>";
+	if(district != ""){
+			$("#district").val(district);
+	}
 </script>
