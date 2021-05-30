@@ -685,6 +685,19 @@ class Helpline extends CI_Controller {
 			}
 			else {
 			}
+			
+			if ($this->input->post('view_receiver_id')) {
+				// get sessions for a receiver
+			   $receivers= $this->helpline_model->get_helpline_sessions_for_receiver();
+			$this->data['full_name']=$this->input->post('name_receiver_id');
+			$this->data['report_sessions']=$receivers;
+			$data=array(
+				'report_sessions'=>$receivers
+			);
+				//$data['report_sesssions']=$this->data['report_sessions'];
+				 //echo json_encode($data);
+			}
+
 			if ($this->form_validation->run() === FALSE) 
 			{
 				$this->load->view('pages/helpline/update_session_plan',$this->data);

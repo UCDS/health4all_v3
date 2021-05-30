@@ -290,6 +290,7 @@ echo "</select></li>";
 		<th>Helpline Receiver Delete</th>
 	<?php } ?>
 	<?php } ?>
+		<th>View Other Sessions </th>
 	</thead>
 	<tbody>
 	<?php 
@@ -299,7 +300,7 @@ echo "</select></li>";
 	?>
 	<tr>
 		<td><?php echo $sno;?></td>
-		<td><?php echo $s->full_name.'-'.$s->email;?></td>
+		<td><?php echo $s->full_name.', '.$s->email.', '.$s->phone;?></td>
 		<td><?php echo $s->languages;?></td>
 		<td><?php echo $s->session_name; ?></td>
 	<?php foreach($functions as $f) {
@@ -312,6 +313,11 @@ echo "</select></li>";
 		</form>
 	<?php } ?>
 	<?php } ?>
+		<td><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button></td> 
+		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'view_helpline_sessions_'.$s->receiver_id));?>
+		<input type="text" class="sr-only" hidden value="<?php echo $s->receiver_id;?>" name="view_receiver_id"/>
+		<input type="text" class="sr-only" hidden value="<?php echo $s->full_name;?>" name="name_receiver_id"/>
+		</form>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
@@ -434,6 +440,43 @@ echo "</select></li>";
 		<input class="btn btn-sm btn-primary" type="submit" value="Back"/>
 		</form>
 </div>
+
+<div class="modal fade" id="viewModal" role="dialog">
+	<div class="modal-dialog">
+	 <!-- Modal content-->
+	 <div class="modal-content">
+		<div class="modal-header bg-primary text-white" id="view_modal_header">
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		      <h4 class="modal-title" id="view_modal_title_id"><?php echo $full_name."'s View Sessions" ?></h4>
+		</div>
+		<div class="modal-body" id="view">
+		    <table class="table table-bordered table-striped" id="table-sort">
+			<thead>
+				<th>SNo</th>
+				<th>Helpline Receiver Session Name</th>
+			</thead>
+			<tbody>
+			<?php 
+			$sno=1 ; 
+
+			foreach($report_sessions as $s){
+			?>
+			<tr>
+				<td><?php echo $sno;?></td>
+				<td><?php echo $s->session_name; ?></td>
+				</tr>
+			<?php $sno++;}	?>
+			</tbody>
+		    </table>
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+		</div>
+	 </div>
+	 <!-- Modal content-->
+	</div>
+</div>
+<!-- Modal -->
+
 <script type="text/javascript">
 /*
 document.getElementById("deletebtn").addEventListener("click", function(e) {
@@ -493,6 +536,55 @@ function delete_helpline_receiver(e) {
         		}
     		}
 	});
+
+}
+
+function view_helpline_sessions(e) {
+	// e.preventDefault();
+	var event_prop = e;
+	console.log(event_prop);
+	console.log($(event_prop.target).data('id'));
+	var id=$(event_prop.target).data('id');
+	var form =  document.getElementById("view_helpline_sessions_"+id);
+
+	// Create an FormData object 
+	var data = new FormData(form);
+	// var secondfield_value = event_prop.currentTarget[1].value;
+	// console.log(secondfield_value);
+	console.log("before submit");
+	// disabled the submit button
+	// $(event_prop.target).prop("disabled", true);
+	$.ajax({
+type: "POST",
+enctype: 'multipart/form-data',
+url: $(form).attr('action'),
+data: data,
+processData: false,
+contentType: false,
+// contentType: "application/json; charset=utf-8",
+//     dataType: "json",
+cache: false,
+success: function (data) {
+// show success notification here...
+
+// Since the data is the full response, parse it and fill the actual page with the 
+// html division
+const parser = new DOMParser();
+let parsed = parser.parseFromString(data, "text/html");
+
+// console.log(parsed.querySelector("#view").innerHTML);
+// console.log(parsed.querySelector("#view_modal_title_id").innerHTML);
+document.getElementById("view").innerHTML=parsed.querySelector("#view").innerHTML;
+document.getElementById("view_modal_header").innerHTML=parsed.querySelector("#view_modal_header").innerHTML;
+//$("#view_modal_title_id").val(parsed.querySelector("#view_modal_title_id").innerHTML);
+},
+error: function (error) {
+bootbox.alert('Deletion Failed');
+// show error notification here...
+$(event_prop.target).prop("disabled", false);
+}
+});
+
 
 }
 function goSubmit() {
