@@ -660,6 +660,7 @@ class Helpline extends CI_Controller {
 			$user=$this->session->userdata('logged_in');
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="HelpLine Receivers -Sessions";
+			$this->data['weekdays']=$this->helpline_model->get_weekdays();
 			$helpline_session_id = $this->input->post('helpline_session_id');
 			$helpline_session_plan_id = $this->input->post('helpline_session_plan_id');
 			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id);

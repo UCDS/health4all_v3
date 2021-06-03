@@ -258,13 +258,8 @@ $(function(){
 			<select id="departmentSelect" name="helpline_department" style="width:100px" class="form-control">
 				<option value="">Department</option>
 			</select>
-			<select name="call_category" style="width:150px" class="form-control">
-				<option value="">Category</option>
-				<?php foreach($call_category as $cc){ ?>
-					<option value="<?php echo $cc->call_category_id;?>"
-					<?php if($this->input->post('call_category') == $cc->call_category_id) echo " selected "; ?>									
-					><?php echo $cc->call_category;?></option>
-				<?php } ?>
+			<select name="call_category" id= "call_category"style="width:150px" class="form-control">
+				<option value="">Call Category</option>
 			</select>
 			<select name="resolution_status" style="width:150px" class="form-control">
 				<option value="">Status</option>
@@ -1244,13 +1239,15 @@ function setupHospitalDropdown() {
 	
 	$("#helplineSelect").on("change", function() {	
 		const helplineId = $(this).val();
-		onHelplineDropdownChanged(helplineId);
+		onHelplineDropdownChanged(helplineId);		
 	})
 }
 function onHelplineDropdownChanged(helplineId) {
 	console.log("select changed");
 	const optionsHtml = getHospitalsForHelpline(helplineId);
-	$("#hospitalSelect").html(optionsHtml);	
+	$("#hospitalSelect").html(optionsHtml);
+	const optionsHtmlCallCateogry = getCallCategoryForHelpline(helplineId);
+	$("#call_category").html(optionsHtmlCallCateogry);	
 	onHospitalDropdownChanged();
 }
 
@@ -1281,6 +1278,20 @@ function getDepartmentOptionsForHelpline(helplineId) {
 		const hospitalId = helplineHospital[0].hospital_id;
 		const deptOptions = getDepartmentOptionsForHospital(hospitalId);
 		deptOptions? optionsHtml = deptOptions: "";		
+	}
+	return optionsHtml;
+}
+
+function getCallCategoryForHelpline(helplineId) {
+	var callCategorySelect = callCategory.filter((callCategory) =>  callCategory.helpline_id == helplineId);
+	let optionsHtml = buildEmptyOption("Call Category"); 
+	if(callCategorySelect.length > 0) {		
+		optionsHtml += callCategorySelect.map(callCategorySelect => {
+			return `	<option value="${callCategorySelect.call_category_id}">
+							${callCategorySelect.call_category}
+						</option>`;
+		});
+		return optionsHtml;
 	}
 	return optionsHtml;
 }
@@ -1327,7 +1338,7 @@ function buildHospitalOptions(hospitals = []) {
 
 function buildCallCategoryOptions(callCategory = []) {
 	if(callCategory && callCategory.length > 0) {
-		let optionsHtml = buildEmptyOption("Select"); 
+		let optionsHtml = buildEmptyOption("Call Category"); 
 		optionsHtml += callCategory.map(callCategory => {
 			return `	<option value="${callCategory.call_category_id}">
 							${callCategory.call_category}
@@ -1435,6 +1446,11 @@ $(document).ready(function() {
 	var department = "<?php echo $this->input->post('helpline_department')?>";
 	if(department != ""){
 		$("#departmentSelect").val(department);
+	}
+	
+	var call_category = "<?php echo $this->input->post('call_category')?>";
+	if(call_category != ""){
+		$("#call_category").val(call_category);
 	}
 })
 
