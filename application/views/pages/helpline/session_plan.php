@@ -423,7 +423,7 @@ echo "</select></li>";
 		<td><?php echo $weekdays[$s->weekday]; ?></td>
 		<td><?php echo $s->helpline_session_role;?></td>
 		<td><?php echo $s->session_name;?></td>
-		<td><button type="button" class="btn btn-success" autofocus onclick="$('#select_helpline_<?php echo $s->helpline_session_id;?>').submit()"><?php echo $s->count_receiver_id ?></button></td>
+		<td style="text-align:center"><button type="button" class="btn btn-success" autofocus onclick="$('#select_helpline_<?php echo $s->helpline_session_id;?>').submit()"><?php echo $s->count_receiver_id ?></button></td>
 		
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'select_helpline_'.$s->helpline_session_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->count_receiver_id;?>" form="select_helpline_<?php echo $s->helpline_session_id;?>" name="selected_helpline" />

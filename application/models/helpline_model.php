@@ -1374,14 +1374,16 @@ class Helpline_model extends CI_Model{
 
 	function get_helpline_receiver_report($helpline_session_id) {
 		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
-			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id,  hs.session_name as session_name");
+			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id,  hs.session_name as session_name,hsp.helpline_session_role_id,hsr.helpline_session_role");
 			$this->db->select("(SELECT GROUP_CONCAT(language.language) as languages FROM helpline_receiver JOIN helpline_receiver_language on helpline_receiver_language.receiver_id = helpline_receiver.receiver_id JOIN language on language.language_id = helpline_receiver_language.language_id WHERE helpline_receiver.receiver_id = hsp.receiver_id ORDER BY helpline_receiver_language.proficiency) as languages ");
 			$this->db->from('helpline_session_plan as hsp');
+			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
 			$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
 			$this->db->join('helpline_receiver', 'hsp.receiver_id = helpline_receiver.receiver_id');
 			$this->db->where('hs.session_status = 1');
 			$this->db->where('hsp.soft_deleted = 0');
 			$this->db->where('hs.helpline_session_id', $helpline_session_id);
+			$this->db->order_by('hsr.helpline_session_role','asc');
 			$query = $this->db->get();
 
 		return $query->result();
@@ -1420,12 +1422,15 @@ class Helpline_model extends CI_Model{
 	}
 	function get_helpline_sessions_for_receiver() {
 		$receiver_id = $this->input->post('view_receiver_id');
-		$this->db->select("session_name");
-		$this->db->where("helpline_session_plan.receiver_id", $receiver_id);
-		$this->db->from('helpline_session_plan');
-		$this->db->join('helpline_session', 'helpline_session.helpline_session_id = helpline_session_plan.helpline_session_id');
-	 	$this->db->where('session_status = 1');
-		$this->db->where('soft_deleted = 0');
+		$this->db->select("hs.session_name,hsr.helpline_session_role,hs.weekday");
+		$this->db->where("hsp.receiver_id", $receiver_id);
+		$this->db->from('helpline_session_plan as hsp');
+		$this->db->join('helpline_session as hs', 'hs.helpline_session_id = hsp.helpline_session_id');
+		$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
+	 	$this->db->where('hs.session_status = 1');
+		$this->db->where('hsp.soft_deleted = 0');
+		$this->db->order_by('hs.weekday','asc');
+		$this->db->order_by('hsr.helpline_session_role','asc');
 		$query = $this->db->get();
 //			echo("<script>console.log('PHP: report_sessions" . json_encode($query->result()) . "');</script>");
 		return $query->result();

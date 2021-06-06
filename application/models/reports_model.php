@@ -1207,9 +1207,8 @@ function get_op_detail_with_idproof(){
 		$user_staff_id = $this->session->userdata('logged_in')['staff_id'];
 		
 		$where = "pv.hospital_id = $current_hospital
-			  AND visit_type = 'OP'";
-			  //AND (admit_date BETWEEN '$from_date' AND '$to_date')
-			  //AND (pv.appointment_with = $user_staff_id OR pv.signed_consultation = $user_staff_id)";
+			  AND visit_type = 'OP'
+			  AND (pv.appointment_with = $user_staff_id OR pv.signed_consultation = $user_staff_id)";
 		$this->db->where($where);
 		
 		//$this->db->order_by('admit_date','ASC');

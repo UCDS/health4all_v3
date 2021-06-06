@@ -284,6 +284,7 @@ echo "</select></li>";
 		<th>SNo</th>
 		<th>Helpline Receiver Name</th>
 		<th>Helpline Receiver Languages</th>
+		<th>Role</th>
 		<th>Helpline Receiver Session Name</th>
 	<?php foreach($functions as $f) {
 		if($f->user_function =="helpline_session_plan" && ($f->remove==1)) { ?>
@@ -302,18 +303,19 @@ echo "</select></li>";
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->full_name.', '.$s->email.', '.$s->phone;?></td>
 		<td><?php echo $s->languages;?></td>
+		<td><?php echo $s->helpline_session_role;?></td>
 		<td><?php echo $s->session_name; ?></td>
 	<?php foreach($functions as $f) {
 		if($f->user_function =="helpline_session_plan" && ($f->remove==1)) { ?>
 		<!--<td><button type="button" class="btn btn-info" autofocus onclick="$('#delete_helpline_<?php echo $s->helpline_session_plan_id;?>').submit()">Delete</button></td> --!>
-		<td><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->helpline_session_plan_id; ?>" onclick="delete_helpline_receiver(event)" >Delete</button></td> 
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->helpline_session_plan_id; ?>" onclick="delete_helpline_receiver(event)" >Delete</button></td> 
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'delete_helpline_'.$s->helpline_session_plan_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_id;?>" name="helpline_session_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_plan_id;?>" name="helpline_update_session_plan_id" />
 		</form>
 	<?php } ?>
 	<?php } ?>
-		<td><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button></td> 
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button></td> 
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'view_helpline_sessions_'.$s->receiver_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->receiver_id;?>" name="view_receiver_id"/>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->full_name;?>" name="name_receiver_id"/>
@@ -453,7 +455,10 @@ echo "</select></li>";
 		    <table class="table table-bordered table-striped" id="table-sort">
 			<thead>
 				<th>SNo</th>
+				<th>Weekday</th>
+				<th>Role</th>				
 				<th>Helpline Receiver Session Name</th>
+				
 			</thead>
 			<tbody>
 			<?php 
@@ -463,6 +468,8 @@ echo "</select></li>";
 			?>
 			<tr>
 				<td><?php echo $sno;?></td>
+				<td><?php echo $weekdays[$s->weekday]; ?></td>
+				<td><?php echo $s->helpline_session_role; ?></td>				
 				<td><?php echo $s->session_name; ?></td>
 				</tr>
 			<?php $sno++;}	?>
@@ -571,7 +578,6 @@ success: function (data) {
 // html division
 const parser = new DOMParser();
 let parsed = parser.parseFromString(data, "text/html");
-
 // console.log(parsed.querySelector("#view").innerHTML);
 // console.log(parsed.querySelector("#view_modal_title_id").innerHTML);
 document.getElementById("view").innerHTML=parsed.querySelector("#view").innerHTML;
@@ -579,7 +585,7 @@ document.getElementById("view_modal_header").innerHTML=parsed.querySelector("#vi
 //$("#view_modal_title_id").val(parsed.querySelector("#view_modal_title_id").innerHTML);
 },
 error: function (error) {
-bootbox.alert('Deletion Failed');
+bootbox.alert('Query Failed');
 // show error notification here...
 $(event_prop.target).prop("disabled", false);
 }
