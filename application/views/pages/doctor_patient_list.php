@@ -156,6 +156,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>From</th>
 		<th>Phone</th>
 		<th>Department</th>
+		<th>Visit Type</th>
     		<th>Request CreatedBy</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
@@ -184,6 +185,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?></td>
 		<td><?php echo $s->phone;?></td>
 		<td><?php echo $s->department;?></td>
+		<td><?php echo $s->visit_name;?></td>
     		<td><?php echo $s->volunteer;?></td>
 		<td><?php echo $s->doctor;?></td>
 		<td><?php echo $s->appointment_with;?></td>

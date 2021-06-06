@@ -599,7 +599,7 @@ function get_op_detail_with_idproof(){
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
 		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
 		appointment_update_time,  
-		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state",false);
+		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,vn.visit_name",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department','pv.department_id=department.department_id','left')
@@ -614,7 +614,8 @@ function get_op_detail_with_idproof(){
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')	
 		 ->join('staff as appointment_status_update_by_staff','pv.appointment_status_update_by=appointment_status_update_by_staff.staff_id','left')
-		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')		
+		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');
 		$this->db->limit($rows_per_page,$start);			
@@ -708,7 +709,8 @@ function get_op_detail_with_idproof(){
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
 		 ->join('staff as appointment_status_update_by_staff','pv.appointment_status_update_by=appointment_status_update_by_staff.staff_id','left')
-		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')			
+		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');			
 		$resource=$this->db->get();
@@ -1162,21 +1164,21 @@ function get_op_detail_with_idproof(){
 		}
 		
 		if($this->input->post('visit_name')){
-			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
+			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
 		}
 		if($this->input->post('department')){
-			$this->db->where('patient_visit.department_id',$this->input->post('department'));
+			$this->db->where('pv.department_id',$this->input->post('department'));
 		}
 		if($this->input->post('unit')){
 			$this->db->select('IF(unit!="",unit,0) unit',false);
-			$this->db->where('patient_visit.unit',$this->input->post('unit'));
+			$this->db->where('pv.unit',$this->input->post('unit'));
 		}
 		else{
 			$this->db->select('"0" as unit',false);
 		}
 		if($this->input->post('area')){
 			$this->db->select('IF(area!="",area,0) area',false);
-			$this->db->where('patient_visit.area',$this->input->post('area'));
+			$this->db->where('pv.area',$this->input->post('area'));
 		}
 		else{
 			$this->db->select('"0" as area',false);
@@ -1189,7 +1191,7 @@ function get_op_detail_with_idproof(){
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
 		appointment_time, summary_sent_time, appointment_update_time,   
 		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
-		pv.signed_consultation as signed",false);
+		pv.signed_consultation as signed,vn.visit_name",false);
 		
 		$this->db->from('patient_visit as pv');
 		$this->db->join('patient as p','pv.patient_id=p.patient_id');
@@ -1202,7 +1204,7 @@ function get_op_detail_with_idproof(){
 		$this->db->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left');	 
 		$this->db->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left');
 		$this->db->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
-		
+		$this->db->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left');	
 		$current_hospital = $hospital['hospital_id'];
 		$user_staff_id = $this->session->userdata('logged_in')['staff_id'];
 		
