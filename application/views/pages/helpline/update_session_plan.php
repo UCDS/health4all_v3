@@ -286,6 +286,7 @@ echo "</select></li>";
 		<th>Helpline Receiver Languages</th>
 		<th>Role</th>
 		<th>Helpline Receiver Session Name</th>
+		<th>Notes</th>
 	<?php foreach($functions as $f) {
 		if($f->user_function =="helpline_session_plan" && ($f->remove==1)) { ?>
 		<th>Helpline Receiver Delete</th>
@@ -305,21 +306,24 @@ echo "</select></li>";
 		<td><?php echo $s->languages;?></td>
 		<td><?php echo $s->helpline_session_role;?></td>
 		<td><?php echo $s->session_name; ?></td>
+		<td><?php echo $s->helpline_session_note; ?></td>
 	<?php foreach($functions as $f) {
 		if($f->user_function =="helpline_session_plan" && ($f->remove==1)) { ?>
 		<!--<td><button type="button" class="btn btn-info" autofocus onclick="$('#delete_helpline_<?php echo $s->helpline_session_plan_id;?>').submit()">Delete</button></td> --!>
-		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->helpline_session_plan_id; ?>" onclick="delete_helpline_receiver(event)" >Delete</button></td> 
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->helpline_session_plan_id; ?>" onclick="delete_helpline_receiver(event)" >Delete</button>
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'delete_helpline_'.$s->helpline_session_plan_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_id;?>" name="helpline_session_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_plan_id;?>" name="helpline_update_session_plan_id" />
 		</form>
+		</td> 
 	<?php } ?>
 	<?php } ?>
-		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button></td> 
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button> 
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'view_helpline_sessions_'.$s->receiver_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->receiver_id;?>" name="view_receiver_id"/>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->full_name;?>" name="name_receiver_id"/>
 		</form>
+		</td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
@@ -452,12 +456,14 @@ echo "</select></li>";
 		      <h4 class="modal-title" id="view_modal_title_id"><?php echo $full_name."'s View Sessions" ?></h4>
 		</div>
 		<div class="modal-body" id="view">
+		<div style="height: 200px; overflow: auto;">
 		    <table class="table table-bordered table-striped" id="table-sort">
-			<thead>
+			<thead style="position: sticky; top: 0; background: #ffff;">
 				<th>SNo</th>
 				<th>Weekday</th>
 				<th>Role</th>				
 				<th>Helpline Receiver Session Name</th>
+				<th>Notes</th>
 				
 			</thead>
 			<tbody>
@@ -471,10 +477,13 @@ echo "</select></li>";
 				<td><?php echo $weekdays[$s->weekday]; ?></td>
 				<td><?php echo $s->helpline_session_role; ?></td>				
 				<td><?php echo $s->session_name; ?></td>
+				<td><?php echo $s->helpline_session_note; ?></td>
 				</tr>
 			<?php $sno++;}	?>
 			</tbody>
 		    </table>
+		</div>
+		<br/>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
 		</div>

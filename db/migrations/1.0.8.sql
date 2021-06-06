@@ -167,5 +167,7 @@ CREATE TABLE `helpline_receiver_language` (
        `language_id` int(11) NOT NULL,
   `receiver_id` int(11) NOT NULL,
   `proficiency` tinyint(4) NOT NULL,  
-   PRIMARY KEY (`helpline_receiver_language_id`)) ENGINE = InnoDB
+   PRIMARY KEY (`helpline_receiver_language_id`)) ENGINE = InnoDB;
+   
+ALTER TABLE `helpline_session_plan` ADD `helpline_session_note` VARCHAR(200) NULL AFTER `helpline_session_role_id`;
 

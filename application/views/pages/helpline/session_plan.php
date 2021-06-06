@@ -245,13 +245,6 @@ input[type=number] {
 			</select>
 			<select name="session_name" id="session_name" class="form-control" >
 				<option value="">Helpline Session Name</option>
-				<?php 
-				foreach($helpline_sessions as $session){
-				echo "<option value='".$session->helpline_session_id."'";
-				if($this->input->post('session_name') && $this->input->post('session_name') == $session->helpline_session_id)  echo " selected ";
-				echo ">".$session->session_name."</option>";
-				}
-				?>
 			</select>
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
@@ -602,6 +595,10 @@ echo "</select></li>";
 				<option value="">Helpline Session Name</option>
 			</select>
 			</div>	
+			<div>
+			 Helpline Session Note: <input type="text" style="width:300px;" class="form-custom form-control" name="session_note" value="" placeholder="Helpline Session Note"/>
+			</div>
+			<br/>
 			<input type="text" hidden class="sr-only" name="submit_modal" value="submitModal1"/>
 			<button type="button" class="btn btn-info" required name="submit_modal" onclick="addModalSubmit()">Submit</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal" onclick="addModalClose()">Close</button>
@@ -646,6 +643,39 @@ function gethelplineSession(){
 	}	
 	return optionsHtml;
 }
+
+function gethelplineSessionfromHelplineid(){
+	 // console.log(helpline_sessions);
+	var helpline = document.getElementById("helpline").value;
+	console.log(helpline);
+	let optionsHtml = buildEmptyOption("Helpline Session");
+	var helplineSessions = {};
+	if (helpline != "") {
+		helplineSessions = helpline_sessions.filter(session => session.helpline_id == helpline);
+			
+	}
+	var weekday_id = document.getElementById("weekday").value;
+	
+	if (weekday_id != "") {
+		if (helplineSessions.length > 0) {
+		helplineSessions = helplineSessions.filter(session => session.weekday == weekday_id);
+		}
+		else{
+		helplineSessions = helpline_sessions.filter(session => session.weekday == weekday_id);
+		}
+			
+	}
+	if (helplineSessions.length > 0) {
+			optionsHtml += helplineSessions.map(session => {
+				return `	<option value="${session.helpline_session_id}">
+							${session.session_name}
+						</option>`;
+			});
+	
+		
+		}
+	return optionsHtml;
+}
 function setupSessionNameDropDown(){
 	console.log("select changed ");
 	//console.log(weekday_id);
@@ -653,8 +683,21 @@ function setupSessionNameDropDown(){
 	$("#session_name_modal").html(optionsHtml);
 }
 
+function setupSessionNameMainFilterDropDown(){
+	console.log("select changed ");
+	//console.log(weekday_id);
+	const optionsHtml = gethelplineSessionfromHelplineid();
+	$("#session_name").html(optionsHtml);
+}
+
 $("#helpline_modal").on("change", function() {
 setupSessionNameDropDown();});
+
+$("#helpline").on("change", function() {
+setupSessionNameMainFilterDropDown();});
+
+$("#weekday").on("change", function() {
+setupSessionNameMainFilterDropDown();});
 
 function setupDefaultWeekDayDropDown(){
 	let optionsHtml = buildEmptyOption("Weekdays");
@@ -751,5 +794,10 @@ $("#addModalForm").trigger("reset");
 $(document).ready(function() {
 	console.log("document ready");
 	setupWeekdayDropdown();
+	setupSessionNameMainFilterDropDown();
+	var session_name = "<?php echo $this->input->post('session_name')?>";
+	if(session_name != ""){
+		$("#session_name").val(session_name);
+	}
 })
 </script>
