@@ -362,6 +362,7 @@ echo "</select></li>";
 		<th>Address</th>
 		<th>Phone</th>
 		<th>Department</th>
+		<th>Visit Type</th>
     		<th>Registered By/Time</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
@@ -394,6 +395,7 @@ echo "</select></li>";
 		if (!!$s->state) echo ", ".$s->state;   ?></td>
 		<td><?php echo $s->phone;?></td>
 		<td><?php echo $s->department;?></td>
+		<td><?php echo $s->visit_name;?></td>
     		<td><?php echo $s->volunteer;?> , <?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
 		<td><?php echo $s->doctor;?></td>
 		<td><?php echo $s->appointment_with;?></td>
