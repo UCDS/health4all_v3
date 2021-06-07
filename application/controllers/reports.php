@@ -482,7 +482,7 @@ class Reports extends CI_Controller {
 			}
 		}
 		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name);
-		$this->data['report'] = $this->reports_model->get_ip_detail($this->data['rowsperpage'], $department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name);
+		$this->data['report'] = $this->reports_model->get_ip_detail($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name,$this->data['rowsperpage']);
 
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');

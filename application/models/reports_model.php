@@ -1312,7 +1312,7 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 	}
 
-	function get_ip_detail($default_rowsperpage,$department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type = 0, $outcome = 0){
+	function get_ip_detail($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type = 0, $outcome = 0,$default_rowsperpage=0){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		} else {
@@ -1420,7 +1420,9 @@ function get_op_detail_with_idproof(){
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','IP')
 		 ->order_by('hosp_file_no','ASC');
-		$this->db->limit($rows_per_page, $start);
+		if ($rows_per_page>0) {
+			$this->db->limit($rows_per_page, $start);
+		}
 		$resource=$this->db->get();
 		return $resource->result();
 	}
