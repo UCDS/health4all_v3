@@ -25,6 +25,11 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 <script type="text/javascript">
+
+function escapeSpecialChars(str) {
+    return str.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+}
+
 $(function(){	
 	$(".date").Zebra_DatePicker();
 	$(".time").timeEntry();
@@ -99,7 +104,7 @@ function getAge(dateString) {
 }
 
 function initDistrictSelectize(){
-        var districts = JSON.parse('<?php echo json_encode($districts); ?>');
+        var districts = JSON.parse(escapeSpecialChars('<?php echo json_encode($districts); ?>'));
 	var selectize = $('#district_id').selectize({
 	    valueField: 'district_id',
 	    labelField: 'custom_data',
@@ -424,7 +429,7 @@ pri.print();
 						</div>
 						<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 						<script>
-						var patient = JSON.parse('<?php echo json_encode($patient); ?>'); 
+						var patient = JSON.parse(escapeSpecialChars('<?php echo json_encode($patient); ?>')); 
 						$('#district_id').attr("data-previous-value", patient['district_id']);
 						initDistrictSelectize();
 	
