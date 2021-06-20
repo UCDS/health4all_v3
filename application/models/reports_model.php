@@ -1306,8 +1306,7 @@ function get_op_detail_with_idproof(){
 		->join('mlc', 'patient_visit.visit_id=mlc.visit_id', 'left')
 		->join('hospital', 'patient_visit.hospital_id=hospital.hospital_id', 'left')
 		->where('patient_visit.hospital_id', $hospital['hospital_id'])
-		->where('visit_type', 'IP')
-		->order_by('hosp_file_no', 'ASC');
+		->where('visit_type', 'IP');
 		$resource = $this->db->get();
 		return $resource->result();
 	}
