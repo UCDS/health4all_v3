@@ -378,7 +378,7 @@ $(document).ready(function(){
 	<tbody>
 	<?php 
 	$total_count=0;
-	$i=1;
+	$i=(($page_no - 1) * $total_records_per_page)+1 ; 
 	foreach($report as $s){
 		$age="";
 		if($s->age_years!=0) $age.=$s->age_years."Y ";
