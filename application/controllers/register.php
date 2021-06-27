@@ -433,6 +433,7 @@ class Register extends CI_Controller {
 	$files = $_FILES;
 	$i = $this->input->post('imageIndex');
 	if (count($files["uploadImageFile"]["name"])>0) {
+		 set_time_limit(0);
                 $dir_path = './assets/patient_documents/';
                 $config['upload_path'] = $dir_path;
                 $config['allowed_types'] = $allowed_types;
