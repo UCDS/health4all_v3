@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
@@ -286,7 +287,7 @@ function initUserSelectize(){
 		<div class="modal-body">
 				<div class="row">
 					<div class="col-md-4"> 
-						<label for="language_id_1">Language 1 </label>
+						<label for="language_id_1">Language</label>
 						<select id="language_id_1" name="language_id_1" class="form-control" >
 							<option value="">Select Language</option> 
 							<?php 
@@ -298,7 +299,7 @@ function initUserSelectize(){
 						</select>
 					</div>
 					<div class="col-md-4"> 
-						<label for="proficiency_id_1"> proficiency 1 </label>
+						<label for="proficiency_id_1"> Proficiency</label>
 						<select id="proficiency_id_1" name="proficiency_id_1" class="form-control" >
 							<option value="">Select Proficiency</option> 
 							<?php 
@@ -309,9 +310,9 @@ function initUserSelectize(){
 							?>
 						</select>
 					</div>
+				<div class="col-md-4"> 
+					<button type="button" class="btn btn-success" data-dismiss="modal">ADD</button>
 				</div>
-				<div class="row"> 
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 		   </div>
 	     </div>
