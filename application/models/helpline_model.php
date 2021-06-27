@@ -1246,8 +1246,14 @@ class Helpline_model extends CI_Model{
 		if($this->db->trans_status()==FALSE){
 			return false;
 		} else {
-           return true;
-        }  
+
+			if ($this->input->post('mylanguage')){
+				if (!($this->update_languages($receiver_id))) {
+					return false;
+				}
+			}	
+			return true;
+		}  
 	}
 
 	function search_helpline_receiver($query=""){
@@ -1436,5 +1442,82 @@ class Helpline_model extends CI_Model{
 //			echo("<script>console.log('PHP: report_sessions" . json_encode($query->result()) . "');</script>");
 		return $query->result();
 	}
+	
+	function get_helpline_languages(){
+		$this->db->select("*");
+		$this->db->from('language');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
+	function get_proficiency() {
+		$data = 	array('1' => 'Expert' ,
+				'2'  => 'Intermediate' ,
+				'3' => 'Beginner');
+		return $data;
+	}
+
+	function get_helpline_receiver_languages($receiver_id="") {
+		$this->db->select("language.language_id as language_id, language, receiver_id, proficiency");
+		$this->db->from("helpline_receiver_language");
+		$this->db->join("language", "helpline_receiver_language.language_id = language.language_id");
+		$this->db->where("receiver_id", $receiver_id);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function check_language_exists($receiver_id, $language_id) {
+		$search = array(
+           		'receiver_id'=>$receiver_id, 
+           		'language_id'=>$language_id,
+        	);
+	
+		$this->db->select("receiver_id");
+		$this->db->from("helpline_receiver_language");
+		$this->db->where('receiver_id', $receiver_id);
+		$this->db->where('language_id', $language_id);
+		$query=$this->db->get();
+		$num_rows = $query->num_rows();
+	
+		// echo("<script>console.log('to_number: proficiency [i] " .$num_rows. "');</script>");
+		if ($num_rows > 0) {
+			return true;
+		}	
+		return false;
+	}	
+	
+	function update_languages($receiver_id) {
+			// echo("<script>console.log('to_number: Am I here" .$this->input->post('myproficiency'). "');</script>");
+		
+		$mylanguages = $this->input->post('mylanguage');
+		$myproficiency = $this->input->post('myproficiency');
+		
+	
+		$this->db->trans_start();
+		for ($i = 0 ; $i < count($mylanguages); $i++) {
+			// echo("<script>console.log('to_number: index " .$i. "');</script>");
+			// echo("<script>console.log('to_number: languages [i] " .$mylanguages[$i]. "');</script>");
+			// echo("<script>console.log('to_number: proficiency [i] " .$myproficiency[$i]. "');</script>");
+			
+			if ($this->check_language_exists($receiver_id, $mylanguages[$i])) {
+				echo("<script>console.log('Language already exists " .$mylanguages[$i]. "');</script>");
+				continue;
+			}
+			$data=array(
+				'receiver_id'=>$receiver_id,
+				'language_id'=>$mylanguages[$i],
+				'proficiency'=>$myproficiency[$i]);
+			$this->db->insert('helpline_receiver_language',$data);
+		}
+		$this->db->trans_complete();
+		if($this->db->trans_status()!==TRUE){
+			$this->db->trans_rollback();
+			// echo("<script>console.log('Language insertion failed " .$mylanguages. "');</script>");
+			return false;
+		}
+
+		return true;	
+	}
+
 }
 ?>
