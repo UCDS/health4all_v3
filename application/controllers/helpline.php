@@ -381,10 +381,10 @@ class Helpline extends CI_Controller {
 
 	function helpline_receivers_form($receiver_id=''){
 		if($this->session->userdata('logged_in')){  						
-            $this->data['userdata']=$this->session->userdata('logged_in');  
+			$this->data['userdata']=$this->session->userdata('logged_in');  
 		} else{
-            show_404(); 													
-        } 
+            		show_404(); 													
+            	} 
 
 		/*$access = -1;
 		foreach($this->data['functions'] as $function){
@@ -416,7 +416,10 @@ class Helpline extends CI_Controller {
 
 		$this->data['users']=$this->masters_model->get_users();
 		$this->data['helplines']=$this->helpline_model->get_helplines();
-		
+		$this->data['proficiency']=$this->helpline_model->get_proficiency();
+		$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
+		$this->data['languages']=$this->helpline_model->get_helpline_languages($receiver_id);
+		$this->data['count_languages']= count($this->data['receiver_languages']);	
 		$existing_receivers = false;
 		if($this->input->post('phone')){
 			$this->data['receivers_exists_msg'] = "The receiver with this phone already exists";
@@ -431,6 +434,7 @@ class Helpline extends CI_Controller {
 
 			} else {
 				if($this->helpline_model->save_helpline_receiver($receiver_id)){
+				$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
 					$this->data['msg']="Helpline Receiver Saved Succesfully";					
 				}
 			}

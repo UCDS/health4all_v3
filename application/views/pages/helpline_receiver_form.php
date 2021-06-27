@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
@@ -230,6 +231,38 @@ function initUserSelectize(){
 						</select>
 					</div>
 				</div>
+				
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+					<div class="form-horizontal">
+					
+					<table class="table table-bordered table-striped" id="table-sort" name="language_table_id">
+					<thead>
+						<th>Receiver Language</th>
+						<th>Proficiency</th>
+					</thead>	
+					<tbody>
+					<?php if(isset($receiver_languages) && count($receiver_languages)>0)
+					{ ?>
+						<?php 
+						foreach($receiver_languages as $s){
+						?>
+					    <tr>
+						<td><?php echo $s->language;?></td>
+						<td><?php echo $proficiency[$s->proficiency];?></td>
+					     </tr>
+						<?php } ?>
+						<?php } ?> 						
+					</tbody>
+					</table>
+					</div>
+				</div> 
+				
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+					<div class="row">
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addLanguageModal">ADD Language</button>
+					</div>
+				</div> 
+				
 			</div>
 		</div>
 		<div class="container">
@@ -239,5 +272,99 @@ function initUserSelectize(){
 				</div>
 			</div>
 		</div>
+		</form>
 	</div>
 </div>
+
+<div class="modal fade" id="addLanguageModal" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content">
+		<div class="modal-header bg-primary text-white">
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		      <h4 class="modal-title">Update/Edit Languages</h4>
+		</div>
+		<div class="modal-body">
+				<div class="row">
+					<div class="col-md-4"> 
+						<label for="language_id_1">Language</label>
+						<select id="language_id_1" name="language_id_1" class="form-control" >
+							<option value="">Select Language</option> 
+							<?php 
+								foreach($languages as $language){ 
+									echo "<option value='".$language->language_id."'";
+									echo ">".$language->language."</option>"; 
+							}
+							?>
+						</select>
+					</div>
+					<div class="col-md-4"> 
+						<label for="proficiency_id_1"> Proficiency</label>
+						<select id="proficiency_id_1" name="proficiency_id_1" class="form-control" >
+							<option value="">Select Proficiency</option> 
+							<?php 
+								foreach($proficiency as $key=>$val){ 
+									echo "<option value='".$key."'";
+									echo ">".$val."</option>"; 
+							}
+							?>
+						</select>
+					</div>
+				<div class="col-md-4"> 
+					<button type="button" class="btn btn-success" data-dismiss="modal">ADD</button>
+				</div>
+				</div>
+		   </div>
+	     </div>
+	</div>
+</div>
+<!-- Modal -->
+<script type="text/javascript">
+var languages = <?php echo json_encode($languages); ?>;
+var proficiencies = <?php echo json_encode($proficiency); ?>;
+var current_languages = <?php echo json_encode($receiver_languages); ?>;
+$('#addLanguageModal').on('hidden.bs.modal', function () {
+  // do something...
+//	console.log("I am here after the close ");
+ //	console.log(document.getElementById("table-sort"));
+//	console.log(document.getElementById("language_id_1").value);
+//	console.log(document.getElementById("proficiency_id_1").value);
+	var language_id = document.getElementById("language_id_1").value;
+	var proficiency_id = document.getElementById("proficiency_id_1").value;
+	if (proficiency_id.length === 0 || language_id === 0) {
+		bootbox.alert("Please fill all the values");
+		document.getElementById("language_id_1").reset();
+		document.getElementById("proficiency_id_1").reset();
+		return;	
+	}
+	
+	const language = languages.filter(language => language.language_id == language_id);
+	const proficiency = proficiencies[proficiency_id];
+	// console.log(language[0].language);
+	// console.log(proficiency);
+	var input = document.createElement('input');
+	input.name = 'mytext';
+	input.type = 'text';
+	input.value = language[0].language_id;
+	input.id = 'mytext';
+	input.disabled=true;
+	input.hidden=true;
+	$('#add_form').append(input);
+	newRow = "<tr><td> <input type='text' name='mylanguage[]' id='mylanguage' required hidden value=" + language[0].language_id +">"+ language[0].language + "</td> <td> " + 
+			  " <input type='text' name='myproficiency[]' id='myproficiency' required hidden value=" + proficiency_id + ">" +  proficiency + "</td></tr>";
+	var tbl = $("#table-sort");
+	tbl.append(newRow);
+	
+	// reset the values
+	document.getElementById("language_id_1").reset();
+	document.getElementById("proficiency_id_1").reset();
+	// console.log(newRow);
+   	//$('#table-sort > tbody > tr:last').after(newRow);
+
+});
+
+function submitOnClick() {
+	// document.getElementById("table_values_id").value = document.getElementById("table-sort");
+	// console.log(document.getElementById("table-sort"));
+}
+</script>
