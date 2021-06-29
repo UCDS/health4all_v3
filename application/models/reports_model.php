@@ -497,6 +497,33 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 		
 	}
+
+	function get_search_helpline_doctor($query = "")
+	{
+		$hospital = $this->session->userdata('hospital');
+		$search = array(
+			"LOWER(first_name)" => strtolower($query),
+			"replace(replace(lower(first_name), 'dr', ''), '.', '')" => strtolower($query),
+			"LOWER(last_name)" => strtolower($query),
+			"LOWER(department)" => strtolower($query),
+		);
+
+		$this->db->select("staff.staff_id, staff.first_name as first_name, CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor,
+				department.department as department", false);
+		$this->db->from('helpline_receiver')
+		->join('hospital', 'hospital.helpline_id=helpline_receiver.helpline_id', 'left')
+		->join('user', 'user.user_id=helpline_receiver.user_id', 'left')
+		->join('staff', 'staff.staff_id=user.staff_id', 'left')
+		->join('department', 'department.department_id=staff.department_id', 'left')
+		->or_like($search, 'both')
+		->where('hospital.hospital_id', $hospital['hospital_id'])
+		->where('helpline_receiver.doctor', 1);
+		$this->db->order_by('department', 'ASC');
+		$this->db->order_by('helpline_doctor', 'ASC');
+
+		$resource = $this->db->get();
+		return $resource->result();
+	}
 	
 	function get_registration_appointment($default_rowsperpage){
 		if ($this->input->post('page_no')) {
@@ -590,7 +617,7 @@ function get_op_detail_with_idproof(){
 
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
-		p.place, p.phone, department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
+		p.place, p.phone, pvd.department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
 		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
@@ -598,11 +625,12 @@ function get_op_detail_with_idproof(){
 		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
 		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
-		appointment_update_time,  
-		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,vn.visit_name",false);
+		appointment_update_time,
+		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,
+		sd.department as doctor_department,vn.visit_name",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
-		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
 		 ->join('district','p.district_id=district.district_id','left')
 		 ->join('state','district.state_id=state.state_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
@@ -610,6 +638,7 @@ function get_op_detail_with_idproof(){
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
 		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
 		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
+		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
 		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')	

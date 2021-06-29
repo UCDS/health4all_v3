@@ -332,6 +332,13 @@ class Reports extends CI_Controller {
 		}
 		
 	}
+
+	function get_search_helpline_doctor()
+	{
+		if ($results = $this->reports_model->get_search_helpline_doctor($this->input->post('query'))) {
+			echo json_encode($results);
+		} else return false;
+	}
 	
 	public function appointments_status($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
