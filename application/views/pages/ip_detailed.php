@@ -77,28 +77,52 @@ $(document).ready(function(){$("#from_date").datepicker({
     </script>
 
 <script type="text/javascript">
+	/**
+	 * sends a request to the specified url from a form. this will change the window location.
+	 * @param {string} path the path to send the post request to
+	 * @param {object} params the parameters to add to the url
+	 * @param {string} [method=post] the method to use on the form
+	 */
+
+	function postFromLocation(path, params, method='post') {
+
+	  // The rest of this code assumes you are not using a library.
+	  // It can be made less verbose if you use one.
+	  const form = document.createElement('form');
+	  form.method = method;
+	  form.action = path;
+
+	  for (const key in params) {
+	    if (params.hasOwnProperty(key)) {
+	      const hiddenField = document.createElement('input');
+	      hiddenField.type = 'hidden';
+	      hiddenField.name = key;
+	      hiddenField.value = params[key];
+
+	      form.appendChild(hiddenField);
+	    }
+	  }
+
+	  document.body.appendChild(form);
+	  form.submit();
+	}
 	function doPost(page_no) {
-		var page_no_hidden = document.getElementById("page_no");
-		page_no_hidden.value = page_no;
-		$('#ip_detailed').submit();
+		
+		var pathArray = window.location.pathname.split( '/' );
+		if (pathArray.length > 4){
+			postFromLocation(window.location.pathname,{page_no: page_no});
+		}
+		else {
+			var page_no_hidden = document.getElementById("page_no");
+			page_no_hidden.value = page_no;
+			$('#ip_detailed').submit();
+		}
 	}
 
 	function onchange_page_dropdown(dropdownobj) {
 		doPost(dropdownobj.value);
 	}
 </script>
-<script type="text/javascript">
-	function doPost(page_no) {
-		var page_no_hidden = document.getElementById("page_no");
-		page_no_hidden.value = page_no;
-		$('#ip_detailed').submit();
-	}
-
-	function onchange_page_dropdown(dropdownobj) {
-		doPost(dropdownobj.value);
-	}
-</script>
-
 <style type="text/css">
 	.page_dropdown {
 		position: relative;

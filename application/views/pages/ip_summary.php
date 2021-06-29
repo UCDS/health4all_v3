@@ -202,22 +202,27 @@ $(function(){
 	}
 	?>
 	<tfoot>
+	 	<?php 
+	 	$department_val = ($department=="" ? 	-1 : $department);
+	 	$unit_val = ($unit=="" ? 0 : $unit);
+	 	$area_val = ($area=="" ? 0 : $area);
+	 	?>
 		<th>Total </th>
-		<th class="text-right" ><?php echo $total_mchild;?></th>
-		<th class="text-right"><?php echo $total_fchild;?></th>
-		<th class="text-right" ><?php echo $total_child;?></th>
-		<th class="text-right" ><?php echo $total_m14to30;?></th>
-		<th class="text-right" ><?php echo $total_f14to30;?></th>
-		<th class="text-right" ><?php echo $total_14to30;?></th>
-		<th class="text-right" ><?php echo $total_m30to60;?></th>
-		<th class="text-right" ><?php echo $total_f30to60;?></th>
-		<th class="text-right" ><?php echo $total_30to60;?></th>
-		<th class="text-right" ><?php echo $total_m60plus;?></th>
-		<th class="text-right" ><?php echo $total_f60plus;?></th>
-		<th class="text-right" ><?php echo $total_60plus;?></th>
-		<th class="text-right" ><?php echo $total_male;?></th>
-		<th class="text-right" ><?php echo $total_female;?></th>
-		<th class="text-right" ><?php echo $total_ip;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/M/14/0/$from_date/$to_date";?>"><?php echo $total_mchild;?></th>
+		<th class="text-right"><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/F/14/0/$from_date/$to_date";?>"><?php echo $total_fchild;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/0/14/0/$from_date/$to_date";?>"><?php echo $total_child;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/M/14/30/$from_date/$to_date";?>"><?php echo $total_m14to30;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/F/14/30/$from_date/$to_date";?>"><?php echo $total_f14to30;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/0/14/30/$from_date/$to_date";?>"><?php echo $total_14to30;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/M/30/50/$from_date/$to_date";?>"><?php echo $total_m30to60;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/F/30/50/$from_date/$to_date";?>"><?php echo $total_f30to60;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/0/30/50/$from_date/$to_date";?>"><?php echo $total_30to60;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/M/0/50/$from_date/$to_date";?>"><?php echo $total_m60plus;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/F/0/50/$from_date/$to_date";?>"><?php echo $total_f60plus;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/0/0/50/$from_date/$to_date";?>"><?php echo $total_60plus;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/M/0/0/$from_date/$to_date";?>"><?php echo $total_male;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/F/0/0/$from_date/$to_date";?>"><?php echo $total_female;?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/ip_detail/$department_val/$unit_val/$area_val/0/0/0/$from_date/$to_date";?>"><?php echo $total_ip;?></th>
 	</tfoot>
 	</tbody>
 	</table>

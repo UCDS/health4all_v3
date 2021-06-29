@@ -1246,8 +1246,14 @@ class Helpline_model extends CI_Model{
 		if($this->db->trans_status()==FALSE){
 			return false;
 		} else {
-           return true;
-        }  
+
+			if ($this->input->post('mylanguage')){
+				if (!($this->update_languages($receiver_id))) {
+					return false;
+				}
+			}	
+			return true;
+		}  
 	}
 
 	function search_helpline_receiver($query=""){
@@ -1351,6 +1357,7 @@ class Helpline_model extends CI_Model{
 			'receiver_id'=>$this->input->post("receiver_id"),
 			'helpline_session_id'=>$this->input->post("session_name_modal"),
 			'helpline_session_role_id'=>$this->input->post("session_role_id"),
+			'helpline_session_note'=>$this->input->post("session_note"),
 			'created_by_staff_id'=>$this->session->userdata("logged_in")['staff_id'],
 			'create_date_time'=>date("Y-m-d H:i:s"),
 			'soft_deleted'=>0
@@ -1374,7 +1381,7 @@ class Helpline_model extends CI_Model{
 
 	function get_helpline_receiver_report($helpline_session_id) {
 		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
-			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id,  hs.session_name as session_name,hsp.helpline_session_role_id,hsr.helpline_session_role");
+			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id,  hs.session_name as session_name,hsp.helpline_session_role_id,hsr.helpline_session_role,hsp.helpline_session_note");
 			$this->db->select("(SELECT GROUP_CONCAT(language.language) as languages FROM helpline_receiver JOIN helpline_receiver_language on helpline_receiver_language.receiver_id = helpline_receiver.receiver_id JOIN language on language.language_id = helpline_receiver_language.language_id WHERE helpline_receiver.receiver_id = hsp.receiver_id ORDER BY helpline_receiver_language.proficiency) as languages ");
 			$this->db->from('helpline_session_plan as hsp');
 			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
@@ -1422,7 +1429,7 @@ class Helpline_model extends CI_Model{
 	}
 	function get_helpline_sessions_for_receiver() {
 		$receiver_id = $this->input->post('view_receiver_id');
-		$this->db->select("hs.session_name,hsr.helpline_session_role,hs.weekday");
+		$this->db->select("hs.session_name,hsr.helpline_session_role,hs.weekday,hs.helpline_id,hsp.helpline_session_note");
 		$this->db->where("hsp.receiver_id", $receiver_id);
 		$this->db->from('helpline_session_plan as hsp');
 		$this->db->join('helpline_session as hs', 'hs.helpline_session_id = hsp.helpline_session_id');
@@ -1435,5 +1442,82 @@ class Helpline_model extends CI_Model{
 //			echo("<script>console.log('PHP: report_sessions" . json_encode($query->result()) . "');</script>");
 		return $query->result();
 	}
+	
+	function get_helpline_languages(){
+		$this->db->select("*");
+		$this->db->from('language');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
+	function get_proficiency() {
+		$data = 	array('1' => 'Expert' ,
+				'2'  => 'Intermediate' ,
+				'3' => 'Beginner');
+		return $data;
+	}
+
+	function get_helpline_receiver_languages($receiver_id="") {
+		$this->db->select("language.language_id as language_id, language, receiver_id, proficiency");
+		$this->db->from("helpline_receiver_language");
+		$this->db->join("language", "helpline_receiver_language.language_id = language.language_id");
+		$this->db->where("receiver_id", $receiver_id);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function check_language_exists($receiver_id, $language_id) {
+		$search = array(
+           		'receiver_id'=>$receiver_id, 
+           		'language_id'=>$language_id,
+        	);
+	
+		$this->db->select("receiver_id");
+		$this->db->from("helpline_receiver_language");
+		$this->db->where('receiver_id', $receiver_id);
+		$this->db->where('language_id', $language_id);
+		$query=$this->db->get();
+		$num_rows = $query->num_rows();
+	
+		// echo("<script>console.log('to_number: proficiency [i] " .$num_rows. "');</script>");
+		if ($num_rows > 0) {
+			return true;
+		}	
+		return false;
+	}	
+	
+	function update_languages($receiver_id) {
+			// echo("<script>console.log('to_number: Am I here" .$this->input->post('myproficiency'). "');</script>");
+		
+		$mylanguages = $this->input->post('mylanguage');
+		$myproficiency = $this->input->post('myproficiency');
+		
+	
+		$this->db->trans_start();
+		for ($i = 0 ; $i < count($mylanguages); $i++) {
+			// echo("<script>console.log('to_number: index " .$i. "');</script>");
+			// echo("<script>console.log('to_number: languages [i] " .$mylanguages[$i]. "');</script>");
+			// echo("<script>console.log('to_number: proficiency [i] " .$myproficiency[$i]. "');</script>");
+			
+			if ($this->check_language_exists($receiver_id, $mylanguages[$i])) {
+				echo("<script>console.log('Language already exists " .$mylanguages[$i]. "');</script>");
+				continue;
+			}
+			$data=array(
+				'receiver_id'=>$receiver_id,
+				'language_id'=>$mylanguages[$i],
+				'proficiency'=>$myproficiency[$i]);
+			$this->db->insert('helpline_receiver_language',$data);
+		}
+		$this->db->trans_complete();
+		if($this->db->trans_status()!==TRUE){
+			$this->db->trans_rollback();
+			// echo("<script>console.log('Language insertion failed " .$mylanguages. "');</script>");
+			return false;
+		}
+
+		return true;	
+	}
+
 }
 ?>

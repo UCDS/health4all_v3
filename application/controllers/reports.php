@@ -482,7 +482,7 @@ class Reports extends CI_Controller {
 			}
 		}
 		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name);
-		$this->data['report'] = $this->reports_model->get_ip_detail($this->data['rowsperpage'], $department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name);
+		$this->data['report'] = $this->reports_model->get_ip_detail($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name,0,0,$this->data['rowsperpage']);
 
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
@@ -526,7 +526,16 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
-		$this->data['report']=$this->reports_model->get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome);
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach ($this->data['defaultsConfigs'] as $default) {
+			if ($default->default_id == 'pagination') {
+				$this->data['rowsperpage'] = $default->value;
+				$this->data['upper_rowsperpage'] = $default->upper_range;
+				$this->data['lower_rowsperpage'] = $default->lower_range;
+			}
+		}
+		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome);
+		$this->data['report']=$this->reports_model->get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome,$this->data['rowsperpage']);
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 
