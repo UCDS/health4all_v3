@@ -247,13 +247,16 @@ class Reports_model extends CI_Model{
 		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
-		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
-		 ->group_by('icd_10');
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		 if(!$this->input->post('postback') or $this->input->post('groupbyicdchapter')) {
+		 	$this->db->group_by('icd_block.chapter_id');
+		 }
+		 
 		 if($this->input->post('groupbyicdblock')) {
 		 	$this->db->group_by('icd_code.block_id');
 		 }
-		 if($this->input->post('groupbyicdchapter')){
-		 	$this->db->group_by('icd_block.chapter_id');
+		 if($this->input->post('groupbyicdcode')){
+		 	$this->db->group_by('icd_10');
 		 }
 		$resource=$this->db->get();
 		return $resource->result();
@@ -1461,7 +1464,7 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 	}
 
-	function get_icd_detail($icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome,$default_rowsperpage=0){
+	function get_icd_detail($icdchapter,$icdblock,$icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome,$default_rowsperpage=0){
 		$hospital=$this->session->userdata('hospital');
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
@@ -1501,9 +1504,18 @@ function get_op_detail_with_idproof(){
 		}
 		if($this->input->post('icd_block')){
 			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		} else {		
+			if($icdblock != "-1") {
+				$this->db->where('icd_block.block_id',$icdblock );
+			}
 		}
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		else {		
+			if($icdchapter != "-1") {
+				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
@@ -1547,13 +1559,16 @@ function get_op_detail_with_idproof(){
 		}
 		$this->db->select("hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,
-		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,icd_10,outcome,final_diagnosis,
+		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,outcome,final_diagnosis,
 		outcome_date,outcome_time",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('mlc','patient_visit.visit_id=mlc.visit_id','left')
+		 ->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
+		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
@@ -1565,7 +1580,7 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 	}
 
-function get_icd_detail_count($icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome){
+function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome){
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
@@ -1594,9 +1609,18 @@ function get_icd_detail_count($icd_10,$department,$unit,$area,$gender,$from_age,
 		}
 		if($this->input->post('icd_block')){
 			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		} else {		
+			if($icdblock != "-1") {
+				$this->db->where('icd_block.block_id',$icdblock );
+			}
 		}
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		else {		
+			if($icdchapter != "-1") {
+				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
@@ -1604,20 +1628,14 @@ function get_icd_detail_count($icd_10,$department,$unit,$area,$gender,$from_age,
 		}
 		if(!!$unit){
 			if($this->input->post('unit')) $unit=$this->input->post('unit');
-			$this->db->select('IF(unit!="",unit,0) unit',false);
 			$this->db->where('patient_visit.unit',$unit);
 		}
-		else{
-			$this->db->select('"0" as unit_id',false);
-		}
+		
 		if(!!$area){
 			if($this->input->post('area')) $area=$this->input->post('area');
-			$this->db->select('IF(area!="",area,0) area',false);
 			$this->db->where('patient_visit.area',$area);
 		}
-		else{
-			$this->db->select('"0" as area',false);
-		}
+	
 		if($gender!='0'){
 			$this->db->where('gender',$gender);
 		}
@@ -1644,6 +1662,9 @@ function get_icd_detail_count($icd_10,$department,$unit,$area,$gender,$from_age,
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('mlc','patient_visit.visit_id=mlc.visit_id','left')
+		 ->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
+		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
