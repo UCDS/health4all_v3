@@ -98,8 +98,6 @@ $(document).ready(function(){
 	  form.submit();
 	}
 	function doPost(page_no) {
-		
-		var pathArray = window.location.pathname.split( '/' );
 		postFromLocation(window.location.pathname,{page_no: page_no});
 		
 	}

@@ -585,7 +585,16 @@ class Reports extends CI_Controller {
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
-		$this->data['report']=$this->reports_model->get_icd_detail($icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome);
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach ($this->data['defaultsConfigs'] as $default) {
+			if ($default->default_id == 'pagination') {
+				$this->data['rowsperpage'] = $default->value;
+				$this->data['upper_rowsperpage'] = $default->upper_range;
+				$this->data['lower_rowsperpage'] = $default->lower_range;
+			}
+		}
+		$this->data['report_count'] = $this->reports_model->get_icd_detail_count($icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome);
+		$this->data['report']=$this->reports_model->get_icd_detail($icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome,$this->data['rowsperpage']);
 		$this->load->view('pages/icd_detailed',$this->data);
 		$this->load->view('templates/footer');
 		}

@@ -273,7 +273,17 @@ f									<option value="OP" <?php if($visit_type == "OP") echo " selected ";?>>
 						<?php } ?>
 					</select>	
 					</div>
+					<div class="col-md-4">
+					  <input type="checkbox" id="groupbyicdchapter" name="groupbyicdchapter" value="1" <?php if($this->input->post('groupbyicdchapter')) echo "checked"; ?> >
+  						<label for="groupbyicdchapter"> Group by ICD Chapter</label><br>
 					</div>
+					<div class="col-md-4">
+					  <input type="checkbox" id="groupbyicdblock" name="groupbyicdblock" value="1" <?php if($this->input->post('groupbyicdblock')) echo "checked"; ?> >
+  						<label for="groupbyicdblock"> Group by ICD Block</label><br>
+					</div>
+					
+					</div>
+					
 					<br/><br/>
 <script>
 		var $year=$("#year").val();

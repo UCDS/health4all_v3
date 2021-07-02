@@ -31,7 +31,7 @@ class Masters_model extends CI_Model{
 			$this->db->select("unit_id,unit_name,department_id")->from("unit");
 		}
 		else if($type=="icd_chapters"){
-			$this->db->select("chapter_id,chapter_title")->from("icd_chapter")->order_by('chapter_title');
+			$this->db->select("chapter_id,chapter_title")->from("icd_chapter")->order_by('chapter_id');
 		}
 		else if($type=="icd_blocks"){
 			$this->db->select("*")->from("icd_block")->order_by('block_title');
