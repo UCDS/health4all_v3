@@ -284,7 +284,7 @@ class Register_model extends CI_Model{
 			if($this->input->post('patient_id_manual')) $patient_id_manual=$this->input->post('patient_id_manual'); else $patient_id_manual="";
 			$data['patient_id_manual'] = $patient_id_manual;
 		}
-                if($this->input->post('patient_id_manual')){
+                if(!$this->input->post('patient_id') && $this->input->post('patient_id_manual')){
                     $patient_id_manual = $this->input->post('patient_id_manual');
                     $this->db->select('patient_id_manual'); //Here we are selecting hosp_file_no and admit_date with year for match  from the database
                     $this->db->from('patient');
@@ -1039,9 +1039,11 @@ class Register_model extends CI_Model{
 				$this->db->where('visit_type','IP');
 			}
 			if($this->input->post('search_phone')){
-				$this->db->where('patient.phone',$this->input->post('search_phone'));
-				$this->db->or_where('patient.alt_phone',$this->input->post('search_phone'));
-			}
+				$search_phone_withoutzero = ltrim($this->input->post('search_phone'), '0');
+				$this->db->like("TRIM(LEADING '0' FROM patient.phone)",$search_phone_withoutzero);
+				$this->db->or_like("TRIM(LEADING '0' FROM patient.alt_phone)",$search_phone_withoutzero);
+				
+							}
 			if($this->input->post('selected_patient')){
 				$this->db->where('patient_visit.visit_id',$this->input->post('selected_patient'));
 			}

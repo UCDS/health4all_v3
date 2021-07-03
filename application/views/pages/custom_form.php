@@ -258,7 +258,7 @@ pri.print();
 					
                                     ?>
 						<label class="control-label">Patient ID Manual<?php if($field->mandatory) { ?><span class="mandatory">*</span><?php } ?></label>
-						<input type="text" name="patient_id_manual" class="form-control" placeholder="Patient ID Manual" value="<?php if($patient) echo $patient->patient_id_manual;?>" <?php if($field->mandatory) echo "required"; if($form_type=="IP") echo "disabled";?> />
+						<input type="text" name="patient_id_manual" class="form-control" placeholder="Patient ID Manual" value="<?php if($patient) echo $patient->patient_id_manual;?>" <?php if($field->mandatory) echo "required"; if($form_type=="IP") echo "disabled"; ?> <?php if($patient->patient_id_manual) echo "readonly"; ?> />
 						
                                     <?php 
 						break;
