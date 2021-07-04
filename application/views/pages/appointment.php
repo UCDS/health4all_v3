@@ -98,7 +98,7 @@ function transformUser(res){
 		res.map(function(d){
 		if(d.last_name !=""){
 				
-			d.helpline_doctor = d.department + ' - ' + d.first_name + ' - ' + d.last_name;
+			d.helpline_doctor = d.department + ' - ' + d.first_name + ' ' + d.last_name;
 		}
 		else{
 			d.helpline_doctor = d.department + ' - ' + d.first_name;
