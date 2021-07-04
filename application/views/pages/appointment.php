@@ -98,9 +98,7 @@ function transformUser(res){
 		res.map(function(d){
 		if(d.last_name !=""){
 				
-			d.helpline_doctor = d.department + ' - ' + d.first_name + ' - ' + d.last_name;
-			console.log("last_name");
-			console.log(d);
+			d.helpline_doctor = d.department + ' - ' + d.first_name + ' ' + d.last_name;
 		}
 		else{
 			d.helpline_doctor = d.department + ' - ' + d.first_name;
@@ -132,7 +130,7 @@ function initAppointmentDoctorSelectize(modal_id){
 	var selectize = modal.find('#staff_id').selectize({
 	    valueField: 'staff_id',
 	    labelField: 'helpline_doctor',
-	    searchField: ['first_name', 'last_name', 'department'],
+	    searchField: ['first_name_check', 'last_name_check', 'department'],
 		options: window['userList'],
 	    create: false,
 	    render: {
