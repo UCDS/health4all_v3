@@ -517,15 +517,15 @@ function get_op_detail_with_idproof(){
 			"LOWER(department)" => strtolower($query),
 		);
 
-		$this->db->select("staff.staff_id, staff.first_name as first_name, staff.last_name as last_name,CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor,
+		$this->db->select("staff.staff_id, staff.first_name as first_name, replace(replace(replace(lower(first_name), 'dr', ''), '.', ''),' ','') as first_name_check ,staff.last_name as last_name, replace(LOWER(last_name),' ','') as last_name_check ,CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor,
 				department.department as department", false);
 		$this->db->from('staff')
 		->join('user', 'user.staff_id=staff.staff_id')
 		->join('user_hospital_link', 'user.user_id=user_hospital_link.user_id')
 		->join('department', 'department.department_id=staff.department_id','left')
-		->or_like($search, 'both')
 		->where('user_hospital_link.hospital_id', $hospital['hospital_id'])
-		->where('staff.doctor_flag', 1);
+		->where('staff.doctor_flag', 1)
+		->or_like($search, 'both');
 		$this->db->order_by('department', 'ASC');
 		$this->db->order_by('helpline_doctor', 'ASC');
 		$resource = $this->db->get();

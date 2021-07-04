@@ -130,7 +130,7 @@ function initAppointmentDoctorSelectize(modal_id){
 	var selectize = modal.find('#staff_id').selectize({
 	    valueField: 'staff_id',
 	    labelField: 'helpline_doctor',
-	    searchField: ['first_name', 'last_name', 'department'],
+	    searchField: ['first_name_check', 'last_name_check', 'department'],
 		options: window['userList'],
 	    create: false,
 	    render: {
