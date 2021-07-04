@@ -99,8 +99,6 @@ function transformUser(res){
 		if(d.last_name !=""){
 				
 			d.helpline_doctor = d.department + ' - ' + d.first_name + ' - ' + d.last_name;
-			console.log("last_name");
-			console.log(d);
 		}
 		else{
 			d.helpline_doctor = d.department + ' - ' + d.first_name;
