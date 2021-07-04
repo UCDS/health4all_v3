@@ -5,6 +5,13 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
@@ -85,6 +92,77 @@ function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
 </script>
+<script type="text/javascript">
+function transformUser(res){
+	if(res){
+		res.map(function(d){
+			d.helpline_doctor = d.department + ' - ' + d.first_name;
+		    return d;
+		});
+	}
+	return res;
+}
+
+function initAppointmentDoctorSelectize(modal_id){
+	console.log(window['userList']);
+	var modal = $('#'+modal_id);
+	console.log(modal);
+	var user_list_data = {};
+	if(modal.find('#staff_id').attr("data-previous-value")){
+		user_list_data.staff_id = modal.find('#staff_id').attr("data-previous-value");
+	}
+	if(modal.find('#staff_id').attr("data-previous-department-value")){
+		user_list_data.department = modal.find('#staff_id').attr("data-previous-department-value");
+	}
+	if(modal.find('#staff_id').attr("data-previous-doctor-value")){
+		user_list_data.first_name = modal.find('#staff_id').attr("data-previous-doctor-value");
+	}
+	user_list_data.last_name = "";
+	window['userList'] = transformUser([user_list_data]);
+
+	var selectize = modal.find('#staff_id').selectize({
+	    valueField: 'staff_id',
+	    labelField: 'helpline_doctor',
+	    searchField: ['first_name', 'last_name', 'department'],
+		options: window['userList'],
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">' + escape(item.helpline_doctor) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+	        $.ajax({
+	            url: '<?php echo base_url();?>reports/get_search_helpline_doctor',
+	            type: 'POST',
+				dataType : 'JSON',
+				data : { query: query },
+	            error: function(res) {
+					console.log(res);
+	                callback();
+	            },
+	            success: function(res) {
+					console.log("success")
+					console.log(res);
+					res = transformUser(res);
+	            	callback(res.slice(0, 10));
+	            }
+	        });
+		},
+	});
+	if(modal.find('#staff_id').attr("data-previous-value")){
+		console.log(modal.find('#staff_id').attr("data-previous-value"));
+		selectize[0].selectize.setValue(modal.find('#staff_id').attr("data-previous-value"));
+		//selectize.setValue($('#staff_id').attr("data-previous-value"));
+	}
+}
+</script>
+
 <style type="text/css">
 .page_dropdown{
     position: relative;
@@ -142,6 +220,15 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+</style>
+
+<style type="text/css">
+	.selectize-control.repositories .selectize-dropdown > div {
+border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.selectize-control {
+display: inline-grid;
+} 
 </style>
 
 	<?php 
@@ -598,19 +685,25 @@ echo "</select></li>";
 				</select>	                        
 			</div>				
 			<div class="form-group">
-				<label for="helpline_doctor">Appointment With:</label>
-				<?php //var_dump($helpline_doctor); ?>
-				<select name="appointment_with" id="helpline_doctor" class="form-control">
-					<option value="NULL">Select Doctor</option>
+				<label for="staff_id">Appointment With:</label>
+				<select id="staff_id" name="appointment_with" class="" style="width:300px; position:relative;" placeholder="-Enter Doctor Name/Department-" data-previous-value="<?php echo $s->appointment_with_id; ?>" data-previous-department-value="<?php echo $s->doctor_department; ?>" data-previous-doctor-value="<?php echo $s->appointment_with; ?>">
 					<?php 
-					foreach($helpline_doctor as $doctor){
-						echo "<option value='".$doctor->staff_id."'";
-						if($s->appointment_with_id == $doctor->staff_id) echo " selected ";
-						echo ">".$doctor->helpline_doctor."</option>";
-					}
-					?>
+					if($s->appointment_with) { ?>
+						<script type="text/javascript">
+						</script>
+					<?php } else { ?>
+						<script type="text/javascript">
+							window['userList'] = [];
+						</script>
+					<?php } ?>
 				</select>
 			</div>
+			<script type="text/javascript">
+				$( "#myModal_<?php echo $sno; ?>" ).on('shown.bs.modal', function(){
+    			//alert("I want this to appear after the modal has opened!");
+				initAppointmentDoctorSelectize("myModal_<?php echo $sno; ?>");
+				});
+			</script>
 				
 			<div class="form-group">
 				<label for="appointment_time">Appointment Date-Time:</label>
