@@ -247,8 +247,17 @@ class Reports_model extends CI_Model{
 		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
-		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
-		 ->group_by('icd_10');
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		 if(!$this->input->post('postback') or $this->input->post('groupbyicdchapter')) {
+		 	$this->db->group_by('icd_block.chapter_id');
+		 }
+		 
+		 if($this->input->post('groupbyicdblock')) {
+		 	$this->db->group_by('icd_code.block_id');
+		 }
+		 if($this->input->post('groupbyicdcode')){
+		 	$this->db->group_by('icd_10');
+		 }
 		$resource=$this->db->get();
 		return $resource->result();
 	}
@@ -1455,8 +1464,19 @@ function get_op_detail_with_idproof(){
 		return $resource->result();
 	}
 
-	function get_icd_detail($icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome){
+	function get_icd_detail($icdchapter,$icdblock,$icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome,$default_rowsperpage=0){
 		$hospital=$this->session->userdata('hospital');
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		} else {
+			$page_no = 1;
+		}
+		if ($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		} else {
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no - 1)  * $rows_per_page;
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
@@ -1484,9 +1504,18 @@ function get_op_detail_with_idproof(){
 		}
 		if($this->input->post('icd_block')){
 			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		} else {		
+			if($icdblock != "-1") {
+				$this->db->where('icd_block.block_id',$icdblock );
+			}
 		}
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		else {		
+			if($icdchapter != "-1") {
+				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
@@ -1530,21 +1559,118 @@ function get_op_detail_with_idproof(){
 		}
 		$this->db->select("hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,
-		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,icd_10,outcome,final_diagnosis,
+		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,outcome,final_diagnosis,
 		outcome_date,outcome_time",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('mlc','patient_visit.visit_id=mlc.visit_id','left')
+		 ->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
+		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
 		 ->order_by('hosp_file_no','ASC');
+		 if ($rows_per_page>0) {
+			$this->db->limit($rows_per_page, $start);
+		}
 		$resource=$this->db->get();
 		return $resource->result();
 	}
 
+function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome){
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else if($from_date=='0' && $to_date=='0'){
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+		if($visit_type!='0'){
+			$this->db->where('patient_visit.visit_type',$visit_type);
+		}
+		if(!!$visit_name && $visit_name != "-1"){
+			$this->db->where('patient_visit.visit_name_id',$visit_name);
+		}
+		if($icd_10!="0" && $icd_10 != -1){
+			$this->db->where('patient_visit.icd_10',$icd_10);
+		}
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		} else {		
+			if($icdblock != "-1") {
+				$this->db->where('icd_block.block_id',$icdblock );
+			}
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		else {		
+			if($icdchapter != "-1") {
+				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+			}
+		}
+		if($department!='-1' || $this->input->post('department')){
+			if($this->input->post('department')) $department=$this->input->post('department');
+			$this->db->where('department.department_id',$department);
+		}
+		if(!!$unit){
+			if($this->input->post('unit')) $unit=$this->input->post('unit');
+			$this->db->where('patient_visit.unit',$unit);
+		}
+		
+		if(!!$area){
+			if($this->input->post('area')) $area=$this->input->post('area');
+			$this->db->where('patient_visit.area',$area);
+		}
+	
+		if($gender!='0'){
+			$this->db->where('gender',$gender);
+		}
+		if($from_age!='0' && $to_age!='0'){
+			$this->db->where('age_years>=',$from_age,false);
+			$this->db->where('age_years<=',$to_age,false);
+		}
+		if($from_age!='0' && $to_age=='0'){
+			$this->db->where('age_years<=',$from_age,false);
+		}
+		if($from_age=='0' && $to_age!='0'){
+			$this->db->where('age_years>=',$to_age,false);
+		}
+		if(!!$outcome || $this->input->post('outcome_type')){
+			if($this->input->post('outcome_type')) $outcome = $this->input->post('outcome_type');
+			if($outcome == "Unupdated") {
+				$this->db->where_not_in('outcome',array('Death','Absconded','Discharge','LAMA'));
+			}
+			else $this->db->where('outcome', $outcome);
+		}
+		$this->db->select("count(*) as count",false);
+		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('department','patient_visit.department_id=department.department_id','left')
+		 ->join('unit','patient_visit.unit=unit.unit_id','left')
+		 ->join('area','patient_visit.area=area.area_id','left')
+		 ->join('mlc','patient_visit.visit_id=mlc.visit_id','left')
+		 ->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
+		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
+		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		$resource=$this->db->get();
+		return $resource->result();
+	}
 	function get_order_detail($test_master,$department,$unit,$area,$test_area,$specimen_type,$test_method,$visit_type,$from_date,$to_date,$status,$type,$number,$antibiotic_id,$micro_organism_id,$sensitive,$outcome_type=0){
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){
