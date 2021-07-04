@@ -517,19 +517,17 @@ function get_op_detail_with_idproof(){
 			"LOWER(department)" => strtolower($query),
 		);
 
-		$this->db->select("staff.staff_id, staff.first_name as first_name, CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor,
+		$this->db->select("staff.staff_id, staff.first_name as first_name, staff.last_name as last_name,CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor,
 				department.department as department", false);
-		$this->db->from('helpline_receiver')
-		->join('hospital', 'hospital.helpline_id=helpline_receiver.helpline_id', 'left')
-		->join('user', 'user.user_id=helpline_receiver.user_id', 'left')
-		->join('staff', 'staff.staff_id=user.staff_id', 'left')
-		->join('department', 'department.department_id=staff.department_id', 'left')
+		$this->db->from('staff')
+		->join('user', 'user.staff_id=staff.staff_id')
+		->join('user_hospital_link', 'user.user_id=user_hospital_link.user_id')
+		->join('department', 'department.department_id=staff.department_id','left')
 		->or_like($search, 'both')
-		->where('hospital.hospital_id', $hospital['hospital_id'])
-		->where('helpline_receiver.doctor', 1);
+		->where('user_hospital_link.hospital_id', $hospital['hospital_id'])
+		->where('staff.doctor_flag', 1);
 		$this->db->order_by('department', 'ASC');
 		$this->db->order_by('helpline_doctor', 'ASC');
-
 		$resource = $this->db->get();
 		return $resource->result();
 	}
