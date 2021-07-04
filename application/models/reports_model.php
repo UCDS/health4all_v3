@@ -512,8 +512,8 @@ function get_op_detail_with_idproof(){
 		$hospital = $this->session->userdata('hospital');
 		$search = array(
 			"LOWER(first_name)" => strtolower($query),
-			"replace(replace(lower(first_name), 'dr', ''), '.', '')" => strtolower($query),
-			"LOWER(last_name)" => strtolower($query),
+			"replace(replace(replace(lower(first_name), 'dr', ''), '.', ''),' ','')" => strtolower($query),
+			"replace(LOWER(last_name),' ','')" => strtolower($query),
 			"LOWER(department)" => strtolower($query),
 		);
 
