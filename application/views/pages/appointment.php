@@ -154,10 +154,10 @@ function initAppointmentDoctorSelectize(modal_id){
 	                callback();
 	            },
 	            success: function(res) {
-					console.log("success")
-					console.log(res);
-					res = transformUser(res);
-	            	callback(res.slice(0, 10));
+			console.log("success")
+			console.log(res);
+			res = transformUser(res);
+	            	callback(res);
 	            }
 	        });
 		},
