@@ -96,8 +96,17 @@ function onchange_page_dropdown(dropdownobj){
 function transformUser(res){
 	if(res){
 		res.map(function(d){
+		if(d.last_name !=""){
+				
+			d.helpline_doctor = d.department + ' - ' + d.first_name + ' - ' + d.last_name;
+			console.log("last_name");
+			console.log(d);
+		}
+		else{
 			d.helpline_doctor = d.department + ' - ' + d.first_name;
-		    return d;
+		}
+			
+		return d;
 		});
 	}
 	return res;
