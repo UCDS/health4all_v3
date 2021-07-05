@@ -553,7 +553,16 @@ class Staff_model extends CI_Model{
 				'hospital_id'=>$uh
 			);
 		}
+		
+		$this->db->trans_start();
+		$this->db->delete('user_hospital_link',array('user_id' => $user_id));
 		$this->db->insert_batch('user_hospital_link',$user_hospital_data);
+		$this->db->trans_complete();
+		if($this->db->trans_status()===FALSE){
+			//if the transaction failed,return false.
+			return false;
+		}
+		else return true;
 	}
 	
 	function get_user_hospitals() {
