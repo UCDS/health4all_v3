@@ -510,12 +510,11 @@ function get_op_detail_with_idproof(){
 	function get_search_helpline_doctor($query = "")
 	{
 		$hospital = $this->session->userdata('hospital');
-		$search = array(
-			"LOWER(first_name)" => strtolower($query),
-			"replace(replace(replace(lower(first_name), 'dr', ''), '.', ''),' ','')" => strtolower($query),
-			"replace(LOWER(last_name),' ','')" => strtolower($query),
-			"LOWER(department)" => strtolower($query),
-		);
+		$search = "(LOWER(first_name) like '%" . strtolower($query) . "%' 
+			 OR replace(replace(replace(lower(first_name), 'dr', ''), '.', ''),' ','') like '%" . strtolower($query) . "%'
+			 OR replace(LOWER(last_name),' ','') like '%" . strtolower($query) . "%'
+			 OR LOWER(department)  like '%" . strtolower($query) . "%')";
+		
 
 		$this->db->select("staff.staff_id, staff.first_name as first_name, replace(replace(replace(lower(first_name), 'dr', ''), '.', ''),' ','') as first_name_check ,staff.last_name as last_name, replace(LOWER(last_name),' ','') as last_name_check ,CONCAT( department.department, ' - ',staff.first_name, ' ', staff.last_name) as helpline_doctor,
 				department.department as department", false);
@@ -525,7 +524,8 @@ function get_op_detail_with_idproof(){
 		->join('department', 'department.department_id=staff.department_id','left')
 		->where('user_hospital_link.hospital_id', $hospital['hospital_id'])
 		->where('staff.doctor_flag', 1)
-		->or_like($search, 'both');
+		->where($search);
+		
 		$this->db->order_by('department', 'ASC');
 		$this->db->order_by('helpline_doctor', 'ASC');
 		$resource = $this->db->get();
