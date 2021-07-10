@@ -374,6 +374,16 @@ $(function(){
 	
 	<div class="form-group">
 		<div class="col-md-3">
+			<label for="staff_type" class="control-label">Is Doctor ?</label>
+		</div>
+		<div class="col-md-6">
+			<input type ='radio' id="doctor_flag" name="doctor_flag" value ='1' <?php if($staff[0]->doctor_flag== 1) echo "checked"; ?>>Yes</input>
+			<input type ='radio' id="doctor_flag" name="doctor_flag" value ='0' <?php if($staff[0]->doctor_flag== 0) echo "checked"; ?>>No</input>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<div class="col-md-3">
 			<label for="staff_type" class="control-label">Registration No</label>
 		</div>
 		<div class="col-md-6">

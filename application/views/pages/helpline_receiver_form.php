@@ -232,11 +232,10 @@ function initUserSelectize(){
 					</div>
 				</div>
 				
-				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3" style="height: 100px; overflow-y: auto;overflow-x: hidden;"">
 					<div class="form-horizontal">
-					
-					<table class="table table-bordered table-striped" id="table-sort" name="language_table_id">
-					<thead>
+					<table class="table table-bordered table-striped"   id="table-sort" name="language_table_id">
+					<thead style="position: sticky; top: 0; background: #ffff;">
 						<th>Receiver Language</th>
 						<th>Proficiency</th>
 					</thead>	
@@ -340,13 +339,19 @@ $('#addLanguageModal').on('hidden.bs.modal', function () {
 	
 	const language = languages.filter(language => language.language_id == language_id);
 	const proficiency = proficiencies[proficiency_id];
+	if(current_languages.filter(current_languages => current_languages.language_id === language_id).length > 0){
+		return;
+	}
+	if ($('#mytext'+language[0].language_id).length > 0) {
+ 		return;
+	}
 	// console.log(language[0].language);
 	// console.log(proficiency);
 	var input = document.createElement('input');
 	input.name = 'mytext';
 	input.type = 'text';
 	input.value = language[0].language_id;
-	input.id = 'mytext';
+	input.id = 'mytext'+language[0].language_id;
 	input.disabled=true;
 	input.hidden=true;
 	$('#add_form').append(input);

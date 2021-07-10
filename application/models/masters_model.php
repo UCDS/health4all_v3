@@ -89,7 +89,7 @@ class Masters_model extends CI_Model{
 			
 			
 			$this->db->select("staff.staff_id,first_name,last_name,gender,date_of_birth,staff.department_id,staff.area_id, area_name,department,unit_id,staff_role_id,
-staff.ima_registration_number,			staff_category.staff_category_id,staff_category.staff_category,designation,email,phone,specialisation,research,research_area, mci_flag, hr_transaction_type.hr_transaction_type, MAX(hr_transaction.hr_transaction_date),
+staff.ima_registration_number, staff.doctor_flag as doctor_flag,			staff_category.staff_category_id,staff_category.staff_category,designation,email,phone,specialisation,research,research_area, mci_flag, hr_transaction_type.hr_transaction_type, MAX(hr_transaction.hr_transaction_date),
 			bank,bank_branch,ifsc_code,account_number,account_name")
 			->from("staff")
 			->join('department','staff.department_id = department.department_id','left')
@@ -945,6 +945,7 @@ else if($type=="dosage"){
 					  'designation'=>$this->input->post('designation'),
 					  'mci_flag'=>$this->input->post('mci_flag'),
 					  'ima_registration_number'=>$this->input->post('ima_registration_number'),
+					  'doctor_flag'=>$this->input->post('doctor_flag'),
 					  'staff_type'=>$this->input->post('staff_type'),
 					  'email'=>$this->input->post('email'),
 					  'phone'=>$this->input->post('phone'),
@@ -1125,6 +1126,7 @@ else if($type=="dosage"){
 					  'research_area'=>$this->input->post('research_area'),
 					  'research'=>$this->input->post('research'),
 					  'ima_registration_number'=>$this->input->post('ima_registration_number'),
+					  'doctor_flag'=>$this->input->post('doctor_flag'),
 					  'bank'=>$this->input->post('bank'),
 					  'bank_branch'=>$this->input->post('bank_branch'),
 					  'account_name'=>$this->input->post('account_name'),
