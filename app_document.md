@@ -1,3 +1,28 @@
+# Implementation Steps for new hospital/clinic
+
+Add hospital name to hospital table
+Set OP/IP/MLC counters 
+Add departments 
+Link admin to hospital_id in user_hospital_link table
+Link admin to hospital admin department in user_department_link table
+Create OP and IP forms
+Add Areas and Units for Departments
+Add staff from front end, assign to specific hospital
+Grant user access to that staff member.
+OP/IP
+View Patient
+Reports
+
+# Diagnostics Module Set up
+
+Test Area - denotes a specific physical area or department
+Test Method - to classify individual/group tests under a specific Method under a Test Area.
+Test unit - eg mg/dl etc
+Test Master - actual test names
+Specimen type
+User set up - To approve the tests, user should be linked to the department under which the Test Area is linked to,  in the user_derpartment_link table
+
+
 # Print Summary - Patient Visit
     DB: add field summary_header (tiny int, 0 by default, 1 for active or use status) in table visit_name
     In Print Summary: 
