@@ -1263,6 +1263,7 @@ class Helpline_model extends CI_Model{
         );
 		$this->db->select("receiver_id, phone, full_name, email")
 			->from("helpline_receiver")
+			->where("activity_status",1)
 			->or_like($search, 'both');
 		$query=$this->db->get();
 		return $query->result();
