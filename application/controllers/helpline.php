@@ -593,7 +593,7 @@ class Helpline extends CI_Controller {
 			$user=$this->session->userdata('logged_in');
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="Helpline Session Plan";
-			$this->data['helpline']=$this->helpline_model->get_helpline("update",1);
+			$this->data['helpline']=$this->helpline_model->get_helpline("any",1);
 			$this->data['weekdays']=$this->helpline_model->get_weekdays();
 			$this->data['helpline_session_role']=$this->helpline_model->get_helpline_session_role();
 			//$this->data['helpline_sessions']='SSSOG'; //$this->helpline_model->get_helpline_session();

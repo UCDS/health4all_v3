@@ -1031,6 +1031,8 @@ class Helpline_model extends CI_Model{
 			}
 			else if($access == "update"){
 				$this->db->where('update_access',1);
+			}else if($access == "any"){
+				$this->db->where('(update_access = 1 OR reports_access=1)');						
 			}
 		}
 		$this->db->select("helpline.helpline_id, helpline, note", false)
