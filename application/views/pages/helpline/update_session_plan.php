@@ -6,6 +6,9 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
@@ -69,7 +72,49 @@ $(document).ready(function(){
 <script type="text/javascript">
         $(document).ready(function(){
 	// find the input fields and apply the time select to them.
-        });
+	$('#editModal').on('show.bs.modal', function(e) {
+        	var id = $(e.relatedTarget).data('id');
+        	var name = $(e.relatedTarget).data('name');
+        	var phone = $(e.relatedTarget).data('phone');
+        	var email = $(e.relatedTarget).data('email');
+        	var role = $(e.relatedTarget).data('role');
+        	var note = $(e.relatedTarget).data('note');
+         	$(e.currentTarget).find('label[id="name"]').html(name);
+         	$(e.currentTarget).find('label[id="phone"]').html(phone);
+         	$(e.currentTarget).find('label[id="email"]').html(email);
+         	$(e.currentTarget).find('input[id="edit_note"]').val(note);
+         	$(e.currentTarget).find('input[id="helpline_session_plan_id"]').attr("value",id);
+         	if (role != "0") {		
+			 $(e.currentTarget).find('select[id="role"]').val(role).change();
+		}
+         });
+          $("#btEdit").click(function(){
+	    //stop submit the form, we will post it manually.
+		event.preventDefault();
+        // Get form
+        //var form =$(event.currentTarget).find('form[id=edit_helpline_sessions]');
+	 var form  = $('#editModal').find('form[id=edit_helpline_sessions]');
+	
+        // disabled the submit button
+        $("#btEdit").prop("disabled", true);
+
+        $.ajax({
+	        type: "POST",
+	        url: $(form).attr('action'),
+	        data: $(form).serialize(),
+	        success: function (data) {
+		        // show success notification here...
+		        location.reload()
+	        },
+    	    error: function (e) {
+	    	    // show error notification here...
+		        $("#btEdit").prop("disabled", false);
+	        }
+	     });
+	
+	});
+    });
+        
 </script>
 <script type="text/javascript">
 function doPost(page_no){
@@ -139,16 +184,33 @@ input[type=number] {
     outline: 0;	
 }
 </style>
-
 	<?php
 	$page_no = 1;
 	$rowsperpage = 50;
+	$remove_access = 0;
+	$edit_access = 0;
+	foreach($functions as $f) {
+		if($f->user_function =="helpline_session_plan"){
+		 if ($f->remove==1) {
+		 	$remove_access = 1;
+		 }
+		  if ($f->edit==1) {
+		 	$edit_access = 1;
+		 }
+          }
+       }
+		 
+	
 	?>
+<div style="text-align:center;">
+<h2><?php if($session_name) {echo "Volunteers of the session ".$session_name;} ?></h2>
+</div>
 <div class="row">
 
 <?php if(isset($report) && count($report)>0)
 { ?>
 <div style='padding: 0px 2px;'>
+
 
 <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
 
@@ -285,12 +347,12 @@ echo "</select></li>";
 		<th>Helpline Receiver Name</th>
 		<th>Helpline Receiver Languages</th>
 		<th>Role</th>
-		<th>Helpline Receiver Session Name</th>
 		<th>Notes</th>
-	<?php foreach($functions as $f) {
-		if($f->user_function =="helpline_session_plan" && ($f->remove==1)) { ?>
-		<th>Helpline Receiver Delete</th>
+	<?php if($edit_access==1) { ?>
+		<th>Helpline Receiver Edit</th>
 	<?php } ?>
+	<?php if($remove_access==1) { ?>
+		<th>Helpline Receiver Delete</th>
 	<?php } ?>
 		<th>View Other Sessions </th>
 	</thead>
@@ -305,18 +367,18 @@ echo "</select></li>";
 		<td><?php echo $s->full_name.', '.$s->email.', '.$s->phone;?></td>
 		<td><?php echo $s->languages;?></td>
 		<td><?php echo $s->helpline_session_role;?></td>
-		<td><?php echo $s->session_name; ?></td>
 		<td><?php echo $s->helpline_session_note; ?></td>
-	<?php foreach($functions as $f) {
-		if($f->user_function =="helpline_session_plan" && ($f->remove==1)) { ?>
-		<!--<td><button type="button" class="btn btn-info" autofocus onclick="$('#delete_helpline_<?php echo $s->helpline_session_plan_id;?>').submit()">Delete</button></td> --!>
+		<?php if($edit_access==1) { ?>
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->helpline_session_plan_id; ?>" data-name="<?php echo $s->full_name; ?>" data-email="<?php echo $s->email; ?>" data-phone="<?php echo $s->phone; ?>" data-toggle="modal" data-role="<?php echo $s->helpline_session_role_id; ?>"  data-note="<?php echo $s->helpline_session_note; ?>" data-target="#editModal">Edit</button>
+		</td> 
+	<?php } ?>
+	<?php if($remove_access==1) { ?>
 		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->helpline_session_plan_id; ?>" onclick="delete_helpline_receiver(event)" >Delete</button>
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'delete_helpline_'.$s->helpline_session_plan_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_id;?>" name="helpline_session_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_plan_id;?>" name="helpline_update_session_plan_id" />
 		</form>
 		</td> 
-	<?php } ?>
 	<?php } ?>
 		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button> 
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'view_helpline_sessions_'.$s->receiver_id));?>
@@ -442,11 +504,59 @@ echo "</select></li>";
 		<?php echo form_open('helpline/session_plan',array('role'=>'form','id'=>'back_helpline_session_plan'));?>
 		<input type="text" class="sr-only" hidden value="helpline_session_id" name="helpline_session_id" />
 		<input type="number" class="sr-only" hidden name="rows_per_page" value=50 />
-		<!--<button type="button" class="btn btn-info" required name="submit" >Back</button>--!>
 		<input class="btn btn-sm btn-primary" type="submit" value="Back"/>
 		</form>
 </div>
-
+<div class="modal fade" id="editModal" role="dialog">
+	<div class="modal-dialog">
+	 <!-- Modal content-->
+	 <div class="modal-content">
+		<div class="modal-header bg-primary text-white" id="view_modal_header">
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		      <h4 class="modal-title">Edit Metadata</h4>
+		</div>
+		<div class="modal-body">
+		<div class="form-group">
+		<label><b>Name: &nbsp </b></label><label id="name"></label>
+		<label><b>Phone: &nbsp </b></label><label id="phone"></label>
+		<label><b>Email: &nbsp </b></label><label id="email"></label>
+		</div>
+		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'edit_helpline_sessions'));?>
+		<input type="text" hidden value="" name="helpline_update_session_plan_id" id="helpline_session_plan_id"/>
+		<input type="text" class="sr-only" hidden value="Edit" name="helpline_session_plan_operation" />
+		<div class="form-group">
+			
+	        		<label for="role" class="control-label">Helpline Role</label>
+	       
+				<select name="role" id="role" class="form-control" >
+					<?php 
+					foreach($helpline_session_role as $role){
+					echo "<option value='".$role->helpline_session_role_id."' class='".$role->helpline_session_role_id."'";
+					if($this->input->post('role') && $this->input->post('role') == $role->helpline_session_role_id) echo " selected ";
+					echo ">".$role->helpline_session_role."</option>";
+					}
+					?>
+				</select>
+			
+		</div>
+		<div class="form-group">
+		
+	        		<label for="note" class="control-label">Note</label>
+	        	
+	            		<input type="text" class="form-control" placeholder="note" id="edit_note" name="edit_note"/>
+	        	
+	        </div>
+		</form>
+		<br/>
+		<div style="text-align:right;">
+		<button class="btn btn-danger"  type="button" name="btEdit" id="btEdit" >Update</button>
+		<button type="button"  class="btn btn-default" data-dismiss="modal">Close</button>
+		</div>
+		</div>
+	 </div>
+	 <!-- Modal content-->
+	</div>
+</div>
 <div class="modal fade" id="viewModal" role="dialog">
 	<div class="modal-dialog">
 	 <!-- Modal content-->

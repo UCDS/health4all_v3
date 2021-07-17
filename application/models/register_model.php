@@ -101,11 +101,12 @@ class Register_model extends CI_Model{
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,hospital.hospital_short_name	,helpline.helpline,
 		pv.appointment_time as appointment_date_time,
 		pv.admit_date as admit_date,pv.admit_time as admit_time,
-		pv.signed_consultation as signed",false);
+		pv.signed_consultation as signed,hospital.map_link as map_link,visit_name.visit_name as visit_name",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department','pv.department_id=department.department_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('visit_name','pv.visit_name_id=visit_name.visit_name_id','left')
 		 ->join('area','pv.area=area.area_id','left')
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
 		 ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
