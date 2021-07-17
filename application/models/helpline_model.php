@@ -1384,7 +1384,7 @@ class Helpline_model extends CI_Model{
 
 	function get_helpline_receiver_report($helpline_session_id) {
 		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
-			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id,  hs.session_name as session_name,hsp.helpline_session_role_id,hsr.helpline_session_role,hsp.helpline_session_note");
+			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id, hsp.helpline_session_role_id,hsr.helpline_session_role,hsr.helpline_session_role_id,hsp.helpline_session_note");
 			$this->db->select("(SELECT GROUP_CONCAT(language.language) as languages FROM helpline_receiver JOIN helpline_receiver_language on helpline_receiver_language.receiver_id = helpline_receiver.receiver_id JOIN language on language.language_id = helpline_receiver_language.language_id WHERE helpline_receiver.receiver_id = hsp.receiver_id ORDER BY helpline_receiver_language.proficiency) as languages ");
 			$this->db->from('helpline_session_plan as hsp');
 			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
@@ -1398,7 +1398,26 @@ class Helpline_model extends CI_Model{
 
 		return $query->result();
 	}
+	function update_helpline_session_plan_id($helpline_session_plan_id) {
+		$helpline_session_plan_id = $this->input->post('helpline_update_session_plan_id');
+		$this->db->trans_start();
+		$this->db->set('helpline_session_role_id', $this->input->post('role'));
+	 	$this->db->set('helpline_session_note', $this->input->post('edit_note'));
+		$this->db->where('helpline_session_plan.helpline_session_plan_id', $helpline_session_plan_id);
+		$this->db->update('helpline_session_plan');
+		$this->db->trans_complete();
+		if($this->db->trans_status()===TRUE){
+			return true;
+		}
+		else {
+			$this->db->trans_rollback();
+			return false;
+		}
 
+
+	}
+	
+	
 	function delete_helpline_session_plan_id($helpline_session_plan_id) {
 		$helpline_session_plan_id = $this->input->post('helpline_update_session_plan_id');
 		echo("<script>console.log('PHP: Model " . json_encode($helpline_session_plan_id) . "');</script>");

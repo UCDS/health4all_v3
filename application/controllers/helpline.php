@@ -664,6 +664,8 @@ class Helpline extends CI_Controller {
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="HelpLine Receivers -Sessions";
 			$this->data['weekdays']=$this->helpline_model->get_weekdays();
+			$this->data['helpline_session_role']=$this->helpline_model->get_helpline_session_role();
+			$this->data['session_name']=$this->input->post('session_name');
 			$helpline_session_id = $this->input->post('helpline_session_id');
 			$helpline_session_plan_id = $this->input->post('helpline_session_plan_id');
 			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id);
@@ -679,15 +681,20 @@ class Helpline extends CI_Controller {
 				}
 			}
 			if ($this->input->post('helpline_update_session_plan_id')) {
-				// delete request
-				if ($this->helpline_model->delete_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'))) {
-			}
-			else {
-			//	deletion failed
-				header('HTTP/1.1 500 Internal Server');
- 			       header('Content-Type: application/json; charset=UTF-8');
+				if($this->input->post('helpline_session_plan_operation') && $this->input->post('helpline_session_plan_operation') == "Edit") {
+					$this->helpline_model->update_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'));
+				}
+				else {
+					//delete request
+					if ($this->helpline_model->delete_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'))) {
+				}
+				else {
+					//deletion failed
+					header('HTTP/1.1 500 Internal Server');
+ 			       	header('Content-Type: application/json; charset=UTF-8');
 				echo json_encode(array('message' => 'error')) ;
-			}
+					}
+				}
 			}
 			else {
 			}

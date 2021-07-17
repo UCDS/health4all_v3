@@ -424,6 +424,7 @@ echo "</select></li>";
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_id;?>" name="helpline_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_id;?>" name="helpline_session_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_plan_id;?>" name="helpline_session_plan_id" />
+		<input type="text" class="sr-only" hidden value="<?php echo $s->session_name;?>" name="session_name" />
 		</form>
 	</tr>
 	<?php $sno++;}	?>

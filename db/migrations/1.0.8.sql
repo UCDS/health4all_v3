@@ -172,3 +172,5 @@ CREATE TABLE `helpline_receiver_language` (
 ALTER TABLE `helpline_session_plan` ADD `helpline_session_note` VARCHAR(200) NULL AFTER `helpline_session_role_id`;
 
 ALTER TABLE `staff` CHANGE `doctor_flag` `doctor_flag` TINYINT(1) NOT NULL DEFAULT '0';
+
+ALTER TABLE `hospital` ADD `map_link` VARCHAR(500) NOT NULL AFTER `state`;
