@@ -634,7 +634,7 @@ function get_op_detail_with_idproof(){
 		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
 		appointment_update_time,
 		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,
-		sd.department as doctor_department,vn.visit_name",false);
+		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
@@ -646,6 +646,7 @@ function get_op_detail_with_idproof(){
 		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
 		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
 		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
+		 ->join('department as sd_doctor', 'doctor.department_id=sd_doctor.department_id','left')
 		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')	
