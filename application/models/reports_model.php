@@ -765,17 +765,24 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->where('p.gender',$gender);
 			$max_query = $max_query . "  p.gender='".$gender."' AND";
 		}
-		if($district_id != -1){
+		if($district_id != -1 && $district_id!=""){
 				$this->db->where('p.district_id',$district_id );
 				$max_query = $max_query . "  p.district_id=".$district_id." AND";
 				
 		}
 		
-		if($state_id != -1){
+		if($district_id==""){
+			$this->db->where('p.district_id',0 );
+			$max_query = $max_query . "  p.district_id=0 AND";
+		}
+		
+		if($state_id != -1 && $state_id!=""){
 			$this->db->where('state.state_id',$state_id);
 			$max_query = $max_query . "  s1.state_id=".$state_id." AND";
 				
 		}
+		
+		
 		$max_query = $max_query." pv2.visit_type='".$visittype."' AND pv2.patient_id= pv.patient_id";
 		if ($visittype == 'IP'){
 			$select_fields=" pv.hosp_file_no as latest_ip_no,pv.admit_date,pv.admit_time,pv.decision,pv.outcome,pv.outcome_date,pv.outcome_time,department.department as ip_department ";
@@ -888,15 +895,23 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		if($gender !=-1){
 			$this->db->where('p.gender',$gender);
 		}
-		if($district_id != -1){
+		if($district_id != -1 && $district_id!=""){
 				$this->db->where('p.district_id',$district_id );
 				
 		}
 		
-		if($state_id != -1){
+		if($district_id==""){
+			$this->db->where('p.district_id',0 );
+			$max_query = $max_query . "  p.district_id=0 AND";
+		}
+		
+		if($state_id != -1 && $state_id!=""){
 			$this->db->where('state.state_id',$state_id);
+			$max_query = $max_query . "  s1.state_id=".$state_id." AND";
 				
 		}
+		
+		
 		
 		$this->db->select("count(DISTINCT pv.patient_id) as count" ,false);
 		 $this->db->from('patient_visit as pv')
