@@ -655,7 +655,7 @@ sum(case when patient_sub.gender='M' then 1 else 0 end) as male,
 sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner_query."  GROUP by patient_sub.state,patient_sub.district",false);		 			
 		return $query->result();
 	}
-	function get_referrals_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$from_time_param,$to_time_param,$district_id,$state_id,$default_rowsperpage){
+	function get_referrals_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$district_id,$state_id,$default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -721,24 +721,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_date=$from_date;
 		}
 	
-                if($from_time_param && $to_time_param){
-			$from_time=date("H:i",strtotime($from_time_param));
-			$to_time=date("H:i",strtotime($to_time_param));
-				
-		}
-		else if($from_time_param || $to_time){
-			if($from_time_param){
-                            $from_time=$from_time_param;
-                            $to_time = '23:59';
-                        }else{
-                            $from_time = '00:00';
-                            $to_time=$to_time;
-                        }				
-		}		
-		else{
-			$to_time = '23:59';
-		 	$from_time = '00:00';
-		}
+               $to_time = '23:59';
+	       $from_time = '00:00';
 		
 		if($date_filter_field=="Registration"){
 			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
@@ -746,6 +730,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->order_by('admit_date','ASC');
 		 	$this->db->order_by('admit_time','ASC'); 
 		 	$max_query = $max_query . " (admit_date BETWEEN '$from_date' AND '$to_date')"." AND";
+		 	$max_query = $max_query . " (admit_time BETWEEN '$from_time' AND '$to_time')"." AND";
 		} 
 		else if($date_filter_field=="Appointment"){
 			$this->db->where("(appointment_time IS NOT NULL)");				
@@ -820,7 +805,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	function get_referrals_detail_count($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$from_time_param,$to_time_param,$district_id,$state_id){
+	function get_referrals_detail_count($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$district_id,$state_id){
 		
 		
 	   
@@ -868,25 +853,11 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_date=$from_date;
 		}
 	
-                if($from_time_param && $to_time_param){
-			$from_time=date("H:i",strtotime($from_time_param));
-			$to_time=date("H:i",strtotime($to_time_param));
-				
-		}
-		else if($from_time_param || $to_time){
-			if($from_time_param){
-                            $from_time=$from_time_param;
-                            $to_time = '23:59';
-                        }else{
-                            $from_time = '00:00';
-                            $to_time=$to_time;
-                        }				
-		}		
-		else{
-			$to_time = '23:59';
-		 	$from_time = '00:00';
-		}
+              
+		$to_time = '23:59';
+		$from_time = '00:00';
 		
+	
 		if($date_filter_field=="Registration"){
 			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
 			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
