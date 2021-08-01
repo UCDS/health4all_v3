@@ -902,12 +902,11 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		
 		if($district_id==""){
 			$this->db->where('p.district_id',0 );
-			$max_query = $max_query . "  p.district_id=0 AND";
+			
 		}
 		
 		if($state_id != -1 && $state_id!=""){
 			$this->db->where('state.state_id',$state_id);
-			$max_query = $max_query . "  s1.state_id=".$state_id." AND";
 				
 		}
 		
