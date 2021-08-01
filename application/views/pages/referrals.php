@@ -291,7 +291,6 @@ display: inline-grid;
 						initHospitalSelectize();
 	
 						</script>
-			<br/>
 			<select name="state" id="state"  class="form-control" onchange='onchange_state_dropdown(this)'>
 							<option value="" >State</option>
 							<?php 
