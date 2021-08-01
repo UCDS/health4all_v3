@@ -91,6 +91,7 @@
 								}
 							} ?>
 							<li class="divider"></li>
+							<!-- 
 							<?php
 								foreach($functions as $f){
 									if($f->user_function == "View Patients"){ ?>
@@ -99,6 +100,7 @@
 									break;
 									}
 								} ?>
+								-->
 							<?php
 								foreach($functions as $f){
 									if($f->user_function == "Update Patients"){ ?>
@@ -259,7 +261,7 @@
 					$f->user_function=="OP Detail" || $f->user_function=="IP Detail" ||
 					$f->user_function=="Diagnostics - Detail" || $f->user_function=="Diagnostics - Summary" ||
 					($f->user_function == "Sanitation Evaluation" && $f->view==1) ||
-					$f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary" || $f->user_function == "Helpline Reports"|| $f->user_function == "follow_up_report" || $f->user_function =="appointment_status"){ ?>
+					$f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary" || $f->user_function == "Helpline Reports"|| $f->user_function == "follow_up_report" || $f->user_function =="appointment_status" || $f->user_function =="referral"){ ?>
 					<li class="dropdown  <?php if(preg_match("^".base_url()."reports^",current_url())){ echo "active";}?>">
 						<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown"><i class="fa fa-line-chart"></i> Reports <b class="caret"></b></a>
 						<ul class="dropdown-menu">
@@ -302,6 +304,10 @@
                       if($f->user_function=="Patient Transport Report"){ ?>
 						  <li><a href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a></li>
 				<?php                      }
+				 if($f->user_function=="referral"){ ?>
+						  <li><a href="<?php echo base_url()."reports/referrals";?>">Referrals</a></li>
+				<?php                      }
+				
 				}
 				foreach($functions as $f){
 					if($f->user_function=="Diagnostics - Summary"){ ?>

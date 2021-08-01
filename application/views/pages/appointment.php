@@ -121,9 +121,13 @@ function initAppointmentDoctorSelectize(modal_id){
 	if(modal.find('#staff_id').attr("data-previous-department-value")){
 		user_list_data.department = modal.find('#staff_id').attr("data-previous-department-value");
 	}
-	if(modal.find('#staff_id').attr("data-previous-doctor-value")){
+	if(modal.find('#staff_id').attr("data-previous-doctor-consulted-value")){
+		user_list_data.first_name = modal.find('#staff_id').attr("data-previous-doctor-consulted-value");
+	}
+	else if(modal.find('#staff_id').attr("data-previous-doctor-value")){
 		user_list_data.first_name = modal.find('#staff_id').attr("data-previous-doctor-value");
 	}
+	
 	user_list_data.last_name = "";
 	window['userList'] = transformUser([user_list_data]);
 
@@ -693,7 +697,7 @@ echo "</select></li>";
 			</div>				
 			<div class="form-group">
 				<label for="staff_id">Appointment With:</label>
-				<select id="staff_id" name="appointment_with" class="" style="width:300px; position:relative;" placeholder="-Enter Doctor Name/Department-" data-previous-value="<?php echo $s->appointment_with_id; ?>" data-previous-department-value="<?php echo $s->doctor_department; ?>" data-previous-doctor-value="<?php echo $s->appointment_with; ?>">
+				<select id="staff_id" name="appointment_with" class="" style="width:300px; position:relative;" placeholder="-Enter Doctor Name/Department-" data-previous-value="<?php echo $s->appointment_with_id; ?>" data-previous-department-value="<?php echo $s->doctor_department; ?>" data-previous-doctor-value="<?php echo $s->appointment_with; ?>" data-previous-doctor-consulted-value="<?php echo $s->doctor; ?>">
 					<?php 
 					if($s->appointment_with) { ?>
 						<script type="text/javascript">
