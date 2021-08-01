@@ -334,7 +334,7 @@ class Reports extends CI_Controller {
 	}
 	///health4all_v3/reports/referrals_detail/Registration/IP/0/0/0/0/M/HospitalReferredby/0/2021-01-01/2021-08-01/00:00/00:00/2/2
 	//reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$from_time/$from_time/$s->district_id/$s->state_id
-	public function referrals_detail($date_filter_field,$visittype,$visit_name=0,$department=0,$unit=0,$area=0,$gender=0,$hospitalsearchtype,$hospital,$from_date,$to_date,$from_time,$from_time,$district_id,$state_id)
+	public function referrals_detail($date_filter_field,$visittype,$visit_name=0,$department=0,$unit=0,$area=0,$gender=0,$hospitalsearchtype,$hospital,$from_date,$to_date,$from_time,$to_time,$district_id,$state_id)
 	{
 	       if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
@@ -366,8 +366,8 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
-		$this->data['report_count']=$this->reports_model->get_referrals_detail_count($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$from_time,$from_time,$district_id,$state_id);
-		$this->data['report']=$this->reports_model->get_referrals_detail($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$from_time,$from_time,$district_id,$state_id,$this->data['rowsperpage']);		
+		$this->data['report_count']=$this->reports_model->get_referrals_detail_count($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$from_time,$to_time,$district_id,$state_id);
+		$this->data['report']=$this->reports_model->get_referrals_detail($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$from_time,$to_time,$district_id,$state_id,$this->data['rowsperpage']);		
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 

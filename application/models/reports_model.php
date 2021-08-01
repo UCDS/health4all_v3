@@ -655,7 +655,7 @@ sum(case when patient_sub.gender='M' then 1 else 0 end) as male,
 sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner_query."  GROUP by patient_sub.state,patient_sub.district",false);		 			
 		return $query->result();
 	}
-	function get_referrals_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$from_time_param,$from_time_param,$district_id,$state_id,$default_rowsperpage){
+	function get_referrals_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$from_time_param,$to_time_param,$district_id,$state_id,$default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -820,7 +820,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	function get_referrals_detail_count($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$from_time_param,$from_time_param,$district_id,$state_id){
+	function get_referrals_detail_count($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$from_time_param,$to_time_param,$district_id,$state_id){
 		
 		
 	   
