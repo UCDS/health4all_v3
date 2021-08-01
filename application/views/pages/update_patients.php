@@ -1183,14 +1183,14 @@ function initDistrictSelectize(){
                                             ?>
                                      </div>                                     
                                      <div class="col-md-8 col-xs-6">
-                                        <label class="control-label">Referral Hospital</label>
-                                        <?php if($f->edit==1 && empty($patient->refereal_hospital_id)){ ?>
-                                        <select name="refereal_hospital_id" id="refereal_hospital_id" class="form-control refereal_hospital_id">
+                                        <label class="control-label">Referred by Hospital</label>
+                                        <?php if($f->edit==1 && empty($patient->referral_by_hospital_id)){ ?>
+                                        <select name="referral_by_hospital_id" id="referral_by_hospital_id" class="form-control referral_by_hospital_id">
                                             <option value="">--Select--</option>
                                             <?php 
                                             foreach($hospitals as $hospital){
                                                 echo "<option value='".$hospital->hospital_id."' class='".$hospital->hospital_id."'";
-                                                if($hospital->hospital_id==$patient->refereal_hospital_id) echo " selected ";
+                                                if($hospital->hospital_id==$patient->referral_by_hospital_id) echo " selected ";
                                                 echo ">".$hospital->hospital."</option>";
                                             }
                                             ?>
@@ -1198,9 +1198,9 @@ function initDistrictSelectize(){
                                         <?php 
                                             }else{
                                                 foreach($hospitals as $hospital){
-                                                    if($hospital->hospital_id==$patient->refereal_hospital_id){
+                                                    if($hospital->hospital_id==$patient->referral_by_hospital_id){
                                                         echo "<input type='text' id='hospital_id' class='form-control' value='$hospital->hospital' disabled/>";
-                                                        echo "<input type='hidden' name='refereal_hospital_id' id='hospital_id' class='form-control' value='$hospital->hospital_id'/>";
+                                                        echo "<input type='hidden' name='referral_by_hospital_id' id='hospital_id' class='form-control' value='$hospital->hospital_id'/>";
                                                     }
                                                 }
                                             }

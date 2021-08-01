@@ -7,7 +7,7 @@ class Register_model extends CI_Model{
 		'pulse_rate','respiratory_rate','temperature','sbp','dbp','spo2', 'blood_sugar','hb','hb1ac',
 		'clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis',
 		'final_diagnosis','decision','advise','discharge_weight','outcome','outcome_date',
-		'outcome_time','ip_file_received','mlc','arrival_mode','refereal_hospital_id','insert_by_user_id',
+		'outcome_time','ip_file_received','mlc','arrival_mode','referral_by_hospital_id','insert_by_user_id',
 		'update_by_user_id','insert_datetime','update_datetime','temp_visit_id'
 	);
 	private $patient = array(
@@ -636,7 +636,7 @@ class Register_model extends CI_Model{
         if($this->input->post('visit_name_id')) $visit_name_id=$this->input->post('visit_name_id'); else $visit_name_id="";
 		if($this->input->post('insurance_case')) $insurance_case=$this->input->post('insurance_case'); else $insurance_case="";
 		if($this->input->post('insurance_no')) $insurance_no=$this->input->post('insurance_no'); else $insurance_no="";
-        if($this->input->post('refereal_hospital_id')) $refereal_hospital_id=$this->input->post('refereal_hospital_id'); else $refereal_hospital_id="";
+        if($this->input->post('referral_by_hospital_id')) $referral_by_hospital_id=$this->input->post('referral_by_hospital_id'); else $referral_by_hospital_id="";
         if($this->input->post('arrival_mode')) $arrival_mode=$this->input->post('arrival_mode'); else $arrival_mode="";
 		if($this->input->post('sbp')) $sbp=$this->input->post('sbp'); else $sbp="";
 		if($this->input->post('dbp')) $dbp=$this->input->post('dbp'); else $dbp="";
@@ -818,7 +818,7 @@ class Register_model extends CI_Model{
 			'visit_name_id'=>$visit_name_id,
 			'insurance_case'=>$insurance_case,
 			'insurance_no'=>$insurance_no,
-			'refereal_hospital_id'=>$refereal_hospital_id,
+			'referral_by_hospital_id'=>$referral_by_hospital_id,
 			'arrival_mode' => $arrival_mode,
 			'outcome'=>$outcome,
 			'outcome_date'=>$outcome_date,

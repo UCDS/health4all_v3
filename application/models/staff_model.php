@@ -38,10 +38,12 @@ class Staff_model extends CI_Model{
 	function user_hospital($user_id = false){
 		if(!!$user_id)
 			$this->db->where('user_hospital_link.user_id',$user_id);
-		$this->db->select('hospital.hospital_id,hospital,hospital_short_name,description,place,district,state,logo,telehealth,helpline.helpline as helpline,helpline.note as helpline_note')->from('user')
+		$this->db->select("hospital.hospital_id,hospital,hospital_short_name,description,place,district.district,state.state,logo,telehealth,helpline.helpline as helpline,helpline.note as helpline_note,CONCAT(hospital_short_name,' - ',place,' - ',district.district,' - ',state.state) as customdata",false)->from('user')
 		->join('user_hospital_link','user.user_id=user_hospital_link.user_id')
 		->join('hospital','user_hospital_link.hospital_id=hospital.hospital_id')	
-		->join('helpline','hospital.helpline_id=helpline.helpline_id','left')	
+		->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+		->join('district','hospital.district_id=district.district_id','left')
+		->join('state','state.state_id=district.state_id','left')	
 		->group_by('hospital.hospital_id')			
 		->order_by('hospital');
 		$query=$this->db->get();

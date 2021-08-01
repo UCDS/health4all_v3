@@ -174,3 +174,9 @@ ALTER TABLE `helpline_session_plan` ADD `helpline_session_note` VARCHAR(200) NUL
 ALTER TABLE `staff` CHANGE `doctor_flag` `doctor_flag` TINYINT(1) NOT NULL DEFAULT '0';
 
 ALTER TABLE `hospital` ADD `map_link` VARCHAR(500) NOT NULL AFTER `state`;
+
+ALTER TABLE `patient_visit` CHANGE `refereal_hospital_id` `referral_by_hospital_id` INT(11) NULL DEFAULT NULL;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'referral', 'Referrals', 'This user function is to determine authorisation for the referral report. ');
+
+ALTER TABLE `hospital` ADD `district_id` INT(3) NOT NULL AFTER `district`;
