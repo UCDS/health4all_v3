@@ -1059,7 +1059,7 @@ class Register_model extends CI_Model{
 		}
 		//Build the query to retrieve the patient records based on the search query.
 		$this->db->select("patient.*,patient_visit.*,CONCAT(patient.first_name,' ',patient.last_name) name,
-		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,staff.ima_registration_number as ima_registration_number, staff.doctor_flag as doctor_flag, designation,IFNULL(visit_name.summary_header,0) as summary_header,visit_name.visit_name",false)
+		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,mainhospital.hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,staff.ima_registration_number as ima_registration_number, staff.doctor_flag as doctor_flag, designation,IFNULL(visit_name.summary_header,0) as summary_header,visit_name.visit_name,referral.hospital as referral_by_hospital_name",false)
 		->from('patient')
 		->join('patient_visit','patient.patient_id=patient_visit.patient_id')
                 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')
@@ -1073,7 +1073,8 @@ class Register_model extends CI_Model{
 		->join('occupation','patient.occupation_id=occupation.occupation_id','left')
 		->join('id_proof_type','patient.id_proof_type_id=id_proof_type.id_proof_type_id','left')
 		->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
-		->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		->join('hospital as referral','patient_visit.referral_by_hospital_id=referral.hospital_id','left')
+		->join('hospital as mainhospital','patient_visit.hospital_id=mainhospital.hospital_id','left')
 		->join('staff','patient_visit.signed_consultation = staff.staff_id','left')
 		->order_by('name','ASC');
 		$query=$this->db->get();

@@ -1197,12 +1197,11 @@ function initDistrictSelectize(){
                                         </select>
                                         <?php 
                                             }else{
-                                                foreach($hospitals as $hospital){
-                                                    if($hospital->hospital_id==$patient->referral_by_hospital_id){
-                                                        echo "<input type='text' id='hospital_id' class='form-control' value='$hospital->hospital' disabled/>";
-                                                        echo "<input type='hidden' name='referral_by_hospital_id' id='hospital_id' class='form-control' value='$hospital->hospital_id'/>";
-                                                    }
-                                                }
+                                               
+                                           echo "<input type='text' id='hospital_id' class='form-control' value='$patient->referral_by_hospital_name' disabled/>";
+                                           echo "<input type='hidden' name='referral_by_hospital_id' id='hospital_id' class='form-control' value='$patient->referral_by_hospital_id'/>";
+                                                    
+                                                
                                             }
                                             ?>
                                      </div>                                     
