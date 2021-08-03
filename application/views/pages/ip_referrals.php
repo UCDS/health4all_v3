@@ -342,7 +342,7 @@ echo "</select></li>";
 		<th>Phone</th>
 		<th>Department</th>
     		<th>Latest IP No,Date Time</th> 
-    		<th>Provisional Diagnosis</th>   		
+    		<th>Diagnosis</th>   		
     		<th>Procedure</th>
     		<th>IP Status, Date/Time</th>
     		<th>Referred to</th>
