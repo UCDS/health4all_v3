@@ -343,7 +343,7 @@ echo "</select></li>";
     		<th>Latest OP Visit Type, Department</th>	
 		<th>Latest OP No,Date Time</th>		
 		<th>ICD Code</th>	
-    		<th>Provisional Diagnosis</th>
+    		<th>Diagnosis</th>
     		<th>OP Appointment Time</th>
     		<th>Referred to</th>
     		<th>Referred by</th>

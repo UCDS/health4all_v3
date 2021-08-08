@@ -341,7 +341,8 @@ echo "</select></li>";
 		<th>Address</th>
 		<th>Phone</th>
 		<th>Department</th>
-    		<th>Latest IP No,Date Time</th>    		
+    		<th>Latest IP No,Date Time</th> 
+    		<th>Diagnosis</th>   		
     		<th>Procedure</th>
     		<th>IP Status, Date/Time</th>
     		<th>Referred to</th>
@@ -373,7 +374,7 @@ echo "</select></li>";
 		echo $s->latest_ip_no;?> , <?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));
 		
 		} ?></td>
-			
+		<td><?php echo $s->final_diagnosis;?></td>	
 		<td><?php echo $s->decision;?></td>
 		<td><?php
 			if(isset($s->outcome) && $s->outcome!="0" ){
