@@ -925,7 +925,139 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$resource=$this->db->get();
 		return $resource->result();
 	}
+	function get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param){
+		
+		if($login_status != -1){
+			$this->db->where('is_success', $login_status);
+		}
+		
+	   	if($from_date_param != -1 && $to_date_param != -1){
+	   	
+	   		if($from_date_param && $to_date_param){
+				$from_date=date("Y-m-d",strtotime($from_date_param));
+				$to_date=date("Y-m-d",strtotime($to_date_param));
+			}
+			else if($from_date_param || $to_date_param){
+				$from_date_param?$from_date=$from_date_param:$from_date=$to_date_param;
+				$to_date=$from_date;
+			}
+			else{
+				$from_date=date("Y-m-d");
+				$to_date=$from_date;
+			}
 	
+              
+			$to_time = '23:59';
+			$from_time = '00:00';
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");	
+	   	
+	   	} else {
+	   			//Report for day or month or year.
+			if($trend_type !=-1){
+				$dateValue = strtotime($datefilter); 
+                        	if($trend_type=="Month"){
+                        		$val = date("m-Y", $dateValue); 
+                            		$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
+                        	}
+                        	else if($trend_type=="Year"){
+                        		$val = date("Y", $dateValue); 
+                            		$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
+                        	}
+                        	else{
+                        		$val = date("d-m-Y", $dateValue); 
+                            		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
+                        	}
+		  	}
+                 	else{
+                 
+                  		$val = date("d-m-Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);                	
+                 	}
+	   		
+	   	}		
+		$this->db->select("count(*) as count",false);
+		$this->db->from("user_signin");			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	function get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		if($login_status != -1){
+			$this->db->where('is_success', $login_status);
+		}
+		
+	   	if($from_date_param != -1 && $to_date_param != -1){
+	   	
+	   		if($from_date_param && $to_date_param){
+				$from_date=date("Y-m-d",strtotime($from_date_param));
+				$to_date=date("Y-m-d",strtotime($to_date_param));
+			}
+			else if($from_date_param || $to_date_param){
+				$from_date_param?$from_date=$from_date_param:$from_date=$to_date_param;
+				$to_date=$from_date;
+			}
+			else{
+				$from_date=date("Y-m-d");
+				$to_date=$from_date;
+			}
+	
+              
+			$to_time = '23:59';
+			$from_time = '00:00';
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");	
+	   	
+	   	} else {
+	   			//Report for day or month or year.
+			if($trend_type !=-1){
+				$dateValue = strtotime($datefilter); 
+                        	if($trend_type=="Month"){
+                        		$val = date("m-Y", $dateValue); 
+                            		$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
+                        	}
+                        	else if($trend_type=="Year"){
+                        		$val = date("Y", $dateValue); 
+                            		$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
+                        	}
+                        	else{
+                        		$val = date("d-m-Y", $dateValue); 
+                            		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
+                        	}
+		  	}
+                 	else{
+                 
+                  		$val = date("d-m-Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);                	
+                 	}
+	   		
+	   	}		
+		$this->db->select("user_signin.username as username,CONCAT(staff.first_name,'  ',staff.last_name) as name, (case when staff.gender = 'M' then 'Male' when staff.gender = 'F' then 'Female' when staff.gender = 'O' then 'Others' end) as gender,hospital.hospital_short_name as hospital,department.department,signin_date_time,(case when is_success = 1 then 'Success' else 'Failed' end) as status,details",false);
+		$this->db->from("user_signin")
+		->join('user','user_signin.username = user.username','left')
+		->join('staff','user.staff_id = staff.staff_id','left')
+		->join('hospital','staff.hospital_id = hospital.hospital_id','left')
+		->join('department','staff.department_id = department.department_id','left');
+		$this->db->limit($rows_per_page,$start);
+		$this->db->order_by('UNIX_TIMESTAMP(signin_date_time)','ASC');			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
 	function get_registration_appointment($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
@@ -2447,7 +2579,57 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		return $resource->result();
         }
 
-
+	function get_login_report(){	
+	     $from_time = '00:00';	
+	     $to_time = '23:59';
+            if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+               
+                //Report for day or month or year.
+		if($this->input->post('trend_type')){
+                        $trend = $this->input->post('trend_type');
+                        if($trend=="Month"){                            
+                            	$this->db->group_by('MONTH(signin_date_time),YEAR(signin_date_time)');
+                        }
+                        else if($trend=="Year"){                          
+                            	$this->db->group_by('YEAR(signin_date_time)');
+                        }
+                        else{                    
+                           	$this->db->group_by('date(signin_date_time)');
+                        }
+		  }
+                 else{
+                 
+                  	$this->db->select('signin_date_time date');
+                       $this->db->group_by('date(signin_date_time)');                  	
+                 }
+               
+		
+		$from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		
+                //Counting the number of patients gender wise.
+		$this->db->select("signin_date_time 'date',
+		SUM(CASE WHEN 1 THEN 1 ELSE 0 END) 'total',
+          SUM(CASE WHEN is_success = 1  THEN 1 ELSE 0 END) 'no_of_success',
+           SUM(CASE WHEN is_success = 0  THEN 1 ELSE 0 END) 'no_of_un_success',
+		");
+		$this->db->from('user_signin');
+		$resource=$this->db->get();
+		return $resource->result();
+        }
+        
 	function get_transfers_summary(){
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){

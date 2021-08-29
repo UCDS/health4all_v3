@@ -1114,8 +1114,96 @@ class Reports extends CI_Controller {
             
         }
 	
-}
+    }	
+        // This function is used to get login activities in specified period.
+        
+        public function login_report(){ 
+            
+            if($this->session->userdata('logged_in')){                          //Checking for user login
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                    if($function->user_function=="login_report"){
+                        $access=1;
+                    }
+                }
+                if($access==1){                                      
+                    $this->data['title']="Login Activities";                       //Getting values to populate the selection fields in the query form.
+                    $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                    foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
 
+		 		}
+			}
+                    $this->load->view('templates/header',$this->data);
+                    $this->load->helper('form');
+                    $this->load->library('form_validation');
+                    $this->data['report']=$this->reports_model->get_login_report(); //This method gets data from the Database, and puts the data in report variable.
+                    //Report variable stores all the data returned by reports_model which is passed to the view.
+                    $this->load->view('pages/login_report',$this->data);
+                    $this->load->view('templates/footer');
+                }
+                else{
+                    show_404();
+                }
+            }
+        else{
+            show_404();
+            
+        }
+	
+    }	
+    
+    public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage)
+	{
+	
+	       if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="login_report"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}	
+    		$this->data['title']="Login Activities - Detail"; 	
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->load->view('templates/header',$this->data);
+		$this->data['rowsperpage'] = $rowsperpage;
+		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date);
+		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage);		
+		$this->form_validation->set_rules('from_date', 'From Date',
+		'trim|required|xss_clean');
+	    $this->form_validation->set_rules('to_date', 'To Date', 
+	    'trim|required|xss_clean');
+		
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/login_activity_detail',$this->data);
+		}
+		else{
+			$this->load->view('pages/login_activity_detail',$this->data);
+		}
+		
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+	
+	
     public function outcome_summary(){
         if($this->session->userdata('logged_in')){
                 $this->data['userdata']=$this->session->userdata('logged_in');

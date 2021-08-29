@@ -180,20 +180,26 @@ class Home extends CI_Controller {
 				$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean');
 				$this->form_validation->set_rules('captcha_text', 'Captcha', 'trim|required|xss_clean');
 				$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|callback_check_database');
+				$login = 0;
 				if ($this->form_validation->run() === FALSE)
 				{
 					$this->load->view('pages/login');
 				}
 				else{
+					$login = 1;
 					$defaults = $this->staff_model->get_defaults();
 					 if($defaults != false) {
 						foreach($defaults as $def) {
 							$this->session->set_userdata($def->primary_key, $def->default_value_text);
 						}
-					 }
-					redirect('home', 'refresh');
+					 }				
 				}
-				
+				if($this->input->post('username') && $this->input->post('username')!=""){
+						$this->staff_model->save_user_signin($this->input->post('username'), $login);
+				}
+				if($login==1){
+					redirect('home', 'refresh');	
+				}
 				$this->load->view('templates/footer');
 			}
 			else {
