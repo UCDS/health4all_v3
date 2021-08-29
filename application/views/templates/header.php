@@ -266,6 +266,7 @@
 						<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown"><i class="fa fa-line-chart"></i> Reports <b class="caret"></b></a>
 						<ul class="dropdown-menu">
 			<?php
+			
 				foreach($functions as $f){
 					if($f->user_function=="OP Summary" || $f->user_function=="IP Summary" || $f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary"){ ?>
 						  <li class="dropdown-header">Summary reports</li>
@@ -273,7 +274,7 @@
 				break;
 				}
 				}
-				foreach($functions as $f){
+				foreach($functions as $f){				
 				if($f->user_function=="OP Summary"){ ?>
                                             <li><a href="<?php echo base_url()."reports/op_summary";?>">OP Summary</a></li>
 				<?php	}
@@ -426,7 +427,15 @@
                   <li><a href="<?php echo base_url()."user_panel/settings";?>"><i class="fa fa-gear"></i> Settings</a></li>
 				  <li class="divider"></li>
 				<?php break;
-					}
+					}				
+				}
+				?>
+				<?php
+				foreach($functions as $f){
+				if($f->user_function=="login_report"){ ?>
+                  <li><a href="<?php echo base_url()."reports/login_report";?>"><i class="fa fa-eye"></i>Login Report</a></li>
+				<?php break;
+					}				
 				}
 				?>
                   <li><a href="<?php echo base_url()."user_panel/change_password";?>"><i class="fa fa-edit"></i> Change Password</a></li>
