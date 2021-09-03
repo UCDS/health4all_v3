@@ -1021,6 +1021,9 @@ class Register_model extends CI_Model{
 		if($this->input->post('search_patient_id')){
 			$this->db->where('patient.patient_id',$this->input->post('search_patient_id'));
 		} else {
+			if ($this->input->post('search_patient_id_manual')) {
+				$this->db->where('patient.patient_id_manual', $this->input->post('search_patient_id_manual'));
+			}
 			if($this->input->post('search_patient_name')){
 				$name=$this->input->post('search_patient_name');
 				$this->db->like("LOWER(CONCAT(patient.first_name,' ',patient.last_name))",strtolower($name),'after');

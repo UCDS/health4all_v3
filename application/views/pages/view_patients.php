@@ -643,7 +643,7 @@ pri.print();
 					<div class="col-md-12 col-xs-12">
 						<div class="form-group">
 
-						<label class="control-label">H4A ID</label>
+						<label class="control-label">H4A Patient ID</label>
 						<input type="text" name="search_patient_id" size="5" class="form-control" />
 						<label class="control-label">Year</label>
 						<select class="form-control" name="search_year">
@@ -674,6 +674,10 @@ pri.print();
 						<div class="form-group">
 						<label class="control-label">Phone Number</label>
 						<input type="text" name="search_phone" class="form-control" />
+						</div>
+						<div class="form-group">
+						<label class="control-label">Patient ID Manual</label>
+						<input type="text" name="search_patient_id_manual" size="5" class="form-control" />
 						</div>
 					</div>
 				</div>
