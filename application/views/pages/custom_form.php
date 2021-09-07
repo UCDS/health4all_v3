@@ -1188,7 +1188,7 @@ pri.print();
 					</div>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
-						<label class="control-label">Patient ID</label>
+						<label class="control-label">H4A Patient ID</label>
 						<input type="text" name="search_patient_id" class="form-control" />
 						</div>
 					</div>
@@ -1205,6 +1205,12 @@ pri.print();
 						<input type="text" name="search_phone" class="form-control" />
 						</div>
 					</div>
+					<div class="<?php echo $class;?>">
+						<div class="form-group">
+						<label class="control-label">Patient ID Manual</label>
+						<input type="text" name="search_patient_id_manual" class="form-control" />
+						</div>
+					</div>
 				</div>
 				<div class="panel-footer">
 					<button type="submit" class="btn btn-primary btn-sm" name="search_patients" value="1" >Search</button>
@@ -1217,10 +1223,11 @@ pri.print();
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<h4>Search Results</h4> | 
-							<?php if($this->input->post('search_patient_id')) echo "Patient ID : ".$this->input->post('search_patient_id')." | "; ?>
+							<?php if($this->input->post('search_patient_id')) echo "H4A Patient ID : ".$this->input->post('search_patient_id')." | "; ?>
 							<?php if($this->input->post('search_patient_name')) echo "Patient name starting with : ".$this->input->post('search_patient_name')." | "; ?>
 							<?php if($this->input->post('search_op_number')) echo "OP Number : ".$this->input->post('search_op_number')." | "; ?>
 							<?php if($this->input->post('search_phone')) echo "Phone Number : ".$this->input->post('search_phone')." | "; ?>
+							<?php if($this->input->post('search_patient_id_manual')) echo "Patient ID Manual: ".$this->input->post('search_patient_id_manual')." | "; ?>
 						</div>
 						<div class="panel-body">
 							<?php if(count($patients)>1){ ?>
@@ -1278,6 +1285,7 @@ pri.print();
 									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_op_number');?>" name="search_op_number" />
 									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_ip_number');?>" name="search_ip_number" />
 									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_phone');?>" name="search_phone" />
+									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_patient_id_manual');?>" name="search_patient_id_manual" />
 									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_year');?>" name="search_year" />
 									<input type="text" class="sr-only" value="1" name="load_other_hospitals" />
 									<input type="submit" value="Search All Hospitals" name="search_patients" class="btn btn-primary btn-sm text-center">
