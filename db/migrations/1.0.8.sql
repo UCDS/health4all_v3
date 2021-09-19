@@ -184,3 +184,5 @@ ALTER TABLE `hospital` ADD `district_id` INT(3) NOT NULL AFTER `district`;
 CREATE TABLE `user_signin` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCHAR(60) NOT NULL , `signin_date_time` DATETIME NOT NULL , `is_success` BOOLEAN NOT NULL ,`details` TEXT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB COMMENT = 'Table for storing the user login activities';
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'login_report', 'Login Report', 'To check whether user having access for Login Activity Report');
+
+ALTER TABLE `appointment_status` ADD `is_default` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Stores whether the status is default or not' AFTER `appointment_status`;

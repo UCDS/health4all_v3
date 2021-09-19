@@ -201,7 +201,7 @@ class Staff_model extends CI_Model{
 			$this->db->where('hospital_id',$hospital['hospital_id']);
 		}		
 		
-		$this->db->select("id,appointment_status")->from("appointment_status");
+		$this->db->select("id,appointment_status,is_default")->from("appointment_status");
 		$query=$this->db->get();
 		return $query->result();
 	}
