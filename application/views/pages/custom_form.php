@@ -282,7 +282,7 @@ function initAppointmentDoctorSelectize(modal_id){
 							<th>Gender</th>
 							<td><?php echo $registered->gender;?></td>
 							<th>Department</th>
-							<td><?php echo $registered->department;?></td>
+							<td id='dept_name'><?php echo $registered->department;?></td>
 						</tr>
 					</table>
 				</div>
@@ -1856,7 +1856,9 @@ $("#appointment").submit(function(e) {
            data: form.serialize(), // serializes the form's elements.
            success: function(data)
            {
-             bootbox.alert("Appointment updated successfully");
+           	var modal = $('#myModal_appointment');
+           	document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();; 
+             	bootbox.alert("Appointment updated successfully");
            }
          });
 
