@@ -584,8 +584,13 @@ echo "</select></li>";
 					<?php 
 					foreach($all_appointment_status as $status){
 						echo "<option value='".$status->id."'";
-						if($s->appointment_status_id == $status->id) echo " selected ";
-						echo ">".$status->appointment_status."</option>";
+						if($s->appointment_status_id) {
+							if($s->appointment_status_id == $status->id) echo " selected ";
+							echo ">".$status->appointment_status."</option>";
+						} else {
+							if($status->is_default==1) echo " selected ";
+							echo ">".$status->appointment_status."</option>";
+						}
 					}
 					?>
 				</select>	                        
