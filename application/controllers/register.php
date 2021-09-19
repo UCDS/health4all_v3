@@ -73,22 +73,26 @@ class Register extends CI_Controller {
 				show_404();
 			else{	
 			$access=0;
+			$add_sms_access=0;
+			$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
 			foreach($this->data['functions'] as $f){
 				if(($f->user_function=="Out Patient Registration" || $f->user_function == "IP Registration")){
 					$access = 1;
-					break;
 				}
-				else{
-					$access=0;
-				}
+				if($f->user_function=="sms"){
+                		if ($f->add==1 && $this->data['staff_hospital']["helpline"] && $this->data['staff_hospital']["helpline"]!="" && !empty($this->data['staff_hospital']["helpline"])) $add_sms_access=1;
+            		}
 			}
 			if($access==1){
 			$transaction = $this->transaction_condition();
 			//Load data required for the select options in views.
+			$user=$this->session->userdata('logged_in');
+			$this->data['user_id']=$user['user_id'];
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			$this->data['id_proof_types']=$this->staff_model->get_id_proof_type();
 			$this->data['occupations']=$this->staff_model->get_occupations();
 			$this->data['departments']=$this->staff_model->get_department();
+			$this->data['all_departments']=$this->data['departments'];
 			$this->data['visit_names']=$this->staff_model->get_visit_name();
 			$this->data['units']=$this->staff_model->get_unit();
 			$this->data['areas']=$this->staff_model->get_area();
@@ -99,6 +103,15 @@ class Register extends CI_Controller {
 			$this->data['title']="Patient Registration"; //Set the page title to be used by the header.
 			$this->data['form_id']=$form_id; //Store the form_id in a variable to access in the views.
 			$this->data['fields']=$this->staff_model->get_form_fields($form_id); //Get the form fields based on the form_id
+			$user_receiver = $this->helpline_model->getHelplineReceiverByUserId($this->data['user_id']);
+			$user_receiver_links = array();
+			if($user_receiver){
+				$user_receiver_links = $this->helpline_model->getHelplineReceiverLinksById($user_receiver->receiver_id);
+			}
+			$this->data['user_details']=json_encode(array(
+				'receiver' => $user_receiver,
+				'receiver_link' => $user_receiver_links
+			)); 
 			if(count($this->data['fields'])==0){ //if there are no form fields available in the selected form.
 				show_404();
 			}
@@ -108,6 +121,7 @@ class Register extends CI_Controller {
 			$this->data['form_type']=$form->form_type;
 			$this->data['patient']=array();
 			$this->data['update']=0;
+			$this->data['add_sms_access']=$add_sms_access;
 			$print_layout_page=$form->print_layout_page;
 			$this->load->view('templates/header',$this->data);
 			$this->load->library('form_validation');
