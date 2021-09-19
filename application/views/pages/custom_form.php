@@ -4,6 +4,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css">
 <style>
 .mandatory{
@@ -25,7 +26,6 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 <script type="text/javascript">
-
 function escapeSpecialChars(str) {
     return str.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
 }
@@ -140,7 +140,81 @@ pri.document.close();
 pri.focus();
 pri.print();
 }
+function transformUser(res){
+	if(res){
+		res.map(function(d){
+		if(d.last_name !=""){
+				
+			d.helpline_doctor = d.department + ' - ' + d.first_name + ' ' + d.last_name;
+		}
+		else{
+			d.helpline_doctor = d.department + ' - ' + d.first_name;
+		}
+			
+		return d;
+		});
+	}
+	return res;
+}
 
+function initAppointmentDoctorSelectize(modal_id){
+	var modal = $('#'+modal_id);
+	var user_list_data = {};
+	if(modal.find('#staff_id').attr("data-previous-value")){
+		user_list_data.staff_id = modal.find('#staff_id').attr("data-previous-value");
+	}
+	if(modal.find('#staff_id').attr("data-previous-department-value")){
+		user_list_data.department = modal.find('#staff_id').attr("data-previous-department-value");
+	}
+	if(modal.find('#staff_id').attr("data-previous-doctor-consulted-value")){
+		user_list_data.first_name = modal.find('#staff_id').attr("data-previous-doctor-consulted-value");
+	}
+	else if(modal.find('#staff_id').attr("data-previous-doctor-value")){
+		user_list_data.first_name = modal.find('#staff_id').attr("data-previous-doctor-value");
+	}
+	
+	user_list_data.last_name = "";
+	window['userList'] = transformUser([user_list_data]);
+
+	var selectize = modal.find('#staff_id').selectize({
+	    valueField: 'staff_id',
+	    labelField: 'helpline_doctor',
+	    searchField: ['first_name_check', 'last_name_check', 'department'],
+		options: window['userList'],
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">' + escape(item.helpline_doctor) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+	        $.ajax({
+	            url: '<?php echo base_url();?>reports/get_search_helpline_doctor',
+	            type: 'POST',
+				dataType : 'JSON',
+				data : { query: query },
+	            error: function(res) {
+					console.log(res);
+	                callback();
+	            },
+	            success: function(res) {
+			res = transformUser(res);
+	            	callback(res);
+	            }
+	        });
+		},
+	});
+	if(modal.find('#staff_id').attr("data-previous-value")){
+		console.log(modal.find('#staff_id').attr("data-previous-value"));
+		selectize[0].selectize.setValue(modal.find('#staff_id').attr("data-previous-value"));
+		//selectize.setValue($('#staff_id').attr("data-previous-value"));
+	}
+}
 </script>
 		<?php if(isset($duplicate)) { ?>
 		<!-- If duplicate IP no is found then it displays the error message -->
@@ -154,6 +228,14 @@ pri.print();
 		<div id="a6-label" class="sr-only"> 
 			<?php $this->load->view('pages/print_layouts/a6_label');?>
 		</div>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
                 <!-- Script for printing MLC complaint -->
                 <?php
                 
@@ -214,11 +296,24 @@ pri.print();
                                 <?php        foreach($functions as $f){ 
 				if($f->user_function == "Update Patients"  || $f->user_function == "Clinical" || $f->user_function == "Diagnostics" || $f->user_function == "Procedures" || $f->user_function == "Prescription" || $f->user_function == "Discharge") { ?>
                                             <button type="button" class="btn btn-warning" onclick="$('#select_patient_<?php echo $registered->visit_id1;?>').submit()" autofocus>Update Info</button>
-                                            <?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$registered->visit_id1));?>
+                                            <div style="display: none;"> 
+                                               <?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$registered->visit_id1));?>
                                             <input type="text" class="sr-only" hidden value="<?php echo $registered->visit_id1;?>" form="select_patient_<?php echo $registered->visit_id1;?>" name="selected_patient" />
 											<input type="text" class="sr-only" hidden value="<?php echo $registered->patient_id;?>" name="patient_id" />
-                                </form>
-                                <?php break; }}?>                                
+                                </form>      
+                                </div>                                  
+                                <?php break; }} ?>
+                                <br/>
+                                <div class="col-md-offset-<?php echo $offset;?>">
+                                <?php  
+                                foreach($functions as $f){ 
+                                if($f->user_function=="create_appointment"){ ?> 
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal_appointment">Create Appointment</button>
+                                <?php break; }}
+                                  if($add_sms_access==1){ ?> 
+                                <button type="button" class="btn btn-warning" onclick="openSmsModal()">Send SMS</button>
+                                <?php } ?>  
+                                </div>                               
 				</div>
 			</div>
 			</div>
@@ -1295,6 +1390,323 @@ pri.print();
 					</div>
 				<?php } ?>
 				</div>
+<!-- Modal -->
+<div class="modal fade" id="smsModal" tabindex="-1" role="dialog" aria-labelledby="smsModalLabel">
+  <div class="modal-dialog" role="document" style="width:90%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="smsModalLabel">SMS</h4>
+      </div>
+      <div class="modal-body" id="smsModalBody">
+      	<div class="row">							
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-customer">SMS To<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="smsModal-customer" placeholder="Enter '0' followed by 10 digit phone number" value='<?php echo $registered->phone;?>' required" />
+					 <p class="error smsModal-customer-error">This field is required</p> 
+
+				</div>
+			</div>		
+
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-helplinewithname">Through Helpline<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="smsModal-helplinewithname" required readonly />
+					<select class="form-control" id="smsModal-helplinewithname-dropdown" style="display: none" onchange="setSmsHelplineNumber()" disabled></select>
+					<input type="hidden" id="smsModal-helpline" />
+				</div>
+			</div>
+			<!--<?php
+				echo("<script>console.log('PHP: " . json_encode($sms_templates) . "');</script>");
+			?>-->
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-templatewithname">Template<font style="color:red">*</font></label>
+					<input type="text" class="form-control" id="smsModal-templatewithname" required readonly />
+					<select class="form-control" id="smsModal-templatewithname-dropdown" style="display: none" onchange="setSmsTemplateName()"></select>
+					<input type="hidden" id="smsModal-helpline" />
+				</div>
+			</div>			
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				<div class="form-horizontal">
+					<label for="smsModal-template">SMS Content<font style="color:red">*</font></label>
+					<textarea class="form-control" id="smsModal-template"  required rows="8" onblur=smsTemplate()></textarea>
+					<p class="error smsModal-template-error">This field is required</p>
+				</div>
+			</div>	
+			<script type="text/javascript">
+		
+			var smstemplate='<?php echo json_encode($sms_templates); ?>';
+			var inputF = document.getElementById("smsModal-template");
+			var json=JSON.parse(escapeSpecialChars(smstemplate));
+
+			function setSmsTemplate(helpline_id){	
+				smsDetails.templateName=$('#smsModal-templatewithname-dropdown').val();
+				document.getElementById('smsModal-template').readOnly = false;
+				for (var key in json) {
+					if (json.hasOwnProperty(key)) {
+						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == smsDetails.templateName){
+							if (json[key].edit_text_area==0){
+								document.getElementById('smsModal-template').readOnly = true;
+							}
+							
+							
+							inputF.value=json[key].template;
+							smsDetails.sms_type=json[key].sms_type;
+							smsDetails.template_name=json[key].sms_template_id;
+							smsDetails.dlt_tid=json[key].dlt_tid;
+							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
+							if(json[key].generate_by_query==1){
+							var target = '<?php echo base_url();?>'+ json[key].generation_method;
+							switch (json[key].generation_method) {
+								case 'register/generate_summary_link':
+									var content = document.getElementById('print-div');
+									var template = '';
+									$('#summary_link_contents').val(content.innerHTML); 
+									$('#summary_link_sms').val(json[key].template);
+									$('#summary_download_link').val(json[key].report_download_url);
+									$.ajax({
+  										type: 'POST',
+  										url: target,
+  										data: $("#generate_summary_link").serialize(), 
+  										success: function(response) { smsDetails.template = response; document.getElementById("smsModal-template").value = response;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_doc_upload_link':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $registered->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $registered->visit_id1;?>";
+   									jsonData.report_download_url = json[key].report_download_url;
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_appointment_sms':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $registered->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $registered->visit_id1;?>";
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								
+							      }
+							}							
+							else{
+								smsDetails.template=json[key].template;
+							}
+						}
+					}
+				}
+			}
+
+			function setSmsTemplateWithName(helpline_id, templateName){
+				document.getElementById('smsModal-template').readOnly = false;
+				for (var key in json) {
+					if (json.hasOwnProperty(key)) {
+						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == templateName ){
+							document.getElementById("smsModal-template").value=json[key].template;
+							if (json[key].edit_text_area==0){
+								document.getElementById('smsModal-template').readOnly = true;
+							}							
+							smsDetails.sms_type=json[key].sms_type;
+							smsDetails.template_name=json[key].sms_template_id;
+							smsDetails.dlt_tid=json[key].dlt_tid;
+							smsDetails.dlt_entity_id=json[key].dlt_entity_id;
+							smsDetails.dlt_header = json[key].dlt_header;
+							if(json[key].generate_by_query==1){
+							var target = '<?php echo base_url();?>'+ json[key].generation_method;
+							switch (json[key].generation_method) {
+								case 'register/generate_summary_link':
+									var content = document.getElementById('print-div');
+									var template = '';
+									$('#summary_link_contents').val(content.innerHTML); 
+									$('#summary_link_sms').val(json[key].template);
+									$('#summary_download_link').val(json[key].report_download_url);
+									$.ajax({
+  										type: 'POST',
+  										url: target,
+  										data: $("#generate_summary_link").serialize(), 
+  										success: function(response) { smsDetails.template = response; document.getElementById("smsModal-template").value = response;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_doc_upload_link':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $registered->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $registered->visit_id1;?>";
+   									jsonData.report_download_url = json[key].report_download_url;
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								case 'register/generate_appointment_sms':
+   									var jsonData = {};
+   									jsonData.patient_id = "<?php echo $registered->patient_id;?>";
+   									jsonData.visit_id = "<?php echo $registered->visit_id1;?>";
+   									jsonData.template = json[key].template;
+   									$.ajax({
+   										url: target,
+  										type: 'POST',					
+  										dataType: "JSON",
+  										data: jsonData, 
+  										success: function(response) { smsDetails.template = response.sms_content; document.getElementById("smsModal-template").value = response.sms_content;},
+   										error : function(response) {  bootbox.alert("Link Generation failed"); }
+   									});
+   									break;
+   								
+							       }
+							}							
+							else{
+								smsDetails.template=json[key].template;
+							}
+						}
+					}
+				}				
+			}
+
+			function setSmsTemplateName(){
+				smsDetails.templateName = $('#smsModal-templatewithname-dropdown').val();
+				smsDetails.called_id = $('#smsModal-helplinewithname-dropdown').val();
+				setSmsTemplateWithName(smsDetails.called_id, smsDetails.templateName);
+			}
+
+			function smsTemplate(){
+			    smsDetails.template=$('#smsModal-template').val();
+			}
+
+			function setSmsHelplineNumber(){
+				smsDetails.called_id = $('#smsModal-helplinewithname-dropdown').val();
+				document.getElementById("smsModal-templatewithname-dropdown").innerHTML = null; 
+				for (var key in json) {
+					if (json.hasOwnProperty(key)) {
+						if(json[key].helpline_id==smsDetails.called_id){
+						if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
+                $('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
+            }
+														
+						}
+					}
+				}
+				setSmsTemplateName();
+			}
+			</script>
+		</div>
+		<div class="row" style="margin-top: 20px;">
+			<div class="col-xs-12">
+				<input id="initiateSmsButton" type="button" value="Send" class="btn btn-primary btn-sm" onclick="initiateSms()" />
+			</div>
+		</div>
+      </div>
+	 </div>
+	</div>
+</div>
+<div class="modal fade" id="myModal_appointment" role="dialog">
+	<div class="modal-dialog">
+	<!-- Modal content-->
+	<div class="modal-content">
+		<div class="modal-header bg-primary text-white">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<h4 class="modal-title">Update Appointment</h4>
+		</div>
+		<div class="modal-body">
+			<div>
+				<p>
+				<?php
+				$age="";
+				if(!!$registered->age_years) $age.=$registered->age_years."Y ";
+				if(!!$registered->age_months) $age.=$registered->age_months."M ";
+				if(!!$registered->age_days) $age.=$registered->age_days."D ";
+				if($registered->age_days==0 && $registered->age_months==0 && $registered->age_years==0) $age.="0D"; ?>
+				<span><b>Patient ID:</b> <?php echo $registered->patient_id;?>,&nbsp;</span>
+				<span><b>OP#:</b> <?php echo $registered->hosp_file_no;?>,&nbsp;</span>
+				<span><b>Date:</b> <?php echo date("j M Y", strtotime("$registered->admit_date"));?>&nbsp;
+				<?php echo date("h:i A.", strtotime("$registered->admit_time"));?>,&nbsp;</span>
+				</p>
+				<p class="bg-primary text-white">
+				<span><b>Patient:</b> <?php echo $registered->name;?>,&nbsp;<?php echo $age;?>&nbsp;/&nbsp;
+				<?php echo $registered->gender;?>, &nbsp;<b>Related to:</b> <?php echo $registered->parent_spouse;?>,&nbsp;</span>
+				<span><b>From:</b> <?php if(!!$registered->address && !!$s->place) echo $registered->address.", ".$s->place; else echo $registered->address." ".$registered->place;?>,&nbsp;</span>
+				<span><b>Ph:</b> <?php echo $registered->phone;?>, &nbsp;</span>
+				</p>	
+			</div>	
+
+			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
+			<input type="hidden" name="appointment" value="true">
+			<input type="hidden" name="visit_id" value="<?php echo $registered->visit_id1;?>">				
+			<div class="form-group">
+				<label for="department">Department:</label>
+				<select name="department_id" id="department" class="form-control">
+					<option>Select Department</option>
+					<?php 
+					foreach($all_departments as $dept){
+						echo "<option value='".$dept->department_id."'";
+						if($registered->department == $dept->department) echo " selected ";
+						echo ">".$dept->department."</option>";
+					}
+					?>
+				</select>	                        
+			</div>				
+			<div class="form-group">
+				<label for="staff_id">Appointment With:</label>
+				<select id="staff_id" name="appointment_with" class="" style="width:300px; position:relative;" placeholder="-Enter Doctor Name/Department-" data-previous-value="<?php echo $registered->appointment_with_id; ?>" data-previous-department-value="<?php echo $registered->doctor_department; ?>" data-previous-doctor-value="<?php echo $registered->appointment_with; ?>" data-previous-doctor-consulted-value="<?php echo $registered->doctor; ?>">
+					<?php 
+					if($registered->appointment_with) { ?>
+						<script type="text/javascript">
+						</script>
+					<?php } else { ?>
+						<script type="text/javascript">
+							window['userList'] = [];
+						</script>
+					<?php } ?>
+				</select>
+			</div>
+			<script type="text/javascript">
+				$( "#myModal_appointment" ).on('shown.bs.modal', function(){
+				initAppointmentDoctorSelectize("myModal_appointment");
+				});
+			</script>
+				
+			<div class="form-group">
+				<label for="appointment_time">Appointment Date-Time:</label>
+				<input name="appointment_time" type="datetime-local" 
+				       value="<?php if(isset($registered->appointment_date_time) && $registered->appointment_date_time!="") 
+						{echo date("Y-m-d\TH:i", strtotime("$registered->appointment_date_time"));} 
+						else {echo $registered->appointment_date_time="";}?>" 
+				       		class="form-control">
+			</div>
+
+			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+			</form> 
+		</div>
+	</div>
+
+	</div>
+</div>
 <script type="text/javascript">
 function getStates()
 {
@@ -1339,4 +1751,115 @@ function getDistrict() {
     });
     return false;
 }// getDistrict
+
+var smsDetails = {};
+var user_details = <?php echo $user_details; ?>;
+var receiver = user_details.receiver;
+function initiateSms(){
+	setSmsToNumber();
+	if(!smsDetails.to){
+		$('.smsModal-customer-error').show();
+		return;
+	}
+	$('.smsModal-customer-error').hide();
+
+	// customer to agent flow...
+	// ajax for call...
+	$('#initiateSmsButton').val('Sending...').attr('disabled', 'disabled');
+	$.ajax({
+        url: '<?php echo base_url();?>helpline/initiate_sms',
+        type: 'POST',
+		dataType : 'JSON',
+		data : smsDetails,
+        error: function(res) {
+            //callback();
+			$('#initiateSmsButton').val('Send').removeAttr('disabled');
+            bootbox.alert(res.responseText);
+        },
+        success: function(res) {
+			$('#initiateSmsButton').val('Send').removeAttr('disabled');
+			$("#SmsModal").modal('hide');
+			bootbox.alert("SMS sent successfully");
+        }
+    });
+}
+
+
+function setSmsToNumber(){
+	smsDetails.to = $('#smsModal-customer').val();
+}
+function sendToChangeReset(){
+	$('.smsModal-customer-error').hide();
+	$('.smsModal-app_id-error').hide();
+	$('.smsModal-template-error').hide(); 
+
+	$('[href="#change_sendto"]').removeAttr("data-hidden").html('Change');
+	$('#change_sendto_section').addClass('hidden');
+	$('[name=radio_doctor]:checked').removeAttr('checked');
+
+	$('#smsModal_sendto_alternate_section').addClass('hidden');
+	$('#smsModal-sendto-alternate option').remove();
+	$('#smsModal-sendto-alternate-showmore').removeAttr('checked');
+}
+
+function openSmsModal(){
+	sendToChangeReset();
+
+	smsDetails.to = '';
+	smsDetails.called_id = $('#smsModal-helplinewithname-dropdown').val();
+	smsDetails.app_id = receiver.app_id;
+	
+
+	for (var key in json) {
+		if (json.hasOwnProperty(key)) {
+			if (json[key].helpline_id==smsDetails.called_id){
+			if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
+				$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
+				document.getElementById("smsModal-template").value=json[key].template;
+			}
+		    }
+		}
+	}
+
+	setSmsTemplate(smsDetails.called_id);
+	$('#smsModal-customer').removeAttr('readonly');
+	$('#smsModal-helplinewithname').hide();
+	$('#smsModal-templatewithname').hide();
+	$('#smsModal-helplinewithname-dropdown').show();
+	$('#smsModal-templatewithname-dropdown').show();	
+	$("#smsModal").modal({ keyboard: false, backdrop: 'static' });
+}
+</script>
+<script>
+$(function(){
+	$('[data-toggle="tooltip"]').tooltip();
+
+	if(receiver && receiver.enable_outbound == "1"){
+		$('.sms_button').show();
+		var valHospital = JSON.parse(escapeSpecialChars('<?php echo json_encode($staff_hospital); ?>'));		
+		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');
+		
+		
+	}	
+});
+// this is the id of the form
+$("#appointment").submit(function(e) {
+
+    e.preventDefault(); // avoid to execute the actual submit of the form.
+
+    var form = $(this);
+    var url = form.attr('action');
+    
+    $.ajax({
+           type: "POST",
+           url: url,
+           data: form.serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+             bootbox.alert("Appointment updated successfully");
+           }
+         });
+
+    
+});
 </script>
