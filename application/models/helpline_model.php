@@ -128,6 +128,25 @@ class Helpline_model extends CI_Model{
 			return false;
 		}
 	}
+	
+	function insert_live_call(){
+		$callsid=$this->input->get('CallSid');
+		$from_number = $this->input->get('From');
+		$to_number = $this->input->get('To');
+		$direction = $this->input->get('Direction');
+
+		$data = array(
+			'callsid'=>$callsid,
+			'from_number' => $from_number,
+			'to_number' => $to_number,
+			'direction' => $direction,
+		);
+
+		if($this->db->insert('helpline_live_call',$data)){
+			return true;
+		}
+		else return false;
+	}
 
 	function send_email(){
 		$this->load->library('email');

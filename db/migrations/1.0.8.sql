@@ -186,3 +186,10 @@ CREATE TABLE `user_signin` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCH
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'login_report', 'Login Report', 'To check whether user having access for Login Activity Report');
 
 ALTER TABLE `appointment_status` ADD `is_default` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Stores whether the status is default or not' AFTER `appointment_status`;
+
+CREATE TABLE `helpline_live_call` ( 
+    `callsid` varchar(100) NOT NULL,
+    `from_number` varchar(20) NOT NULL,
+    `to_number` varchar(20) NOT NULL,
+    `direction` varchar(20) NOT NULL
+) ENGINE = InnoDB;
