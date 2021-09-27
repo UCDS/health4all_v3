@@ -953,30 +953,26 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_timestamp = $to_date." ".$to_time;
 			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");	
 	   	
-	   	} else {
-	   			//Report for day or month or year.
-			if($trend_type !=-1){
-				$dateValue = strtotime($datefilter); 
-                        	if($trend_type=="Month"){
-                        		$val = date("m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
-                        	}
-                        	else if($trend_type=="Year"){
-                        		$val = date("Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
-                        	}
-                        	else{
-                        		$val = date("d-m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
-                        	}
-		  	}
-                 	else{
-                 
-                  		$val = date("d-m-Y", $dateValue); 
-                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);                	
-                 	}
+	   	}
+	   	//Report for day or month or year.
+		if($trend_type !=-1){
+			$dateValue = strtotime($datefilter); 
+                        if($trend_type=="Month"){
+                        	$val = date("m-Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
+                        }
+                        else if($trend_type=="Year"){
+                        	$val = date("Y", $dateValue); 
+                        	$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
+                        }
+                        else{
+                        	$val = date("d-m-Y", $dateValue); 
+                   		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
+                      	}
+		}
+               
 	   		
-	   	}		
+	   			
 		$this->db->select("count(*) as count",false);
 		$this->db->from("user_signin");			
 		$resource=$this->db->get();
@@ -1023,30 +1019,25 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_timestamp = $to_date." ".$to_time;
 			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");	
 	   	
-	   	} else {
-	   			//Report for day or month or year.
-			if($trend_type !=-1){
-				$dateValue = strtotime($datefilter); 
-                        	if($trend_type=="Month"){
-                        		$val = date("m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
-                        	}
-                        	else if($trend_type=="Year"){
-                        		$val = date("Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
-                        	}
-                        	else{
-                        		$val = date("d-m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
-                        	}
-		  	}
-                 	else{
-                 
-                  		$val = date("d-m-Y", $dateValue); 
-                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);                	
-                 	}
+	   	} 
+	   	//Report for day or month or year.
+		if($trend_type !=-1){
+			$dateValue = strtotime($datefilter); 
+                        if($trend_type=="Month"){
+                        	$val = date("m-Y", $dateValue); 
+                        	$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
+                        }
+                        else if($trend_type=="Year"){
+                        	$val = date("Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
+                        }
+                        else{
+                        	$val = date("d-m-Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
+                        }
+		  }
 	   		
-	   	}		
+	   			
 		$this->db->select("user_signin.username as username,CONCAT(staff.first_name,'  ',staff.last_name) as name, (case when staff.gender = 'M' then 'Male' when staff.gender = 'F' then 'Female' when staff.gender = 'O' then 'Others' end) as gender,hospital.hospital_short_name as hospital,department.department,signin_date_time,(case when is_success = 1 then 'Success' else 'Failed' end) as status,details",false);
 		$this->db->from("user_signin")
 		->join('user','user_signin.username = user.username','left')
@@ -1635,6 +1626,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
+                
         	}
         else{
                 return true;

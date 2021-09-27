@@ -170,17 +170,17 @@ input[type=number] {
 	<tr>
 		<td><?php echo $date;?></td>
 		<?php if ($s->no_of_success > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/1/-1/-1/$rowsperpage/";?>"><?php echo $s->no_of_success;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/1/$from_date/$to_date/$rowsperpage/";?>"><?php echo $s->no_of_success;?> </td>
 		<?php } else { ?>
 			<td class="text-right"><?php echo $s->no_of_success;?></td>
 		<?php }  ?>
 		
 		<?php if ($s->no_of_un_success > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/0/-1/-1/$rowsperpage";?>"><?php echo $s->no_of_un_success;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/0/$from_date/$to_date/$rowsperpage";?>"><?php echo $s->no_of_un_success;?> </td>
 		<?php } else { ?>
 			<td class="text-right"><?php echo $s->no_of_un_success;?></td>
 		<?php }  ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/-1/-1/-1/$rowsperpage/";?>"><?php echo $s->total;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/-1/$from_date/$to_date/$rowsperpage/";?>"><?php echo $s->total;?> </td>
 	</tr>
 	<?php
 	$total_success += $s->no_of_success;
