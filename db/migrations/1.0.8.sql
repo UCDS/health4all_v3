@@ -186,3 +186,16 @@ CREATE TABLE `user_signin` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCH
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'login_report', 'Login Report', 'To check whether user having access for Login Activity Report');
 
 ALTER TABLE `appointment_status` ADD `is_default` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Stores whether the status is default or not' AFTER `appointment_status`;
+
+CREATE TABLE `appointment_slot` (
+ `slot_id` int(11) NOT NULL AUTO_INCREMENT,
+ `date` date NOT NULL,
+ `from_time` time NOT NULL,
+ `to_time` time NOT NULL,
+ `department_id` int(11) NOT NULL,
+ `visit_name_id` int(11) NOT NULL,
+ `appointments_limit` int(11) NOT NULL,
+ `appointment_update_by` int(50) NOT NULL,
+ `appointment_update_time` datetime NOT NULL,
+ PRIMARY KEY (`slot_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;

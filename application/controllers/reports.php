@@ -271,8 +271,179 @@ class Reports extends CI_Controller {
                 else{
                     show_404();
                 }
-            }
-    
+        }
+        public function validate_appointment_slot()
+	{
+		if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="create_appointment"){
+                            $access=1;
+                    }
+                }
+                if($access==1){
+                	$val = $this->reports_model->validate_appointment_slot();
+              		if ($val==0){               
+				header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 200 OK');  
+			    	$result=array(); 
+			    	$result['Message'] = 'Appointment validation successful'; 
+			    	echo(json_encode($result));
+		       }
+		       else if ($val==2) {
+		       	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Selected appointment time is outside of the slot';        
+				echo(json_encode($result));	       
+		       }
+		       else if ($val==3) {
+		       	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Appointment limit exceeded';        
+				echo(json_encode($result));	       
+		       }
+		       else if ($val==4) {
+		       	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Please enter all the values';        
+				echo(json_encode($result));	       
+		       }
+		       else{
+			    	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Error in Appointment slot validation';        
+				echo(json_encode($result));
+			}
+                }
+                else {
+			header('Content-Type: application/json; charset=UTF-8');
+			header('HTTP/1.1 404 Not Found');    
+			$result=array();    	
+			$result['Message'] = '404 Not Found';        
+			echo(json_encode($result));    	
+		    }
+              }
+              else {
+		   header('Content-Type: application/json; charset=UTF-8');
+		   header('HTTP/1.1 404 Not Found');    
+		   $result=array();    	
+		   $result['Message'] = '404 Not Found';        
+		   echo(json_encode($result));    	
+	      }
+               
+	}
+    	public function add_appointment_slot()
+	{
+		if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="appointment_status"){
+                            $access=1;
+                    }
+                }
+                if($access==1){
+                	$val = $this->reports_model->update_appointment_slot();
+              		if ($val==0){               
+				header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 200 OK');  
+			    	$result=array(); 
+			    	$result['Message'] = 'Data added succesffuly'; 
+			    	echo(json_encode($result));
+		       }
+		       else if ($val==2) {
+		       	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Found conflict slots, please select different time period';        
+				echo(json_encode($result));	       
+		       }
+		       else{
+			    	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Data updation failed';        
+				echo(json_encode($result));
+			}
+                }
+                else {
+			header('Content-Type: application/json; charset=UTF-8');
+			header('HTTP/1.1 404 Not Found');    
+			$result=array();    	
+			$result['Message'] = '404 Not Found';        
+			echo(json_encode($result));    	
+		    }
+              }
+              else {
+		   header('Content-Type: application/json; charset=UTF-8');
+		   header('HTTP/1.1 404 Not Found');    
+		   $result=array();    	
+		   $result['Message'] = '404 Not Found';        
+		   echo(json_encode($result));    	
+	      }
+               
+	}
+	public function appointment_slot()
+	{
+            if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                $add_appointment_access =0;
+                $remove_appointment_access =0;
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="appointment_status"){
+                            $access=1;
+                            if ($function->add==1) $add_appointment_access=1;
+                            if ($function->remove==1) $remove_appointment_access=1;
+                    }
+                }
+                if($access==1){
+		$this->data['title']="Appointment Slot";
+		if($this->input->post('slot_id')){ 
+			$this->reports_model->delete_appointment_slot();
+		}
+		$this->data['all_departments']=$this->hospital_model->get_department($fromallhospital=1);
+		$this->data['user_hospitals']=$this->data['hospitals'];
+		$this->data['add_appointment_access']=$add_appointment_access;
+		$this->data['remove_appointment_access']=$remove_appointment_access;
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['all_visit_names']=$this->staff_model->get_visit_name($all=1);
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+		$this->data['report_count']=$this->reports_model->get_appointment_slot_count();
+		$this->data['report']=$this->reports_model->get_appointment_slot($this->data['rowsperpage']);		
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');	
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/appointment_slot',$this->data);
+		}
+		else{
+			$this->load->view('pages/appointment_slot',$this->data);
+		}
+		$this->load->view('templates/footer',$this->data);
+		}
+                }
+                else{
+                    show_404();
+                }
+        }    
 	public function appointment($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
 	       if($this->session->userdata('logged_in')){

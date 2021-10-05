@@ -5,7 +5,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
-
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
@@ -76,11 +76,42 @@ $(document).ready(function(){$("#from_date").datepicker({
 
 </script>
 <script type="text/javascript">
-        $(document).ready(function(){
-	// find the input fields and apply the time select to them.
-        $('#from_time').ptTimeSelect();
-	$('#to_time').ptTimeSelect();
-        });
+$(document).ready(function(){
+// find the input fields and apply the time select to them.
+$('#from_time').ptTimeSelect();
+$('#to_time').ptTimeSelect();
+});
+function submit_appointment(e) {
+	e.preventDefault();
+	var event_prop = e;
+	var visitid=$(event_prop.target).data('visitid');
+	var doctor=$(event_prop.target).data('doctor');
+	var formName = "submit_appointment_"+visitid;
+	if (doctor.length ==0 ){		
+		var form =  document.getElementById(formName);
+		var data = new FormData(form);
+		target = '<?php echo base_url();?>reports/validate_appointment_slot';
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: target,
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			success: function (data) {
+				   $('#'+formName).submit();
+			},
+			error: function (error) {  
+				   bootbox.alert(error.responseJSON.Message);
+				}
+			});
+	}else {
+	
+		 $('#'+formName).submit();
+	}
+	
+    }
 </script>
 <script type="text/javascript">
 function doPost(page_no){
@@ -111,7 +142,7 @@ function transformUser(res){
 }
 
 function initAppointmentDoctorSelectize(modal_id){
-	console.log(window['userList']);
+	//console.log(window['userList']);
 	var modal = $('#'+modal_id);
 	console.log(modal);
 	var user_list_data = {};
@@ -672,9 +703,10 @@ echo "</select></li>";
 				</p>	
 			</div>	
 
-			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom')); ?>
+			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'submit_appointment_'.$s->visit_id,'enctype'=>'multipart/form-data')); ?>
 			<input type="hidden" name="appointment" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">
+			<input type="hidden" name="visit_name_id" value="<?php echo $s->visit_name_id;?>">
 			<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
 			<input type="hidden" name="to_date" value="<?php echo $this->input->post('to_date');?>">
 			<input type="hidden" name="from_time" value="<?php echo $this->input->post('from_time');?>">
@@ -730,7 +762,7 @@ echo "</select></li>";
 				<input name="summary_sent_time" type="datetime-local" class="form-control" >
 			</div>
 
-			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="button" class="btn btn-default" onclick="submit_appointment(event)" data-visitid="<?php echo $s->visit_id; ?>" data-doctor="<?php echo $s->doctor; ?>">Submit</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
 			</form> 

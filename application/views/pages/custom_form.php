@@ -1655,7 +1655,8 @@ function initAppointmentDoctorSelectize(modal_id){
 
 			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
 			<input type="hidden" name="appointment" value="true">
-			<input type="hidden" name="visit_id" value="<?php echo $registered->visit_id1;?>">				
+			<input type="hidden" name="visit_id" value="<?php echo $registered->visit_id1;?>">
+			<input type="hidden" name="visit_name_id" value="<?php echo $registered->visit_name_id;?>">				
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">
@@ -1849,18 +1850,35 @@ $("#appointment").submit(function(e) {
 
     var form = $(this);
     var url = form.attr('action');
-    
+    var formdom =  document.getElementById('appointment');
+    var data = new FormData(formdom);
+    target = '<?php echo base_url();?>reports/validate_appointment_slot';
     $.ajax({
-           type: "POST",
-           url: url,
-           data: form.serialize(), // serializes the form's elements.
-           success: function(data)
-           {
-           	var modal = $('#myModal_appointment');
-           	document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();; 
-             	bootbox.alert("Appointment updated successfully");
-           }
-         });
+		type: "POST",
+		url: target,
+		data: data,
+		processData: false,
+		contentType: false,
+		cache: false,
+		success: function (data) {
+		      $.ajax({
+           		type: "POST",
+           		url: url,
+           		data: form.serialize(), // serializes the form's elements.
+           		success: function(data)
+           		{
+			   	var modal = $('#myModal_appointment');
+			   	document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();; 
+			     	bootbox.alert("Appointment updated successfully");
+			}
+         	     });
+		   },
+		error: function (error) {  
+		    bootbox.alert(error.responseJSON.Message);
+		   }
+		});
+    
+    
 
     
 });
