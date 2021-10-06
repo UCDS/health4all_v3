@@ -71,10 +71,6 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
-.ui-datepicker{
-    position: relative;
-    z-index: 9999;
-}
 </style>
 <script type="text/javascript">
 $(document).ready(function(){$("#from_date").datepicker({
