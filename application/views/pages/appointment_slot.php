@@ -71,12 +71,28 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+.ui-datepicker{
+    position: relative;
+    z-index: 9999;
+}
 </style>
 <script type="text/javascript">
 $(document).ready(function(){$("#from_date").datepicker({
 		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
-		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
-		$("#to_date").datepicker("option","minDate",sdt)}})
+		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,beforeShow: function (input) {
+                    $(input).css({
+                        "position": "relative",
+                        "z-index": 1
+                    });
+                },onClose: function () { $('.ui-datepicker').css({ 'z-index': 0  } ); } })
+		$("#to_date").datepicker("option","minDate",sdt)},beforeShow: function (input) {
+                    $(input).css({
+                        "position": "relative",
+                        "z-index": 1
+                    });
+                },
+                onClose: function () { $('.ui-datepicker').css({ 'z-index': 0  } ); } 
+                })
 		var options = {
 			widthFixed : true,
 			showProcessing: true,
@@ -400,7 +416,7 @@ $(function() {
 	$page_no = 1;
 	?>
 <div class="row">
-		<h4>Appointment Summary</h4>	
+		<h4>Appointment Slot</h4>	
 		<?php echo form_open("reports/appointment_slot",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>                      <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
