@@ -1718,7 +1718,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
             $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
         }
         else {
-        	return 4;
+        	return 0;
         }
         if($this->input->post('appointment_time')){
             $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
