@@ -1733,19 +1733,18 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         	$this->db->select('appointments_limit as appointments_limit,from_time as from_time,to_time as to_time');
         	$this->db->from('appointment_slot');
         
-		if($this->input->post('department_id')){
-		    $this->db->where('department_id',$this->input->post('department_id'));
-		}
-		if($this->input->post('visit_name_id')){
-		    $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-		}
-		if($this->input->post('appointment_time')){
-		    $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-		    $time = date("H:i:s", strtotime($this->input->post('appointment_time')));
-		    $this->db->where('date',$date);
-		    $this->db->where('from_time <=',$time);
-		    $this->db->where('to_time >=',$time);
-		}
+		$this->db->where('department_id',$this->input->post('department_id'));
+		
+		
+		$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+		
+		
+		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+		$time = date("H:i:s", strtotime($this->input->post('appointment_time')));
+		$this->db->where('date',$date);
+		$this->db->where('from_time <=',$time);
+		$this->db->where('to_time >=',$time);
+		
 		$query = $this->db->get();
         	$result = $query->result_array();
         	if (count($result)==1){
@@ -1756,18 +1755,18 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         		$this->db->select('count(*) as count');
         		$this->db->from('patient_visit');
         
-			if($this->input->post('department_id')){
-			    $this->db->where('department_id',$this->input->post('department_id'));
-			}
-			if($this->input->post('visit_name_id')){
-			    $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-			}
-			if($this->input->post('appointment_time')){
-			    $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-			    $from_timestamp = $date." ".$from_time;
-			    $to_timestamp = $date." ".$to_time;
-			    $this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
-			}
+			
+			$this->db->where('department_id',$this->input->post('department_id'));
+			
+			
+			$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+			
+			
+			$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+			$from_timestamp = $date." ".$from_time;
+			$to_timestamp = $date." ".$to_time;
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+			
         		$query = $this->db->get();
         		$result = $query->result_array();
         		$appoints_taken = $result[0]['count'];

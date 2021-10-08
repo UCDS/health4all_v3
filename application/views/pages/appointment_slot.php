@@ -689,6 +689,7 @@ echo "</select></li>";
 	foreach($report as $s){ ?>
 		
 		<tr>
+		<?php $remaining_appointments = $s->appointments_limit - $s->taken_appointments ?>
 		<td><?php echo $sno;?></td>		
 		<td><?php echo $s->slot_id;?></td>		
 		<td><?php echo  date("j M Y", strtotime("$s->date"));?></td>
@@ -699,7 +700,7 @@ echo "</select></li>";
 		<td><?php echo $s->visit_name;?></td>
 		<td><?php echo $s->appointments_limit;?></td>
 		<td><?php echo $s->taken_appointments;?></td>
-		<td><?php echo $s->appointments_limit - $s->taken_appointments; ?></td>
+		<td><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
 		<?php if($remove_appointment_access==1) { ?>
 		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->slot_id; ?>" onclick="delete_appointment_slot(event)" >Delete</button>
