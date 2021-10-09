@@ -333,14 +333,14 @@ class Hospital_model extends CI_Model {
                 return true;
         } 
     }
-	function get_department(){   //This for evaluation.
-		if($this->input->post('hospital')){
+	function get_department($fromallhospital=0){   //This for evaluation.
+		if($this->input->post('hospital') && $fromallhospital !=1){
 			$this->db->where('department.hospital_id',$this->input->post('hospital'));
 		}
-		if($this->input->post('department_id')){
+		if($this->input->post('department_id') && $fromallhospital !=1){
 			$this->db->where('department.department_id',$this->input->post('department_id'));
 		}
-        if($this->input->post('department')){
+        if($this->input->post('department') && $fromallhospital !=1){
 			$this->db->where('department',$this->input->post('department'));
          
         }
@@ -386,7 +386,8 @@ class Hospital_model extends CI_Model {
         }  
        $this->db->select('department.*,hospital')
           ->from('department')
-		  ->join('hospital','department.hospital_id = hospital.hospital_id');                              
+		  ->join('hospital','department.hospital_id = hospital.hospital_id')
+		  ->order_by('department');                             
        $query = $this->db->get();
        $result = $query->result();
        if($result){

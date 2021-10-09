@@ -281,6 +281,7 @@
 				
 				if($f->user_function=="appointment_status"){ ?>
                                             <li><a href="<?php echo base_url()."reports/appointment_summary";?>">Appointment Summary</a></li>
+                                            <li><a href="<?php echo base_url()."reports/appointment_slot";?>">Appointment Slot</a></li>
 				<?php	}
                                 }
                                 
