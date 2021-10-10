@@ -316,7 +316,7 @@ $(function() {
 
 	
 	
-   	//$('#edit_appointment_slot').submit();
+   	$('#edit_appointment_slot').submit();
 	
 	});
     });
