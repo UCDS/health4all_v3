@@ -232,10 +232,10 @@ function addModalSubmit() {
 		return;
 	}	
 	
-	//if (no_of_appointments <= 0 ){
-	//	bootbox.alert("No of Appointments should be greater than zero");
-	//	return;
-	//}
+	if (no_of_appointments <= -1 ){
+		bootbox.alert("No of Appointments should be greater than zero");
+		return;
+	}
 	
 	$('#modalSubmit').prop("disabled", true);
 	var addModalForm = document.getElementById("addModalForm");
@@ -396,7 +396,7 @@ $(function() {
 			<div class="form-group">
 				<label for="no_of_appointments" class="control-label col-sm-4">No of Appointments: </label>
 				<div class="col-sm-8">
-				<input type="number" style="width:120px" class="form-control"  id="no_of_appointments" value="1" name="appointments" min="1" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"/>
+				<input type="number" style="width:120px" class="form-control"  id="no_of_appointments" value="0" name="appointments" min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"/>
 				</div>
 			</div>		
 			<br/>
