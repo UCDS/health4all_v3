@@ -233,7 +233,7 @@ function addModalSubmit() {
 	}	
 	
 	if (no_of_appointments <= -1 ){
-		bootbox.alert("No of Appointments should be greater than zero");
+		bootbox.alert("No of Appointments should be greater than or equal to zero");
 		return;
 	}
 	
@@ -308,15 +308,15 @@ $(function() {
           $("#btEdit").click(function(){
 	    //stop submit the form, we will post it manually.
 		event.preventDefault();
-		 var no_of_appointments  = $('#editModal').find('input[id=no_of_appointments]');
-if (no_of_appointments <= -1 ){
-		bootbox.alert("No of Appointments should be greater than zero");
-		return;
-	}
+		 var no_of_appointments  = $('#editModal').find('input[id=no_of_appointments]').val();
+		if (no_of_appointments <= -1 ||  no_of_appointments.length === 0 ){
+			bootbox.alert("No of Appointments should be greater than or equal to zero");
+			return;
+		}
 
 	
 	
-   	$('#edit_appointment_slot').submit();
+   	//$('#edit_appointment_slot').submit();
 	
 	});
     });
