@@ -717,7 +717,7 @@ echo "</select></li>";
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">
-					<option>Select Department</option>
+					<option value="">Select Department</option>
 					<?php 
 					foreach($all_departments as $dept){
 						echo "<option value='".$dept->department_id."'";

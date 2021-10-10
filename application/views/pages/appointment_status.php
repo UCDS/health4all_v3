@@ -12,8 +12,20 @@
 <script type="text/javascript">
 $(document).ready(function(){$("#from_date").datepicker({
 		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
-		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
-		$("#to_date").datepicker("option","minDate",sdt)}})
+		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,beforeShow: function (input) {
+                    $(input).css({
+                        "position": "relative",
+                        "z-index": 1
+                    });
+                },onClose: function () { $('.ui-datepicker').css({ 'z-index': 0  } ); } })
+		$("#to_date").datepicker("option","minDate",sdt)},beforeShow: function (input) {
+                    $(input).css({
+                        "position": "relative",
+                        "z-index": 1
+                    });
+                },
+                onClose: function () { $('.ui-datepicker').css({ 'z-index': 0  } ); } 
+                })
 		var options = {
 			widthFixed : true,
 			showProcessing: true,

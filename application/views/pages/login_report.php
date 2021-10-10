@@ -192,9 +192,9 @@ input[type=number] {
         <tbody class="tablesorter-no-sort">
 	<tr>
 		<th>Total </th>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/-1/1/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total_success);?></th>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/-1/0/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total_fail);?></th>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/-1/-1/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total);?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/1/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total_success);?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/0/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total_fail);?></th>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/-1/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total);?></th>
 	</tr>
         </tbody>
 	</table>
