@@ -1787,7 +1787,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         		
         		$operation="add";
         		$curr_appointment_time="";
-        		$this->db->select("ifnull(appointment_time,'') as appointment_time,department_id as department_id,visit_name_id as visit_name_id",false);
+        		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
         		$this->db->from('patient_visit');
         		 if($this->input->post('visit_id')){
             			$this->db->where('visit_id',$this->input->post('visit_id'));
