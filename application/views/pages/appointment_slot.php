@@ -144,9 +144,6 @@ $(document).ready(function(){$("#from_date").datepicker({
 
 </script>
 <script type="text/javascript">
-var departments = <?php echo json_encode($all_departments); ?>;
-var hospitals = <?php echo json_encode($user_hospitals); ?>;
-var all_visit_names = <?php echo json_encode($all_visit_names); ?>;
 var is_updated = false;
 function doPost(page_no){
 	var page_no_hidden = document.getElementById("page_no");
@@ -157,12 +154,7 @@ function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
 
-function buildEmptyOption(optionName = "Select") {
-	return `<option value="" selected>
-					${optionName}
-			</option>`;
 
-}
 function delete_appointment_slot(e) {
 	e.preventDefault();
 	var event_prop = e;
@@ -210,81 +202,7 @@ function delete_appointment_slot(e) {
 	});
 
 }
-function getDepartmentOptionsForMainHospital(hospitalId) {
-	
-	const hospitalDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
-	let optionsHtml; 
-	optionsHtml = buildEmptyOption("Department");
-	if(hospitalDepartments.length > 0) {		
-		optionsHtml += hospitalDepartments.map(dept => {
-			return `	<option value="${dept.department_id}">
-							${dept.department}
-						</option>`;
-		});
-		
-	}
-	return optionsHtml;
-}
 
-function getDepartmentOptionsForHospital(hospitalId) {
-	const hospitalDepartments = departments.filter(dept => dept.hospital_id == hospitalId);
-	let optionsHtml; 
-	
-	if(hospitalDepartments.length > 0) {		
-		optionsHtml += hospitalDepartments.map(dept => {
-			return `	<option value="${dept.department_id}">
-							${dept.department}
-						</option>`;
-		});
-		
-	}
-	else {
-		optionsHtml = buildEmptyOption("Department");
-	}
-	return optionsHtml;
-}
-function getVisitOptionsForMainHospital(hospitalId) {
-	var visitDepartments = all_visit_names.filter(visit => visit.hospital_id == hospitalId);
-	let optionsHtml; 
-	optionsHtml = buildEmptyOption("Visit Name");
-	if(visitDepartments.length > 0) {		
-		optionsHtml += visitDepartments.map(visit => {
-			return `	<option value="${visit.visit_name_id}">
-							${visit.visit_name}
-						</option>`;
-		});
-		
-	}
-	return optionsHtml;
-}
-function getVisitOptionsForHospital(hospitalId) {
-	var visitDepartments = all_visit_names.filter(visit => visit.hospital_id == hospitalId);
-	let optionsHtml; 
-	if(visitDepartments.length > 0) {		
-		optionsHtml += visitDepartments.map(visit => {
-			return `	<option value="${visit.visit_name_id}">
-							${visit.visit_name}
-						</option>`;
-		});
-		
-	}
-	else {
-		optionsHtml = buildEmptyOption("Visit Name");
-	}
-	return optionsHtml;
-}
-
-function onHospitalDropdownChanged(hospitalId) {
-	var optionsHtmlDept = getDepartmentOptionsForHospital(hospitalId);
-	$("#department_modal").html(optionsHtmlDept);
-	var optionsHtmlVisit = getVisitOptionsForHospital(hospitalId);
-	$("#visit_modal").html(optionsHtmlVisit);	
-		
-}
-function setupHospitalDropdownChanged() {
-	var hospitalId = $('#hospital_modal').val();
-	onHospitalDropdownChanged(hospitalId);
-}
 function addModalClose() {
 	var dom = document.getElementById("no_of_appointments");
 	dom.value = dom.min; 
@@ -293,7 +211,6 @@ function addModalClose() {
 	}
 }
 function addModalSubmit() {
-	var hospital_modal = document.getElementById("hospital_modal").value;
 	var department_modal = document.getElementById("department_modal").value;
 	var visit_modal = document.getElementById("visit_modal").value;
 	var date_modal = document.getElementById("date_modal").value;
@@ -305,7 +222,7 @@ function addModalSubmit() {
 	var to_time = new Date(date_modal+' '+to_time_modal);
 
 	
-	if (hospital_modal.length === 0 || department_modal.length === 0 || visit_modal.length === 0 || from_time_modal.length === 0 || to_time_modal.length === 0 || date_modal.length === 0 || no_of_appointments.length === 0 ) {
+	if (department_modal.length === 0 || visit_modal.length === 0 || from_time_modal.length === 0 || to_time_modal.length === 0 || date_modal.length === 0 || no_of_appointments.length === 0 ) {
 		bootbox.alert("Please fill all the values");
 		return;	
 	}
@@ -344,18 +261,7 @@ function addModalSubmit() {
         		
 	
 }
-function setupHospitalMainDropdownChanged() {
-	var hospitalId = $('#hospital').val();
-	onHospitalDropdownMainChanged(hospitalId);
-	
-}
-function onHospitalDropdownMainChanged(hospitalId) {
-	var optionsHtmlDept = getDepartmentOptionsForMainHospital(hospitalId);
-	$("#department").html(optionsHtmlDept);
-	var optionsHtmlVisit = getVisitOptionsForMainHospital(hospitalId);
-	$("#visit_name").html(optionsHtmlVisit);	
-		
-}
+
 $(document).ready(function(){
 	// find the input fields and apply the time select to them.
 	$(".date").Zebra_DatePicker();
@@ -363,27 +269,6 @@ $(document).ready(function(){
 	$('#to_time').ptTimeSelect();
 	$('#from_time_modal').ptTimeSelect({zIndex:9999});
 	$('#to_time_modal').ptTimeSelect({zIndex:9999});
-	$("#hospital_modal").on("change", function() {
-		var hospitalId = $(this).val();
-		onHospitalDropdownChanged(hospitalId);
-	});
-	setupHospitalDropdownChanged();
-	
-	$("#hospital").on("change", function() {
-		var hospitalId = $(this).val();
-		onHospitalDropdownMainChanged(hospitalId);
-	});
-	setupHospitalMainDropdownChanged();	
-	
-	var hospital = "<?php echo $this->input->post('hospital')?>";
-	if(hospital != ""){
-		$("#hospital").val(hospital);
-		setupHospitalMainDropdownChanged();
-	}
-	var department = "<?php echo $this->input->post('department')?>";
-	$("#department").val(department);
-	var visit_name = "<?php echo $this->input->post('visit_name')?>";
-	$("#visit_name").val(visit_name);
 	
 });
 $(function() {
@@ -410,22 +295,18 @@ $(function() {
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
 	$page_no = 1;
+	$default_appointment_status = "";
+	foreach($all_appointment_status as $status){
+		if($status->is_default==1){
+			$default_appointment_status = $status->appointment_status;
+		}					
+	}
 	?>
 <div class="row">
 		<h4>Appointment Slot</h4>	
 		<?php echo form_open("reports/appointment_slot",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>                      <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
-			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-			<select name="hospital" id="hospital" class="form-control">
-				<option value="">Hospital</option>
-				<?php 
-				foreach($user_hospitals as $hospital){
-				echo "<option value='".$hospital->hospital_id."'";
-				if($this->input->post('hospital') && $this->input->post('hospital') == $hospital->hospital_id) echo " selected ";
-				echo ">".$hospital->hospital_short_name."</option>";
-				}
-				?>
-			</select>	
+			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />	
 			<select name="department" id="department" class="form-control">
 				<option value="">Department</option>
 				<?php 
@@ -464,23 +345,18 @@ $(function() {
 		      <h4 class="modal-title">Add Appointment Slots</h4>
 		</div>
 		<div class="modal-body">
-			<?php echo form_open("reports/add_appointment_slot",array('role'=>'form','class'=>'form-horizontal','id'=>'addModalForm','enctype'=>'multipart/form-data')); ?>
-			<div class="form-group">
-				<label for="hospital_modal" class="control-label col-sm-4">Hospital: </label>
-				<div class="col-sm-8">
-				<select name="hospital" id="hospital_modal" required class="form-control">
-					<?php 
-					foreach($user_hospitals as $hospital){
-					echo "<option value='".$hospital->hospital_id."'"; ?>
-					<?php echo ">".$hospital->hospital_short_name;?></option>
-					<?php } ?>
-				</select>
-				</div>				
-			</div>		
+			<?php echo form_open("reports/add_appointment_slot",array('role'=>'form','class'=>'form-horizontal','id'=>'addModalForm','enctype'=>'multipart/form-data')); ?>		
 			<div class="form-group">
 				<label for="department_modal" class="control-label col-sm-4">Department: </label>
 				<div class="col-sm-8">
 				<select name="department" id="department_modal" required class="form-control">
+				<?php 
+				foreach($all_departments as $dept){
+				echo "<option value='".$dept->department_id."'";
+				if($this->input->post('department') && $this->input->post('department') == $dept->department_id) echo " selected ";
+				echo ">".$dept->department."</option>";
+				}
+				?>
 				</select>
 				</div>				
 			</div>	
@@ -488,6 +364,13 @@ $(function() {
 				<label for="visit_modal" class="control-label col-sm-4">Department: </label>
 				<div class="col-sm-8">
 				<select name="visit" id="visit_modal" required class="form-control">
+				<?php 
+				foreach($visit_names as $v){
+				echo "<option value='".$v->visit_name_id."'";
+				if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id)  echo " selected ";
+				echo ">".$v->visit_name."</option>";
+				}
+				?>
 				</select>
 				</div>				
 			</div>	
@@ -671,12 +554,14 @@ echo "</select></li>";
 		<th>Date</th>
 		<th>From Time</th>
 		<th>To Time</th>
-		<th>Hospital</th>
 		<th>Department</th>
 		<th>Visit Name</th>
 		<th>Max Appointments</th>
 		<th>Appointments Taken</th>
 		<th>Appointments Remaining</th>
+		<?php if ($default_appointment_status !=""){ ?>
+			<th><?php echo $default_appointment_status; ?></th>
+		<?php } ?>
     		<th>Updated By/Time</th>
     		<?php if($remove_appointment_access==1) { ?>
 		<th>Delete Appointment Slot</th>
@@ -695,12 +580,14 @@ echo "</select></li>";
 		<td><?php echo  date("j M Y", strtotime("$s->date"));?></td>
 		<td><?php echo  date("h:i A", strtotime("$s->from_time"));?></td>
 		<td><?php echo  date("h:i A", strtotime("$s->to_time"));?></td>
-		<td><?php echo $s->hospital_short_name;?></td>
 		<td><?php echo $s->department;?></td>
 		<td><?php echo $s->visit_name;?></td>
 		<td><?php echo $s->appointments_limit;?></td>
 		<td><?php echo $s->taken_appointments;?></td>
 		<td><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
+		<?php if ($default_appointment_status !=""){ ?>
+			<td><?php echo $s->default_appointment_status; ?></td>
+		<?php } ?>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
 		<?php if($remove_appointment_access==1) { ?>
 		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->slot_id; ?>" onclick="delete_appointment_slot(event)" >Delete</button>

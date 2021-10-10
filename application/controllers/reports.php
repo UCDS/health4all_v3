@@ -310,7 +310,7 @@ class Reports extends CI_Controller {
 		       	header('Content-Type: application/json; charset=UTF-8');
 			    	header('HTTP/1.1 500 Internal Server Error');    
 			    	$result=array();    	
-				$result['Message'] = 'Please enter all the values';        
+				$result['Message'] = 'Please enter Department and Appointment time';        
 				echo(json_encode($result));	       
 		       }
 		       else{
@@ -345,7 +345,7 @@ class Reports extends CI_Controller {
                 $access=0;
                 
                 foreach($this->data['functions'] as $function){
-                    if($function->user_function=="appointment_status"){
+                    if($function->user_function=="appointment_slot"){
                             $access=1;
                     }
                 }
@@ -398,7 +398,7 @@ class Reports extends CI_Controller {
                 $add_appointment_access =0;
                 $remove_appointment_access =0;
                 foreach($this->data['functions'] as $function){
-                    if($function->user_function=="appointment_status"){
+                    if($function->user_function=="appointment_slot"){
                             $access=1;
                             if ($function->add==1) $add_appointment_access=1;
                             if ($function->remove==1) $remove_appointment_access=1;
@@ -409,12 +409,11 @@ class Reports extends CI_Controller {
 		if($this->input->post('slot_id')){ 
 			$this->reports_model->delete_appointment_slot();
 		}
-		$this->data['all_departments']=$this->hospital_model->get_department($fromallhospital=1);
-		$this->data['user_hospitals']=$this->data['hospitals'];
+		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
+		$this->data['all_departments']=$this->staff_model->get_department();
 		$this->data['add_appointment_access']=$add_appointment_access;
 		$this->data['remove_appointment_access']=$remove_appointment_access;
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
-		$this->data['all_visit_names']=$this->staff_model->get_visit_name($all=1);
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){

@@ -199,3 +199,5 @@ CREATE TABLE `appointment_slot` (
  `appointment_update_time` datetime NOT NULL,
  PRIMARY KEY (`slot_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_slot', 'appointment_slot', 'Access for Appointment slot');
