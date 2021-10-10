@@ -232,7 +232,7 @@ function addModalSubmit() {
 		return;
 	}	
 	
-	if (no_of_appointments <= 0 ){
+	if (no_of_appointments <= -1 ){
 		bootbox.alert("No of Appointments should be greater than zero");
 		return;
 	}
@@ -396,7 +396,7 @@ $(function() {
 			<div class="form-group">
 				<label for="no_of_appointments" class="control-label col-sm-4">No of Appointments: </label>
 				<div class="col-sm-8">
-				<input type="number" style="width:120px" class="form-control"  id="no_of_appointments" value="1" name="appointments" min="1" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"/>
+				<input type="number" style="width:120px" class="form-control"  id="no_of_appointments" value="0" name="appointments" min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"/>
 				</div>
 			</div>		
 			<br/>
@@ -582,11 +582,11 @@ echo "</select></li>";
 		<td><?php echo  date("h:i A", strtotime("$s->to_time"));?></td>
 		<td><?php echo $s->department;?></td>
 		<td><?php echo $s->visit_name;?></td>
-		<td><?php echo $s->appointments_limit;?></td>
-		<td><?php echo $s->taken_appointments;?></td>
-		<td><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
+		<td class="text-right"><?php echo $s->appointments_limit;?></td>
+		<td class="text-right"><?php echo $s->taken_appointments;?></td>
+		<td class="text-right"><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
 		<?php if ($default_appointment_status !=""){ ?>
-			<td><?php echo $s->default_appointment_status; ?></td>
+			<td class="text-right"><?php echo $s->default_appointment_status; ?></td>
 		<?php } ?>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
 		<?php if($remove_appointment_access==1) { ?>
