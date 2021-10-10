@@ -232,10 +232,10 @@ function addModalSubmit() {
 		return;
 	}	
 	
-	if (no_of_appointments <= 0 ){
-		bootbox.alert("No of Appointments should be greater than zero");
-		return;
-	}
+	//if (no_of_appointments <= 0 ){
+	//	bootbox.alert("No of Appointments should be greater than zero");
+	//	return;
+	//}
 	
 	$('#modalSubmit').prop("disabled", true);
 	var addModalForm = document.getElementById("addModalForm");
@@ -582,11 +582,11 @@ echo "</select></li>";
 		<td><?php echo  date("h:i A", strtotime("$s->to_time"));?></td>
 		<td><?php echo $s->department;?></td>
 		<td><?php echo $s->visit_name;?></td>
-		<td><?php echo $s->appointments_limit;?></td>
-		<td><?php echo $s->taken_appointments;?></td>
-		<td><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
+		<td class="text-right"><?php echo $s->appointments_limit;?></td>
+		<td class="text-right"><?php echo $s->taken_appointments;?></td>
+		<td class="text-right"><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
 		<?php if ($default_appointment_status !=""){ ?>
-			<td><?php echo $s->default_appointment_status; ?></td>
+			<td class="text-right"><?php echo $s->default_appointment_status; ?></td>
 		<?php } ?>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
 		<?php if($remove_appointment_access==1) { ?>
