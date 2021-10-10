@@ -1137,9 +1137,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		}
 		
 		$hospital=$this->session->userdata('hospital');
-		if(!!$hospital){
-			$this->db->where('hospital.hospital_id',$hospital['hospital_id']);
-		}
+		
+		$this->db->where('hospital.hospital_id',$hospital['hospital_id']);
+		
 		
 		$taken_appointments = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time) as taken_appointments";
 		$default_appointment_status = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv.hospital_id)) as default_appointment_status";
