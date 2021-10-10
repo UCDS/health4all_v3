@@ -310,7 +310,14 @@ class Reports extends CI_Controller {
 		       	header('Content-Type: application/json; charset=UTF-8');
 			    	header('HTTP/1.1 500 Internal Server Error');    
 			    	$result=array();    	
-				$result['Message'] = 'Please enter Department and Appointment time';        
+				$result['Message'] = 'Please enter Department';        
+				echo(json_encode($result));	       
+		       }
+		        else if ($val==5) {
+		       	header('Content-Type: application/json; charset=UTF-8');
+			    	header('HTTP/1.1 500 Internal Server Error');    
+			    	$result=array();    	
+				$result['Message'] = 'Please enter Appointment time';        
 				echo(json_encode($result));	       
 		       }
 		       else{

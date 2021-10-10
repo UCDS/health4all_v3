@@ -1726,6 +1726,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         else {
         	return 4;
         }
+ 
         if($this->input->post('visit_name_id')){
             $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
         }
@@ -1737,7 +1738,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
             $this->db->where('date',$date);
         }
         else {
-        	return 4;
+        	return 5;
         }
        
         $query = $this->db->get();
