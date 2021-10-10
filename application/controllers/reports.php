@@ -357,7 +357,7 @@ class Reports extends CI_Controller {
                     }
                 }
                 if($access==1){
-                	$val = $this->reports_model->update_appointment_slot();
+                	$val = $this->reports_model->add_appointment_slot();
               		if ($val==0){               
 				header('Content-Type: application/json; charset=UTF-8');
 			    	header('HTTP/1.1 200 OK');  
@@ -404,22 +404,32 @@ class Reports extends CI_Controller {
                 $access=0;
                 $add_appointment_access =0;
                 $remove_appointment_access =0;
+                $edit_appointment_access = 0;
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="appointment_slot"){
                             $access=1;
                             if ($function->add==1) $add_appointment_access=1;
                             if ($function->remove==1) $remove_appointment_access=1;
+                            if ($function->edit==1) $edit_appointment_access=1;
                     }
                 }
                 if($access==1){
+                $this->load->model('helpline_model');
+                $this->data['weekdays']=$this->helpline_model->get_weekdays_array();
 		$this->data['title']="Appointment Slot";
 		if($this->input->post('slot_id')){ 
-			$this->reports_model->delete_appointment_slot();
+			if($this->input->post('appointment_slot_operation')=="Edit"){
+				$this->reports_model->update_appointment_slot();
+			}
+			else if($this->input->post('appointment_slot_operation')=="Delete"){
+				$this->reports_model->delete_appointment_slot();
+			}
 		}
 		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
 		$this->data['all_departments']=$this->staff_model->get_department();
 		$this->data['add_appointment_access']=$add_appointment_access;
 		$this->data['remove_appointment_access']=$remove_appointment_access;
+		$this->data['edit_appointment_access']=$edit_appointment_access;
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		foreach($this->data['defaultsConfigs'] as $default){		 

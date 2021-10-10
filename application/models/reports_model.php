@@ -1839,7 +1839,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         }
         
     	}
-	function update_appointment_slot(){
+	function add_appointment_slot(){
 	
 	$this->db->select('count(*) as count');
         $this->db->from('appointment_slot');
@@ -1897,6 +1897,31 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
                 return 0;
         	} 
     	}
+    	function update_appointment_slot(){
+    	$appointment_info = array();
+        if($this->input->post('slot_id')){
+           $this->db->where('slot_id', $this->input->post('slot_id'));
+        }
+        else {
+        	return true;
+        }
+        if($this->input->post('appointments_limit')){
+            $appointment_info['appointments_limit'] = $this->input->post('appointments_limit');
+        }
+        $appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+	$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+        $this->db->trans_start();
+        $this->db->update('appointment_slot',$appointment_info);
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+                return false;
+                
+        	}
+        else{
+                return true;
+        	} 
+    	}
+    	
     	function delete_appointment_slot(){
         if($this->input->post('slot_id')){
            $this->db->where('slot_id', $this->input->post('slot_id'));
