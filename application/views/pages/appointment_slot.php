@@ -630,11 +630,11 @@ echo "</select></li>";
 	<thead>
 		<th>SNo</th>
 		<th>Slot ID</th>
-		<th>Date</th>
-		<th>From Time</th>
-		<th>To Time</th>
 		<th>Department</th>
 		<th>Visit Name</th>
+		<th>Date</th>
+		<th>From Time</th>
+		<th>To Time</th>		
 		<th>Max Appointments</th>
 		<th>Appointments Taken</th>
 		<th>Appointments Remaining</th>
@@ -658,12 +658,12 @@ echo "</select></li>";
 		<tr>
 		<?php $remaining_appointments = $s->appointments_limit - $s->taken_appointments; $date=date("j M Y", strtotime("$s->date"))." - ".$weekdays[date("w", strtotime("$s->date"))]; $from = date("h:i A", strtotime("$s->from_time"));  $to =date("h:i A", strtotime("$s->to_time"));  ?>
 		<td><?php echo $sno;?></td>		
-		<td><?php echo $s->slot_id;?></td>		
+		<td><?php echo $s->slot_id;?></td>
+		<td><?php echo $s->department;?></td>
+		<td><?php echo $s->visit_name;?></td>		
 		<td><?php echo  $date;?></td>
 		<td><?php echo  $from;?></td>
-		<td><?php echo  $to;?></td>
-		<td><?php echo $s->department;?></td>
-		<td><?php echo $s->visit_name;?></td>
+		<td><?php echo  $to;?></td>		
 		<td class="text-right"><?php echo $s->appointments_limit;?></td>
 		<td class="text-right"><?php echo $s->taken_appointments;?></td>
 		<td class="text-right"><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
