@@ -165,7 +165,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 	<thead>
 		<th style="text-align:center" rowspan="2">Date</th>
 		<?php if ($default_appointment_status !=""){ ?>
-		<th style="text-align:center" colspan="4">Details</th>
+		<th style="text-align:center" colspan="5">Details</th>
 		<?php } else {?>
 		<th style="text-align:center" colspan="3">Details</th>
 		<?php } ?>
@@ -173,6 +173,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th>Department</th><th>Slots Alloted</th> <th>Appointments Created</th> 
 		<?php if ($default_appointment_status !=""){ ?>
 			<th><?php echo $default_appointment_status; ?></th>
+			<th style="text-align:center"><?php echo "Percentage (%)"; ?></th>
 		<?php } ?>
 		</tr>				
  		
@@ -202,7 +203,8 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
 		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>
 		<?php if ($default_appointment_status !=""){ ?>
-		<td style="text-align:right"> <?php echo $s->default_status_count;  $total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
+		<td style="text-align:right"> <?php echo $s->default_status_count;$total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
+		<td style="text-align:right"> <?php echo round(($s->default_status_count/$s->patient_count)*100,0)."%"; ?></td>
 		<?php } ?>		
 		</tr>
 		<?php  } else { ?>
@@ -211,7 +213,8 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
 		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count; ?></td>
 		<?php if ($default_appointment_status !=""){ ?>
-		<td style="text-align:right"> <?php echo $s->default_status_count;  $total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
+		<td style="text-align:right"> <?php echo $s->default_status_count;$total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
+		<td style="text-align:right"> <?php echo round(($s->default_status_count/$s->patient_count)*100,0)."%"; ?></td>
 		<?php } ?>	
 		</tr>	
 		<?php  } 
@@ -224,6 +227,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td style="text-align:right"><b><?php echo $total_appointmnets; ?></b></td>
 		<?php if ($default_appointment_status !=""){ ?>
 		<td style="text-align:right"><b><?php echo $total_default_status_count; ?></b></td>
+		<td style="text-align:right"><b><?php echo round(($total_default_status_count/$total_appointmnets)*100,0)."%"; ?></b></td>
 		<?php } ?>
 		</tr>
 	</tbody>
