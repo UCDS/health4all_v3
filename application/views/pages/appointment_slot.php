@@ -464,7 +464,7 @@ $(function() {
 		<label><b>Date: &nbsp </b></label><label style="font-weight: normal" id="date"></label>
 		<label><b>Time: &nbsp </b></label><label style="font-weight: normal" id="time"></label>
 		
-		<?php echo form_open('reports/appointment_slot',array('role'=>'form','id'=>'edit_appointment_slot'));?>
+		<?php echo form_open('reports/appointment_slot',array('role'=>'form','id'=>'edit_appointment_slot','class'=>'form-horizontal'));?>
 		<input type="text" hidden value="" name="slot_id" id="slot_id"/>
 		<input type="text" class="sr-only" hidden value="Edit" name="appointment_slot_operation" />
 		<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
@@ -476,17 +476,15 @@ $(function() {
 	        <br/>	
 		<div class="form-group">
 		
-	        		<label for="no_of_appointments" class="control-label">Appointment Limit</label>
-	  
+	        		<label for="no_of_appointments" class="control-label col-sm-5">Appointment Limit</label>
+	  			<div class="col-sm-5">
 	            		<input type="number" style="width:120px" class="form-control" name="appointments_limit" id="no_of_appointments" value="0" name="appointments" min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"/>
+	            		</div>
 			
 	        </div>	
 	        </div>
 		</form>
-		<div style="text-align:left;padding-top: 2px;
-    padding-right: 20px;
-    padding-bottom: 20px;
-    padding-left: 20px;">
+		<div style="text-align:center;padding-bottom: 20px;">
 			<button class="btn btn-danger"  type="button" name="btEdit" id="btEdit" >Update</button>
 			<button type="button"  class="btn btn-default" data-dismiss="modal">Close</button>
 		</div>
