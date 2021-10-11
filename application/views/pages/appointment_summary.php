@@ -82,7 +82,12 @@ $(document).ready(function(){$("#from_date").datepicker({
 	$from_time=0;$to_time=0;
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
-	
+	$default_appointment_status = "";
+	foreach($all_appointment_status as $status){
+		if($status->is_default==1){
+			$default_appointment_status = $status->appointment_status;
+		}					
+	}
 	?>
 <div class="row">
 		<h4>Appointment Summary</h4>	
@@ -159,9 +164,16 @@ $(document).ready(function(){$("#from_date").datepicker({
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th style="text-align:center" rowspan="2">Date</th>
-		<th style="text-align:center" colspan="2">Details</th>
+		<?php if ($default_appointment_status !=""){ ?>
+		<th style="text-align:center" colspan="4">Details</th>
+		<?php } else {?>
+		<th style="text-align:center" colspan="3">Details</th>
+		<?php } ?>
 		<tr>
-		<th>Department</th><th>No of Appointments</th> 
+		<th>Department</th><th>Slots Alloted</th> <th>Appointments Created</th> 
+		<?php if ($default_appointment_status !=""){ ?>
+			<th><?php echo $default_appointment_status; ?></th>
+		<?php } ?>
 		</tr>				
  		
 	</thead>
@@ -171,6 +183,9 @@ $(document).ready(function(){$("#from_date").datepicker({
 	$appointment_date="";
 	$appointment_date_count=0;
 	$total_appointmnets=0;
+	$total_slots=0;
+	$total_default_status_count=0;
+	
 	foreach($report as $s){
 	 if($s->appointment_date != $appointment_date){
 		$appointment_date_count=0;
@@ -182,19 +197,35 @@ $(document).ready(function(){$("#from_date").datepicker({
 		
 		?>
 		<tr>      
-		<td rowspan="<?php echo $appointment_date_count; ?>" > <?php echo date("d-M-Y", strtotime($s->appointment_date));  ?></td>		
+		<td rowspan="<?php echo $appointment_date_count; ?>" > <?php echo date("d-M-Y", strtotime($s->appointment_date))." - ".$weekdays[date("w", strtotime($s->appointment_date))];  ?></td>		
 		<td> <?php echo $s->department_name;  ?> </td>
-		<td> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>		
+		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
+		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>
+		<?php if ($default_appointment_status !=""){ ?>
+		<td style="text-align:right"> <?php echo $s->default_status_count;  $total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
+		<?php } ?>		
 		</tr>
 		<?php  } else { ?>
 		<tr>
 		<td> <?php echo $s->department_name; ?> </td>
-		<td> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count; ?></td>	
+		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
+		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count; ?></td>
+		<?php if ($default_appointment_status !=""){ ?>
+		<td style="text-align:right"> <?php echo $s->default_status_count;  $total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
+		<?php } ?>	
 		</tr>	
 		<?php  } 
 		$appointment_date = $s->appointment_date; 
 		} ?>
-		<tr><td colspan="3" style="text-align:right"><b>Total Appointments : <?php echo $total_appointmnets; ?></b></td></tr>
+		<tr>
+		<td></td>
+		<td><b>Total</b></td>
+		<td style="text-align:right"><b><?php if ($total_slots!=0) echo $total_slots; ?></b></td>
+		<td style="text-align:right"><b><?php echo $total_appointmnets; ?></b></td>
+		<?php if ($default_appointment_status !=""){ ?>
+		<td style="text-align:right"><b><?php echo $total_default_status_count; ?></b></td>
+		<?php } ?>
+		</tr>
 	</tbody>
 	</table>
 	

@@ -233,7 +233,7 @@ function addModalSubmit() {
 	}	
 	
 	if (no_of_appointments <= -1 ){
-		bootbox.alert("No of Appointments should be greater than zero");
+		bootbox.alert("No of Appointments should be greater than or equal to zero");
 		return;
 	}
 	
@@ -286,6 +286,41 @@ $(function() {
        	return false;
    	});
 });
+</script>
+<script type="text/javascript">
+        $(document).ready(function(){
+	// find the input fields and apply the time select to them.
+	$('#editModal').on('show.bs.modal', function(e) {
+        	var slot_id = $(e.relatedTarget).data('id');
+        	var department = $(e.relatedTarget).data('department');
+        	var visitname = $(e.relatedTarget).data('visitname');
+        	var date = $(e.relatedTarget).data('date');
+        	var from = $(e.relatedTarget).data('from');
+        	var to = $(e.relatedTarget).data('to');
+        	var appointments_limit = $(e.relatedTarget).data('limit');
+         	$(e.currentTarget).find('label[id="department"]').html(department);
+         	$(e.currentTarget).find('label[id="visitname"]').html(visitname);
+         	$(e.currentTarget).find('label[id="date"]').html(date);
+         	$(e.currentTarget).find('label[id="time"]').html(from+" - "+to);
+         	$(e.currentTarget).find('input[id="slot_id"]').attr("value",slot_id);
+         	$(e.currentTarget).find('input[id="no_of_appointments"]').attr("value",appointments_limit);
+         });
+          $("#btEdit").click(function(){
+	    //stop submit the form, we will post it manually.
+		event.preventDefault();
+		 var no_of_appointments  = $('#editModal').find('input[id=no_of_appointments]').val();
+		if (no_of_appointments <= -1 ||  no_of_appointments.length === 0 ){
+			bootbox.alert("No of Appointments should be greater than or equal to zero");
+			return;
+		}
+
+	
+	
+   	$('#edit_appointment_slot').submit();
+	
+	});
+    });
+        
 </script>
 	<?php 
 	$from_date=0;$to_date=0;
@@ -414,6 +449,50 @@ $(function() {
 	</div>
 </div>
 <!-- Modal End -->
+<div class="modal fade" id="editModal" role="dialog">
+	<div class="modal-dialog">
+	 <!-- Modal content-->
+	 <div class="modal-content" style="width:450px; margin: auto;">
+		<div class="modal-header bg-primary text-white" id="view_modal_header">
+		      <button type="button" class="close" data-dismiss="modal">&times;</button>
+		      <h4 class="modal-title">Edit Appointment slot</h4>
+		</div>
+		<div class="modal-body">
+		<label><b>Department: &nbsp </b></label><label style="font-weight: normal" id="department"></label>
+		<label><b>Visit Name: &nbsp </b></label><label style="font-weight: normal" id="visitname"></label>
+		<br/>
+		<label><b>Date: &nbsp </b></label><label style="font-weight: normal" id="date"></label>
+		<label><b>Time: &nbsp </b></label><label style="font-weight: normal" id="time"></label>
+		
+		<?php echo form_open('reports/appointment_slot',array('role'=>'form','id'=>'edit_appointment_slot','class'=>'form-horizontal'));?>
+		<input type="text" hidden value="" name="slot_id" id="slot_id"/>
+		<input type="text" class="sr-only" hidden value="Edit" name="appointment_slot_operation" />
+		<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
+	        <input type="hidden" name="to_date" value="<?php echo $this->input->post('to_date');?>">
+	        <input type="hidden" name="page_no" id="page_no" value='<?php echo $this->input->post('page_no');?>'>
+	        <input type="hidden" name="visit_name" value="<?php echo $this->input->post('visit_name');?>">
+	        <input type="hidden" name="department" value="<?php echo $this->input->post('department');?>">
+	        <input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>	
+	        <br/>	
+		<div class="form-group">
+		
+	        		<label for="no_of_appointments" class="control-label col-sm-5">Appointment Limit</label>
+	  			<div class="col-sm-5">
+	            		<input type="number" style="width:120px" class="form-control" name="appointments_limit" id="no_of_appointments" value="0" name="appointments" min="0" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"/>
+	            		</div>
+			
+	        </div>	
+	        </div>
+		</form>
+		<div style="text-align:center;padding-bottom: 20px;">
+			<button class="btn btn-danger"  type="button" name="btEdit" id="btEdit" >Update</button>
+			<button type="button"  class="btn btn-default" data-dismiss="modal">Close</button>
+		</div>
+		
+	 </div>
+	 <!-- Modal content-->
+	</div>
+</div>
 <?php if(isset($report) && count($report)>0)
 {
 
@@ -551,11 +630,11 @@ echo "</select></li>";
 	<thead>
 		<th>SNo</th>
 		<th>Slot ID</th>
-		<th>Date</th>
-		<th>From Time</th>
-		<th>To Time</th>
 		<th>Department</th>
 		<th>Visit Name</th>
+		<th>Date</th>
+		<th>From Time</th>
+		<th>To Time</th>		
 		<th>Max Appointments</th>
 		<th>Appointments Taken</th>
 		<th>Appointments Remaining</th>
@@ -563,6 +642,9 @@ echo "</select></li>";
 			<th><?php echo $default_appointment_status; ?></th>
 		<?php } ?>
     		<th>Updated By/Time</th>
+    		<?php if($edit_appointment_access==1) { ?>
+		<th>Edit Appointment Slot</th>
+		<?php } ?>
     		<?php if($remove_appointment_access==1) { ?>
 		<th>Delete Appointment Slot</th>
 		<?php } ?>		
@@ -570,18 +652,18 @@ echo "</select></li>";
 	</thead>
 	<tbody>
 	<?php 
-	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
+	$sno=(($page_no - 1) * $total_records_per_page)+1 ;
 	foreach($report as $s){ ?>
 		
 		<tr>
-		<?php $remaining_appointments = $s->appointments_limit - $s->taken_appointments ?>
+		<?php $remaining_appointments = $s->appointments_limit - $s->taken_appointments; $date=date("j M Y", strtotime("$s->date"))." - ".$weekdays[date("w", strtotime("$s->date"))]; $from = date("h:i A", strtotime("$s->from_time"));  $to =date("h:i A", strtotime("$s->to_time"));  ?>
 		<td><?php echo $sno;?></td>		
-		<td><?php echo $s->slot_id;?></td>		
-		<td><?php echo  date("j M Y", strtotime("$s->date"));?></td>
-		<td><?php echo  date("h:i A", strtotime("$s->from_time"));?></td>
-		<td><?php echo  date("h:i A", strtotime("$s->to_time"));?></td>
+		<td><?php echo $s->slot_id;?></td>
 		<td><?php echo $s->department;?></td>
-		<td><?php echo $s->visit_name;?></td>
+		<td><?php echo $s->visit_name;?></td>		
+		<td><?php echo  $date;?></td>
+		<td><?php echo  $from;?></td>
+		<td><?php echo  $to;?></td>		
 		<td class="text-right"><?php echo $s->appointments_limit;?></td>
 		<td class="text-right"><?php echo $s->taken_appointments;?></td>
 		<td class="text-right"><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
@@ -589,9 +671,14 @@ echo "</select></li>";
 			<td class="text-right"><?php echo $s->default_appointment_status; ?></td>
 		<?php } ?>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
+		<?php if($edit_appointment_access==1) { ?>
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->slot_id; ?>" data-department="<?php echo $s->department; ?>" data-visitname="<?php echo $s->visit_name; ?>" data-date="<?php echo $date; ?>" data-toggle="modal" data-from="<?php echo $from; ?>"  data-to="<?php echo date('h:i A', strtotime($s->to_time)); ?>" data-limit="<?php echo $s->appointments_limit; ?>" data-target="#editModal">Edit</button>
+		</td> 
+	<?php } ?>
 		<?php if($remove_appointment_access==1) { ?>
 		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->slot_id; ?>" onclick="delete_appointment_slot(event)" >Delete</button>
 		<?php echo form_open('reports/appointment_slot',array('role'=>'form','id'=>'delete_appointment_slot_'.$s->slot_id));?>
+		<input type="text" class="sr-only" hidden value="Delete" name="appointment_slot_operation" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->slot_id;?>" name="slot_id" />
 		</form>
 		</td> 

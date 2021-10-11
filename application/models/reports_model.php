@@ -1150,6 +1150,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
 		 ->join('staff','aps.appointment_update_by=staff.staff_id','left')
 		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left');
+		 $this->db->order_by('aps.department_id','ASC');
+		 $this->db->order_by('aps.visit_name_id','ASC');
 		 $this->db->order_by('aps.date','ASC');
 		 $this->db->order_by('aps.from_time','ASC');	
 		 $this->db->order_by('aps.to_time','ASC');
@@ -1673,11 +1675,13 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->order_by('UNIX_TIMESTAMP(pv1.appointment_time)','ASC');
 		
 		$extraWhere = "";
+		$extraSlotWhere = "";
 		if($this->input->post('visit_name')){
 			$this->db->where('pv1.visit_name_id',$this->input->post('visit_name'));
 			$this->db->where("pv1.visit_name_id is not null");
 			$this->db->where("pv1.visit_name_id != ",0);	
-			$extraWhere = $extraWhere ." AND pv2.visit_name_id=pv1.visit_name_id";		
+			$extraWhere = $extraWhere ." AND pv2.visit_name_id=pv1.visit_name_id";
+			$extraSlotWhere = $extraSlotWhere ." AND aps.visit_name_id=pv1.visit_name_id";		
 		}
 		
 		if($this->input->post('appointment_status_id')){
@@ -1701,8 +1705,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$extraWhere = $extraWhere ." AND pv2.area=pv1.area ";
 		}
 		
-
-		$this->db->select("(select count(*) as patient_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) ". $extraWhere . ") as patient_count  , DATE(pv1.appointment_time) as appointment_date,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id",false);
+		$slots_alloted = "(Select sum(appointments_limit) from appointment_slot aps where aps.department_id = pv1.department_id and aps.date = ifnull(date(pv1.appointment_time),'')  ". $extraSlotWhere .") as slots_alloted";
+		
+		$this->db->select("(select count(*) as patient_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) ". $extraWhere . ") as patient_count  , ".$slots_alloted .", (select count(*) as default_status_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) and pv2	.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv2.hospital_id)". $extraWhere . ") as default_status_count, DATE(pv1.appointment_time) as appointment_date,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id",false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
 		 ->join('department d','pv1.department_id=d.department_id','left')
@@ -1839,7 +1844,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         }
         
     	}
-	function update_appointment_slot(){
+	function add_appointment_slot(){
 	
 	$this->db->select('count(*) as count');
         $this->db->from('appointment_slot');
@@ -1897,6 +1902,31 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
                 return 0;
         	} 
     	}
+    	function update_appointment_slot(){
+    	$appointment_info = array();
+        if($this->input->post('slot_id')){
+           $this->db->where('slot_id', $this->input->post('slot_id'));
+        }
+        else {
+        	return true;
+        }
+        if($this->input->post('appointments_limit')){
+            $appointment_info['appointments_limit'] = $this->input->post('appointments_limit');
+        }
+        $appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+	$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+        $this->db->trans_start();
+        $this->db->update('appointment_slot',$appointment_info);
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+                return false;
+                
+        	}
+        else{
+                return true;
+        	} 
+    	}
+    	
     	function delete_appointment_slot(){
         if($this->input->post('slot_id')){
            $this->db->where('slot_id', $this->input->post('slot_id'));
