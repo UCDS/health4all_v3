@@ -90,7 +90,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 	}
 	?>
 <div class="row">
-		<h4>Appointment Summary by Team Members</h4>	
+		<h4>Appointment Summary by Team Member</h4>	
 		<?php echo form_open("reports/appointment_summary_by_volunteer",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>                      
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
