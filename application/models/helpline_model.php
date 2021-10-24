@@ -738,8 +738,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		->join('helpline', 'helpline_call.to_number=helpline.helpline')
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')	
 		->where('user_helpline_link.user_id', $user['user_id'])
-		->order_by('InClientHangup','desc')
-		->group_by('from_number');
+		->group_by('from_number')
+		->order_by('InClientHangup','desc');
 		$this->db->limit($rows_per_page,$start);	
 		$query = $this->db->get();
 		return $query->result();
