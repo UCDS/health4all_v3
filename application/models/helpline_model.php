@@ -736,10 +736,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$this->db->select("from_number,SUM(CASE WHEN call_type =  'client-hangup' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InClientHangup, SUM(CASE WHEN call_type =  'call-attempt' AND helpline_call.direction =  'incoming' THEN 1 ELSE 0 END) AS InCallAttempt, SUM(CASE WHEN call_type = 'incomplete' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InIncomplete, SUM(CASE WHEN call_type =  'completed' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InCompleted, SUM(CASE WHEN call_type =  'client-hangup' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutClientHangup, SUM(CASE WHEN call_type =  'call-attempt' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutCallAttempt, SUM(CASE WHEN call_type =  'incomplete' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutIncomplete, SUM(CASE WHEN call_type =  'completed' AND helpline_call.direction = 'outbound-dial' THEN 1 ELSE 0 END) AS OutCompleted",FALSE)
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline')
-		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone')		
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')	
 		->where('user_helpline_link.user_id', $user['user_id'])
-		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')	
 		->group_by('from_number')
 		->order_by('InClientHangup','desc');
 		$this->db->limit($rows_per_page,$start);	
@@ -778,10 +776,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$this->db->select("count(DISTINCT from_number) as count",FALSE)
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline')
-		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone')		
-		->where('user_helpline_link.user_id', $user['user_id'])
-		->where('from_number NOT IN (SELECT number FROM helpline_numbers)');	
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')		
+		->where('user_helpline_link.user_id', $user['user_id']);	
 		$query = $this->db->get();
 		return $query->result();
 	}
