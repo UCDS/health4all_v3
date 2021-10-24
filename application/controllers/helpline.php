@@ -19,7 +19,7 @@ class Helpline extends CI_Controller {
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
 		$this->data['sms_templates']=$this->helpline_model->get_sms_templates();	
 	}
-
+	
 	function detailed_report(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();
@@ -87,6 +87,83 @@ class Helpline extends CI_Controller {
 		}
 		else show_404();
 	}
+	
+	function completed_calls_report(){
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		$add_sms_access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="completed_calls_report"){
+					$access=1;
+			}
+		}
+		
+		
+		if($access==1){
+			$this->load->helper('form');
+			$this->load->library('form_validation');
+			$user=$this->session->userdata('logged_in');
+			$this->data['user_id']=$user['user_id'];
+			$this->data['title']="Completed Calls Report";		
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
+			$this->load->view('templates/header',$this->data);	 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+			$this->data['calls']=$this->helpline_model->get_completed_calls_report($this->data['rowsperpage']);
+			$this->data['calls_count']=$this->helpline_model->get_completed_calls_report_count();
+	   		$this->data['helpline']=$this->helpline_model->get_helpline("report");
+			$this->load->view('pages/helpline/completed_calls_report',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else show_404();
+	}
+	
+	function missed_calls_report(){
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		$add_sms_access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="missed_calls_report"){
+					$access=1;
+			}
+		}
+		
+		
+		if($access==1){
+			$this->load->helper('form');
+			$this->load->library('form_validation');
+			$user=$this->session->userdata('logged_in');
+			$this->data['user_id']=$user['user_id'];
+			$this->data['title']="Missed Calls Report";		
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
+			$this->load->view('templates/header',$this->data);	 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+			$this->data['calls']=$this->helpline_model->get_missed_calls_report($this->data['rowsperpage']);
+			$this->data['calls_count']=$this->helpline_model->get_missed_calls_report_count();
+	   		$this->data['helpline']=$this->helpline_model->get_helpline("report");
+			$this->load->view('pages/helpline/missed_calls_report',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else show_404();
+	}
+	
 	function sms_detailed_report(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();
