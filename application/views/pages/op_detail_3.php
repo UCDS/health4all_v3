@@ -379,8 +379,8 @@ echo "</select></li>";
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
 		<th>Appointment Time</th>
-		<th>Decision</th>
 		<th>Final diagnosis</th>
+		<th>Decision</th>		
 	</thead>
 	<tbody>
 	<?php 
@@ -410,8 +410,9 @@ echo "</select></li>";
 		<td><?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
 				{echo date("j M Y", strtotime("$s->appointment_date_time")).", ".date("h:i A.", strtotime("$s->appointment_date_time"));} 
 				else {echo $s->appointment_date_time="";}?></td>
-		<td><?php echo $s->decision;?></td>
 		<td><?php echo $s->final_diagnosis;?></td>
+		<td><?php echo $s->decision;?></td>
+		
 		
 	</tr>
 	<?php $sno++;}	?>
