@@ -233,7 +233,69 @@ class Reports extends CI_Controller {
 		show_404();
 		}
 		
-	}	
+	}
+	
+	public function op_detail_3($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
+	{
+		if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="OP Detail"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->data['title']="OP Detail 3";
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->data['updated']=false;		
+		if($this->input->post('visit_id')){ 
+			if($this->reports_model->update_appointment()){$this->data['updated']=true;}
+		}
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+		$this->data['report_count']=$this->reports_model->get_op_detail_3_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
+		$this->data['report']=$this->reports_model->get_op_detail_3($this->data['rowsperpage']);		
+		$this->form_validation->set_rules('from_date', 'From Date',
+		'trim|required|xss_clean');
+	    $this->form_validation->set_rules('to_date', 'To Date', 
+	    'trim|required|xss_clean');
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/op_detail_3',$this->data);
+		}
+		else{
+			$this->load->view('pages/op_detail_3',$this->data);
+		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+	
+		
 	public function appointment_summary()
 	{
             if($this->session->userdata('logged_in')){
@@ -242,6 +304,7 @@ class Reports extends CI_Controller {
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="appointment_status"){
                             $access=1;
+                            break;
                     }
                 }
                 if($access==1){
@@ -269,11 +332,61 @@ class Reports extends CI_Controller {
 		}
 		$this->load->view('templates/footer',$this->data);
 		}
+		else{
+                    show_404();
+                }
                 }
                 else{
                     show_404();
                 }
         }
+        
+        public function appointment_summary_by_volunteer()
+	{
+            if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="appointment_by_staff"){
+                            $access=1;
+                            break;
+                    }
+                }
+                if($access==1){
+		$this->data['title']="Appointment Summary by Volunteer";
+		$this->load->model('helpline_model');
+               $this->data['weekdays']=$this->helpline_model->get_weekdays_array();
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+	
+		$this->data['report']=$this->reports_model->get_appointment_summary_by_staff();	
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/appointment_summary_by_staff',$this->data);
+		}
+		else{
+			$this->load->view('pages/appointment_summary_by_staff',$this->data);
+		}
+		$this->load->view('templates/footer',$this->data);
+		}
+		else{
+                    show_404();
+                }
+                }
+                
+                else{
+                    show_404();
+                }
+        }
+        
         public function validate_appointment_slot()
 	{
 		if($this->session->userdata('logged_in')){
@@ -521,6 +634,35 @@ class Reports extends CI_Controller {
 		}
 		
 	}
+	
+	public function more_reports()
+	{
+	       if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" ){
+				$access=1;
+				break;
+			}
+		}
+		if($access==1){
+		$this->data['title']="More Reports";
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/more_reports',$this->data);	
+		$this->load->view('templates/footer');
+		}
+		else{
+			show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+	
 	///health4all_v3/reports/referrals_detail/Registration/IP/0/0/0/0/M/HospitalReferredby/0/2021-01-01/2021-08-01/00:00/00:00/2/2
 	//reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$from_time/$from_time/$s->district_id/$s->state_id
 	public function referrals_detail($date_filter_field,$visittype,$visit_name=0,$department=0,$unit=0,$area=0,$gender=0,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id)

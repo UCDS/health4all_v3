@@ -57,7 +57,7 @@
           <ul class="nav navbar-nav">
 			<?php if($this->session->userdata('logged_in')) {
 			//Loop through the session data to check if the user has access to each function and only display those.
-
+			$more_reports=0;
 			foreach($functions as $f){
 					//Check if the user has access to Out Patient Registration forms or In Patient Registration forms
 					if($f->user_function=="Out Patient Registration" || $f->user_function=="In Patient Registration" || $f->user_function == "View Patients" || $f->user_function == "Update Patients"){
@@ -330,12 +330,19 @@
 				<?php
 					}
 				?>
+				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff"){ $more_reports=1; ?>
+					
+				<?php } ?>
 				<?php
 					if($f->user_function=="prescription_report"){ ?>
            <!--       		<li><a href="<?php echo base_url()."report/get/vitals_report";?>"><i class="glyphicon glyphicon-heart"></i> Vitals Report</a></li> -->
 						<li><a href="<?php echo base_url()."report/get/prescription_report";?>"><i class="glyphicon glyphicon-pencil"></i> Prescription Report</a></li>
 					<?php }?>
+					
 			<?php	}	?>
+			<?php if ($more_reports == 1){ ?>
+				<li><a href="<?php echo base_url()."reports/more_reports";?>">More Reports</a></li>
+			<?php } ?>
 			<li class="divider"></li>
 			<?php foreach($functions as $f){
 			?>
@@ -345,10 +352,11 @@
 			<?php	break;
 			}
 			}
+			
 			foreach($functions as $f){
 			if($f->user_function=="OP Detail"){ //OP Detail?>
 						<li><a href="<?php echo base_url()."report/get/op_vitals_detailed";?>">OP Detail - 1</a></li>
-			<?php	}
+			<?php }
 			if($f->user_function=="OP Detail"){ //OP Detail?>
 						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail - 2</a></li>
 			<?php	}
