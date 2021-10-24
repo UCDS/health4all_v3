@@ -603,12 +603,10 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/footer');
 		}
 		else{
-		show_404();
-		echo("<script>console.log('PHP: 1');</script>");
+			show_404();
 		}
 		}
 		else{
-		echo("<script>console.log('PHP: 2');</script>");
 		show_404();
 		}
 		
