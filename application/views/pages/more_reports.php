@@ -37,7 +37,7 @@ foreach($this->data['functions'] as $function){
 <?php		 }
 
 if($function->user_function=="appointment_by_staff"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_volunteer";?>">Appointment by volunteer</a></button>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_volunteer";?>">Appointment by Volunteer</a></button>
 <?php		 }
 
 		} ?>
