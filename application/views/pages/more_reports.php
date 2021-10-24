@@ -20,15 +20,29 @@
 $appointments=0;
 $helpline=0;
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail"){
+			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff"){
 				$appointments=1;
+				
 				?>
 				<button class="accordion">Patients</button>
-				<div class="panel_accordion">
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
-				</div>
-<?php			}
+<?php			break;}
 		}
+		
+if($appointments==1) { ?>
+<div class="panel_accordion">
+<?php
+foreach($this->data['functions'] as $function){
+			if($function->user_function=="OP Detail"){ ?>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
+<?php		 }
+
+if($function->user_function=="appointment_by_staff"){ ?>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_volunteer";?>">Appointment by volunteer</a></button>
+<?php		 }
+
+		} ?>
+</div> <?php
+	}
 ?>
 <?php 
 foreach($this->data['functions'] as $function){

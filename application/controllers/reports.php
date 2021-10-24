@@ -304,6 +304,7 @@ class Reports extends CI_Controller {
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="appointment_status"){
                             $access=1;
+                            break;
                     }
                 }
                 if($access==1){
@@ -331,11 +332,61 @@ class Reports extends CI_Controller {
 		}
 		$this->load->view('templates/footer',$this->data);
 		}
+		else{
+                    show_404();
+                }
                 }
                 else{
                     show_404();
                 }
         }
+        
+        public function appointment_summary_by_volunteer()
+	{
+            if($this->session->userdata('logged_in')){
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                foreach($this->data['functions'] as $function){
+                    if($function->user_function=="appointment_by_staff"){
+                            $access=1;
+                            break;
+                    }
+                }
+                if($access==1){
+		$this->data['title']="Appointment Summary by Volunteer";
+		$this->load->model('helpline_model');
+               $this->data['weekdays']=$this->helpline_model->get_weekdays_array();
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+	
+		$this->data['report']=$this->reports_model->get_appointment_summary_by_staff();	
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/appointment_summary_by_staff',$this->data);
+		}
+		else{
+			$this->load->view('pages/appointment_summary_by_staff',$this->data);
+		}
+		$this->load->view('templates/footer',$this->data);
+		}
+		else{
+                    show_404();
+                }
+                }
+                
+                else{
+                    show_404();
+                }
+        }
+        
         public function validate_appointment_slot()
 	{
 		if($this->session->userdata('logged_in')){
@@ -590,7 +641,7 @@ class Reports extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report"){
+			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" ){
 				$access=1;
 				break;
 			}

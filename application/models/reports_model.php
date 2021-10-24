@@ -1923,7 +1923,99 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->group_by(array("DATE(pv1.appointment_time)", "pv1.department_id"));			
 		$resource=$this->db->get();
 		return $resource->result();
-	}	
+	}
+	
+	function get_appointment_summary_by_staff(){		
+	       	
+					
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		
+	
+		$this->db->where("(pv1.appointment_time IS NOT NULL)");				
+		$from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(pv1.appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		$this->db->order_by('UNIX_TIMESTAMP(pv1.appointment_time)','ASC');
+		
+		$extraWhere = "";
+		$extraSlotWhere = "";
+		if($this->input->post('visit_name')){
+			$this->db->where('pv1.visit_name_id',$this->input->post('visit_name'));
+			$this->db->where("pv1.visit_name_id is not null");
+			$this->db->where("pv1.visit_name_id != ",0);	
+			$extraWhere = $extraWhere ." AND pv2.visit_name_id=pv1.visit_name_id";
+			$extraSlotWhere = $extraSlotWhere ." AND aps.visit_name_id=pv1.visit_name_id";		
+		}
+		
+		if($this->input->post('appointment_status_id')){
+			$this->db->where('pv1.appointment_status_id',$this->input->post('appointment_status_id'));
+			$extraWhere = $extraWhere  ." AND pv2.appointment_status_id=pv1.appointment_status_id";
+		}			
+		
+		if($this->input->post('department')){
+			$this->db->where('pv1.department_id',$this->input->post('department'));			
+		}
+		
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('pv1.unit',$this->input->post('unit'));
+			$extraWhere = $extraWhere ." AND pv2.unit=pv1.unit ";
+		}
+		
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('pv1.area',$this->input->post('area'));
+			$extraWhere = $extraWhere ." AND pv2.area=pv1.area ";
+		}
+		
+	
+		
+		$this->db->select("(select count(*) as patient_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) and pv2.appointment_update_by=pv1.appointment_update_by ". $extraWhere . ") as patient_count, (select count(*) as default_status_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) and pv2.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv2.hospital_id) and pv2.appointment_update_by=pv1.appointment_update_by ". $extraWhere . ") as default_status_count, DATE(pv1.appointment_time) as appointment_date,CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by",false);
+		 $this->db->from('patient_visit as pv1')
+		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
+		 ->join('staff as appointment_update_by','pv1.appointment_update_by=appointment_update_by.staff_id','left')	 
+		 ->join('unit','pv1.unit=unit.unit_id','left')
+		 ->join('area','pv1.area=area.area_id','left')
+		 ->join('appointment_status aps','pv1.appointment_status_id=aps.id','left')		
+		 ->where('pv1.hospital_id',$hospital['hospital_id'])
+		 ->where('pv1.visit_type','OP');
+		$this->db->group_by(array("DATE(pv1.appointment_time)", "pv1.appointment_update_by"));			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	
+		
 	function validate_appointment_slot(){
 	
 	$this->db->select('count(*) as count');
