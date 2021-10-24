@@ -353,7 +353,7 @@ class Reports extends CI_Controller {
                     }
                 }
                 if($access==1){
-		$this->data['title']="Appointment Summary by Team Member";
+		$this->data['title']="Appointments Summary by Team Member";
 		$this->load->model('helpline_model');
                $this->data['weekdays']=$this->helpline_model->get_weekdays_array();
 		$this->data['all_departments']=$this->staff_model->get_department();

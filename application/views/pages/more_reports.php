@@ -37,7 +37,7 @@ foreach($this->data['functions'] as $function){
 <?php		 }
 
 if($function->user_function=="appointment_by_staff"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_volunteer";?>">Appointment by Volunteer</a></button>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_volunteer";?>">Appointments by Team Member</a></button>
 <?php		 }
 
 		} ?>
@@ -60,9 +60,9 @@ if($helpline==1) { ?>
 <div class="panel_accordion">
 <?php
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="completed_calls_report"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/completed_calls_report";?>">Completed Calls</a></button>
-<?php		 }
+		//	if($function->user_function=="completed_calls_report"){ ?>
+		<!--		<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/completed_calls_report";?>">Completed Calls</a></button> !-->
+<?php //		 }
 
 if($function->user_function=="missed_calls_report"){ ?>
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>

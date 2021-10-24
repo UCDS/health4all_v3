@@ -707,12 +707,6 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		
 		$user = $this->session->userdata('logged_in');
 
-		if($this->input->post('from_number')){
-			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
-		}
-		if($this->input->post('to_number')){
-			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
-		}
 
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
@@ -733,7 +727,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
 		}
 		else{
-			$this->db->where('date(start_time)',date("Y-m-d"));
+			$this->db->where('(date(start_time) BETWEEN "'.date("Y-m-d").'" AND "'.date("Y-m-d").'")');
 		}
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
@@ -756,13 +750,6 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 	function get_missed_calls_report_count(){
 		$user = $this->session->userdata('logged_in');
 
-		if($this->input->post('from_number')){
-			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
-		}
-		if($this->input->post('to_number')){
-			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
-		}
-
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
 			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
@@ -782,7 +769,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
 		}
 		else{
-			$this->db->where('date(start_time)',date("Y-m-d"));
+			$this->db->where('(date(start_time) BETWEEN "'.date("Y-m-d").'" AND "'.date("Y-m-d").'")');
 		}
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
