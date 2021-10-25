@@ -2002,7 +2002,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count,IFN
 		
 	
 		
-		$this->db->select("DATE(pv1.appointment_time) as appointment_date,CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by, COUNT(*) AS patient_count, 
+		$this->db->select("CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by, COUNT(*) AS patient_count, 
 SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
@@ -2012,7 +2012,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		 ->join('appointment_status aps','pv1.appointment_status_id=aps.id','left')		
 		 ->where('pv1.hospital_id',$hospital['hospital_id'])
 		 ->where('pv1.visit_type','OP');
-		$this->db->group_by(array("DATE(pv1.appointment_time)", "pv1.appointment_update_by"));			
+		$this->db->group_by("pv1.appointment_update_by");			
 		$resource=$this->db->get();
 		return $resource->result();
 	}
