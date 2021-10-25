@@ -170,14 +170,12 @@ $(document).ready(function(){$("#from_date").datepicker({
 			<th><?php echo $default_appointment_status; ?></th>
 			<th style="text-align:center"><?php echo "Percentage (%)"; ?></th>
 		<?php } ?>
-		</tr>				
+						
  		
 	</thead>
 	<tbody>
 	<?php 
 	$sno=1 ; 
-	$appointment_date="";
-	$appointment_date_count=0;
 	$total_appointmnets=0;
 	$total_default_status_count=0;
 	

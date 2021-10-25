@@ -163,42 +163,27 @@ $(document).ready(function(){$("#from_date").datepicker({
 </div>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
-		<th style="text-align:center" rowspan="2">Date</th>
-		<?php if ($default_appointment_status !=""){ ?>
-		<th style="text-align:center" colspan="5">Details</th>
-		<?php } else {?>
-		<th style="text-align:center" colspan="3">Details</th>
-		<?php } ?>
-		<tr>
-		<th>Department</th><th>Slots Alloted</th> <th>Appointments Created</th> 
+		<th style="text-align:center">Date</th>		
+		<th>Department</th>
+		<th>Slots Alloted</th> 
+		<th>Appointments Created</th> 
 		<?php if ($default_appointment_status !=""){ ?>
 			<th><?php echo $default_appointment_status; ?></th>
 			<th style="text-align:center"><?php echo "Percentage (%)"; ?></th>
 		<?php } ?>
-		</tr>				
+					
  		
 	</thead>
 	<tbody>
 	<?php 
 	$sno=1 ; 
-	$appointment_date="";
-	$appointment_date_count=0;
 	$total_appointmnets=0;
 	$total_slots=0;
 	$total_default_status_count=0;
 	
-	foreach($report as $s){
-	 if($s->appointment_date != $appointment_date){
-		$appointment_date_count=0;
-		foreach($report as $s1){
-			if ($s->appointment_date == $s1->appointment_date ){
-				$appointment_date_count = $appointment_date_count + 1;
-			}
-		}
-		
-		?>
+	foreach($report as $s){ ?>
 		<tr>      
-		<td rowspan="<?php echo $appointment_date_count; ?>" > <?php echo date("d-M-Y", strtotime($s->appointment_date))." - ".$weekdays[date("w", strtotime($s->appointment_date))];  ?></td>		
+		<td> <?php echo date("d-M-Y", strtotime($s->appointment_date))." - ".$weekdays[date("w", strtotime($s->appointment_date))];  ?></td>		
 		<td> <?php echo $s->department_name;  ?> </td>
 		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
 		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>
@@ -207,19 +192,8 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td style="text-align:right"> <?php echo round(($s->default_status_count/$s->patient_count)*100,0)."%"; ?></td>
 		<?php } ?>		
 		</tr>
-		<?php  } else { ?>
-		<tr>
-		<td> <?php echo $s->department_name; ?> </td>
-		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
-		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count; ?></td>
-		<?php if ($default_appointment_status !=""){ ?>
-		<td style="text-align:right"> <?php echo $s->default_status_count;$total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
-		<td style="text-align:right"> <?php echo round(($s->default_status_count/$s->patient_count)*100,0)."%"; ?></td>
-		<?php } ?>	
-		</tr>	
-		<?php  } 
-		$appointment_date = $s->appointment_date; 
-		} ?>
+		
+		<?php } ?>
 		<tr>
 		<td></td>
 		<td><b>Total</b></td>

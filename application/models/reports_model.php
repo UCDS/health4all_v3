@@ -1911,7 +1911,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		
 		$slots_alloted = "(Select sum(appointments_limit) from appointment_slot aps where aps.department_id = pv1.department_id and aps.date = ifnull(date(pv1.appointment_time),'')  ". $extraSlotWhere .") as slots_alloted";
 		
-		$this->db->select("(select count(*) as patient_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) ". $extraWhere . ") as patient_count  , ".$slots_alloted .", (select count(*) as default_status_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) and pv2	.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv2.hospital_id)". $extraWhere . ") as default_status_count, DATE(pv1.appointment_time) as appointment_date,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id",false);
+		$this->db->select("DATE(pv1.appointment_time) as appointment_date, COUNT(*) AS patient_count, 
+SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id, ".$slots_alloted,false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
 		 ->join('department d','pv1.department_id=d.department_id','left')
@@ -2001,7 +2002,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		
 	
 		
-		$this->db->select("(select count(*) as patient_count from patient_visit pv2 where DATE(pv2.appointment_time)=DATE(pv1.appointment_time) and pv2.appointment_update_by=pv1.appointment_update_by ". $extraWhere . ") as patient_count, (select count(*) as default_status_count from patient_visit pv2 where DATE(pv2.appointment_time)=DATE(pv1.appointment_time) and pv2.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv2.hospital_id) and pv2.appointment_update_by=pv1.appointment_update_by ". $extraWhere . ") as default_status_count, DATE(pv1.appointment_time) as appointment_date,CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by",false);
+		$this->db->select("DATE(pv1.appointment_time) as appointment_date,CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by, COUNT(*) AS patient_count, 
+SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
 		 ->join('staff as appointment_update_by','pv1.appointment_update_by=appointment_update_by.staff_id','left')	 
