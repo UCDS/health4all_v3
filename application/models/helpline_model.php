@@ -683,8 +683,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
 		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone')
 		->where('helpline_call.call_type','completed')			
-		->where('user_helpline_link.user_id', $user['user_id'])
-		->where('from_number NOT IN (SELECT number FROM helpline_numbers)');	
+		->where('user_helpline_link.user_id', $user['user_id']);	
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1316,7 +1315,57 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		if($this->db->trans_status()===TRUE) return true; else { $this->db->trans_rollback(); return false; }	
 	}
 
-	function getHelplineReceivers($data=array()){
+	function getHelplineReceiversCount(){		
+		
+		
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline_receiver.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
+		}
+		
+		$this->db->select("count(*) as count", false)
+		->from('helpline_receiver')
+		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
+	
+	function getHelplineReceivers($data=array()){		
+		if(isset($data['default_rowsperpage'])){
+			$default_rowsperpage=$data['default_rowsperpage'];
+		}
+		else{
+			$default_rowsperpage = 0;
+		}
+		
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline_receiver.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
+		}
+		
+		
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);
 		}
@@ -1324,6 +1373,9 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
 		->order_by('full_name', 'asc');
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
 		$query = $this->db->get();
 		return $query->result();
 	}

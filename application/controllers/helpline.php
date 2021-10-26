@@ -443,9 +443,19 @@ class Helpline extends CI_Controller {
 		if($this->session->userdata('logged_in')){
 			$this->load->helper('form');
 			$this->data['title']="User Helpline Receivers";
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;
+		 		}
+			}
+			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['userdata']=$this->session->userdata('logged_in');
 			$this->data['user_functions']=$this->staff_model->get_user_function();
-			$this->data['receivers'] = $this->helpline_model->getHelplineReceivers();
+			$this->data['report_count'] = $this->helpline_model->getHelplineReceiversCount();
+			$this->data['receivers'] = $this->helpline_model->getHelplineReceivers(array('default_rowsperpage' => $this->data['rowsperpage']));
 			$this->load->view('templates/header',$this->data);
 			$this->load->view('templates/leftnav',$this->data);			
 			$this->load->view('pages/helpline_receiver_list',$this->data);
