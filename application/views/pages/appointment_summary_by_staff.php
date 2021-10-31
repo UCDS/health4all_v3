@@ -163,27 +163,23 @@ $(document).ready(function(){$("#from_date").datepicker({
 </div>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
-		<th style="text-align:center">Date</th>
 		<th>Team Member</th>
 		<th>Appointments Created</th> 
 		<?php if ($default_appointment_status !=""){ ?>
 			<th><?php echo $default_appointment_status; ?></th>
 			<th style="text-align:center"><?php echo "Percentage (%)"; ?></th>
 		<?php } ?>
-		</tr>				
+						
  		
 	</thead>
 	<tbody>
 	<?php 
 	$sno=1 ; 
-	$appointment_date="";
-	$appointment_date_count=0;
 	$total_appointmnets=0;
 	$total_default_status_count=0;
 	
 	foreach($report as $s){ ?>
-		<tr>      
-		<td> <?php echo date("d-M-Y", strtotime($s->appointment_date))." - ".$weekdays[date("w", strtotime($s->appointment_date))];  ?></td>		
+		<tr>      		
 		<td> <?php echo $s->appointment_update_by;  ?> </td>	
 		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>
 		<?php if ($default_appointment_status !=""){ ?>
@@ -192,7 +188,6 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<?php } } ?>		
 		
 		<tr>
-		<td></td>
 		<td><b>Total</b></td>
 		<td style="text-align:right"><b><?php echo $total_appointmnets; ?></b></td>
 		<?php if ($default_appointment_status !=""){ ?>
