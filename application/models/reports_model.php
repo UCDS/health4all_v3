@@ -414,7 +414,21 @@ class Reports_model extends CI_Model{
 		return $resource->result();
 	}
 
-function get_op_detail_with_idproof(){
+function get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$from_date,$to_date,$default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
@@ -481,11 +495,75 @@ function get_op_detail_with_idproof(){
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		$this->db->limit($rows_per_page,$start);	
 		$resource=$this->db->get();
 		return $resource->result();
 	}
 	
-	
+	function get_op_detail_with_idproof_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date){		
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		}
+		else{
+			$this->db->where("(admit_time BETWEEN '00:00' AND '23:59')");
+		}
+		if($this->input->post('visit_name')){
+			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
+		}
+		if($this->input->post('department')){
+			$this->db->where('patient_visit.department_id',$this->input->post('department'));
+		}
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('patient_visit.unit',$this->input->post('unit'));
+		}
+		
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('patient_visit.area',$this->input->post('area'));
+		}
+		
+
+		$this->db->select("count(*) as count",false);
+		 $this->db->from('patient_visit')
+		 ->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('id_proof_type','patient.id_proof_type_id=id_proof_type.id_proof_type_id','left')
+		 ->join('mlc','mlc.visit_id=patient_visit.visit_id','left')
+		 ->join('department','patient_visit.department_id=department.department_id','left')
+		 ->join('unit','patient_visit.unit=unit.unit_id','left')
+		 ->join('area','patient_visit.area=area.area_id','left')
+		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
+		 ->where('visit_type','OP')
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");	
+		$resource=$this->db->get();
+		return $resource->result();
+	}
 	
 	function get_helpline_doctor(){
 		$hospital=$this->session->userdata('hospital');

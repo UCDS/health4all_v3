@@ -203,15 +203,25 @@ class Reports extends CI_Controller {
 		}
 		if($access==1){
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		$this->data['title']="Out-Patient Detailed Report - 2";
 		$this->data['all_departments']=$this->staff_model->get_department();
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
-		$this->data['report']=$this->reports_model->get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
+		$this->data['report_count']=$this->reports_model->get_op_detail_with_idproof_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
+		$this->data['report']=$this->reports_model->get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$from_date,$to_date,$this->data['rowsperpage']);
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 
