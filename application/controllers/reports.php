@@ -267,10 +267,6 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
-		$this->data['updated']=false;		
-		if($this->input->post('visit_id')){ 
-			if($this->reports_model->update_appointment()){$this->data['updated']=true;}
-		}
 		foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
@@ -351,7 +347,7 @@ class Reports extends CI_Controller {
                 }
         }
         
-        public function appointment_summary_by_volunteer()
+        public function appointment_summary_by_staff()
 	{
             if($this->session->userdata('logged_in')){
                 $this->data['userdata']=$this->session->userdata('logged_in');

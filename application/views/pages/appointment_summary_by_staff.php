@@ -91,7 +91,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 	?>
 <div class="row">
 		<h4>Appointments Summary by Team Member</h4>	
-		<?php echo form_open("reports/appointment_summary_by_volunteer",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>                      
+		<?php echo form_open("reports/appointment_summary_by_staff",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>                      
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 	                From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
@@ -163,6 +163,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 </div>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
+		<th>Serial No</th>
 		<th>Team Member</th>
 		<th>Appointments Created</th> 
 		<?php if ($default_appointment_status !=""){ ?>
@@ -179,7 +180,8 @@ $(document).ready(function(){$("#from_date").datepicker({
 	$total_default_status_count=0;
 	
 	foreach($report as $s){ ?>
-		<tr>      		
+		<tr>      	
+		<td> <?php echo $sno++; ?> </td> 	
 		<td> <?php echo $s->appointment_update_by;  ?> </td>	
 		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>
 		<?php if ($default_appointment_status !=""){ ?>
@@ -188,6 +190,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<?php } } ?>		
 		
 		<tr>
+		<td></td>
 		<td><b>Total</b></td>
 		<td style="text-align:right"><b><?php echo $total_appointmnets; ?></b></td>
 		<?php if ($default_appointment_status !=""){ ?>
