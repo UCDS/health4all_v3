@@ -1316,6 +1316,20 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		if($this->input->post('department')){
 			$this->db->where('pv.department_id',$this->input->post('department'));
 		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('p.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('patientid')){
+			$this->db->like('p.patient_id',$this->input->post('patientid'));
+		}
+		
+		if($this->input->post('opno')){
+			$this->db->like('pv.hosp_file_no',$this->input->post('opno'));
+		}
+		
+		
 		if($this->input->post('unit')){
 			$this->db->select('IF(unit!="",unit,0) unit',false);
 			$this->db->where('pv.unit',$this->input->post('unit'));
@@ -1433,7 +1447,18 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->where('pv.area',$this->input->post('area'));
 		}
 		
-
+		if($this->input->post('phone')){
+			$this->db->like('p.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('patientid')){
+			$this->db->like('p.patient_id',$this->input->post('patientid'));
+		}
+		
+		if($this->input->post('opno')){
+			$this->db->like('pv.hosp_file_no',$this->input->post('opno'));
+		}
+		
 		$this->db->select("count(*) as count",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')

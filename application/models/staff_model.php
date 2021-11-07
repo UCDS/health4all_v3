@@ -706,16 +706,60 @@ class Staff_model extends CI_Model{
 		return $query->result();
 	}
 
-	function get_user() {
+	function get_user($default_rowsperpage=0) {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		if($this->input->post('phone')){
+			$this->db->like('staff.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('staff_name')){
+			$this->db->like('lower(staff.first_name)',strtolower($this->input->post('staff_name')));
+			$this->db->or_like('lower(staff.last_name)',strtolower($this->input->post('staff_name')));
+		}
 		$this->db->select("staff.staff_id,staff.hospital_id, staff.designation, 
 		staff.first_name, staff.last_name,
 		user.user_id, user.username, staff.phone")
 			->from("user")
 			->join("staff", "user.staff_id = staff.staff_id");
+		if($default_rowsperpage!=0){
+			$this->db->limit($rows_per_page,$start);
+		}	
 		$query=$this->db->get();
 		return $query->result();
 	}
 
+	function get_user_count() {
+		
+		
+		if($this->input->post('phone')){
+			$this->db->like('staff.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('staff_name')){
+			$this->db->like('lower(staff.first_name)',strtolower($this->input->post('staff_name')));
+			$this->db->or_like('lower(staff.last_name)',strtolower($this->input->post('staff_name')));
+		}
+		$this->db->select("count(*) as count")
+			->from("user");
+			
+		$query=$this->db->get();
+		return $query->result();
+	}
+	
+	
 	function get_prescription_frequency(){
 
 		$this->db->select("frequency")

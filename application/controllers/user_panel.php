@@ -166,12 +166,22 @@ class User_panel extends CI_Controller {
 			$this->load->helper('form');
 			$this->data['title']="Link User To Hospitals";
 			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;
+		 		}
+			}
 			if($this->input->post('submit')){
 				$this->data['status'] = $this->staff_model->user_hospital_link();
-				$this->data['user'] = $this->staff_model->get_user();
+				$this->data['report_count'] = $this->staff_model->get_user_count();
+				$this->data['user'] = $this->staff_model->get_user($this->data['rowsperpage']);
 				$this->data['hptls']= false;
 			}else if(!$this->input->post('select')){
-				$this->data['user'] = $this->staff_model->get_user();
+				$this->data['report_count'] = $this->staff_model->get_user_count();
+				$this->data['user'] = $this->staff_model->get_user($this->data['rowsperpage']);
 				$this->data['hptls']= false;
 			}else {
 				$this->data['hptls'] = $this->staff_model->get_hospital();
