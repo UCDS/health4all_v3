@@ -725,9 +725,8 @@ class Staff_model extends CI_Model{
 			$this->db->like('staff.phone',$this->input->post('phone'));
 		}
 		
-		if($this->input->post('staff_name')){
-			$this->db->like('lower(staff.first_name)',strtolower($this->input->post('staff_name')));
-			$this->db->or_like('lower(staff.last_name)',strtolower($this->input->post('staff_name')));
+		if($this->input->post('staff_user_name')){
+			$this->db->like('lower(user.username)',strtolower($this->input->post('staff_user_name')));
 		}
 		$this->db->select("staff.staff_id,staff.hospital_id, staff.designation, 
 		staff.first_name, staff.last_name,
@@ -748,13 +747,12 @@ class Staff_model extends CI_Model{
 			$this->db->like('staff.phone',$this->input->post('phone'));
 		}
 		
-		if($this->input->post('staff_name')){
-			$this->db->like('lower(staff.first_name)',strtolower($this->input->post('staff_name')));
-			$this->db->or_like('lower(staff.last_name)',strtolower($this->input->post('staff_name')));
+		if($this->input->post('staff_user_name')){
+			$this->db->like('lower(user.username)',strtolower($this->input->post('staff_user_name')));
 		}
 		$this->db->select("count(*) as count")
-			->from("user");
-			
+			->from("user")
+			->join("staff", "user.staff_id = staff.staff_id");
 		$query=$this->db->get();
 		return $query->result();
 	}

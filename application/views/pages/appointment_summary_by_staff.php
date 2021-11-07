@@ -163,7 +163,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 </div>
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
-		<th>Serial No</th>
+		<th>#</th>
 		<th>Team Member</th>
 		<th>Appointments Created</th> 
 		<?php if ($default_appointment_status !=""){ ?>
