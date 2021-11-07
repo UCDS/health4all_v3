@@ -133,7 +133,7 @@ function onchange_page_dropdown(dropdownobj){
         'id'=>'search_user')); 
      ?>
       <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
-     Name: <input type="text" class="form-control" placeholder="Name"  style="width:120px"  value="<?php echo $this->input->post('staff_name');?>" name="staff_name" />
+     User Name: <input type="text" class="form-control" placeholder="Name"  style="width:120px"  value="<?php echo $this->input->post('staff_user_name');?>" name="staff_user_name" />
      Phone: <input type="text" class="form-control" placeholder="Phone"  style="width:120px"  value="<?php echo $this->input->post('phone');?>" name="phone" />
      Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
       <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
