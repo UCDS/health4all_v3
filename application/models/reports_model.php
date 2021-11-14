@@ -1329,6 +1329,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->like('pv.hosp_file_no',$this->input->post('opno'));
 		}
 		
+		if($this->input->post('manualid')){
+			$this->db->like('p.patient_id_manual',$this->input->post('manualid'));
+		}		
+		
 		
 		if($this->input->post('unit')){
 			$this->db->select('IF(unit!="",unit,0) unit',false);
@@ -1345,7 +1349,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->select('"0" as area',false);
 		}
 
-		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
+		$this->db->select("p.patient_id,p.patient_id_manual,p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, pvd.department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
@@ -1454,6 +1458,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		if($this->input->post('patientid')){
 			$this->db->like('p.patient_id',$this->input->post('patientid'));
 		}
+		
+		if($this->input->post('manualid')){
+			$this->db->like('p.patient_id_manual',$this->input->post('manualid'));
+		}		
 		
 		if($this->input->post('opno')){
 			$this->db->like('pv.hosp_file_no',$this->input->post('opno'));

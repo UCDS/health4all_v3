@@ -715,7 +715,8 @@ class Helpline extends CI_Controller {
 
 			if ($this->input->post('rows_per_page')) {
 				// The submit for the current search has been entered.
-				$this->data['report'] = $this->helpline_model->get_helpline_session_report();
+				$this->data['report_count'] = $this->helpline_model->get_helpline_session_report_count();
+				$this->data['report'] = $this->helpline_model->get_helpline_session_report($this->data['rowsperpage']);
 			}
 			else {
 			// $this->data['report'] = $this->helpline_model->get_helpline_session_report();
@@ -767,6 +768,8 @@ class Helpline extends CI_Controller {
 					$this->data['lower_rowsperpage']= $default->lower_range;
 				}
 			}
+			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id,$this->data['rowsperpage'] );
+			$this->data['report_count'] = $this->helpline_model->get_helpline_receiver_report_count($helpline_session_id);
 			if ($this->input->post('helpline_update_session_plan_id')) {
 				if($this->input->post('helpline_session_plan_operation') && $this->input->post('helpline_session_plan_operation') == "Edit") {
 					$this->helpline_model->update_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'));

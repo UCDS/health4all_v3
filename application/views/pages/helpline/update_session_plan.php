@@ -118,9 +118,9 @@ $(document).ready(function(){
 </script>
 <script type="text/javascript">
 function doPost(page_no){
-	var page_no_hidden = document.getElementById("page_no");
+	var page_no_hidden = document.getElementById("page_no_next");
   	page_no_hidden.value=page_no;
-        $('#session_plan').submit();
+        $('#update_user_helpline_sessionplan_form').submit();
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
@@ -227,7 +227,7 @@ input[type=number] {
 	else{
 		$page_no = 1;
 	}
-	$total_records = count($report);
+	$total_records = $report_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -377,10 +377,12 @@ echo "</select></li>";
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'delete_helpline_'.$s->helpline_session_plan_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_id;?>" name="helpline_session_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_plan_id;?>" name="helpline_update_session_plan_id" />
+		<input type="hidden" name="rows_per_page_main" id="rows_per_page_main" value='<?php echo $this->input->post('rows_per_page_main');?>'>		
+		<input type="hidden" name="page_no" value='<?php echo $this->input->post('page_no');?>'>	
 		</form>
 		</td> 
 	<?php } ?>
-		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button> 
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->receiver_id; ?>" data-fullname="<?php echo $s->full_name; ?>" data-toggle="modal" data-target="#viewModal" onclick="view_helpline_sessions(event)">View</button> 
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'view_helpline_sessions_'.$s->receiver_id));?>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->receiver_id;?>" name="view_receiver_id"/>
 		<input type="text" class="sr-only" hidden value="<?php echo $s->full_name;?>" name="name_receiver_id"/>
@@ -503,8 +505,20 @@ echo "</select></li>";
 <div class="row">
 		<?php echo form_open('helpline/session_plan',array('role'=>'form','id'=>'back_helpline_session_plan'));?>
 		<input type="text" class="sr-only" hidden value="helpline_session_id" name="helpline_session_id" />
-		<input type="number" class="sr-only" hidden name="rows_per_page" value=50 />
+		<input type="number" class="sr-only" hidden name="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'/> 
+				<input type="number" class="sr-only" hidden name="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'/> 
+				
+				
+		<input type="hidden" name="page_no" id="page_no" value='<?php echo $this->input->post('rows_per_page_main');?>'>	
 		<input class="btn btn-sm btn-primary" type="submit" value="Back"/>
+		</form>
+		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'update_user_helpline_sessionplan_form'));?>
+		<input type="text" class="sr-only" hidden value='<?php echo $this->input->post('helpline_session_id');?>' name="helpline_session_id" />
+
+				<input type="number" class="sr-only" hidden name="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'/> 
+				
+			<input type="hidden" name="rows_per_page_main" id="rows_per_page_main" value='<?php echo $this->input->post('rows_per_page_main');?>'>		
+		<input type="hidden" name="page_no" id="page_no_next" value='<?php echo $this->input->post('page_no');?>'>	
 		</form>
 </div>
 <div class="modal fade" id="editModal" role="dialog">
@@ -523,6 +537,10 @@ echo "</select></li>";
 		</div>
 		<?php echo form_open('helpline/update_user_helpline_sessionplan',array('role'=>'form','id'=>'edit_helpline_sessions'));?>
 		<input type="text" hidden value="" name="helpline_update_session_plan_id" id="helpline_session_plan_id"/>
+		<input type="number" class="sr-only" hidden name="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'/> 
+				
+			<input type="hidden" name="rows_per_page_main" id="rows_per_page_main" value='<?php echo $this->input->post('rows_per_page_main');?>'>		
+		<input type="hidden" name="page_no" value='<?php echo $this->input->post('page_no');?>'>	
 		<input type="text" class="sr-only" hidden value="Edit" name="helpline_session_plan_operation" />
 		<div class="form-group">
 			
@@ -563,7 +581,7 @@ echo "</select></li>";
 	 <div class="modal-content">
 		<div class="modal-header bg-primary text-white" id="view_modal_header">
 		      <button type="button" class="close" data-dismiss="modal">&times;</button>
-		      <h4 class="modal-title" id="view_modal_title_id"><?php echo $full_name."'s View Sessions" ?></h4>
+		      <h4 class="modal-title" id="view_modal_title_id"></h4>
 		</div>
 		<div class="modal-body" id="view">
 		<div style="height: 200px; overflow: auto;">
@@ -668,8 +686,14 @@ function delete_helpline_receiver(e) {
 function view_helpline_sessions(e) {
 	// e.preventDefault();
 	var event_prop = e;
-	console.log(event_prop);
-	console.log($(event_prop.target).data('id'));
+	//console.log(event_prop);
+	//console.log($(event_prop.target).data('id'));
+	//console.log($(event_prop.target).data('fullname'));
+	var name = $(event_prop.target).data('fullname');
+	console.log(name);
+	var modal = $("#viewModal");
+	modal.find("#view_modal_title_id").html(name+"'s Sessions");
+	//console.log(modal.find("#view_modal_title_id"));
 	var id=$(event_prop.target).data('id');
 	var form =  document.getElementById("view_helpline_sessions_"+id);
 

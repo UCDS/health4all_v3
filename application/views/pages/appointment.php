@@ -337,8 +337,9 @@ display: inline-grid;
 				?>
 			</select>
 			Phone : <input type="number" class="form-custom form-control" placeholder="Phone Number" name="phone" id="phone" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('phone')) { echo $this->input->post('phone');  } ?>"  /> 
-			  Patient ID : <input type="number" class="form-custom form-control" placeholder="Patient ID" name="patientid" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('patientid')) { echo $this->input->post('patientid'); } ?>"   /> 
-			  <br/>OP No : <input type="number" class="form-custom form-control" name="opno" placeholder="OP Number" id="opno" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('opno')) { echo $this->input->post('opno'); } ?>" /> 
+			 OP No : <input type="number" class="form-custom form-control" name="opno" placeholder="OP Number" id="opno" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('opno')) { echo $this->input->post('opno'); } ?>" /> <br/>
+			Manual ID : <input type="text" class="form-custom form-control" name="manualid" placeholder="Manual ID" id="manualid" value="<?php if($this->input->post('manualid')) { echo $this->input->post('manualid'); } ?>"  /> 
+			  H4All ID : <input type="number" class="form-custom form-control" placeholder="Health4All ID" name="patientid" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('patientid')) { echo $this->input->post('patientid'); } ?>"   />  			
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
@@ -489,6 +490,7 @@ echo "</select></li>";
 	<thead>
 		<th>SNo</th>
 		<th>Patient ID</th>
+		<th>Patient ID Manual</th>
 		<th>OP No.</th>
 		<th>PatientInfo</th>
 		<th>Address</th>
@@ -520,6 +522,7 @@ echo "</select></li>";
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
+		<td><?php echo $s->patient_id_manual;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
 		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
 		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
@@ -719,7 +722,9 @@ echo "</select></li>";
 			<input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>		
 			<input type="hidden" name="phone" value="<?php echo $this->input->post('phone');?>">
 			<input type="hidden" name="patientid" value="<?php echo $this->input->post('patientid');?>">
-			<input type="hidden" name="opno" value="<?php echo $this->input->post('opno');?>">		
+			<input type="hidden" name="opno" value="<?php echo $this->input->post('opno');?>">
+			<input type="hidden" name="manualid" value="<?php echo $this->input->post('manualid');?>">
+					
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">
