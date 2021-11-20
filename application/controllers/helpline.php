@@ -10,6 +10,7 @@ class Helpline extends CI_Controller {
 		$this->load->model('hospital_model');
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
+		$this->config->load('callandsms');
 		$user_id=$userdata['user_id'];
 		$this->data['hospitals']=$this->staff_model->user_hospital($user_id);
 		$this->data['functions']=$this->staff_model->user_function($user_id);
@@ -566,19 +567,21 @@ class Helpline extends CI_Controller {
 
 	function initiate_call(){
 
-		// TODO: TO BE MOVED TO config/exotel.php  <---- HAD TO PLACE BELOW AS CONFIG LOADING WAS NOT WORKING...
-		/*$api_key = $this->config->item('exotel_api_key');
-		$api_token = $this->config->item('exotel_api_token');
+		$api_key = $this->config->item('exotel_call_api_key');
+		$api_token = $this->config->item('exotel_call_api_token');
 		$account_sid = $this->config->item('exotel_account_sid');
 		$account_subdomain = $this->config->item('exotel_account_subdomain');
-		$call_type = $this->config->item('exotel_call_type');*/
-		$api_key = '';
-		$api_token = '';
-		$account_sid = '';
-		$account_subdomain = 'api.exotel.com';
-		$call_type = 'trans';
-
-
+		$call_type = $this->config->item('exotel_call_type');
+		//$api_key = '';
+		//$api_token = '';
+		//$account_sid = '';
+		//$account_subdomain = 'api.exotel.com';
+		//$call_type = 'trans';
+		//echo("<script>console.log('Call: " . $api_key . "');</script>");
+		//echo("<script>console.log('Call: " . $api_token . "');</script>");
+		//echo("<script>console.log('Call: " . $account_sid . "');</script>");
+		//echo("<script>console.log('Call: " . $account_subdomain . "');</script>");
+		//echo("<script>console.log('Call: " . $call_type . "');</script>");
 		$from = $this->input->post('from');
 		$app_url = 'http://my.exotel.in/exoml/start/' . $this->input->post('app_id');
 		$calledId = $this->input->post('called_id');
@@ -627,10 +630,21 @@ class Helpline extends CI_Controller {
 			'DltEntityId' => $dltEntityId,
 			'DltTemplateId'=>$dlttid
 		);
-		$api_key="";
-		$api_token =  "";
-		$account_sid = "";
-		$account_subdomain = 'api.exotel.com';
+		
+		$api_key = $this->config->item('exotel_sms_api_key');
+		$api_token = $this->config->item('exotel_sms_api_token');
+		$account_sid = $this->config->item('exotel_account_sid');
+		$account_subdomain = $this->config->item('exotel_account_subdomain');
+		//echo("<script>console.log('SMS: " . $api_key . "');</script>");
+		//echo("<script>console.log('SMS: " . $api_token . "');</script>");
+		//echo("<script>console.log('SMS: " . $account_sid . "');</script>");
+		//echo("<script>console.log('SMS: " . $account_subdomain . "');</script>");
+
+		
+		//$api_key="";
+		//$api_token =  "";
+		//$account_sid = "";
+		//$account_subdomain = 'api.exotel.com';
 		
 		$url = "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Sms/send";	  
 		$ch = curl_init();
@@ -715,7 +729,8 @@ class Helpline extends CI_Controller {
 
 			if ($this->input->post('rows_per_page')) {
 				// The submit for the current search has been entered.
-				$this->data['report'] = $this->helpline_model->get_helpline_session_report();
+				$this->data['report_count'] = $this->helpline_model->get_helpline_session_report_count();
+				$this->data['report'] = $this->helpline_model->get_helpline_session_report($this->data['rowsperpage']);
 			}
 			else {
 			// $this->data['report'] = $this->helpline_model->get_helpline_session_report();
@@ -767,6 +782,8 @@ class Helpline extends CI_Controller {
 					$this->data['lower_rowsperpage']= $default->lower_range;
 				}
 			}
+			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id,$this->data['rowsperpage'] );
+			$this->data['report_count'] = $this->helpline_model->get_helpline_receiver_report_count($helpline_session_id);
 			if ($this->input->post('helpline_update_session_plan_id')) {
 				if($this->input->post('helpline_session_plan_operation') && $this->input->post('helpline_session_plan_operation') == "Edit") {
 					$this->helpline_model->update_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'));

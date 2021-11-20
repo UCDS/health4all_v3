@@ -133,7 +133,7 @@ function initUserSelectize(){
 function doPost(page_no){
 	var page_no_hidden = document.getElementById("page_no");
   	page_no_hidden.value=page_no;
-        $('#session_plan').submit();
+        $('#helplineForm').submit();
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
@@ -280,7 +280,11 @@ input[type=number] {
 	else{
 		$page_no = 1;
 	}
-	$total_records = count($report);
+	$tmp_count = 0;
+	foreach($report_count as $count){
+		$tmp_count = $tmp_count + 1;
+	}
+	$total_records = $tmp_count;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -425,6 +429,9 @@ echo "</select></li>";
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_id;?>" name="helpline_session_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->helpline_session_plan_id;?>" name="helpline_session_plan_id" />
 		<input type="text" class="sr-only" hidden value="<?php echo $s->session_name;?>" name="session_name" />
+		<input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>
+		<input type="hidden" name="rows_per_page_main" id="rows_per_page" value='<?php echo $this->input->post('page_no');?>'>	
+		<input type="hidden" name="page_no" id="page_no" value='1'>	
 		</form>
 	</tr>
 	<?php $sno++;}	?>

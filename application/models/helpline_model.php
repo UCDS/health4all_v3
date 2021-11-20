@@ -1559,8 +1559,51 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$query = $this->db->get();
 		return $query->result();
 	}
+	
+	function get_helpline_session_report_count(){
+		if ($this->input->post('weekday')) {
+			$this->db->where('hs.weekday',$this->input->post('weekday'));
+		} 
+		if ($this->input->post('helpline')) {
+			$this->db->where('hs.helpline_id',$this->input->post('helpline'));
+		}
+		if ($this->input->post('role')){
+			$this->db->where('hsp.helpline_session_role_id', $this->input->post('role'));
+		}
+		if ($this->input->post('session_name')){
+			$this->db->where('hs.helpline_session_id',$this->input->post('session_name'));
+		}
 
-	function get_helpline_session_report(){
+		$this->db->select("count(*) as count");
+		$this->db->from('helpline_session_plan as hsp');
+		$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
+		$this->db->join('helpline_session_role as role', 'hsp.helpline_session_role_id =role.helpline_session_role_id');
+		$this->db->join('helpline', 'helpline.helpline_id= hs.helpline_id');
+		$this->db->where('hs.session_status = 1');
+		$this->db->where('hsp.soft_deleted = 0');
+		// $this->db->group_by('hs.helpline_id');
+		 $this->db->group_by('hs.helpline_session_id');
+		 $this->db->order_by('hs.weekday');
+		 $this->db->group_by('hsp.helpline_session_role_id');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_helpline_session_report($default_rowsperpage){
+	
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
 		if ($this->input->post('weekday')) {
 	       echo("<script>console.log('PHP: weekday " . json_encode($this->input->post('weekday')) . "');</script>");
 			$this->db->where('hs.weekday',$this->input->post('weekday'));
@@ -1586,6 +1629,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		 $this->db->group_by('hs.helpline_session_id');
 		 $this->db->order_by('hs.weekday');
 		 $this->db->group_by('hsp.helpline_session_role_id');
+		 $this->db->limit($rows_per_page,$start);	
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1643,10 +1687,41 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 	       echo("<script>console.log('PHP: " . json_encode($session_role_id) . "');</script>");
 	}
 
-	function get_helpline_receiver_report($helpline_session_id) {
+	function get_helpline_receiver_report($helpline_session_id,$default_rowsperpage) {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
 		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
 			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id, hsp.helpline_session_role_id,hsr.helpline_session_role,hsr.helpline_session_role_id,hsp.helpline_session_note");
 			$this->db->select("(SELECT GROUP_CONCAT(language.language) as languages FROM helpline_receiver JOIN helpline_receiver_language on helpline_receiver_language.receiver_id = helpline_receiver.receiver_id JOIN language on language.language_id = helpline_receiver_language.language_id WHERE helpline_receiver.receiver_id = hsp.receiver_id ORDER BY helpline_receiver_language.proficiency) as languages ");
+			$this->db->from('helpline_session_plan as hsp');
+			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
+			$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
+			$this->db->join('helpline_receiver', 'hsp.receiver_id = helpline_receiver.receiver_id');
+			$this->db->where('hs.session_status = 1');
+			$this->db->where('hsp.soft_deleted = 0');
+			$this->db->where('hs.helpline_session_id', $helpline_session_id);
+			$this->db->order_by('hsr.helpline_session_role','asc');
+			$this->db->limit($rows_per_page,$start);	
+			$query = $this->db->get();
+
+		return $query->result();
+	}
+	
+	function get_helpline_receiver_report_count($helpline_session_id) {
+		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
+			$this->db->select("count(*) as count");
+			
 			$this->db->from('helpline_session_plan as hsp');
 			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
 			$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
@@ -1659,6 +1734,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 
 		return $query->result();
 	}
+	
+	
 	function update_helpline_session_plan_id($helpline_session_plan_id) {
 		$helpline_session_plan_id = $this->input->post('helpline_update_session_plan_id');
 		$this->db->trans_start();

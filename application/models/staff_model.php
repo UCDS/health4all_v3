@@ -2,6 +2,7 @@
 class Staff_model extends CI_Model{
 	function __construct(){
 		parent::__construct();
+		$this->config->load('ipinfo');
 	}
 	//login() accepts the username and password, searches the database for match and if found, returns the 
 	//query result else returns false
@@ -94,7 +95,8 @@ class Staff_model extends CI_Model{
     		foreach ($browser_array as $regex => $value)
         	if (preg_match($regex, $user_agent))
             		$browser = $value;
-            	$token = '84d9300a2bfb6a';
+            	$token = $this->config->item('ipinfo_api_token');
+            	//echo("<script>console.log('IP Info: " . $token . "');</script>");
             	$details = "IP Address: ".$ipaddress;
 		$details = $details.", Browser: ".$browser;
 		$details = $details.", OS: ".$os_platform;
