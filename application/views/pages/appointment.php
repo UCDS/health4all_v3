@@ -490,8 +490,8 @@ echo "</select></li>";
 	<thead>
 		<th>SNo</th>
 		<th>Patient ID</th>
-		<th>Patient ID Manual</th>
 		<th>OP No.</th>
+		<th>Patient ID Manual</th>
 		<th>PatientInfo</th>
 		<th>Address</th>
 		<th>Phone</th>
@@ -522,8 +522,8 @@ echo "</select></li>";
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
-		<td><?php echo $s->patient_id_manual;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
+		<td><?php echo $s->patient_id_manual;?></td>
 		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
 		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
 		if (!!$s->district) echo "<br/>, ".$s->district." District";
