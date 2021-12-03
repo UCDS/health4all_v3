@@ -207,3 +207,5 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'missed_calls_report', 'Missed Calls Report', 'Access for missed calls report');
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_by_staff', 'Appointment by staff', 'Access for Appointment by staff');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'dashboard', 'Dashboard', 'Access for dashboards');

@@ -13,9 +13,9 @@
         }
         ?>                   
 
-	    <h2>Welcome to Health4All <small>- a Free and Open Source application developed and supported by <a href=<?php echo $uc_url ?> target="_blank">YouSee</a></small></h2>
+	    <h2 style="text-align:center">Welcome to Health4All <small>- a Free and Open Source application developed and supported by <a href=<?php echo $uc_url ?> target="_blank">YouSee</a></small></h2>
 		<br />
-		<div class="col-md-6">
+		<div class="col-md-12">
 			<div class="alert alert-info" role="alert">
 					<h5>Health4all has the following modules</h5>
                     <ul>
@@ -80,20 +80,5 @@
                     <span class="">Note:</span>
                     Each of the above modules has User Access Control. Contact Administrator for access.
             </div>
-		</div>
-		<div class="col-md-6">
-		<div class="panel panel-info">
-			<div class="panel-heading"><h4><i class="fa fa-bar-chart"></i> Dashboards</h4></div>
-			<div class="panel-body">
-				<a href="<?= base_url()."dashboard/helpline";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-phone"></i> Helpline</div></a>
-				<a href="<?= base_url()."dashboard/state/telangana";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-line-chart"></i> Telangana</div></a>
-				<a href="<?= base_url()."dashboard/view/tvvp";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-pie-chart"></i> TVVP</div></a>
-				<a href="<?= base_url()."dashboard/view/dmetelangana";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-bar-chart"></i> DME Telangana</div></a>
-				<a href="<?= base_url()."dashboard/view/dmeap";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-area-chart"></i> DME AP</div></a>
-				<a href="<?= base_url()."dashboard/bloodbanks";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-tint"></i> Blood Banks</div></a>
-				<a href="<?= base_url()."dashboard/view/npo";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa fa-bar-chart"></i> NPOs</div></a>
-                <a href="<?= base_url()."dashboard/diagnostics_dashboard_1";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa flaticon-chemistry20"></i> Diagnostics - 1</div></a>
-                <a href="<?= base_url()."dashboard/diagnostics_dashboard_2";?>"><div class="alert alert-success col-md-4 col-md-offset-1"><i class="fa flaticon-chemistry20"></i> Diagnostics - 2</div></a>
-			</div>
-		</div>
-	</div>
+</div>
+	

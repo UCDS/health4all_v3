@@ -645,7 +645,7 @@ class Reports extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" ){
+			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" || $f->user_function=="login_report" ){
 				$access=1;
 				break;
 			}
@@ -1476,6 +1476,10 @@ class Reports extends CI_Controller {
                     $this->load->view('templates/header',$this->data);
                     $this->load->helper('form');
                     $this->load->library('form_validation');
+                    $userdata = $this->session->userdata('logged_in');
+		     $user_id = $userdata['user_id'];
+                    $this->data['hospitals']=$this->staff_model->user_hospital($user_id);
+                    //echo("<script>console.log('hospitals: " .json_encode( $this->data['hospitals']) . "');</script>");
                     $this->data['report']=$this->reports_model->get_login_report(); //This method gets data from the Database, and puts the data in report variable.
                     //Report variable stores all the data returned by reports_model which is passed to the view.
                     $this->load->view('pages/login_report',$this->data);
@@ -1492,7 +1496,7 @@ class Reports extends CI_Controller {
 	
     }	
     
-    public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage)
+    public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital)
 	{
 	
 	       if($this->session->userdata('logged_in')){
@@ -1511,8 +1515,8 @@ class Reports extends CI_Controller {
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		$this->load->view('templates/header',$this->data);
 		$this->data['rowsperpage'] = $rowsperpage;
-		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date);
-		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage);		
+		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date,$hospital);
+		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital);		
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 

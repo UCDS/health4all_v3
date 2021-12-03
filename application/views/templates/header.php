@@ -330,7 +330,7 @@
 				<?php
 					}
 				?>
-				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff"){ $more_reports=1; ?>
+				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report"){ $more_reports=1; ?>
 					
 				<?php } ?>
 				<?php
@@ -441,14 +441,6 @@
 					}				
 				}
 				?>
-				<?php
-				foreach($functions as $f){
-				if($f->user_function=="login_report"){ ?>
-                  <li><a href="<?php echo base_url()."reports/login_report";?>"><i class="fa fa-eye"></i>Login Report</a></li>
-				<?php break;
-					}				
-				}
-				?>
                   <li><a href="<?php echo base_url()."user_panel/change_password";?>"><i class="fa fa-edit"></i> Change Password</a></li>
 				  <li><a href="<?php echo base_url();?>home/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
                 </ul>
@@ -458,6 +450,9 @@
 				<a href="<?php echo base_url()."home/login";?>"><i class="fa fa-sign-in"></i> Login</a>
 			</li>
 			<?php } ?>
+	<?php if($this->session->userdata('logged_in')) { 
+		foreach($functions as $f){
+			if($f->user_function=="dashboard"){ ?>
             <li class="dropdown  <?php if(preg_match("^".base_url()."dashboard^",current_url())){ echo "active";}?>">
 				<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown">
 				<i class="fa fa-bar-chart"></i> Dashboards
@@ -479,6 +474,9 @@
 				 <?php } ?>				 
                 </ul>
 			</li>
+		<?php } 
+		}
+	    } ?>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

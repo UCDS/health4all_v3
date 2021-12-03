@@ -19,6 +19,7 @@
 <?php 
 $appointments=0;
 $helpline=0;
+$admin=0;
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff"){
 				$appointments=1;
@@ -67,6 +68,33 @@ foreach($this->data['functions'] as $function){
 
 if($function->user_function=="missed_calls_report"){ ?>
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>
+<?php		 }
+
+		} ?>
+</div> <?php
+	}
+?>
+
+
+<?php 
+foreach($this->data['functions'] as $function){
+			if($function->user_function=="login_report"){
+				$admin=1;
+				?>
+				<button class="accordion">Admin</button>
+<?php			break; }
+		}
+?>
+
+<?php 
+
+if($admin==1) { ?>
+<div class="panel_accordion">
+<?php
+foreach($this->data['functions'] as $function){
+
+if($function->user_function=="login_report"){ ?>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/login_report";?>">Login Report</a></button>
 <?php		 }
 
 		} ?>
