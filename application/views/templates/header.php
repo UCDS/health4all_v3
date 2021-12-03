@@ -358,7 +358,7 @@
 						<li><a href="<?php // echo base_url()."report/get/op_vitals_detailed";?>"></a></li>
 			<?php }
 			if($f->user_function=="OP Detail"){ //OP Detail?>
-						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail - 2</a></li>
+						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail</a></li>
 			<?php	}
 			if($f->user_function=="create_appointment"){ ?>	
                                 <li><a href="<?php echo base_url()."reports/appointment";?>">Registrations/Appointments</a></li>
