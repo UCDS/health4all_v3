@@ -114,7 +114,16 @@ input[type=number] {
 				<label><input type ="radio" name="trend_type" class ="form-control" value="Day" checked > Daily</label>
                 <label><input type="radio" name="trend_type" class ="form-control" value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
                 <label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label><br/>
-            
+            <select name="hospital" id="hospital" class="form-control">
+				<option value="">Hospital</option>
+				<?php 
+				foreach($hospitals as $hosp){
+				echo "<option value='".$hosp->hospital_id."'";
+				if($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) echo " selected ";
+				echo ">".$hosp->hospital_short_name."</option>";
+				}
+				?>
+			</select>
                 From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
                 To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
                Rows per page (For Detail) : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
@@ -141,8 +150,12 @@ input[type=number] {
 	$total_success=0;
 	$total_fail=0;
 	$total=0;
+	$hospital=-1;
         if($this->input->post('rows_per_page')){
         	$rowsperpage = $this->input->post('rows_per_page');
+        }
+        if($this->input->post('hospital')){
+        	$hospital = $this->input->post('hospital');
         }
 	foreach($report as $s){
 		if($this->input->post('trend_type')){
@@ -170,17 +183,17 @@ input[type=number] {
 	<tr>
 		<td><?php echo $date;?></td>
 		<?php if ($s->no_of_success > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/1/$from_date/$to_date/$rowsperpage/";?>"><?php echo $s->no_of_success;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo $s->no_of_success;?> </td>
 		<?php } else { ?>
 			<td class="text-right"><?php echo $s->no_of_success;?></td>
 		<?php }  ?>
 		
 		<?php if ($s->no_of_un_success > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/0/$from_date/$to_date/$rowsperpage";?>"><?php echo $s->no_of_un_success;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/0/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo $s->no_of_un_success;?> </td>
 		<?php } else { ?>
 			<td class="text-right"><?php echo $s->no_of_un_success;?></td>
 		<?php }  ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/-1/$from_date/$to_date/$rowsperpage/";?>"><?php echo $s->total;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/-1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo $s->total;?> </td>
 	</tr>
 	<?php
 	$total_success += $s->no_of_success;
@@ -192,9 +205,21 @@ input[type=number] {
         <tbody class="tablesorter-no-sort">
 	<tr>
 		<th>Total </th>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/1/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total_success);?></th>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/0/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total_fail);?></th>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/-1/$from_date/$to_date/$rowsperpage/";?>"><?php echo number_format($total);?></th>
+		
+		<?php if ($total_success > 0) { ?>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo number_format($total_success);?></th>
+		<?php } else { ?>
+			<td class="text-right"><?php echo $total_success;?></td>
+		<?php }  ?>
+		
+		<?php if ($total_fail > 0) { ?>
+		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/0/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo number_format($total_fail);?></th>
+		<?php } else { ?>
+			<td class="text-right"><?php echo $total_fail;?></td>
+		<?php }  ?>
+		
+		
+		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/-1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo number_format($total);?></th>
 	</tr>
         </tbody>
 	</table>

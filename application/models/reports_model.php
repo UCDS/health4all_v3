@@ -1003,7 +1003,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	function get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param){
+	function get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$hospital){
 		
 		if($login_status != -1){
 			$this->db->where('is_success', $login_status);
@@ -1049,14 +1049,21 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
                       	}
 		}
                
-	   		
+	   	if($hospital!=-1){
+			$this->db->where("hospital.hospital_id",$hospital);
+		}	
 	   			
 		$this->db->select("count(*) as count",false);
-		$this->db->from("user_signin");			
+		$this->db->from("user_signin")
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
+		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");			
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	function get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$default_rowsperpage){
+	function get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$default_rowsperpage,$hospital){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -1115,13 +1122,17 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
                         }
 		  }
 	   		
-	   			
+	   	if($hospital!=-1){
+			$this->db->where("hospital.hospital_id",$hospital);
+		}
+				
 		$this->db->select("user_signin.username as username,CONCAT(staff.first_name,'  ',staff.last_name) as name, (case when staff.gender = 'M' then 'Male' when staff.gender = 'F' then 'Female' when staff.gender = 'O' then 'Others' end) as gender,hospital.hospital_short_name as hospital,department.department,signin_date_time,(case when is_success = 1 then 'Success' else 'Failed' end) as status,details",false);
 		$this->db->from("user_signin")
-		->join('user','user_signin.username = user.username','left')
-		->join('staff','user.staff_id = staff.staff_id','left')
-		->join('hospital','staff.hospital_id = hospital.hospital_id','left')
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
 		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
 		$this->db->limit($rows_per_page,$start);
 		$this->db->order_by('UNIX_TIMESTAMP(signin_date_time)','ASC');			
 		$resource=$this->db->get();
@@ -3358,6 +3369,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                        $this->db->group_by('date(signin_date_time)');                  	
                  }
                
+		if($this->input->post('hospital')){
+			$this->db->where("hospital.hospital_id",$this->input->post('hospital'));
+		}
 		
 		$from_timestamp = $from_date." ".$from_time;
 		$to_timestamp = $to_date." ".$to_time;
@@ -3368,7 +3382,12 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		SUM(CASE WHEN 1 THEN 1 ELSE 0 END) 'total',
           SUM(CASE WHEN is_success = 1  THEN 1 ELSE 0 END) 'no_of_success',
            SUM(CASE WHEN is_success = 0  THEN 1 ELSE 0 END) 'no_of_un_success',
-		");
+		")	
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
+		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
 		$this->db->from('user_signin');
 		$resource=$this->db->get();
 		return $resource->result();
