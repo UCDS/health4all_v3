@@ -209,3 +209,5 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_by_staff', 'Appointment by staff', 'Access for Appointment by staff');
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'dashboard', 'Dashboard', 'Access for dashboards');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'patient_location_report', 'Patient Location Report', 'Access for District wise summary report');
