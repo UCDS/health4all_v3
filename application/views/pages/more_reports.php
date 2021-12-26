@@ -41,6 +41,10 @@ if($function->user_function=="appointment_by_staff"){ ?>
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_staff";?>">Appointments by Team Member</a></button>
 <?php		 }
 
+	if($function->user_function== "patient_location_report"){ ?>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
+	<?php		 }
+
 		} ?>
 </div> <?php
 	}
