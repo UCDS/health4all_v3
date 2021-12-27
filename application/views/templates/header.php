@@ -329,7 +329,7 @@
 				<?php
 					}
 				?>
-				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report"){ $more_reports=1; ?>
+				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report"){ $more_reports=1; ?>
 					
 				<?php } ?>
 				<?php

@@ -21,7 +21,7 @@ $appointments=0;
 $helpline=0;
 $admin=0;
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff"){
+			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report"){
 				$appointments=1;
 				
 				?>

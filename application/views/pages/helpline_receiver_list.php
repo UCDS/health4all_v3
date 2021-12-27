@@ -17,6 +17,10 @@
         cursor: pointer;
         padding-top: 5px;
     }
+    .info_icon{
+    	width: 20px;
+    	height: 20px;
+    }
 </style>
 
 <style type="text/css">
@@ -308,6 +312,7 @@ echo "</select></li>";
             <th style="text-align:center">App ID</th>  
             <th style="text-align:center">Helpline</th>  
             <th style="text-align:center">Activity Status</th>
+            <th style="text-align:center">Note*</th>
             <th style="text-align:center">Action</th>            
         </thead>   
     <tbody>
@@ -335,13 +340,16 @@ echo "</select></li>";
         <td>
             <?php echo $a->activity_status == 1 ? 'Yes': 'No';?>
         </td>
+        <td style="text-align:center">
+          <img src="<?php echo base_url();?>assets/images/information-icon.png" class="info_icon" title="<?php echo $a->helpline_receiver_note; ?>" data-toggle="tooltip"/>
+        </td>
         <td><a href="<?php echo base_url()."helpline/helpline_receivers_form/".$a->receiver_id;?>" class="btn btn-primary">Edit</a></td>
     </tr>
     <?php } ?>
     </tbody>
 </table>
 <div style='padding: 0px 2px;'>
-
+<h5><b>*: Hover the mouse to see notes.</b></h5>
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>

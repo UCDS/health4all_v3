@@ -211,3 +211,6 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'dashboard', 'Dashboard', 'Access for dashboards');
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'patient_location_report', 'Patient Location Report', 'Access for District wise summary report');
+
+ALTER TABLE `helpline_receiver` ADD `helpline_receiver_note` VARCHAR(250) NULL COMMENT 'To save helpline receiver note' AFTER `activity_status`;
+
