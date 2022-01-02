@@ -645,7 +645,7 @@ class Reports extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" || $f->user_function=="login_report" ){
+			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" || $function->user_function=="login_report" || $function->user_function=="patient_location_report" ){
 				$access=1;
 				break;
 			}

@@ -1369,7 +1369,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);
 		}
-		$this->db->select("receiver_id, full_name, phone, email, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline", false)
+		$this->db->select("receiver_id, full_name, phone, email, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
 		->order_by('full_name', 'asc');
@@ -1472,6 +1472,10 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
         }																
 		if($this->input->post('category')){														
             $helpline_receiver['category'] = $this->input->post('category');							
+        }
+        
+        	if($this->input->post('helpline_receiver_note')){														
+            $helpline_receiver['helpline_receiver_note'] = $this->input->post('helpline_receiver_note');							
         }
 
         $helpline_receiver['user_id'] = $this->input->post('user_id') ? $this->input->post('user_id') : '0';
