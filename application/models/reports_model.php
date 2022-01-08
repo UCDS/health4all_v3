@@ -1231,9 +1231,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		
 		
 		$taken_appointments = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time) as taken_appointments";
-		$default_appointment_status = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv.hospital_id)) as default_appointment_status";
+		$default_appointment_status_add = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv.hospital_id)) as default_appointment_status_add";
+		$default_appointment_status_remove = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=2 and appointment_status.hospital_id=pv.hospital_id)) as default_appointment_status_remove";
 		$this->db->select("aps.slot_id,aps.date,aps.from_time,aps.to_time,aps.department_id,aps.visit_name_id,aps.appointment_update_by,aps.appointment_update_time,
-		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit, ".$taken_appointments.", ".$default_appointment_status,false);
+		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit, ".$taken_appointments.", ".$default_appointment_status_add.",".$default_appointment_status_remove,false);
 		 $this->db->from('appointment_slot as aps')
 		 ->join('department as d','aps.department_id=d.department_id','left')
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
@@ -2034,7 +2035,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$slots_alloted = "(Select sum(appointments_limit) from appointment_slot aps where aps.department_id = pv1.department_id and aps.date = ifnull(date(pv1.appointment_time),'')  ". $extraSlotWhere .") as slots_alloted";
 		
 		$this->db->select("DATE(pv1.appointment_time) as appointment_date, COUNT(*) AS patient_count, 
-SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id, ".$slots_alloted,false);
+SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count_add,SUM(CASE WHEN aps.is_default =  2 THEN 1 ELSE 0 END) AS default_status_count_remove,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id, ".$slots_alloted,false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
 		 ->join('department d','pv1.department_id=d.department_id','left')
@@ -2191,7 +2192,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         		$from_time = $result[0]['from_time'];
         		$to_time = $result[0]['to_time'];
         		
-        		$this->db->select('count(*) as count');
+        		$this->db->select('count(*) as count',false);
         		$this->db->from('patient_visit');
         
 			
@@ -2204,8 +2205,9 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
 			$from_timestamp = $date." ".$from_time;
 			$to_timestamp = $date." ".$to_time;
+
 			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
-			
+			$this->db->where("(ifnull(appointment_status_id,'') not in (select id from appointment_status where is_default=2 and hospital_id=(select hospital_id from department where department_id=". $this->input->post('department_id').") ) )"); 
         		$query = $this->db->get();
         		$result = $query->result_array();
         		$appoints_taken = $result[0]['count'];

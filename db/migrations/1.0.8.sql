@@ -218,3 +218,5 @@ ALTER TABLE `helpline_receiver` CHANGE `helpline_receiver_note` `helpline_receiv
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'helpline_receiver', 'Helpline Receiver', 'Access for Helpline Receiver');
 
+ALTER TABLE `appointment_status` CHANGE `is_default` `is_default` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Stores whether the status can be considered in effective appointment (1) or not (2) otherwise value would be zero';
+

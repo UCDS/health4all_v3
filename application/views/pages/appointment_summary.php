@@ -82,12 +82,17 @@ $(document).ready(function(){$("#from_date").datepicker({
 	$from_time=0;$to_time=0;
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
-	$default_appointment_status = "";
+	$default_appointment_status_add = "";
+	$default_appointment_status_remove = "";
 	foreach($all_appointment_status as $status){
 		if($status->is_default==1){
-			$default_appointment_status = $status->appointment_status;
-		}					
+			$default_appointment_status_add = $status->appointment_status;
+		}
+		if($status->is_default==2){
+			$default_appointment_status_remove = $status->appointment_status;
+		}						
 	}
+	
 	?>
 <div class="row">
 		<h4>Appointment Summary</h4>	
@@ -166,9 +171,14 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th style="text-align:center">Date</th>		
 		<th>Department</th>
 		<th>Slots Alloted</th> 
-		<th>Appointments Created</th> 
-		<?php if ($default_appointment_status !=""){ ?>
-			<th><?php echo $default_appointment_status; ?></th>
+		<th>Appointments Created - Total</th> 
+		<?php if ($default_appointment_status_remove !=""){ ?>
+			<th><?php echo $default_appointment_status_remove; ?></th>
+			<th>Appointments Created - Effective</th>
+		<?php } ?>
+		
+		<?php if ($default_appointment_status_add !=""){ ?>
+			<th><?php echo $default_appointment_status_add; ?></th>
 			<th style="text-align:center"><?php echo "Percentage (%)"; ?></th>
 		<?php } ?>
 					
@@ -178,18 +188,30 @@ $(document).ready(function(){$("#from_date").datepicker({
 	<?php 
 	$sno=1 ; 
 	$total_appointmnets=0;
+	$total_appointmnets_effective=0;
 	$total_slots=0;
-	$total_default_status_count=0;
-	
+	$total_default_status_count_add=0;
+	$total_default_status_count_remove=0;
 	foreach($report as $s){ ?>
 		<tr>      
 		<td> <?php echo date("d-M-Y", strtotime($s->appointment_date))." - ".$weekdays[date("w", strtotime($s->appointment_date))];  ?></td>		
 		<td> <?php echo $s->department_name;  ?> </td>
 		<td style="text-align:right"> <?php echo $s->slots_alloted;  $total_slots = $total_slots + $s->slots_alloted; ?></td>	
 		<td style="text-align:right"> <?php echo $s->patient_count;  $total_appointmnets = $total_appointmnets + $s->patient_count;?></td>
-		<?php if ($default_appointment_status !=""){ ?>
-		<td style="text-align:right"> <?php echo $s->default_status_count;$total_default_status_count = $total_default_status_count + $s->default_status_count;?></td>
-		<td style="text-align:right"> <?php echo round(($s->default_status_count/$s->patient_count)*100,0)."%"; ?></td>
+		<?php $appointments_effective=$s->patient_count; if ($default_appointment_status_remove !=""){ 
+		$appointments_effective = $s->patient_count-$s->default_status_count_remove;
+		?>
+		<td style="text-align:right"> <?php echo $s->default_status_count_remove;$total_default_status_count_remove = $total_default_status_count_remove + $s->default_status_count_remove;?></td>
+		<td style="text-align:right"> <?php echo $appointments_effective; ?></td>
+	
+		<?php } 
+		
+		$total_appointmnets_effective = $total_appointmnets_effective + $appointments_effective;
+		?>
+		
+		<?php  if ($default_appointment_status_add !=""){ ?>
+		<td style="text-align:right"> <?php echo $s->default_status_count_add;$total_default_status_count_add = $total_default_status_count_add + $s->default_status_count_add;?></td>		
+		<td style="text-align:right"> <?php echo round(($s->default_status_count_add/$appointments_effective)*100,0)."%"; ?></td>
 		<?php } ?>		
 		</tr>
 		
@@ -199,9 +221,13 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td><b>Total</b></td>
 		<td style="text-align:right"><b><?php if ($total_slots!=0) echo $total_slots; ?></b></td>
 		<td style="text-align:right"><b><?php echo $total_appointmnets; ?></b></td>
-		<?php if ($default_appointment_status !=""){ ?>
-		<td style="text-align:right"><b><?php echo $total_default_status_count; ?></b></td>
-		<td style="text-align:right"><b><?php echo round(($total_default_status_count/$total_appointmnets)*100,0)."%"; ?></b></td>
+		<?php if ($default_appointment_status_remove !=""){ ?>
+		<td style="text-align:right"><b><?php echo $total_default_status_count_remove; ?></b></td>
+		<td style="text-align:right"><b><?php echo $total_appointmnets_effective; ?></b></td>
+		<?php } ?>
+		<?php if ($default_appointment_status_add !=""){ ?>
+		<td style="text-align:right"><b><?php echo $total_default_status_count_add; ?></b></td>
+		<td style="text-align:right"><b><?php echo round(($total_default_status_count_add/$total_appointmnets_effective)*100,0)."%"; ?></b></td>
 		<?php } ?>
 		</tr>
 	</tbody>
