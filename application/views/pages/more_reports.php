@@ -82,7 +82,7 @@ if($function->user_function=="missed_calls_report"){ ?>
 
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="login_report"){
+			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver"){
 				$admin=1;
 				?>
 				<button class="accordion">Admin</button>
@@ -97,8 +97,12 @@ if($admin==1) { ?>
 <?php
 foreach($this->data['functions'] as $function){
 
-if($function->user_function=="login_report"){ ?>
+if($function->user_function=="login_report" ){ ?>
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/login_report";?>">Login Report</a></button>
+<?php		 }
+
+if($function->user_function=="helpline_receiver" ){ ?>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
 <?php		 }
 
 		} ?>

@@ -89,11 +89,6 @@ function initUserSelectize(){
 		selectize[0].selectize.setValue($('#user_id').attr("data-previous-value"));
 	}
 }
-
-function countChars(countfrom,totalchars) {
-  	var len = document.getElementById(countfrom).value.length;
-  	document.getElementById('helpline_receiver_note_charcount').innerHTML = totalchars-len;
-}
 </script>
 
 </script>
@@ -243,8 +238,8 @@ textarea {
 				
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 				
-				<button type="button" class="btn btn-info" style="margin-bottom:10px" data-toggle="modal" data-target="#addLanguageModal">ADD Language</button>
-				<div style="height: 116px; overflow-y: auto;overflow-x: hidden;">
+				<button type="button" class="btn btn-info" style="margin-bottom:12px" data-toggle="modal" data-target="#addLanguageModal">Add Language</button>
+				<div style="height: 133px; overflow-y: auto;overflow-x: hidden;">
 				
 					<div class="form-horizontal">
 					<table class="table table-bordered table-striped"   id="table-sort" name="language_table_id">
@@ -271,9 +266,9 @@ textarea {
 				</div> 
 					
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-					<div class="form-horizontal">
-					<label for="helpline_receiver_note">Helpline Receiver Note <br/>(<span id="helpline_receiver_note_charcount">250</span> characters left) </label> 
-					<textarea rows="5" cols="50" onkeyup="countChars('helpline_receiver_note','250');" onkeydown="countChars('helpline_receiver_note','250');" onmouseout="countChars('helpline_receiver_note','250');" type="text" maxlength="250" class="form-control" id="helpline_receiver_note" name="helpline_receiver_note"></textarea>
+					<div class="form-horizontal" style="margin-top:20px;">
+					<label for="helpline_receiver_note">Helpline Receiver Note </label> 
+					<textarea rows="6" cols="50" class="form-control" id="helpline_receiver_note" name="helpline_receiver_note"></textarea>
 					</div>
 				</div>
 			</div>

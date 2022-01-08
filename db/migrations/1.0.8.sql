@@ -214,3 +214,7 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 
 ALTER TABLE `helpline_receiver` ADD `helpline_receiver_note` VARCHAR(250) NULL COMMENT 'To save helpline receiver note' AFTER `activity_status`;
 
+ALTER TABLE `helpline_receiver` CHANGE `helpline_receiver_note` `helpline_receiver_note` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT 'To save helpline receiver note';
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'helpline_receiver', 'Helpline Receiver', 'Access for Helpline Receiver');
+
