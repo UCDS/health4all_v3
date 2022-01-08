@@ -512,7 +512,7 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="helpline_receiver"){				
-				if($function->edit=="1"){
+				if($function->edit=="1" || $function->add=="1"){
 						$access=1;					
 				}
 				break;
