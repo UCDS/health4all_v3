@@ -363,11 +363,7 @@ echo "</select></li>";
             <?php echo $a->activity_status == 1 ? 'Yes': 'No';?>
         </td>
         <td>
-        <?php echo substr($a->helpline_receiver_note, 0, 25); ?>
-        <?php if(strlen($a->helpline_receiver_note) > 25) { ?>
-        <br/>
-          <p title="<?php echo $a->helpline_receiver_note; ?>" data-toggle="tooltip"><u style="color:#428bca">Read More*</u></p>
-          <?php } ?>
+        <?php echo $a->helpline_receiver_note; ?>
         </td>
         <?php  if($helpline_receiver_edit == 1 ) { ?>
         	<td><a href="<?php echo base_url()."helpline/helpline_receivers_form/".$a->receiver_id;?>" class="btn btn-primary">Edit</a></td>
@@ -377,7 +373,6 @@ echo "</select></li>";
     </tbody>
 </table>
 <div style='padding: 0px 2px;'>
-<h5 style="color:#428bca"><b>*: Hover the mouse to see notes.</b></h5>
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
