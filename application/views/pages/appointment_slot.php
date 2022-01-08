@@ -641,10 +641,10 @@ echo "</select></li>";
 		<th>From Time</th>
 		<th>To Time</th>		
 		<th>Max Appointments</th>
-		<th>Appointments Created - Total </th>
+		<th>Appointments - Total </th>
 		<?php if ($default_appointment_status_remove !=""){ ?>
 			<th><?php echo $default_appointment_status_remove; ?></th>
-			<th>Appointments Created - Effective </th>
+			<th>Appointments - Effective </th>
 		<?php } ?>		
 		<th>Appointments Remaining</th>
 		<?php if ($default_appointment_status_add !=""){ ?>

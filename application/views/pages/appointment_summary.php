@@ -171,15 +171,15 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<th style="text-align:center">Date</th>		
 		<th>Department</th>
 		<th>Slots Alloted</th> 
-		<th>Appointments Created - Total</th> 
+		<th>Appointments - Total</th> 
 		<?php if ($default_appointment_status_remove !=""){ ?>
 			<th><?php echo $default_appointment_status_remove; ?></th>
-			<th>Appointments Created - Effective</th>
+			<th>Appointments - Effective</th>
 		<?php } ?>
 		
 		<?php if ($default_appointment_status_add !=""){ ?>
 			<th><?php echo $default_appointment_status_add; ?></th>
-			<th style="text-align:center"><?php echo "Percentage (%)"; ?></th>
+			<th style="text-align:center"><?php echo $default_appointment_status_add." (%)"; ?></th>
 		<?php } ?>
 					
  		
