@@ -330,10 +330,15 @@ $(function() {
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
 	$page_no = 1;
-	$default_appointment_status = "";
+	$default_appointment_status_add = "";
+	$default_appointment_status_remove = "";
 	foreach($all_appointment_status as $status){
 		if($status->is_default==1){
-			$default_appointment_status = $status->appointment_status;
+			$default_appointment_status_add = $status->appointment_status;
+		}
+		
+		if($status->is_default==2){
+			$default_appointment_status_remove = $status->appointment_status;
 		}					
 	}
 	?>
@@ -636,10 +641,14 @@ echo "</select></li>";
 		<th>From Time</th>
 		<th>To Time</th>		
 		<th>Max Appointments</th>
-		<th>Appointments Taken</th>
+		<th>Appointments - Total </th>
+		<?php if ($default_appointment_status_remove !=""){ ?>
+			<th><?php echo $default_appointment_status_remove; ?></th>
+			<th>Appointments - Effective </th>
+		<?php } ?>		
 		<th>Appointments Remaining</th>
-		<?php if ($default_appointment_status !=""){ ?>
-			<th><?php echo $default_appointment_status; ?></th>
+		<?php if ($default_appointment_status_add !=""){ ?>
+			<th><?php echo $default_appointment_status_add; ?></th>
 		<?php } ?>
     		<th>Updated By/Time</th>
     		<?php if($edit_appointment_access==1) { ?>
@@ -656,7 +665,7 @@ echo "</select></li>";
 	foreach($report as $s){ ?>
 		
 		<tr>
-		<?php $remaining_appointments = $s->appointments_limit - $s->taken_appointments; $date=date("j M Y", strtotime("$s->date"))." - ".$weekdays[date("w", strtotime("$s->date"))]; $from = date("h:i A", strtotime("$s->from_time"));  $to =date("h:i A", strtotime("$s->to_time"));  ?>
+		<?php  $effective_appointments =$s->taken_appointments; $date=date("j M Y", strtotime("$s->date"))." - ".$weekdays[date("w", strtotime("$s->date"))]; $from = date("h:i A", strtotime("$s->from_time"));  $to =date("h:i A", strtotime("$s->to_time"));  ?>
 		<td><?php echo $sno;?></td>		
 		<td><?php echo $s->slot_id;?></td>
 		<td><?php echo $s->department;?></td>
@@ -666,9 +675,19 @@ echo "</select></li>";
 		<td><?php echo  $to;?></td>		
 		<td class="text-right"><?php echo $s->appointments_limit;?></td>
 		<td class="text-right"><?php echo $s->taken_appointments;?></td>
-		<td class="text-right"><?php if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
-		<?php if ($default_appointment_status !=""){ ?>
-			<td class="text-right"><?php echo $s->default_appointment_status; ?></td>
+		<?php if ($default_appointment_status_remove !=""){ ?>
+			<td class="text-right"><?php echo $s->default_appointment_status_remove; ?></td>
+			<td class="text-right"><?php echo ($s->taken_appointments-$s->default_appointment_status_remove); ?></td>
+			
+		<?php } 
+			$effective_appointments = $effective_appointments - $s->default_appointment_status_remove;
+		?>
+		<td class="text-right"><?php 
+		$remaining_appointments = $s->appointments_limit - $effective_appointments;
+		
+		if ($remaining_appointments >= 0) { echo $remaining_appointments;} else {echo 0;} ?></td>
+		<?php if ($default_appointment_status_add !=""){ ?>
+			<td class="text-right"><?php echo $s->default_appointment_status_add; ?></td>
 		<?php } ?>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
 		<?php if($edit_appointment_access==1) { ?>
