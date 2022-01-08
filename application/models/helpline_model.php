@@ -1326,6 +1326,33 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
 		}
 		
+		if($this->input->post('isdoctor')){
+		    	if($this->input->post('isdoctor')=="Yes"){
+				$this->db->like('helpline_receiver.doctor',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.doctor',0);
+			}
+		}
+		
+		if($this->input->post('outboundcall')){
+		    	if($this->input->post('outboundcall')=="Yes"){
+				$this->db->like('helpline_receiver.enable_outbound',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.enable_outbound',0);
+			}
+		}
+		
+		if($this->input->post('activitystatus')){
+		    	if($this->input->post('activitystatus')=="Yes"){
+				$this->db->like('helpline_receiver.activity_status',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.activity_status',0);
+			}
+		}
+		
 		$this->db->select("count(*) as count", false)
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left');
@@ -1363,8 +1390,35 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		
 		if($this->input->post('phone')){
 			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
+		}		
+		
+		
+		if($this->input->post('isdoctor')){
+		    	if($this->input->post('isdoctor')=="Yes"){
+				$this->db->like('helpline_receiver.doctor',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.doctor',0);
+			}
 		}
 		
+		if($this->input->post('outboundcall')){
+		    	if($this->input->post('outboundcall')=="Yes"){
+				$this->db->like('helpline_receiver.enable_outbound',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.enable_outbound',0);
+			}
+		}
+		
+		if($this->input->post('activitystatus')){
+		    	if($this->input->post('activitystatus')=="Yes"){
+				$this->db->like('helpline_receiver.activity_status',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.activity_status',0);
+			}
+		}
 		
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);

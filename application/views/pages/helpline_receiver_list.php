@@ -80,9 +80,6 @@ input[type=number] {
     outline: 0;	
 }
 
-.col-md-12{
-padding-left:5%;
-}
 </style>
 
 <script type="text/javascript">
@@ -150,7 +147,7 @@ $(function(){
 </script>
 
 <?php $page_no = 1;	?>
-
+ <h3 class="col-md-12">List of Receivers</h3>
 <?php echo form_open("helpline/helpline_receivers",array('role'=>'form','class'=>'form-custom col-md-12','id'=>'helpline_receivers')); ?> 
  <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
  <select name="helpline_id" id="helplineSelect" style="width:170px" class="form-control">
@@ -161,20 +158,43 @@ $(function(){
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
 			</select>
-<input type="text" class="form-control" placeholder="Phone"  style="width:120px"  value="<?php echo $this->input->post('phone');?>" name="phone" />
-  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			<input type="text" class="form-control" placeholder="Phone"  style="width:120px"  value="<?php echo $this->input->post('phone');?>" name="phone" />
+			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+    			Doctor : <select name="isdoctor" id="isdoctor" class="form-control">
+    			<option value="">Select</option>   
+                        <option value="Yes" <?php echo ($this->input->post('isdoctor') == 'Yes') ? 'selected' : ''; ?> >Yes</option> 
+                        <option value="No" <?php echo ($this->input->post('isdoctor') == 'No') ? 'selected' : ''; ?> >No</option>          
+                        </select>
+                        Out Bound Call : <select name="outboundcall" id="outboundcall" class="form-control">
+    			<option value="">Select</option>   
+                        <option value="Yes" <?php echo ($this->input->post('outboundcall') == 'Yes') ? 'selected' : ''; ?> >Yes</option> 
+                        <option value="No" <?php echo ($this->input->post('outboundcall') == 'No') ? 'selected' : ''; ?> >No</option>          
+                        </select>
+                        Activity Status : <select name="activitystatus" id="activitystatus" class="form-control">
+    			<option value="">Select</option>   
+                        <option value="Yes" <?php echo ($this->input->post('activitystatus') == 'Yes') ? 'selected' : ''; ?> >Yes</option> 
+                        <option value="No" <?php echo ($this->input->post('activitystatus') == 'No') ? 'selected' : ''; ?> >No</option>          
+                        </select>
  <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
 </form>
 <br />
+
 <div class="col-md-12">
+ <br />
     <?php if(isset($receivers_exists_msg)) { ?>
         <div class="col-md-12 alert alert-danger"><?php echo $receivers_exists_msg; ?></div>
     <?php } else { ?>
-        <h3>List of Receivers <a href="<?php echo base_url()."helpline/helpline_receivers_form";?>" class="btn btn-primary">Add</a></h3>
+       
+        
+        <?php  if($helpline_receiver_add == 1 ) { ?>
+         <a href="<?php echo base_url()."helpline/helpline_receivers_form";?>" class="btn btn-primary">Add Helpline Receiver</a>
+         <?php } ?>
     <?php }?>
+   <br />
+  
        <?php if(isset($receivers) && count($receivers)>0)
 { ?> 
-
+<br />
 	<?php 
 	if ($this->input->post('rows_per_page')){
 		$total_records_per_page = $this->input->post('rows_per_page');
@@ -312,8 +332,10 @@ echo "</select></li>";
             <th style="text-align:center">App ID</th>  
             <th style="text-align:center">Helpline</th>  
             <th style="text-align:center">Activity Status</th>
-            <th style="text-align:center">Note*</th>
-            <th style="text-align:center">Action</th>            
+            <th style="text-align:center">Helpline Receiver Note</th>
+            <?php  if($helpline_receiver_edit == 1 ) { ?>
+            	<th style="text-align:center">Action</th>     
+            <?php } ?>       
         </thead>   
     <tbody>
     <?php 
@@ -340,16 +362,22 @@ echo "</select></li>";
         <td>
             <?php echo $a->activity_status == 1 ? 'Yes': 'No';?>
         </td>
-        <td style="text-align:center">
-          <img src="<?php echo base_url();?>assets/images/information-icon.png" class="info_icon" title="<?php echo $a->helpline_receiver_note; ?>" data-toggle="tooltip"/>
+        <td>
+        <?php echo substr($a->helpline_receiver_note, 0, 25); ?>
+        <?php if(strlen($a->helpline_receiver_note) > 25) { ?>
+        <br/>
+          <p title="<?php echo $a->helpline_receiver_note; ?>" data-toggle="tooltip"><u style="color:#428bca">Read More*</u></p>
+          <?php } ?>
         </td>
-        <td><a href="<?php echo base_url()."helpline/helpline_receivers_form/".$a->receiver_id;?>" class="btn btn-primary">Edit</a></td>
+        <?php  if($helpline_receiver_edit == 1 ) { ?>
+        	<td><a href="<?php echo base_url()."helpline/helpline_receivers_form/".$a->receiver_id;?>" class="btn btn-primary">Edit</a></td>
+        <?php } ?> 
     </tr>
     <?php } ?>
     </tbody>
 </table>
 <div style='padding: 0px 2px;'>
-<h5><b>*: Hover the mouse to see notes.</b></h5>
+<h5 style="color:#428bca"><b>*: Hover the mouse to see notes.</b></h5>
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
