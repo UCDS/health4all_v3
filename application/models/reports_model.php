@@ -1288,7 +1288,15 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$from_date=date("Y-m-d");
 			$to_date=$from_date;
 		}
-	
+		
+		if($this->input->post('myactivity')) {		
+			if($date_filter_field=="Appointment") {
+				$this->db->where('pv.appointment_update_by',$this->session->userdata('logged_in')['staff_id']);
+			}else if($date_filter_field=="Registration") {
+				$this->db->where("p.insert_by_user_id",$this->session->userdata('logged_in')['user_id']);		
+			}		
+		}
+			
                 if($this->input->post('from_time') && $this->input->post('to_time')){
 			$from_time=date("H:i",strtotime($this->input->post('from_time')));
 			$to_time=date("H:i",strtotime($this->input->post('to_time')));
@@ -1417,6 +1425,14 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		else{
 			$from_date=date("Y-m-d");
 			$to_date=$from_date;
+		}
+		
+		if($this->input->post('myactivity')) {		
+			if($date_filter_field=="Appointment") {
+				$this->db->where('pv.appointment_update_by',$this->session->userdata('logged_in')['staff_id']);
+			}else if($date_filter_field=="Registration") {
+				$this->db->where("p.insert_by_user_id",$this->session->userdata('logged_in')['user_id']);		
+			}		
 		}
 	
                 if($this->input->post('from_time') && $this->input->post('to_time')){
