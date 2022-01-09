@@ -262,6 +262,17 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+
+input[type='checkbox'] {
+    width:15px;
+    height:15px; 
+}
+ label.checkbox-label input[type=checkbox]{
+        position: relative;
+        vertical-align: middle;
+        bottom: 3px;
+    }
+
 </style>
 
 <style type="text/css">
@@ -340,8 +351,9 @@ display: inline-grid;
 			Manual ID : <input type="text" class="form-custom form-control" name="manualid" placeholder="Manual ID" id="manualid" value="<?php if($this->input->post('manualid')) { echo $this->input->post('manualid'); } ?>"  /> 
 			  H4All ID : <input type="number" class="form-custom form-control" placeholder="Health4All ID" name="patientid" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('patientid')) { echo $this->input->post('patientid'); } ?>"   />  			
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			<input type="checkbox" id="myactivity" name="myactivity" value="1" <?php if($this->input->post('myactivity')) echo "checked"; ?>/>
-  			<label for="myactivity" style="font-weight:normal">Show only my activity</label>
+		
+  			<label class="checkbox-label" style="font-weight:normal"><input type="checkbox" id="myactivity"  name="myactivity" value="1" <?php if($this->input->post('myactivity')) echo "checked"; ?>> Show my activity</label>
+  			
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
