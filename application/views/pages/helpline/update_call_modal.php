@@ -187,7 +187,14 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
     modal.find(".fromnumber").html(callData.from_number);
-    modal.find(".receivedby").html(callData.short_name.concat(' - ',callData.dial_whom_number,' <br />  ',callData.line_note,' - ',callData.to_number));
+    var recievedby = "";
+    if(callData.short_name==null){
+    	recievedby =callData.line_note.concat(' - ',callData.to_number);  
+    }
+    else {
+    	recievedby =callData.short_name.concat(' - ',callData.dial_whom_number,' <br />  ',callData.line_note,' - ',callData.to_number);
+    }
+    modal.find(".receivedby").html(recievedby);
     modal.find(".notes").val(callData.note);
     modal.find(".caller_type").val(callData.caller_type_id);
     //modal.find(".language").val(callData.language_id); 
