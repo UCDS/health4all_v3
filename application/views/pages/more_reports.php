@@ -52,11 +52,15 @@ if($function->user_function=="appointment_by_staff"){ ?>
 
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report"){
+			if($function->user_function=="missed_calls_report"){
 				$helpline=1;
 				?>
+				
 				<button class="accordion">Helpline</button>
+				
 <?php			break; }
+
+
 		}
 ?>
 

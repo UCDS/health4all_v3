@@ -110,6 +110,7 @@ var departments = <?php echo json_encode($department); ?>;
 var hospitals = <?php echo json_encode($all_hospitals); ?>;
 var userHospitals = <?php echo json_encode($user_hospitals); ?>;
 var callCategory = <?php echo json_encode($call_category); ?>;
+var resolutionStatus = <?php echo json_encode($resolution_status); ?>;
 var updatableHelplines = <?php echo json_encode($updatable_helpline); ?>;
 var receiver = user_details.receiver;
 var callData = <?php echo json_encode($calls); ?>;
@@ -225,7 +226,7 @@ $(function(){
 					><?php echo $ct->caller_type;?></option>
 				<?php } ?>
 			</select>
-			<select name="language" style="width:120px" class="form-control">
+			<select name="language" style="width:115px" class="form-control">
 				<option value="">Language</option>
 				<?php foreach($language as $lng){ ?>
 					<option value="<?php echo $lng->language_id;?>"
@@ -233,7 +234,7 @@ $(function(){
 					><?php echo $lng->language;?></option>
 				<?php } ?>
 			</select>
-			<select name="state" id="state" style="width:120px" class="form-control" onchange='onchange_state_dropdown(this)'>
+			<select name="state" id="state" style="width:118px" class="form-control" onchange='onchange_state_dropdown(this)'>
 				<option value="">State</option>
 				<?php foreach($all_states as $state){ ?>
 					<option value="<?php echo $state->state_id;?>"
@@ -241,25 +242,20 @@ $(function(){
 					><?php echo $state->state;?></option>
 				<?php } ?>
 			</select>
-			<select name="district" id="district" style="width:120px" class="form-control">
+			<select name="district" id="district" style="width:110px" class="form-control">
 				<option value="">District</option>
 			</select>
-			<select id="hospitalSelect" name="helpline_hospital" style="width:100px" class="form-control">
+			<select id="hospitalSelect" name="helpline_hospital" style="width:105px" class="form-control">
 				<option value="">Hospital</option>
 			</select>
-			<select id="departmentSelect" name="helpline_department" style="width:100px" class="form-control">
+			<select id="departmentSelect" name="helpline_department" style="width:120px" class="form-control">
 				<option value="">Department</option>
 			</select>
-			<select name="call_category" id= "call_category"style="width:150px" class="form-control">
+			<select name="call_category" id= "call_category"style="width:138px" class="form-control">
 				<option value="">Call Category</option>
 			</select>
-			<select name="resolution_status" style="width:150px" class="form-control">
-				<option value="">Status</option>
-				<?php foreach($resolution_status as $status){ ?>
-					<option value="<?php echo $status->resolution_status_id;?>"
-					<?php if($this->input->post('resolution_status') == $status->resolution_status_id) echo " selected "; ?>
-					><?php echo $status->resolution_status;?></option>
-				<?php } ?>
+			<select name="resolution_status" id="resolution_status" style="width:155px" class="form-control">
+				<option value="">Resolution Status</option>
 			</select>
 			<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
 			 Rows per page : <input type="number" class="rows_per_page" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
@@ -1240,6 +1236,8 @@ function onHelplineDropdownChanged(helplineId) {
 	$("#hospitalSelect").html(optionsHtml);
 	const optionsHtmlCallCateogry = getCallCategoryForHelpline(helplineId);
 	$("#call_category").html(optionsHtmlCallCateogry);	
+	const optionsHtmlCallStatus = getCallStatusForHelpline(helplineId);
+	$("#resolution_status").html(optionsHtmlCallStatus);
 	onHospitalDropdownChanged();
 }
 
@@ -1270,6 +1268,20 @@ function getDepartmentOptionsForHelpline(helplineId) {
 		const hospitalId = helplineHospital[0].hospital_id;
 		const deptOptions = getDepartmentOptionsForHospital(hospitalId);
 		deptOptions? optionsHtml = deptOptions: "";		
+	}
+	return optionsHtml;
+}
+
+function getCallStatusForHelpline(helplineId) {
+	var resolutionStatusSelect = resolutionStatus.filter((resolutionStatus) =>  resolutionStatus.helpline_id == helplineId);
+	let optionsHtml = buildEmptyOption("Resolution Status"); 
+	if(resolutionStatusSelect.length > 0) {		
+		optionsHtml += resolutionStatusSelect.map(resolutionStatusSelect => {
+			return `	<option value="${resolutionStatusSelect.resolution_status_id}">
+							${resolutionStatusSelect.resolution_status}
+						</option>`;
+		});
+		return optionsHtml;
 	}
 	return optionsHtml;
 }
@@ -1341,6 +1353,22 @@ function buildCallCategoryOptions(callCategory = []) {
 		return null;
 	}
 }
+
+function buildResolutionOptions(resolutionStatus = []) {
+	if(resolutionStatus && resolutionStatus.length > 0) {
+		let optionsHtml = buildEmptyOption("Resolution Status"); 
+		optionsHtml += resolutionStatus.map(resolutionStatus => {
+			return `	<option value="${resolutionStatus.resolution_status_id}">
+							${resolutionStatus.resolution_status}
+						</option>`;
+		});
+		return optionsHtml;
+	} else {
+		return null;
+	}
+}
+
+
 function buildEmptyOption(optionName = "Select") {
 	return `<option value="" selected>
 					${optionName}
@@ -1352,9 +1380,10 @@ function openEditModal(e) {
 	var callArray = callData.filter((call) => call.call_id == callId);
 	var hospitalSelect = hospitals.filter((hospital) =>  hospital.helpline_id == callArray[0].helpline_id);
 	var callCategorySelect = callCategory.filter((callCategory) =>  callCategory.helpline_id == callArray[0].helpline_id && callCategory.status == 1);
+	var resolutionStatusSelect = resolutionStatus.filter((resolutionStatus) =>  resolutionStatus.helpline_id == callArray[0].helpline_id && resolutionStatus.status == 1);
 	if(callArray.length > 0) {
 		$('#updateCallModal').modal({backdrop: 'static', keyboard: false});  
-		setupUpdateCallModalData(callArray[0],hospitalSelect,callCategorySelect);
+		setupUpdateCallModalData(callArray[0],hospitalSelect,callCategorySelect,resolutionStatusSelect);
 	}
 }
 function openSendEmailModal(e) {

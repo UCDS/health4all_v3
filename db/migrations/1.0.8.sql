@@ -220,3 +220,7 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 
 ALTER TABLE `appointment_status` CHANGE `is_default` `is_default` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Stores whether the status can be considered in effective appointment (1) or not (2) otherwise value would be zero';
 
+ALTER TABLE `helpline_resolution_status` ADD `helpline_id` INT NULL AFTER `note`;
+
+ALTER TABLE `helpline_resolution_status` ADD `status` TINYINT NULL AFTER `helpline_id`;
+
