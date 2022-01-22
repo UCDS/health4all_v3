@@ -373,6 +373,7 @@ class Helpline_model extends CI_Model{
 	}
 	function get_resolution_status(){
 		$this->db->select('*')->from('helpline_resolution_status');
+		$this->db->order_by('resolution_status','ASC');
 		$query = $this->db->get();
 		return $query->result();
 	}
