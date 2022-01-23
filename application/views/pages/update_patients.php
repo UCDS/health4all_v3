@@ -64,6 +64,9 @@
     	background: #6DF48F;
     	font-weight: bold;
     }
+    .selectize-control {
+    display: inline-grid;
+}
    /*   .pictures {
       list-style: none;
       margin: 0;
@@ -286,6 +289,33 @@ function openSmsModal(){
     
 </script>
 <script type="text/javascript">
+function initHospitalSelectize(){
+	var helpline_hospitals = JSON.parse(escapeSpecialChars('<?php echo json_encode($helpline_hospitals); ?>'));
+
+	var selectize = $('#hospital_id').selectize({
+	    valueField: 'hospital_id',
+	    labelField: 'customdata',
+	    searchField: ['hospital_short_name', 'place', 'district','state'],
+		options: helpline_hospitals,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	      if (!query.length) return callback();
+		},
+	});
+	var selected_hospital = '<?php echo $this->input->post('hospital'); ?>';
+	if(selected_hospital){
+		selectize[0].selectize.setValue(selected_hospital);
+	}
+}
 function initDistrictSelectize(){
         var districts = JSON.parse(escapeSpecialChars('<?php echo json_encode($districts); ?>'));
 	var selectize = $('#district_id').selectize({
@@ -1185,16 +1215,14 @@ function initDistrictSelectize(){
                                      <div class="col-md-8 col-xs-6">
                                         <label class="control-label">Referred by Hospital</label>
                                         <?php if($f->edit==1 && empty($patient->referral_by_hospital_id)){ ?>
-                                        <select name="referral_by_hospital_id" id="referral_by_hospital_id" class="form-control referral_by_hospital_id">
-                                            <option value="">--Select--</option>
-                                            <?php 
-                                            foreach($hospitals as $hospital){
-                                                echo "<option value='".$hospital->hospital_id."' class='".$hospital->hospital_id."'";
-                                                if($hospital->hospital_id==$patient->referral_by_hospital_id) echo " selected ";
-                                                echo ">".$hospital->hospital."</option>";
-                                            }
-                                            ?>
+               			<select id="hospital_id" name="referral_by_hospital_id" style="width: 340px;display: inline-grid;" class="" placeholder="       --Enter hospital--                      ">
+					<option value="">        --Enter hospital--                       </option>
                                         </select>
+                                        <script>
+						
+						initHospitalSelectize();
+	
+					</script>
                                         <?php 
                                             }else{
                                                

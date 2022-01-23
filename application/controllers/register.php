@@ -92,6 +92,7 @@ class Register extends CI_Controller {
 			$this->data['id_proof_types']=$this->staff_model->get_id_proof_type();
 			$this->data['occupations']=$this->staff_model->get_occupations();
 			$this->data['departments']=$this->staff_model->get_department();
+			$this->data['helpline_hospitals']=$this->staff_model->user_hospital(true);
 			$this->data['all_departments']=$this->data['departments'];
 			$this->data['visit_names']=$this->staff_model->get_visit_name();
 			$this->data['units']=$this->staff_model->get_unit();
@@ -607,6 +608,7 @@ class Register extends CI_Controller {
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['districts']=$this->staff_model->get_district();
+		$this->data['helpline_hospitals']=$this->staff_model->user_hospital(true);
 		$this->data['id_proof_types']=$this->staff_model->get_id_proof_type();
 		$this->data['occupations']=$this->staff_model->get_occupations();
 		$this->data['lab_units'] = $this->masters_model->get_data("lab_unit");
