@@ -543,7 +543,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">District<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<select id="district_id" name="district" style="width: 250px;display: inline-grid;" class="" placeholder="       --Enter district--                      ">
+						<select id="district_id" name="district" style="width: 250px;display: inline-grid;" class="" placeholder="       --Enter district--                      " <?php if($field->mandatory) echo "required"; ?>>
 							<option value="">        --Enter district--                       </option>
 						
 						</select>
