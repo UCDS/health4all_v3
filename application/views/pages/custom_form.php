@@ -902,16 +902,7 @@ function initAppointmentDoctorSelectize(modal_id){
 						</div>
 					</div>
 				<?php 
-					break;					
-					case "hospital" :  ?>
-					<div class="<?php echo $class;?>">
-						<div class="form-group">
-						<label class="control-label">Hospital<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="hospital" class="form-control" value="<?php if($patient) echo $patient->hospital ;?>" <?php if($field->mandatory) echo "required"; ?> />
-						</div>
-					</div>
-					<?php
-					break;	
+					break;						
 					case "referral_by_hospital_id" :  ?>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
