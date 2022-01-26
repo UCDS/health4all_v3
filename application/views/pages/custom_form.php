@@ -102,7 +102,33 @@ function getAge(dateString) {
    document.getElementsByName("age_days")[0].value=d;
    */
 }
+function initHospitalSelectize(){
+	var helpline_hospitals = JSON.parse(escapeSpecialChars('<?php echo json_encode($helpline_hospitals); ?>'));
 
+	var selectize = $('#hospital_id').selectize({
+	    valueField: 'hospital_id',
+	    labelField: 'customdata',
+	    searchField: ['hospital_short_name', 'place', 'district','state'],
+		options: helpline_hospitals,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	      if (!query.length) return callback();
+		},
+	});
+	var selected_hospital = '<?php echo $this->input->post('hospital'); ?>';
+	if(selected_hospital){
+		selectize[0].selectize.setValue(selected_hospital);
+	}
+}
 function initDistrictSelectize(){
         var districts = JSON.parse(escapeSpecialChars('<?php echo json_encode($districts); ?>'));
 	var selectize = $('#district_id').selectize({
@@ -517,7 +543,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">District<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<select id="district_id" name="district" style="width: 250px;display: inline-grid;" class="" placeholder="       --Enter district--                      ">
+						<select id="district_id" name="district" style="width: 250px;display: inline-grid;" class="" placeholder="       --Enter district--                      " <?php if($field->mandatory) echo "required"; ?>>
 							<option value="">        --Enter district--                       </option>
 						
 						</select>
@@ -876,12 +902,19 @@ function initAppointmentDoctorSelectize(modal_id){
 						</div>
 					</div>
 				<?php 
-					break;					
-					case "hospital" :  ?>
+					break;						
+					case "referral_by_hospital_id" :  ?>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
-						<label class="control-label">Hospital<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="hospital" class="form-control" value="<?php if($patient) echo $patient->hospital ;?>" <?php if($field->mandatory) echo "required"; ?> />
+						<label class="control-label">Reffered From<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
+						<select id="hospital_id" name="referral_by_hospital_id" style="width: 240px;display: inline-grid;" class="" placeholder="       --Enter hospital--                      " <?php if($field->mandatory) echo "required"; ?>>
+					<option value="">        --Enter hospital--                       </option>
+                                        </select>
+                                        <script>
+						
+						initHospitalSelectize();
+	
+					</script>
 						</div>
 					</div>
 					<?php

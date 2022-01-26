@@ -424,11 +424,11 @@
 						<input type="text" name="visit_name" style="width: 170px" class="form-control" />
 						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
 						</div>
-						</div>
-						<div class="layout-div col-md-4 hospital">
+						</div>	
+					<div class="layout-div col-md-4 referral_by_hospital_id">
 						<div class="form-group">
-						<label class="control-label">   Hospital   </label>
-						<input type="text" name="hospital" style="width: 170px" class="form-control" />
+						<label class="control-label">   Referred From   </label>
+						<input type="text" name="referral_by_hospital_id" style="width: 170px" class="form-control" />
 						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
 						</div>
 					</div>				
@@ -936,7 +936,7 @@
 				</li>
 				<li>  
 					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="hospital" class="checklist" />Hospital</label>
+						<label><input type="checkbox" value="1" id="referral_by_hospital_id" class="checklist" />Referred From</label>
 					</div>
 				</li>
 				<li>  
