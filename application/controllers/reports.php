@@ -645,7 +645,7 @@ class Reports extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" || $function->user_function=="login_report" || $function->user_function=="patient_location_report" || $function->user_function=="helpline_receiver"){
+			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" || $function->user_function=="login_report" || $function->user_function=="patient_location_report" || $function->user_function=="helpline_receiver" ||  $function->user_function=="referral"){
 				$access=1;
 				break;
 			}
@@ -667,10 +667,11 @@ class Reports extends CI_Controller {
 		
 	}
 	
-	///health4all_v3/reports/referrals_detail/Registration/IP/0/0/0/0/M/HospitalReferredby/0/2021-01-01/2021-08-01/00:00/00:00/2/2
-	//reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$from_time/$from_time/$s->district_id/$s->state_id
-	public function referrals_detail($date_filter_field,$visittype,$visit_name=0,$department=0,$unit=0,$area=0,$gender=0,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id)
+	///health4all_v3/reports/referrals_detail/Registration/IP/0/0/0/0/M/HospitalReferredby/0/2021-01-01/2021-08-01/25/2/2
+	//reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$from_time/$from_time/$rowsperpage/$s->district_id/$s->state_id/
+	public function referrals_detail($date_filter_field,$visittype,$visit_name=0,$department=0,$unit=0,$area=0,$gender=0,$hospitalsearchtype,$hospital,$from_date,$to_date,$rowsperpage,$district_id,$state_id)
 	{
+
 	       if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
@@ -692,17 +693,9 @@ class Reports extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->data['updated']=false;
-		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-		foreach($this->data['defaultsConfigs'] as $default){		 
-		 	if($default->default_id=='pagination'){
-		 			$this->data['rowsperpage'] = $default->value;
-		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
-
-		 		}
-			}
+		$this->data['rowsperpage'] = $rowsperpage;
 		$this->data['report_count']=$this->reports_model->get_referrals_detail_count($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id);
-		$this->data['report']=$this->reports_model->get_referrals_detail($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id,$this->data['rowsperpage']);		
+		$this->data['report']=$this->reports_model->get_referrals_detail($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id,$rowsperpage);		
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 
@@ -744,6 +737,14 @@ class Reports extends CI_Controller {
 		if($access==1){
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
 		$this->data['title']="Referrals";
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 		$this->data['rowsperpage'] = $default->value;
+		 		$this->data['upper_rowsperpage']= $default->upper_range;
+		 		$this->data['lower_rowsperpage']= $default->lower_range;
+		 	}
+		}
 		$this->data['all_districts']=$this->staff_model->get_district();   
 		$this->data['all_states']=$this->staff_model->get_states();  
 		$this->data['all_departments']=$this->staff_model->get_department();
@@ -779,7 +780,62 @@ class Reports extends CI_Controller {
 		}
 		
 	}
-	
+	public function referrals_centers($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
+	{
+	       if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="referral"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		$this->data['title']="Referral Centers";
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 		$this->data['rowsperpage'] = $default->value;
+		 		$this->data['upper_rowsperpage']= $default->upper_range;
+		 		$this->data['lower_rowsperpage']= $default->lower_range;
+		 	}
+		}
+		$this->data['all_districts']=$this->staff_model->get_district();   
+		$this->data['all_states']=$this->staff_model->get_states();  
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
+		$this->data['helpline_hospitals']=$this->staff_model->user_hospital(true);
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');	
+		$this->data['report']=$this->reports_model->get_referrals_centers();	
+		$this->form_validation->set_rules('from_date', 'From Date',
+		'trim|required|xss_clean');
+	    $this->form_validation->set_rules('to_date', 'To Date', 
+	    'trim|required|xss_clean');
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/referrals_centers',$this->data);
+		}
+		else{
+			$this->load->view('pages/referrals_centers',$this->data);
+		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
 	function get_search_helpline_doctor()
 	{
 		if ($results = $this->reports_model->get_search_helpline_doctor($this->input->post('query'))) {

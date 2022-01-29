@@ -250,6 +250,13 @@
 						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
 						</div>
 					</div>
+					<div class="layout-div col-md-4 alt_phone">
+						<div class="form-group">
+						<label class="control-label">    Alternate Phone    </label>
+						<input type="text" name="alt_phone" style="width: 170px" class="form-control"/>
+						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
+						</div>
+					</div>
 					<!-- here we use input type for obtaining textbox for father_name,mother_name-->
 					<div class="layout-div col-md-4 father_name">
 						<div class="form-group">
@@ -811,6 +818,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="phone" class="checklist" />Phone</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="alt_phone" class="checklist" />Alternate Phone</label>
 					</div>
 				</li>
 				<li>  

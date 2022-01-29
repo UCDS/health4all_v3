@@ -733,6 +733,108 @@ sum(case when patient_sub.gender='M' then 1 else 0 end) as male,
 sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner_query."  GROUP by patient_sub.state,patient_sub.district",false);		 			
 		return $query->result();
 	}
+	function get_referrals_centers(){		
+		
+	        $inner_query = "(select pv.patient_id,hospital.hospital_id as hospital_id ,hospital.type1 as type1 ,hospital.hospital_short_name as hospital_short_name,hospital.hospital,p.gender,state.state as state,state.state_id as state_id,district.district as district,district.district_id as district_id from patient_visit pv join patient p on pv.patient_id=p.patient_id inner join hospital on pv.referral_by_hospital_id=hospital.hospital_id left join district on hospital.district_id = district.district_id left join state on district.state_id=state.state_id where ";
+	        $date_filter_field="Registration";
+		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
+			$date_filter_field="Appointment";
+		}	
+		$inner_query = $inner_query . "  pv.referral_by_hospital_id=pv.referral_by_hospital_id AND pv.hospital_id=pv.hospital_id  ";
+		$hospital_refer = $this->input->post('hospital');		
+		if($hospital_refer){
+			$inner_query = $inner_query . " AND pv.referral_by_hospital_id=".$hospital_refer;	
+		}
+		
+		$hospital=$this->session->userdata('hospital');
+		if($hospital){
+			$inner_query = $inner_query . "  AND pv.hospital_id=".$hospital['hospital_id'];
+			
+		}
+		
+		
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		
+		if($this->input->post('visittype')){
+				//$this->db->where('patient.district_id',$this->input->post('district'));
+				$inner_query = $inner_query . " AND pv.visit_type='".$this->input->post('visittype')."'";
+		}
+		else{
+			$inner_query = $inner_query . " AND pv.visit_type='OP'";
+		}
+		if($this->input->post('district')){
+				//$this->db->where('patient.district_id',$this->input->post('district'));
+				$inner_query = $inner_query . " AND hospital.district_id=".$this->input->post('district');
+		}
+		
+		if($this->input->post('state')){
+				//$this->db->where('state.state_id',$this->input->post('state'));
+				$inner_query = $inner_query . " AND state.state_id=".$this->input->post('state');
+		}
+		if($date_filter_field=="Registration"){
+		 	$inner_query = $inner_query ." AND (pv.admit_date BETWEEN '$from_date' AND '$to_date') AND ". "(pv.admit_time BETWEEN '$from_time' AND '$to_time') "; 
+		} 
+		else if($date_filter_field=="Appointment"){
+			$inner_query = $inner_query . "AND (pv.appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp') ";
+		}
+		
+		if($this->input->post('visit_name')){
+			//$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
+			$inner_query = $inner_query . " AND pv.visit_name_id=".$this->input->post('visit_name');
+		}
+		if($this->input->post('department')){
+			//$this->db->where('pv.department_id',$this->input->post('department'));
+			$inner_query = $inner_query . " AND pv.department_id=".$this->input->post('department');
+		}
+		if($this->input->post('unit')){
+			//$this->db->where('pv.unit',$this->input->post('unit'));
+			$inner_query = $inner_query . " AND pv.unit=".$this->input->post('unit');
+		}
+		
+		if($this->input->post('area')){
+			//$this->db->where('pv.area',$this->input->post('area'));
+			$inner_query = $inner_query . " AND pv.area=".$this->input->post('area');
+		}
+		
+		$inner_query = $inner_query . " ) as patient_sub ";
+		$query= $this->db->query("select patient_sub.hospital_id,patient_sub.hospital_short_name,patient_sub.hospital,patient_sub.type1,patient_sub.state,patient_sub.district,patient_sub.state_id,patient_sub.district_id,
+sum(case when 1 then 1 else 0 end) as total,
+sum(case when patient_sub.gender='0' then 1 else 0 end) as not_specified,
+sum(case when patient_sub.gender='O' then 1 else 0 end) as others,
+sum(case when patient_sub.gender='M' then 1 else 0 end) as male,
+sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner_query."  GROUP by patient_sub.hospital_id",false);		 			
+		return $query->result();
+	}
 	function get_referrals_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$district_id,$state_id,$default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
@@ -742,10 +844,13 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		}
 		if($this->input->post('rows_per_page')) {
 			$rows_per_page = $this->input->post('rows_per_page');
+		
 		}
 		else{
 			$rows_per_page = $default_rowsperpage;
+	
 		}
+		
 		$start = ($page_no -1 )  * $rows_per_page;
 		
 		
