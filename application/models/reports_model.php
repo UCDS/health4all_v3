@@ -735,7 +735,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 	}
 	function get_referrals_centers(){		
 		
-	        $inner_query = "(select pv.patient_id,hospital.hospital_id as hospital_id ,hospital.type1 as type1 ,hospital.hospital_short_name as hospital_short_name,hospital.hospital,p.gender,state.state as state,state.state_id as state_id,district.district as district,district.district_id as district_id from patient_visit pv join patient p on pv.patient_id=p.patient_id inner join hospital on pv.referral_by_hospital_id=hospital.hospital_id left join district on hospital.district_id = district.district_id left join state on district.state_id=state.state_id where ";
+	        $inner_query = "(select pv.patient_id,hospital.hospital_id as hospital_id ,hospital.type1 as type1 ,hospital.hospital_short_name as hospital_short_name,hospital.hospital,p.gender,state.state as state,state.state_id as state_id,district.district as district,district.district_id as district_id from patient_visit pv join patient p on pv.patient_id=p.patient_id left join hospital on pv.referral_by_hospital_id=hospital.hospital_id left join district on hospital.district_id = district.district_id left join state on district.state_id=state.state_id where ";
 	        $date_filter_field="Registration";
 		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
 			$date_filter_field="Appointment";
@@ -844,9 +844,11 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		}
 			
 		if($hospital_param !=-1){
-			$hospital_refer = $hospital_param;
 			$this->db->where('pv.referral_by_hospital_id',$hospital_param);	
+		}else if($hospital_param ==0) {
+			$this->db->where('pv.referral_by_hospital_id',0);
 		}
+		
 			
 	
 		$hospital=$this->session->userdata('hospital');
@@ -902,18 +904,21 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		if($gender !=-1){
 			$this->db->where('p.gender',$gender);
 		}
+		
+		
 		if($district_id != -1 && $district_id!=""){
-			$this->db->where('hospital_referral_by_district.district_id IS NULL');			
+			$this->db->where('hospital_referral_by_district.district_id',$district_id );				
 		}
 		
 		if($district_id==""){
-			$this->db->where('hospital_referral_by_district.district_id',0);
+			$this->db->where('hospital_referral_by_district.district_id IS NULL');
+			
 		}
 		
 		if($state_id != -1 && $state_id!=""){
 			$this->db->where('hospital_referral_by_state.state_id',$state_id);
 				
-		}	
+		}
 		
 	
 		
@@ -930,11 +935,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
 		 ->join('mlc','pv.visit_id=mlc.visit_id','left')
 		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
-		 ->join('hospital as hospital_referral_by','pv.referral_by_hospital_id=hospital_referral_by.hospital_id')
+		 ->join('hospital as hospital_referral_by','pv.referral_by_hospital_id=hospital_referral_by.hospital_id','left')
 		 ->join('district as hospital_referral_by_district','hospital_referral_by.district_id=hospital_referral_by_district.district_id','left')
 		 ->join('state as hospital_referral_by_state','hospital_referral_by_district.state_id=hospital_referral_by_state.state_id','left');
-		$this->db->where('pv.visit_type',$visittype);
-		$this->db->where('pv.referral_by_hospital_id !=',0);			
+		$this->db->where('pv.visit_type',$visittype);		
 		$resource=$this->db->get();
 		return $resource->result();
 	}
@@ -967,6 +971,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		if($hospital_param !=-1){
 			$hospital_refer = $hospital_param;
 			$this->db->where('pv.referral_by_hospital_id',$hospital_param);	
+		}else if($hospital_param ==0) {
+			$this->db->where('pv.referral_by_hospital_id',0);
 		}
 			
 		$hospital=$this->session->userdata('hospital');
@@ -1054,11 +1060,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
 		 ->join('mlc','pv.visit_id=mlc.visit_id','left')
 		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
-		 ->join('hospital as hospital_referral_by','pv.referral_by_hospital_id=hospital_referral_by.hospital_id')
+		 ->join('hospital as hospital_referral_by','pv.referral_by_hospital_id=hospital_referral_by.hospital_id','left')
 		 ->join('district as hospital_referral_by_district','hospital_referral_by.district_id=hospital_referral_by_district.district_id','left')
 		 ->join('state as hospital_referral_by_state','hospital_referral_by_district.state_id=hospital_referral_by_state.state_id','left');
 		$this->db->where('pv.visit_type',$visittype);
-		$this->db->where('pv.referral_by_hospital_id !=',0);
 		$this->db->limit($rows_per_page,$start);			
 		$resource=$this->db->get();
 		return $resource->result();
