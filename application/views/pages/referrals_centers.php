@@ -425,7 +425,7 @@ display: inline-grid;
 	if($this->input->post('state') && $this->input->post('state')){
 		$state=$this->input->post('state');
 	}
-	$hospital_row = 0;
+	$hospital_row = -1;
 	foreach($report as $s){	
 	?>
 	<tr>
@@ -433,7 +433,7 @@ display: inline-grid;
 			if ($s->hospital_id) {
 				$hospital_row = $s->hospital_id;
 			} else {
-				$hospital_row = 0;
+				$hospital_row = -1;
 			} 
 		
 		?>
