@@ -295,7 +295,7 @@ function initHospitalSelectize(){
 	var selectize = $('#hospital_id').selectize({
 	    valueField: 'hospital_id',
 	    labelField: 'customdata',
-	    searchField: ['hospital_short_name', 'place', 'district','state'],
+	    searchField: ['hospital','hospital_short_name', 'place', 'district','state'],
 		options: helpline_hospitals,
 	    create: false,
 	    render: {
