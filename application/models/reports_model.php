@@ -735,12 +735,12 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 	}
 	function get_referrals_centers(){		
 		
-	        $inner_query = "(select pv.patient_id,hospital.hospital_id as hospital_id ,hospital.type1 as type1 ,hospital.hospital_short_name as hospital_short_name,hospital.hospital,p.gender,state.state as state,state.state_id as state_id,district.district as district,district.district_id as district_id from patient_visit pv join patient p on pv.patient_id=p.patient_id left join hospital on pv.referral_by_hospital_id=hospital.hospital_id left join district on hospital.district_id = district.district_id left join state on district.state_id=state.state_id where ";
+	        $inner_query = "(select pv.patient_id,hospital.hospital_id as hospital_id ,hospital.type1 as type1 ,ifnull(hospital.hospital_short_name,'NA') as hospital_short_name,ifnull(hospital.hospital,'Not Assigned') as hospital,p.gender,state.state as state,state.state_id as state_id,district.district as district,district.district_id as district_id from patient_visit pv join patient p on pv.patient_id=p.patient_id left join hospital on pv.referral_by_hospital_id=hospital.hospital_id left join district on hospital.district_id = district.district_id left join state on district.state_id=state.state_id where ";
 	        $date_filter_field="Registration";
 		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
 			$date_filter_field="Appointment";
 		}	
-		$inner_query = $inner_query . "  pv.referral_by_hospital_id=pv.referral_by_hospital_id AND pv.hospital_id=pv.hospital_id  ";
+		$inner_query = $inner_query . " 1=1 ";
 		$hospital_refer = $this->input->post('hospital');		
 		if($hospital_refer){
 			$inner_query = $inner_query . " AND pv.referral_by_hospital_id=".$hospital_refer;	
