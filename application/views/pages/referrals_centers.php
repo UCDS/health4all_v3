@@ -370,8 +370,8 @@ display: inline-grid;
 			<th style="text-align:center">S.no</th>
 		 	<th style="text-align:center">State</th>
 			<th style="text-align:center">District</th>
-			<th style="text-align:center">Group 1</th>
-			<th style="text-align:center">Referred by Hospital Name</th>
+			<th style="text-align:center">Hospital Type</th>
+			<th style="text-align:center">Referred From</th>
 			<th>Male</th><th>Female</th><th>Others</th><th>Not Specified</th><th>Total</th> 
 			
 			</tr>
