@@ -688,7 +688,7 @@ class Reports extends CI_Controller {
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
 		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
-		$this->data['helpline_hospitals']=$this->staff_model->user_hospital(true);
+		$this->data['helpline_hospitals']=$this->hospital_model->get_hospitals_selectize();
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
@@ -724,6 +724,7 @@ class Reports extends CI_Controller {
 		}
 		
 	}
+	
 	public function referrals($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
 	       if($this->session->userdata('logged_in')){
@@ -752,7 +753,7 @@ class Reports extends CI_Controller {
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
 		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
-		$this->data['helpline_hospitals']=$this->staff_model->user_hospital(true);
+		$this->data['helpline_hospitals']=$this->hospital_model->get_hospitals_selectize();
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');	
@@ -768,6 +769,58 @@ class Reports extends CI_Controller {
 		}
 		else{
 			$this->load->view('pages/referrals',$this->data);
+		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+	//reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id
+	//health4all_v3/reports/referrals_centers_detail/Registration/OP/-1/-1/-1/-1/M/-1/2022-01-30/2022-01-30/5/3/2
+	public function referrals_centers_detail($date_filter_field,$visittype,$visit_name=0,$department=0,$unit=0,$area=0,$gender=0,$hospital,$from_date,$to_date,$rowsperpage,$district_id,$state_id)
+	{
+
+	       if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="referral"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		$this->data['title']="Referrals Centers Detail";
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
+		$this->data['helpline_hospitals']=$this->hospital_model->get_hospitals_selectize();
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->data['updated']=false;
+		$this->data['rowsperpage'] = $rowsperpage;
+		$this->data['report_count']=$this->reports_model->get_referrals_centers_detail_count($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id);
+		$this->data['report']=$this->reports_model->get_referrals_centers_detail($date_filter_field,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype,$hospital,$from_date,$to_date,$district_id,$state_id,$rowsperpage);		
+		$this->form_validation->set_rules('from_date', 'From Date',
+		'trim|required|xss_clean');
+	    $this->form_validation->set_rules('to_date', 'To Date', 
+	    'trim|required|xss_clean');
+	
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/referrals_centers_details',$this->data);
+		}
+		else{
+			$this->load->view('pages/referrals_centers_details',$this->data);
 		}
 		$this->load->view('templates/footer');
 		}
@@ -808,7 +861,7 @@ class Reports extends CI_Controller {
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
 		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
-		$this->data['helpline_hospitals']=$this->staff_model->user_hospital(true);
+		$this->data['helpline_hospitals']=$this->hospital_model->get_hospitals_selectize();
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');	

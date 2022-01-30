@@ -390,6 +390,9 @@ display: inline-grid;
 	if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
 		$date_filter_field="Appointment";
 	}
+	if($this->input->post('rows_per_page')){
+        	$rowsperpage = $this->input->post('rows_per_page');
+        }
 	$visittype='OP'; 
 	if($this->input->post('visittype') && $this->input->post('visittype')){
 		$visittype=$this->input->post('visittype');
@@ -431,31 +434,31 @@ display: inline-grid;
 		<td><?php echo $s->type1;?> </td>
 		<td><?php echo $s->hospital_short_name.' - '.$s->hospital;?> </td>		
 		<?php if ($s->male > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$s->district_id/$s->state_id";?>"><?php echo $s->male;?> </td>		
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->male;?> </td>		
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->male;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->female > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospitalsearchtype/$hospital/$from_date/$to_date/$s->district_id/$s->state_id";?>"><?php echo $s->female;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->female;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->female;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->others > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospitalsearchtype/$hospital/$from_date/$to_date/$s->district_id/$s->state_id";?>"><?php echo $s->others;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->others;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->others;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->not_specified > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospitalsearchtype/$hospital/$from_date/$to_date/$s->district_id/$s->state_id";?>"><?php echo $s->not_specified;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->not_specified;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->not_specified;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->total > 0) { ?>	
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospitalsearchtype/$hospital/$from_date/$to_date/$s->district_id/$s->state_id";?>"><?php echo $s->total;?>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->total;?>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->total;?> </td>
 		<?php }  ?>
@@ -475,31 +478,31 @@ display: inline-grid;
 	 	<th> </th>
 		<th>Total </th>
 		<?php if ($total_m > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$district/$state";?>"><?php echo $total_m;?> </td>		
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_m;?> </td>		
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_m;?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_f > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospitalsearchtype/$hospital/$from_date/$to_date/$district/$state";?>"><?php echo $total_f;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_f;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_f?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_other > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospitalsearchtype/$hospital/$from_date/$to_date/$district/$state";?>"><?php echo $total_other;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_other;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_other;?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_not_specified > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospitalsearchtype/$hospital/$from_date/$to_date/$district/$state";?>"><?php echo $total_not_specified;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_not_specified;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_not_specified;?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_grand > 0) { ?>	
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospitalsearchtype/$hospital/$from_date/$to_date/$district/$state";?>"><?php echo $total_grand;?>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_grand;?>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_grand;?> </td>
 		<?php }  ?>
