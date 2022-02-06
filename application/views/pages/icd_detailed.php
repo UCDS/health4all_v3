@@ -576,7 +576,7 @@ function fnExcelReport() {
 		<td><?php echo $s->mlc_number;?></td>
 		<td><?php echo $s->outcome;?></td>
 		<td><?php if($s->outcome_date!=0) echo date("d-M-Y",strtotime($s->outcome_date))." ".date("g:iA",strtotime($s->outcome_time));?></td>
-		<td><?php echo $s->icd_10;?></td>
+		<td><?php echo $s->icd_10.' - '.$s->code_title;?></td>
 		<td><?php echo $s->final_diagnosis;?></td>
 	</tr>
 	<?php

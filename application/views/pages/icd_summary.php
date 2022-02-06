@@ -400,7 +400,14 @@ f									<option value="OP" <?php if($visit_type == "OP") echo " selected ";?>>
         <td><?php echo $serial_number++;?></td>
          <?php if(!$this->input->post('postback') or $this->input->post('groupbyicdchapter')) { ?>
         	<td><?php echo $s->chapter_id." - ".$s->chapter_title;?></td>
-        	<?php $filter = $s->chapter_id."/-1/-1"; $val_count = $val_count +1;?>
+        	<?php if ($s->chapter_id){
+        	 	$filter = $s->chapter_id."/-1/-1";
+        	 }
+        	 else {
+        	 	$filter = "0/-1/-1"; 
+        	 }
+        	 $val_count = $val_count +1;
+        	 ?>
         <?php } ?>
         <?php if($this->input->post('groupbyicdblock')) { ?>
         	<td><?php echo $s->block_id." - ".$s->block_title;?></td>
