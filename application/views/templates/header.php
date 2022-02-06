@@ -104,7 +104,7 @@
 							<?php
 								foreach($functions as $f){
 									if($f->user_function == "Update Patients"){ ?>
-										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patients</a></li>
+										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patient/Visits</a></li>
 									<?php
 									break;
 									}
