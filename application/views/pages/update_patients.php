@@ -2314,7 +2314,7 @@ function initDistrictSelectize(){
 				<?php if(!empty($patient->icd_10)){?>
 					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
 				 <?php } else {?>
-					<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
+					<select id="icd_code" style="width:367px" class="repositories" placeholder="Search ICD codes" name="icd_code" >
 					<?php if(!!$patient->icd_10){ ?>
 						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
 					<?php } ?>

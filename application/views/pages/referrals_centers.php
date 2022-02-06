@@ -271,7 +271,7 @@ display: inline-grid;
                       
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-			<select name="department" id="department" class="form-control">
+			<select name="department" id="department" style="width:160px" class="form-control">
 				<option value="">Department</option>
 				<?php 
 				foreach($all_departments as $dept){
@@ -301,7 +301,7 @@ display: inline-grid;
 				}
 				?>
 			</select>
-			<select name="visit_name" id="visit_name" class="form-control" >
+			<select name="visit_name" id="visit_name" style="width:160px" class="form-control" >
 				<option value="">Visit Type</option>
 				<?php 
 				foreach($visit_names as $v){

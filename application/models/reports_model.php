@@ -1047,7 +1047,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 	
 		
 		$this->db->select("p.patient_id,p.patient_id_manual, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) as name,department.department,
-		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) as parent_spouse, age_years, age_months, age_days,pv.hosp_file_no,p.phone,p.address,state.state,district.district,hospital.hospital_short_name as referred_to,hospital_referral_by.hospital_short_name as hospital_referral_by,mlc_number,pv.final_diagnosis,pv.icd_10 as pv_icd_code,icd_code.code_title,pv.appointment_status_id,aps.appointment_status,p.place, p.phone,visit_name.visit_name " ,false);
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) as parent_spouse, age_years, age_months, age_days,pv.hosp_file_no,p.phone,p.address,state.state,district.district,hospital.hospital_short_name as referred_to,hospital_referral_by.hospital_short_name as hospital_referral_by,mlc_number,pv.final_diagnosis,pv.icd_10 as pv_icd_code,icd_code.code_title,pv.appointment_status_id,aps.appointment_status,p.place, p.phone,visit_name.visit_name,admit_date, admit_time" ,false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('district','p.district_id=district.district_id','left')
@@ -3133,15 +3133,20 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
 		else {		
+			
 			if($icdchapter != "-1") {
-				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				if ($icdchapter == "0") {
+					$this->db->where('icd_chapter.chapter_id IS NULL');
+				} else {
+					$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				}
 			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
 			$this->db->where('department.department_id',$department);
 		}
-		if(!!$unit){
+		if(!!$unit && $unit != "-1"){
 			if($this->input->post('unit')) $unit=$this->input->post('unit');
 			$this->db->select('IF(unit!="",unit,0) unit',false);
 			$this->db->where('patient_visit.unit',$unit);
@@ -3149,7 +3154,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		else{
 			$this->db->select('"0" as unit_id',false);
 		}
-		if(!!$area){
+		if(!!$area && $area != "-1"){
 			if($this->input->post('area')) $area=$this->input->post('area');
 			$this->db->select('IF(area!="",area,0) area',false);
 			$this->db->where('patient_visit.area',$area);
@@ -3179,7 +3184,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		}
 		$this->db->select("hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,
-		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,outcome,final_diagnosis,
+		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,icd_code.code_title,outcome,final_diagnosis,
 		outcome_date,outcome_time",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
@@ -3239,21 +3244,32 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 		else {		
 			if($icdchapter != "-1") {
-				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				if ($icdchapter == "0") {
+					$this->db->where('icd_chapter.chapter_id IS NULL');
+				} else {
+					$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				}
 			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
 			$this->db->where('department.department_id',$department);
 		}
-		if(!!$unit){
+		if(!!$unit && $unit != "-1"){
 			if($this->input->post('unit')) $unit=$this->input->post('unit');
+			$this->db->select('IF(unit!="",unit,0) unit',false);
 			$this->db->where('patient_visit.unit',$unit);
 		}
-		
-		if(!!$area){
+		else{
+			$this->db->select('"0" as unit_id',false);
+		}
+		if(!!$area && $area != "-1"){
 			if($this->input->post('area')) $area=$this->input->post('area');
+			$this->db->select('IF(area!="",area,0) area',false);
 			$this->db->where('patient_visit.area',$area);
+		}
+		else{
+			$this->db->select('"0" as area',false);
 		}
 	
 		if($gender!='0'){

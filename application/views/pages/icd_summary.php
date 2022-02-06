@@ -192,7 +192,7 @@ function handleClick() {
 }
 </script>
 	<?php 
-	$this->input->post('visit_type')?$visit_type = $this->input->post('visit_type'): $visit_type = "0";
+	$this->input->post('visit_type')?$visit_type = $this->input->post('visit_type'): $visit_type = "IP";
 	$from_date=0;$to_date=0;
 	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
 	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
@@ -383,15 +383,31 @@ f									<option value="OP" <?php if($visit_type == "OP") echo " selected ";?>>
 	</thead>
 	<tbody>
 	<?php 
-    $serial_number=1;
+    	$serial_number=1;
 	$total_male=0;
 	$total_female=0;
 	$total=0;
-    $total_discharge=0;
-    $total_lama=0;
-    $total_absconded=0;
-    $total_death=0;
-    $total_unupdated=0;
+    	$total_discharge=0;
+    	$total_lama=0;
+    	$total_absconded=0;
+    	$total_death=0;
+    	$total_unupdated=0;
+    	$department_id=-1; 
+	if($this->input->post('department') && $this->input->post('department')){
+		$department_id=$this->input->post('department');
+	}
+    	$unit=-1; 
+	if($this->input->post('unit') && $this->input->post('unit')){
+		$unit=$this->input->post('unit');
+	}
+	$area=-1; 
+	if($this->input->post('area') && $this->input->post('area')){
+		$unit=$this->input->post('area');
+	}
+	$visit_name=-1;
+	if($this->input->post('visit_name') && $this->input->post('visit_name')){
+		$visit_name=$this->input->post('visit_name');
+	}
 	foreach($report as $s){
 	$filter= "";
 	$val_count = 0;
@@ -400,7 +416,14 @@ f									<option value="OP" <?php if($visit_type == "OP") echo " selected ";?>>
         <td><?php echo $serial_number++;?></td>
          <?php if(!$this->input->post('postback') or $this->input->post('groupbyicdchapter')) { ?>
         	<td><?php echo $s->chapter_id." - ".$s->chapter_title;?></td>
-        	<?php $filter = $s->chapter_id."/-1/-1"; $val_count = $val_count +1;?>
+        	<?php if ($s->chapter_id){
+        	 	$filter = $s->chapter_id."/-1/-1";
+        	 }
+        	 else {
+        	 	$filter = "0/-1/-1"; 
+        	 }
+        	 $val_count = $val_count +1;
+        	 ?>
         <?php } ?>
         <?php if($this->input->post('groupbyicdblock')) { ?>
         	<td><?php echo $s->block_id." - ".$s->block_title;?></td>
@@ -410,18 +433,18 @@ f									<option value="OP" <?php if($visit_type == "OP") echo " selected ";?>>
         	<td><?php echo $s->icd_10." - ".$s->code_title; if($s->icd_10=="") $s->icd_10="-1";?></td>
         	<?php $filter = "-1/-1/".$s->icd_10; $val_count = $val_count +1;?>
         <?php } ?>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type";?>"><?php echo $s->male;?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type";?>"><?php echo $s->female;?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type";?>"><?php echo $s->total;?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type/Discharge";?>"><?php echo $s->total_discharge;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/M/0/0/$from_date/$to_date/$visit_name/$visit_type";?>"><?php echo $s->male;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/F/0/0/$from_date/$to_date/$visit_name/$visit_type";?>"><?php echo $s->female;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/0/0/0/$from_date/$to_date/$visit_name/$visit_type";?>"><?php echo $s->total;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/0/0/0/$from_date/$to_date/$visit_name/$visit_type/Discharge";?>"><?php echo $s->total_discharge;?></td>
         <td class="text-right"><?php echo round(($s->total_discharge/$s->total)*100).'%';?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type/LAMA";?>"><?php echo $s->total_lama;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/0/0/0/$from_date/$to_date/$visit_name/$visit_type/LAMA";?>"><?php echo $s->total_lama;?></td>
         <td class="text-right"><?php echo round(($s->total_lama/$s->total)*100).'%';?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type/Absconded";?>"><?php echo $s->total_absconded;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/0/0/0/$from_date/$to_date/$visit_name/$visit_type/Absconded";?>"><?php echo $s->total_absconded;?></td>
         <td class="text-right"><?php echo round(($s->total_absconded/$s->total)*100).'%';?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type/Death";?>"><?php echo $s->total_death;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/0/0/0/$from_date/$to_date/$visit_name/$visit_type/Death";?>"><?php echo $s->total_death;?></td>
         <td class="text-right"><?php echo round(($s->total_death/$s->total)*100).'%';?></td>
-        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$s->visit_name_id/$visit_type/Unupdated";?>"><?php echo $s->total_unupdated;?></td>
+        <td class="text-right"><a href="<?php echo base_url()."reports/icd_detail/".$filter."/$department_id/$unit/$area/0/0/0/$from_date/$to_date/$visit_name/$visit_type/Unupdated";?>"><?php echo $s->total_unupdated;?></td>
         <td class="text-right"><?php echo round(($s->total_unupdated/$s->total)*100).'%';?></td>
 	</tr>
 	<?php
