@@ -305,7 +305,7 @@ function fnExcelReport() {
 	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
 	?>
 	<div class="row">
-		<h4>ICD Code - Detailed report - <?php echo $visit_type_param;?></h4>	
+		<h4>ICD Code - Detailed report  <?php  if ($visit_type_param!="0"){echo "- ".$visit_type_param;}?></h4>	
 		<?php echo form_open("reports/icd_detail",array('role'=>'form','class'=>'form-custom','id'=>'icd_detail')); ?> 
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
