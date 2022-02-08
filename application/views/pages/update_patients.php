@@ -64,7 +64,7 @@
     	background: #6DF48F;
     	font-weight: bold;
     }
-    .selectize-control {
+    .selectize-inline {
     display: inline-grid;
 }
    /*   .pictures {
@@ -1215,7 +1215,7 @@ function initDistrictSelectize(){
                                      <div class="col-md-8 col-xs-6">
                                         <label class="control-label">Referred by Hospital</label>
                                         <?php if($f->edit==1 && empty($patient->referral_by_hospital_id)){ ?>
-               			<select id="hospital_id" name="referral_by_hospital_id" style="width: 340px;display: inline-grid;" class="" placeholder="       --Enter hospital--                      ">
+               			<select id="hospital_id" class="selectize-inline" name="referral_by_hospital_id" style="width: 340px;" class="" placeholder="       --Enter hospital--                      ">
 					<option value="">        --Enter hospital--                       </option>
                                         </select>
                                         <script>
@@ -2314,7 +2314,7 @@ function initDistrictSelectize(){
 				<?php if(!empty($patient->icd_10)){?>
 					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
 				 <?php } else {?>
-					<select id="icd_code" style="width:367px" class="repositories" placeholder="Search ICD codes" name="icd_code" >
+					<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
 					<?php if(!!$patient->icd_10){ ?>
 						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
 					<?php } ?>
