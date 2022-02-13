@@ -88,9 +88,6 @@ public function helpline(){
 		$this->data['to_number_report']=$this->helpline_model->dashboard('to_number');
 		$this->data['op_ip_report']=$this->helpline_model->dashboard('op_ip');
 		$this->data['duration']=$this->helpline_model->dashboard('duration');
-		$this->data['resolution_status']=$this->helpline_model->dashboard('resolution_status');
-		$this->data['closed_tat']=$this->helpline_model->dashboard('closed_tat');
-		$this->data['open_tat']=$this->helpline_model->dashboard('open_tat');
 		$this->data['caller_type']=$this->helpline_model->get_caller_type();
 		$this->data['call_category']=$this->helpline_model->get_call_category();
 		$this->data['all_hospitals']=$this->staff_model->get_hospital();
