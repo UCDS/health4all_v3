@@ -89,7 +89,7 @@
 									to: 6.5,
 									color: 'rgba(68, 170, 213, .2)'
 								}],
-								categories: [<?php $i=1;foreach($report as $a)  { echo "'".$a->date;if($i<count($report)) echo "' ,"; else echo "'"; $i++; }?>]
+								categories: [<?php $i=1;foreach($report as $a)  { echo "'".$a->datefield;if($i<count($report)) echo "' ,"; else echo "'"; $i++; }?>]
 								},
                         yAxis: {
                             title: {
@@ -205,22 +205,22 @@
                     if($this->input->post('trend_type')){
                         $trend_type=$this->input->post('trend_type');
                         if($trend_type == "Month"){
-                            $date = date("M, Y",strtotime($s->date));
+                            $date = date("M, Y",strtotime($s->datefield));
                         }
                         else if($trend_type == "Year"){
                             $date = $s->date;
                         }
                         else{
-                            $date = date("d-M-Y",strtotime($s->date));
+                            $date = date("d-M-Y",strtotime($s->datefield));
                         }
                     }
                     else{
-                        $date = date("d-M-Y",strtotime($s->date));
+                        $date = date("d-M-Y",strtotime($s->datefield));
                     }
                 
             ?>
             <tr>
-            	<td class="text-right"><?php echo $s->date;?></td>
+            	<td class="text-right"><?php echo $s->datefield;?></td>
 	        	<td class="text-right"><?php echo $s->calls;?></td>
 	        </tr>
             <?php 
