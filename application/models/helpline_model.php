@@ -1158,8 +1158,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->select("DATE_FORMAT(summary_calls.date ,\"%d-%b-%Y\") as datefield",false);
 			$this->db->group_by('datefield');
 		}
-		if($this->input->post('helpline_id')){
-			$this->db->where('summary_calls.helpline',$this->input->post('helpline_id'));
+		if($this->input->post('helpline')){
+			$this->db->where('summary_calls.helpline',$this->input->post('helpline'));
 		}
 		if($this->input->post('call_direction')){
 			$this->db->where('summary_calls.call_direction',$this->input->post('call_direction'));

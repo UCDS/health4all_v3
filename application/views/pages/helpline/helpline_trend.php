@@ -140,11 +140,11 @@
 
         	<?php echo form_open('dashboard/helpline_trend/',array('role'=>'form','class'=>'form-custom')); ?>
 			<div style="position:relative;display:inline;">
-            <span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <select name="helpline_id" style="width:300px" class="form-control">
+            <span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <select name="helpline" style="width:300px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
-					<option value="<?php echo $line->helpline_id;?>"
-					<?php if($this->input->post('helpline_id') == $line->helpline_id) echo " selected "; ?>
+					<option value="<?php echo $line->helpline;?>"
+					<?php if($this->input->post('helpline') == $line->helpline) echo " selected "; ?>
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
 			</select></span>
