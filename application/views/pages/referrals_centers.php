@@ -123,11 +123,9 @@ function getDistrictOptionsState(stateID) {
 			</option>`;
 
 	}	
-function escapeSpecialChars(str) {
-    return str.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
-}
+
 function initHospitalSelectize(){
-	var helpline_hospitals = JSON.parse(escapeSpecialChars('<?php echo json_encode($helpline_hospitals); ?>'));
+	var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
 
 	var selectize = $('#hospital_id').selectize({
 	    valueField: 'hospital_id',
