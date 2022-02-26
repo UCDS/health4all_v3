@@ -351,13 +351,6 @@ class Helpline extends CI_Controller {
 		else show_404();
 	}
 
-	function insert_live_call(){
-		if (!!$this->input->get('CallSid')) {
-			$this->helpline_model->insert_live_call();
-		}
-		else show_404();
-	}
-
 	function search_call_groups(){
 		if($groups = $this->helpline_model->get_call_groups()){
 			$list=array(
