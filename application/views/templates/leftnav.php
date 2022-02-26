@@ -315,13 +315,7 @@
 				</li>
 				<li class="nav-divider"></li>
 
-				<li class="navbar-text">Helpline</li>
-				<li <?php if(preg_match("^helpline/add_call_group^",current_url())) echo 'class="active"';?> >
-					<a href="<?php echo "#"; //echo base_url()."helpline/add_call_group";?>">Add Call Group</a>
-				</li>
-				<li <?php if(preg_match("^helpline/helpline_receivers^",current_url())) echo 'class="active"';?> >
-					<a href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Receivers</a>
-				</li>
+				
 				</ul>
         </div>
 <?php } ?>

@@ -89,6 +89,7 @@ function initUserSelectize(){
 		selectize[0].selectize.setValue($('#user_id').attr("data-previous-value"));
 	}
 }
+</script>
 
 </script>
 <style type="text/css">
@@ -104,6 +105,9 @@ function initUserSelectize(){
     .selectize-control.repositories .selectize-dropdown > div {
 		border-bottom: 1px solid rgba(0,0,0,0.05);
 	}
+textarea {
+  resize: none;
+}
 </style>
 <center>
 	<?php
@@ -232,7 +236,11 @@ function initUserSelectize(){
 					</div>
 				</div>
 				
-				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3" style="height: 100px; overflow-y: auto;overflow-x: hidden;"">
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+				
+				<button type="button" class="btn btn-info" style="margin-bottom:12px" data-toggle="modal" data-target="#addLanguageModal">Add Language</button>
+				<div style="height: 133px; overflow-y: auto;overflow-x: hidden;">
+				
 					<div class="form-horizontal">
 					<table class="table table-bordered table-striped"   id="table-sort" name="language_table_id">
 					<thead style="position: sticky; top: 0; background: #ffff;">
@@ -254,15 +262,17 @@ function initUserSelectize(){
 					</tbody>
 					</table>
 					</div>
+				     </div> 
 				</div> 
-				
+					
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
-					<div class="row">
-		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addLanguageModal">ADD Language</button>
+					<div class="form-horizontal" style="margin-top:20px;">
+					<label for="helpline_receiver_note">Helpline Receiver Note </label> 
+					<textarea rows="6" cols="50" class="form-control" id="helpline_receiver_note" name="helpline_receiver_note"></textarea>
 					</div>
-				</div> 
-				
+				</div>
 			</div>
+			
 		</div>
 		<div class="container">
 			<div class="row">

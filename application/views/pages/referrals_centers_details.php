@@ -5,6 +5,13 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
@@ -66,25 +73,57 @@ $(document).ready(function(){$("#from_date").datepicker({
 			$('#table-sort').trigger('printTable');
 		  });
 });
+
 </script>
 <script type="text/javascript">
+        $(document).ready(function(){
+	// find the input fields and apply the time select to them.
+        $('#from_time').ptTimeSelect();
+	$('#to_time').ptTimeSelect();
+        });
+</script>
+<script type="text/javascript">
+/**
+	 * sends a request to the specified url from a form. this will change the window location.
+	 * @param {string} path the path to send the post request to
+	 * @param {object} params the parameters to add to the url
+	 * @param {string} [method=post] the method to use on the form
+	 */
+
+	function postFromLocation(path, params, method='post') {
+
+	  // The rest of this code assumes you are not using a library.
+	  // It can be made less verbose if you use one.
+	  const form = document.createElement('form');
+	  form.method = method;
+	  form.action = path;
+
+	  for (const key in params) {
+	    if (params.hasOwnProperty(key)) {
+	      const hiddenField = document.createElement('input');
+	      hiddenField.type = 'hidden';
+	      hiddenField.name = key;
+	      hiddenField.value = params[key];
+
+	      form.appendChild(hiddenField);
+	    }
+	  }
+
+	  document.body.appendChild(form);
+	  form.submit();
+	}
 function doPost(page_no){
-	var page_no_hidden = document.getElementById("page_no");
-  	page_no_hidden.value=page_no;
-        $('#appointment').submit();
+	var pathArray = window.location.pathname.split( '/' );
+		if (pathArray.length > 4){
+			postFromLocation(window.location.pathname,{page_no: page_no});
+		}
+		
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
 </script>
-<script type="text/javascript">
-        $(document).ready(function(){
-			// find the input fields and apply the time select to them.
-           $('#from_time').ptTimeSelect();
-			$('#to_time').ptTimeSelect();
-        });
-		
-    </script>
+
 <style type="text/css">
 .page_dropdown{
     position: relative;
@@ -143,69 +182,25 @@ input[type=number] {
     outline: 0;	
 }
 </style>
+
+<style type="text/css">
+	.selectize-control.repositories .selectize-dropdown > div {
+border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.selectize-control {
+display: inline-grid;
+} 
+</style>
+
 	<?php 
-	$from_date=0;$to_date=0;
-	$page_no = 1;	
-	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
-	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
-	$from_time=0;$to_time=0;
-	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
-	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
+	$page_no = 1;
 	?>
-	<div class="row">
-		<h4>Out-Patient Detailed report</h4>	
-		<?php echo form_open("reports/op_detail_2",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
-		 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
-					From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
-					To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-	                From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
-                   To Time:<input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" id="to_time" size="7px"/>
-					
-					<select name="department" id="department" class="form-control">
-					<option value="">Department</option>
-					<?php 
-					foreach($all_departments as $dept){
-						echo "<option value='".$dept->department_id."'";
-						if($this->input->post('department') && $this->input->post('department') == $dept->department_id) echo " selected ";
-						echo ">".$dept->department."</option>";
-					}
-					?>
-					</select>
-					<select name="unit" id="unit" class="form-control" >
-					<option value="">Unit</option>
-					<?php 
-					foreach($units as $unit){
-						echo "<option value='".$unit->unit_id."' class='".$unit->department_id."'";
-						if($this->input->post('unit') && $this->input->post('unit') == $unit->unit_id) echo " selected ";
-						echo ">".$unit->unit_name."</option>";
-					}
-					?>
-					</select>
-					<select name="area" id="area" class="form-control" >
-					<option value="">Area</option>
-					<?php 
-					foreach($areas as $area){
-						echo "<option value='".$area->area_id."' class='".$area->department_id."'";
-						if($this->input->post('area') && $this->input->post('area') == $area->area_id) echo " selected ";
-						echo ">".$area->area_name."</option>";
-					}
-					?>
-					</select>
-					<select name="visit_name" id="visit_name" class="form-control" >
-					<option value="">Visit Type</option>
-					<?php 
-					foreach($visit_names as $v){
-						echo "<option value='".$v->visit_name_id."'";
-						if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id) echo " selected ";
-						echo ">".$v->visit_name."</option>";
-					}
-					?>
-					</select>
-					  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
-		</form>
-	<br />
-	<?php if(isset($report) && count($report)>0){ ?>
+
+<h4>Referrals Center - Detail</h4>	
+		
+
+<?php if(isset($report) && count($report)>0)
+{ ?>
 <div style='padding: 0px 2px;'>
 
 <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
@@ -335,33 +330,32 @@ echo "</select></li>";
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
-		<button type="button" class="btn btn-default btn-md print">
-		  <span class="glyphicon glyphicon-print"></span> Print
-		</button>
+	
+
+
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th>SNo</th>
 		<th>Patient ID</th>
-		<th>OP No.</th>
-		<th>Institution ID</th>
-		<th>Date</th>
-		<th>Time</th>
-		<th>Name</th>
-		<th>Gender</th>
-		<th>Age</th>
-		<th>Relative</th>
-		<th>Place</th>
+		<th>Patient ID Manual</th>
+		<th>OP/IP No</th>
+		<th>Registered Time</th>
+		<th>PatientInfo</th>
+		<th>Address</th>
 		<th>Phone</th>
-		<th>ID Proof</th>
-		<th>ID Proof Number</th>
 		<th>Department</th>
-		<th>Unit/ Area</th>
-		<th>MLC Number</th>
+    		<th>Visit Type</th>
+    		<th>Referred From</th>
+    		<th>MLC Number</th>
+    		<th>Final Diagnosis</th>
+    		<th>ICD Code</th>
+    		<th>Appointment Status</th>
+		
 	</thead>
 	<tbody>
 	<?php 
-	//$total_count=0;
-	$sno=(($page_no - 1) * $total_records_per_page)+1;
+	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
+	
 	foreach($report as $s){
 		$age="";
 		if(!!$s->age_years) $age.=$s->age_years."Y ";
@@ -370,35 +364,28 @@ echo "</select></li>";
 		if($s->age_days==0 && $s->age_months==0 && $s->age_years==0) $age.="0D";
 	?>
 	<tr>
-		<td><?php echo $sno++;?></td>
+		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
-		<td><?php echo $s->hosp_file_no;?></td>
 		<td><?php echo $s->patient_id_manual;?></td>
-		<td><?php echo date("j M Y", strtotime("$s->admit_date"));?></td>
-		<td><?php echo date("h:i A.", strtotime("$s->admit_time"));?></td>
-		<td><?php echo $s->name;?></td>
-		<td><?php echo $s->gender;?></td>
-		<td><?php echo $age;?></td>
-		<td><?php echo $s->parent_spouse;?></td>
-		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;?></td>
+		<td><?php echo $s->hosp_file_no;?></td>
+		<td><?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
+		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
+		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
+		if (!!$s->district) echo "<br/>, ".$s->district." District";
+		if (!!$s->state) echo ", ".$s->state;   ?></td>
 		<td><?php echo $s->phone;?></td>
-		<td><?php echo $s->id_proof_type; ?></td>
-		<td><?php echo $s->id_proof_number; ?></td>
 		<td><?php echo $s->department;?></td>
-		<td>
-			<?php echo $s->unit_name;
-				if(!!$s->unit_name && !!$s->area_name) echo  "/ ";
-				echo $s->area_name;
-			?>
-		</td>	
-		<td><?php echo $s->mlc_number; ?></td>
-		<!--<p>if($s->mlc_number_manual=='') else echo// $s->mlc_number_manual;</p>-->
-		</tr>
-	<?php
-	//$total_count++;
-	}
-	?>
-	
+		<td><?php echo $s->visit_name;?></td>	
+		
+		<td><?php echo $s->hospital_referral_by;?></td>
+		<td><?php echo $s->mlc_number;?></td>	
+		<td><?php echo $s->final_diagnosis;?></td>
+		<td><?php echo $s->pv_icd_code." - ".$s->code_title;?></td>
+		<td><?php echo $s->appointment_status;?></td>
+		
+		
+	</tr>
+	<?php $sno++;}	?>
 	</tbody>
 	</table>
 <div style='padding: 0px 2px;'>
@@ -504,8 +491,10 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 	}
 echo "</select></li>";
 } ?>
-</ul>	
+</ul>
 	<?php } else { ?>
+	
 	No patient registrations on the given date.
-	<?php } ?>
-	</div>
+<?php }  ?>
+</div>	
+  

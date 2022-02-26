@@ -414,7 +414,21 @@ class Reports_model extends CI_Model{
 		return $resource->result();
 	}
 
-function get_op_detail_with_idproof(){
+function get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$from_date,$to_date,$default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
@@ -481,11 +495,75 @@ function get_op_detail_with_idproof(){
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP')
 		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		$this->db->limit($rows_per_page,$start);	
 		$resource=$this->db->get();
 		return $resource->result();
 	}
 	
-	
+	function get_op_detail_with_idproof_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date){		
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		}
+		else{
+			$this->db->where("(admit_time BETWEEN '00:00' AND '23:59')");
+		}
+		if($this->input->post('visit_name')){
+			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
+		}
+		if($this->input->post('department')){
+			$this->db->where('patient_visit.department_id',$this->input->post('department'));
+		}
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('patient_visit.unit',$this->input->post('unit'));
+		}
+		
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('patient_visit.area',$this->input->post('area'));
+		}
+		
+
+		$this->db->select("count(*) as count",false);
+		 $this->db->from('patient_visit')
+		 ->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('id_proof_type','patient.id_proof_type_id=id_proof_type.id_proof_type_id','left')
+		 ->join('mlc','mlc.visit_id=patient_visit.visit_id','left')
+		 ->join('department','patient_visit.department_id=department.department_id','left')
+		 ->join('unit','patient_visit.unit=unit.unit_id','left')
+		 ->join('area','patient_visit.area=area.area_id','left')
+		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
+		 ->where('visit_type','OP')
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");	
+		$resource=$this->db->get();
+		return $resource->result();
+	}
 	
 	function get_helpline_doctor(){
 		$hospital=$this->session->userdata('hospital');
@@ -655,6 +733,341 @@ sum(case when patient_sub.gender='M' then 1 else 0 end) as male,
 sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner_query."  GROUP by patient_sub.state,patient_sub.district",false);		 			
 		return $query->result();
 	}
+	function get_referrals_centers(){		
+		
+	        $inner_query = "(select pv.patient_id,hospital.hospital_id as hospital_id ,hospital.type1 as type1 ,ifnull(hospital.hospital_short_name,'NA') as hospital_short_name,ifnull(hospital.hospital,'Not Assigned') as hospital,p.gender,state.state as state,state.state_id as state_id,district.district as district,district.district_id as district_id from patient_visit pv join patient p on pv.patient_id=p.patient_id left join hospital on pv.referral_by_hospital_id=hospital.hospital_id left join district on hospital.district_id = district.district_id left join state on district.state_id=state.state_id where ";
+	        $date_filter_field="Registration";
+		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
+			$date_filter_field="Appointment";
+		}	
+		$inner_query = $inner_query . " 1=1 ";
+		$hospital_refer = $this->input->post('hospital');		
+		if($hospital_refer){
+			$inner_query = $inner_query . " AND pv.referral_by_hospital_id=".$hospital_refer;	
+		}
+		
+		$hospital=$this->session->userdata('hospital');
+		if($hospital){
+			$inner_query = $inner_query . "  AND pv.hospital_id=".$hospital['hospital_id'];
+			
+		}
+		
+		
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		
+		if($this->input->post('visittype')){
+				//$this->db->where('patient.district_id',$this->input->post('district'));
+				$inner_query = $inner_query . " AND pv.visit_type='".$this->input->post('visittype')."'";
+		}
+		else{
+			$inner_query = $inner_query . " AND pv.visit_type='OP'";
+		}
+		if($this->input->post('district')){
+				//$this->db->where('patient.district_id',$this->input->post('district'));
+				$inner_query = $inner_query . " AND hospital.district_id=".$this->input->post('district');
+		}
+		
+		if($this->input->post('state')){
+				//$this->db->where('state.state_id',$this->input->post('state'));
+				$inner_query = $inner_query . " AND state.state_id=".$this->input->post('state');
+		}
+		if($date_filter_field=="Registration"){
+		 	$inner_query = $inner_query ." AND (pv.admit_date BETWEEN '$from_date' AND '$to_date') AND ". "(pv.admit_time BETWEEN '$from_time' AND '$to_time') "; 
+		} 
+		else if($date_filter_field=="Appointment"){
+			$inner_query = $inner_query . "AND (pv.appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp') ";
+		}
+		
+		if($this->input->post('visit_name')){
+			//$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
+			$inner_query = $inner_query . " AND pv.visit_name_id=".$this->input->post('visit_name');
+		}
+		if($this->input->post('department')){
+			//$this->db->where('pv.department_id',$this->input->post('department'));
+			$inner_query = $inner_query . " AND pv.department_id=".$this->input->post('department');
+		}
+		if($this->input->post('unit')){
+			//$this->db->where('pv.unit',$this->input->post('unit'));
+			$inner_query = $inner_query . " AND pv.unit=".$this->input->post('unit');
+		}
+		
+		if($this->input->post('area')){
+			//$this->db->where('pv.area',$this->input->post('area'));
+			$inner_query = $inner_query . " AND pv.area=".$this->input->post('area');
+		}
+		
+		$inner_query = $inner_query . " ) as patient_sub ";
+		$query= $this->db->query("select patient_sub.hospital_id,patient_sub.hospital_short_name,patient_sub.hospital,patient_sub.type1,patient_sub.state,patient_sub.district,patient_sub.state_id,patient_sub.district_id,
+sum(case when 1 then 1 else 0 end) as total,
+sum(case when patient_sub.gender='0' then 1 else 0 end) as not_specified,
+sum(case when patient_sub.gender='O' then 1 else 0 end) as others,
+sum(case when patient_sub.gender='M' then 1 else 0 end) as male,
+sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner_query."  GROUP by patient_sub.hospital_id",false);		 			
+		return $query->result();
+	}
+	function get_referrals_centers_detail_count($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$district_id,$state_id,$default_rowsperpage){
+		
+	     
+	        $date_filter_field="Registration";
+		if($date_filter_field_param){
+			$date_filter_field=$date_filter_field_param;
+		}
+			
+		if($hospital_param !=-1){
+			$this->db->where('pv.referral_by_hospital_id',$hospital_param);	
+		}else if($hospital_param ==0) {
+			$this->db->where('pv.referral_by_hospital_id',0);
+		}
+		
+			
+	
+		$hospital=$this->session->userdata('hospital');
+		if($hospital){
+			$this->db->where('pv.hospital_id',$hospital['hospital_id']);				
+		}
+
+		if($from_date_param && $to_date_param){
+			$from_date=date("Y-m-d",strtotime($from_date_param));
+			$to_date=date("Y-m-d",strtotime($to_date_param));
+		}
+		else if($from_date_param || $to_date_param){
+			$from_date_param?$from_date=$from_date_param:$from_date=$to_date_param;
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+               $to_time = '23:59';
+	       $from_time = '00:00';
+		
+		if($date_filter_field=="Registration"){
+			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+			$this->db->order_by('admit_date','ASC');
+		 	$this->db->order_by('admit_time','ASC'); 
+		 
+		} 
+		else if($date_filter_field=="Appointment"){
+			$this->db->where("(appointment_time IS NOT NULL)");				
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+			$this->db->order_by('UNIX_TIMESTAMP(appointment_time)','ASC');
+		}
+		
+		if($visit_name != -1){
+			$this->db->where('pv.visit_name_id',$visit_name);			
+		}
+		if($department != -1){
+			$this->db->where('pv.department_id',$department );			
+		}
+		if($unit != -1){
+			$this->db->where('pv.unit',$unit);			
+		}
+		
+		if($area !=-1){
+			$this->db->where('pv.area',$area);
+		}
+		
+		if($gender !=-1){
+			$this->db->where('p.gender',$gender);
+		}
+		
+		
+		if($district_id != -1 && $district_id!=""){
+			$this->db->where('hospital_referral_by_district.district_id',$district_id );				
+		}
+		
+		if($district_id==""){
+			$this->db->where('hospital_referral_by_district.district_id IS NULL');
+			
+		}
+		
+		if($state_id != -1 && $state_id!=""){
+			$this->db->where('hospital_referral_by_state.state_id',$state_id);
+				
+		}
+		
+	
+		
+		$this->db->select("count(*) as count" ,false);
+		 $this->db->from('patient_visit as pv')
+		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
+		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('area','pv.area=area.area_id','left')
+		 ->join('icd_code','pv.icd_10=icd_code.icd_code','left')
+		 ->join('visit_name','pv.visit_name_id=visit_name.visit_name_id','left')
+		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
+		 ->join('mlc','pv.visit_id=mlc.visit_id','left')
+		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('hospital as hospital_referral_by','pv.referral_by_hospital_id=hospital_referral_by.hospital_id','left')
+		 ->join('district as hospital_referral_by_district','hospital_referral_by.district_id=hospital_referral_by_district.district_id','left')
+		 ->join('state as hospital_referral_by_state','hospital_referral_by_district.state_id=hospital_referral_by_state.state_id','left');
+		$this->db->where('pv.visit_type',$visittype);		
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	
+	function get_referrals_centers_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$district_id,$state_id,$default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+	
+		}
+		
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		
+	      
+	        $date_filter_field="Registration";
+		if($date_filter_field_param){
+			$date_filter_field=$date_filter_field_param;
+		}
+			
+		if($hospital_param !=-1){
+			$hospital_refer = $hospital_param;
+			$this->db->where('pv.referral_by_hospital_id',$hospital_param);	
+		}else if($hospital_param ==0) {
+			$this->db->where('pv.referral_by_hospital_id',0);
+		}
+			
+		$hospital=$this->session->userdata('hospital');
+		if($hospital){
+			$this->db->where('pv.hospital_id',$hospital['hospital_id']);				
+		}
+		
+
+		if($from_date_param && $to_date_param){
+			$from_date=date("Y-m-d",strtotime($from_date_param));
+			$to_date=date("Y-m-d",strtotime($to_date_param));
+		}
+		else if($from_date_param || $to_date_param){
+			$from_date_param?$from_date=$from_date_param:$from_date=$to_date_param;
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+               $to_time = '23:59';
+	       $from_time = '00:00';
+		
+		if($date_filter_field=="Registration"){
+			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+			$this->db->order_by('admit_date','ASC');
+		 	$this->db->order_by('admit_time','ASC'); 
+		 
+		} 
+		else if($date_filter_field=="Appointment"){
+			$this->db->where("(appointment_time IS NOT NULL)");				
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+			$this->db->order_by('UNIX_TIMESTAMP(appointment_time)','ASC');
+		}
+		
+		if($visit_name != -1){
+			$this->db->where('pv.visit_name_id',$visit_name);			
+		}
+		if($department != -1){
+			$this->db->where('pv.department_id',$department );			
+		}
+		if($unit != -1){
+			$this->db->where('pv.unit',$unit);			
+		}
+		
+		if($area !=-1){
+			$this->db->where('pv.area',$area);
+		}
+		
+		if($gender !=-1){
+			$this->db->where('p.gender',$gender);
+		}
+		if($district_id != -1 && $district_id!=""){
+			$this->db->where('hospital_referral_by_district.district_id',$district_id );				
+		}
+		
+		if($district_id==""){
+			$this->db->where('hospital_referral_by_district.district_id IS NULL');
+			
+		}
+		
+		if($state_id != -1 && $state_id!=""){
+			$this->db->where('hospital_referral_by_state.state_id',$state_id);
+				
+		}
+		
+		
+	
+		
+		$this->db->select("p.patient_id,p.patient_id_manual, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) as name,department.department,
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) as parent_spouse, age_years, age_months, age_days,pv.hosp_file_no,p.phone,p.address,state.state,district.district,hospital.hospital_short_name as referred_to,hospital_referral_by.hospital_short_name as hospital_referral_by,mlc_number,pv.final_diagnosis,pv.icd_10 as pv_icd_code,icd_code.code_title,pv.appointment_status_id,aps.appointment_status,p.place, p.phone,visit_name.visit_name,admit_date, admit_time" ,false);
+		 $this->db->from('patient_visit as pv')
+		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
+		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('area','pv.area=area.area_id','left')
+		 ->join('icd_code','pv.icd_10=icd_code.icd_code','left')
+		 ->join('visit_name','pv.visit_name_id=visit_name.visit_name_id','left')
+		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
+		 ->join('mlc','pv.visit_id=mlc.visit_id','left')
+		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('hospital as hospital_referral_by','pv.referral_by_hospital_id=hospital_referral_by.hospital_id','left')
+		 ->join('district as hospital_referral_by_district','hospital_referral_by.district_id=hospital_referral_by_district.district_id','left')
+		 ->join('state as hospital_referral_by_state','hospital_referral_by_district.state_id=hospital_referral_by_state.state_id','left');
+		$this->db->where('pv.visit_type',$visittype);
+		$this->db->limit($rows_per_page,$start);			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
 	function get_referrals_detail($date_filter_field_param,$visittype,$visit_name,$department,$unit,$area,$gender,$hospitalsearchtype_param,$hospital_param,$from_date_param,$to_date_param,$district_id,$state_id,$default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
@@ -664,10 +1077,13 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		}
 		if($this->input->post('rows_per_page')) {
 			$rows_per_page = $this->input->post('rows_per_page');
+		
 		}
 		else{
 			$rows_per_page = $default_rowsperpage;
+	
 		}
+		
 		$start = ($page_no -1 )  * $rows_per_page;
 		
 		
@@ -925,7 +1341,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	function get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param){
+	function get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$hospital){
 		
 		if($login_status != -1){
 			$this->db->where('is_success', $login_status);
@@ -953,36 +1369,39 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_timestamp = $to_date." ".$to_time;
 			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");	
 	   	
-	   	} else {
-	   			//Report for day or month or year.
-			if($trend_type !=-1){
-				$dateValue = strtotime($datefilter); 
-                        	if($trend_type=="Month"){
-                        		$val = date("m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
-                        	}
-                        	else if($trend_type=="Year"){
-                        		$val = date("Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
-                        	}
-                        	else{
-                        		$val = date("d-m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
-                        	}
-		  	}
-                 	else{
-                 
-                  		$val = date("d-m-Y", $dateValue); 
-                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);                	
-                 	}
-	   		
-	   	}		
+	   	}
+	   	//Report for day or month or year.
+		if($trend_type !=-1){
+			$dateValue = strtotime($datefilter); 
+                        if($trend_type=="Month"){
+                        	$val = date("m-Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
+                        }
+                        else if($trend_type=="Year"){
+                        	$val = date("Y", $dateValue); 
+                        	$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
+                        }
+                        else{
+                        	$val = date("d-m-Y", $dateValue); 
+                   		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
+                      	}
+		}
+               
+	   	if($hospital!=-1){
+			$this->db->where("hospital.hospital_id",$hospital);
+		}	
+	   			
 		$this->db->select("count(*) as count",false);
-		$this->db->from("user_signin");			
+		$this->db->from("user_signin")
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
+		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");			
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	function get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$default_rowsperpage){
+	function get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date_param,$to_date_param,$default_rowsperpage,$hospital){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -1023,42 +1442,417 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_timestamp = $to_date." ".$to_time;
 			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");	
 	   	
-	   	} else {
-	   			//Report for day or month or year.
-			if($trend_type !=-1){
-				$dateValue = strtotime($datefilter); 
-                        	if($trend_type=="Month"){
-                        		$val = date("m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
-                        	}
-                        	else if($trend_type=="Year"){
-                        		$val = date("Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
-                        	}
-                        	else{
-                        		$val = date("d-m-Y", $dateValue); 
-                            		$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
-                        	}
-		  	}
-                 	else{
-                 
-                  		$val = date("d-m-Y", $dateValue); 
-                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);                	
-                 	}
+	   	} 
+	   	//Report for day or month or year.
+		if($trend_type !=-1){
+			$dateValue = strtotime($datefilter); 
+                        if($trend_type=="Month"){
+                        	$val = date("m-Y", $dateValue); 
+                        	$this->db->where("DATE_FORMAT(signin_date_time,'%m-%Y')",$val);
+                        }
+                        else if($trend_type=="Year"){
+                        	$val = date("Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%Y')",$val);
+                        }
+                        else{
+                        	$val = date("d-m-Y", $dateValue); 
+                            	$this->db->where("DATE_FORMAT(signin_date_time,'%d-%m-%Y')",$val);
+                        }
+		  }
 	   		
-	   	}		
+	   	if($hospital!=-1){
+			$this->db->where("hospital.hospital_id",$hospital);
+		}
+				
 		$this->db->select("user_signin.username as username,CONCAT(staff.first_name,'  ',staff.last_name) as name, (case when staff.gender = 'M' then 'Male' when staff.gender = 'F' then 'Female' when staff.gender = 'O' then 'Others' end) as gender,hospital.hospital_short_name as hospital,department.department,signin_date_time,(case when is_success = 1 then 'Success' else 'Failed' end) as status,details",false);
 		$this->db->from("user_signin")
-		->join('user','user_signin.username = user.username','left')
-		->join('staff','user.staff_id = staff.staff_id','left')
-		->join('hospital','staff.hospital_id = hospital.hospital_id','left')
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
 		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
 		$this->db->limit($rows_per_page,$start);
 		$this->db->order_by('UNIX_TIMESTAMP(signin_date_time)','ASC');			
 		$resource=$this->db->get();
 		return $resource->result();
 	}
+	
+	function get_appointment_slot_count(){
+	
+		
+		
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+                
+		
+		$this->db->where("(date BETWEEN '$from_date' AND '$to_date')");
+		
+		
+		
+		if($this->input->post('visit_name')){
+			$this->db->where('aps.visit_name_id',$this->input->post('visit_name'));
+		}
+		if($this->input->post('department')){
+			$this->db->where('aps.department_id',$this->input->post('department'));
+		}
+		
+	        $hospital=$this->session->userdata('hospital');
+		if(!!$hospital){
+			$this->db->where('hospital.hospital_id',$hospital['hospital_id']);
+		}
+		
+		$this->db->select("count(*) as count",false);
+		$this->db->from('appointment_slot as aps');
+		$this->db->join('department as d','aps.department_id=d.department_id','left');
+		$this->db ->join('hospital','d.hospital_id=hospital.hospital_id','left');		
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	
+	
+	function get_appointment_slot($default_rowsperpage){
+	
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+                
+		
+		$this->db->where("(date BETWEEN '$from_date' AND '$to_date')");
+		
+		
+		
+		if($this->input->post('visit_name')){
+			$this->db->where('aps.visit_name_id',$this->input->post('visit_name'));
+		}
+		if($this->input->post('department')){
+			$this->db->where('aps.department_id',$this->input->post('department'));
+		}
+		
+		$hospital=$this->session->userdata('hospital');
+		
+		$this->db->where('hospital.hospital_id',$hospital['hospital_id']);
+		
+		
+		$taken_appointments = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time) as taken_appointments";
+		$default_appointment_status_add = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id=pv.hospital_id)) as default_appointment_status_add";
+		$default_appointment_status_remove = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=2 and appointment_status.hospital_id=pv.hospital_id)) as default_appointment_status_remove";
+		$this->db->select("aps.slot_id,aps.date,aps.from_time,aps.to_time,aps.department_id,aps.visit_name_id,aps.appointment_update_by,aps.appointment_update_time,
+		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit, ".$taken_appointments.", ".$default_appointment_status_add.",".$default_appointment_status_remove,false);
+		 $this->db->from('appointment_slot as aps')
+		 ->join('department as d','aps.department_id=d.department_id','left')
+		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
+		 ->join('staff','aps.appointment_update_by=staff.staff_id','left')
+		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left');
+		 $this->db->order_by('aps.department_id','ASC');
+		 $this->db->order_by('aps.visit_name_id','ASC');
+		 $this->db->order_by('aps.date','ASC');
+		 $this->db->order_by('aps.from_time','ASC');	
+		 $this->db->order_by('aps.to_time','ASC');
+		 $this->db->limit($rows_per_page,$start);		
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	
+	
+	
+	
 	function get_registration_appointment($default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		
+	        
+	        $date_filter_field="Registration";
+		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
+			$date_filter_field="Appointment";
+		}	
+					
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}		
+		if($this->input->post('myactivity')) {		
+			if($date_filter_field=="Appointment") {
+				$this->db->where('pv.appointment_update_by',$this->session->userdata('logged_in')['staff_id']);
+			}else if($date_filter_field=="Registration") {
+				$this->db->where("p.insert_by_user_id",$this->session->userdata('logged_in')['user_id']);		
+			}		
+		}			
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		
+		if($date_filter_field=="Registration"){
+			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+			$this->db->order_by('admit_date','ASC');
+		 	$this->db->order_by('admit_time','ASC');
+		} 
+		else if($date_filter_field=="Appointment"){
+			$this->db->where("(appointment_time IS NOT NULL)");				
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+			$this->db->order_by('UNIX_TIMESTAMP(appointment_time)','ASC');
+		}
+		
+		if($this->input->post('visit_name')){
+			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
+		}
+		if($this->input->post('department')){
+			$this->db->where('pv.department_id',$this->input->post('department'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('p.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('patientid')){
+			$this->db->like('p.patient_id',$this->input->post('patientid'));
+		}
+		
+		if($this->input->post('opno')){
+			$this->db->like('pv.hosp_file_no',$this->input->post('opno'));
+		}
+		
+		if($this->input->post('manualid')){
+			$this->db->like('p.patient_id_manual',$this->input->post('manualid'));
+		}		
+		
+		
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('pv.unit',$this->input->post('unit'));
+		}
+		else{
+			$this->db->select('"0" as unit',false);
+		}
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('pv.area',$this->input->post('area'));
+		}
+		else{
+			$this->db->select('"0" as area',false);
+		}
+
+		$this->db->select("p.patient_id,p.patient_id_manual,p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
+		p.place, p.phone, pvd.department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
+		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
+		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
+		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
+		pv.appointment_time as appointment_date_time,pv.appointment_status_update_time,
+		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
+		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
+		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
+		appointment_update_time,
+		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,
+		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id",false);
+		 $this->db->from('patient_visit as pv')
+		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
+		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('area','pv.area=area.area_id','left')
+		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
+		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
+		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
+		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
+		 ->join('department as sd_doctor', 'doctor.department_id=sd_doctor.department_id','left')
+		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
+		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')	
+		 ->join('staff as appointment_status_update_by_staff','pv.appointment_status_update_by=appointment_status_update_by_staff.staff_id','left')
+		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
+		 ->where('pv.hospital_id',$hospital['hospital_id'])
+		 ->where('visit_type','OP');
+		$this->db->limit($rows_per_page,$start);			
+		$resource=$this->db->get();
+		return $resource->result();
+	}	
+	
+	function get_registration_appointment_count(){
+	        $date_filter_field="Registration";
+		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
+			$date_filter_field="Appointment";
+		}
+				
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}		
+		if($this->input->post('myactivity')) {		
+			if($date_filter_field=="Appointment") {
+				$this->db->where('pv.appointment_update_by',$this->session->userdata('logged_in')['staff_id']);
+			}else if($date_filter_field=="Registration") {
+				$this->db->where("p.insert_by_user_id",$this->session->userdata('logged_in')['user_id']);		
+			}		
+		}	
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		
+		if($date_filter_field=="Registration"){
+			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+			$this->db->where("(admit_time BETWEEN '$from_time' AND '$to_time')");
+		} 
+		else if($date_filter_field=="Appointment"){
+			$this->db->where("(appointment_time IS NOT NULL)");				
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		}
+		
+		if($this->input->post('visit_name')){
+			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
+		}
+		if($this->input->post('department')){
+			$this->db->where('pv.department_id',$this->input->post('department'));
+		}
+		if($this->input->post('unit')){			
+			$this->db->where('pv.unit',$this->input->post('unit'));
+		}
+		
+		if($this->input->post('area')){			
+			$this->db->where('pv.area',$this->input->post('area'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('p.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('patientid')){
+			$this->db->like('p.patient_id',$this->input->post('patientid'));
+		}
+		
+		if($this->input->post('manualid')){
+			$this->db->like('p.patient_id_manual',$this->input->post('manualid'));
+		}		
+		
+		if($this->input->post('opno')){
+			$this->db->like('pv.hosp_file_no',$this->input->post('opno'));
+		}
+		
+		$this->db->select("count(*) as count",false);
+		 $this->db->from('patient_visit as pv')
+		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
+		 ->join('department','pv.department_id=department.department_id','left')
+		 ->join('unit','pv.unit=unit.unit_id','left')
+		 ->join('area','pv.area=area.area_id','left')
+		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
+		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
+		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
+		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
+		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
+		 ->join('staff as appointment_status_update_by_staff','pv.appointment_status_update_by=appointment_status_update_by_staff.staff_id','left')
+		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
+		 ->where('pv.hospital_id',$hospital['hospital_id'])
+		 ->where('visit_type','OP');			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	
+	function get_op_detail_3($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -1153,14 +1947,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		p.place, p.phone, pvd.department, admit_date, admit_time, CONCAT(doctor.first_name, ' ', doctor.last_name) as doctor, 
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
 		IF(pv.signed_consultation=0, CONCAT(appointment_with.first_name, ' ', appointment_with.last_name), '') as appointment_with,
-		IF(pv.signed_consultation=0, '', pv.summary_sent_time) as summary_sent_time,
-		pv.appointment_time as appointment_date_time,pv.appointment_status_update_time,
 		IF(pv.signed_consultation=0, DATE(appointment_time), '') as appointment_date,
 		IF(pv.signed_consultation=0, TIME(appointment_time), '') as appointment_time,
-		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
-		appointment_update_time,
-		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,
-		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name",false);
+		pv.signed_consultation as signed,district.district,state.state,vn.visit_name,pv.visit_name_id,pv.decision,pv.final_diagnosis",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
@@ -1172,12 +1961,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
 		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
 		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
-		 ->join('department as sd_doctor', 'doctor.department_id=sd_doctor.department_id','left')
-		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
-		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')	
-		 ->join('staff as appointment_status_update_by_staff','pv.appointment_status_update_by=appointment_status_update_by_staff.staff_id','left')
-		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
+		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');
@@ -1186,7 +1971,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		return $resource->result();
 	}	
 	
-	function get_registration_appointment_count(){
+	function get_op_detail_3_count(){
 	        $date_filter_field="Registration";
 		if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
 			$date_filter_field="Appointment";
@@ -1254,26 +2039,23 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->select("count(*) as count",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
 		 ->join('district','p.district_id=district.district_id','left')
 		 ->join('state','district.state_id=state.state_id','left')
-		 ->join('department','pv.department_id=department.department_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
 		 ->join('area','pv.area=area.area_id','left')
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
 		 ->join('staff as doctor','pv.signed_consultation=doctor.staff_id','left')
 		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
-		 ->join('staff as appointment_update_by','pv.appointment_update_by=appointment_update_by.staff_id','left')	 
+		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
-		 ->join('staff as appointment_status_update_by_staff','pv.appointment_status_update_by=appointment_status_update_by_staff.staff_id','left')
-		 ->join('appointment_status aps','pv.appointment_status_id=aps.id','left')	
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');			
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	
 	
 	function get_appointment_status($default_rowsperpage){
 		if ($this->input->post('page_no')) {
@@ -1570,11 +2352,13 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->order_by('UNIX_TIMESTAMP(pv1.appointment_time)','ASC');
 		
 		$extraWhere = "";
+		$extraSlotWhere = "";
 		if($this->input->post('visit_name')){
 			$this->db->where('pv1.visit_name_id',$this->input->post('visit_name'));
 			$this->db->where("pv1.visit_name_id is not null");
 			$this->db->where("pv1.visit_name_id != ",0);	
-			$extraWhere = $extraWhere ." AND pv2.visit_name_id=pv1.visit_name_id";		
+			$extraWhere = $extraWhere ." AND pv2.visit_name_id=pv1.visit_name_id";
+			$extraSlotWhere = $extraSlotWhere ." AND aps.visit_name_id=pv1.visit_name_id";		
 		}
 		
 		if($this->input->post('appointment_status_id')){
@@ -1598,8 +2382,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$extraWhere = $extraWhere ." AND pv2.area=pv1.area ";
 		}
 		
-
-		$this->db->select("(select count(*) as patient_count from patient_visit pv2 where pv2.department_id=pv1.department_id and DATE(pv2.appointment_time)=DATE(pv1.appointment_time) ". $extraWhere . ") as patient_count  , DATE(pv1.appointment_time) as appointment_date,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id",false);
+		$slots_alloted = "(Select sum(appointments_limit) from appointment_slot aps where aps.department_id = pv1.department_id and aps.date = ifnull(date(pv1.appointment_time),'')  ". $extraSlotWhere .") as slots_alloted";
+		
+		$this->db->select("DATE(pv1.appointment_time) as appointment_date, COUNT(*) AS patient_count, 
+SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count_add,SUM(CASE WHEN aps.is_default =  2 THEN 1 ELSE 0 END) AS default_status_count_remove,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id, ".$slots_alloted,false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
 		 ->join('department d','pv1.department_id=d.department_id','left')
@@ -1611,8 +2397,328 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->group_by(array("DATE(pv1.appointment_time)", "pv1.department_id"));			
 		$resource=$this->db->get();
 		return $resource->result();
-	}	
+	}
 	
+	function get_appointment_summary_by_staff(){		
+	       	
+					
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+                if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		
+	
+		$this->db->where("(pv1.appointment_time IS NOT NULL)");				
+		$from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(pv1.appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		$this->db->order_by('UNIX_TIMESTAMP(pv1.appointment_time)','ASC');
+		
+		$extraWhere = "";
+		$extraSlotWhere = "";
+		if($this->input->post('visit_name')){
+			$this->db->where('pv1.visit_name_id',$this->input->post('visit_name'));
+			$this->db->where("pv1.visit_name_id is not null");
+			$this->db->where("pv1.visit_name_id != ",0);	
+			$extraWhere = $extraWhere ." AND pv2.visit_name_id=pv1.visit_name_id";
+			$extraSlotWhere = $extraSlotWhere ." AND aps.visit_name_id=pv1.visit_name_id";		
+		}
+		
+		if($this->input->post('appointment_status_id')){
+			$this->db->where('pv1.appointment_status_id',$this->input->post('appointment_status_id'));
+			$extraWhere = $extraWhere  ." AND pv2.appointment_status_id=pv1.appointment_status_id";
+		}			
+		
+		if($this->input->post('department')){
+			$this->db->where('pv1.department_id',$this->input->post('department'));			
+		}
+		
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('pv1.unit',$this->input->post('unit'));
+			$extraWhere = $extraWhere ." AND pv2.unit=pv1.unit ";
+		}
+		
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('pv1.area',$this->input->post('area'));
+			$extraWhere = $extraWhere ." AND pv2.area=pv1.area ";
+		}
+		
+	
+		
+		$this->db->select("CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by, COUNT(*) AS patient_count, 
+SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",false);
+		 $this->db->from('patient_visit as pv1')
+		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
+		 ->join('staff as appointment_update_by','pv1.appointment_update_by=appointment_update_by.staff_id','left')	 
+		 ->join('unit','pv1.unit=unit.unit_id','left')
+		 ->join('area','pv1.area=area.area_id','left')
+		 ->join('appointment_status aps','pv1.appointment_status_id=aps.id','left')		
+		 ->where('pv1.hospital_id',$hospital['hospital_id'])
+		 ->where('pv1.visit_type','OP');
+		$this->db->group_by("pv1.appointment_update_by");			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+	
+		
+	function validate_appointment_slot(){
+	
+	$this->db->select('count(*) as count');
+        $this->db->from('appointment_slot');
+        
+        if($this->input->post('department_id')){
+            $this->db->where('department_id',$this->input->post('department_id'));
+        }
+        else {
+        	return 4;
+        }
+ 
+        if($this->input->post('visit_name_id')){
+            $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+        }
+        else {
+        	return 0;
+        }
+        if($this->input->post('appointment_time')){
+            $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+            $this->db->where('date',$date);
+        }
+        else {
+        	return 5;
+        }
+       
+        $query = $this->db->get();
+        $result = $query->result_array();
+        if ($result[0]['count'] > 0){
+        	$this->db->select('appointments_limit as appointments_limit,from_time as from_time,to_time as to_time');
+        	$this->db->from('appointment_slot');
+        
+		$this->db->where('department_id',$this->input->post('department_id'));
+		
+		
+		$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+		
+		
+		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+		$time = date("H:i:s", strtotime($this->input->post('appointment_time')));
+		$this->db->where('date',$date);
+		$this->db->where('from_time <=',$time);
+		$this->db->where('to_time >=',$time);
+		
+		$query = $this->db->get();
+        	$result = $query->result_array();
+        	if (count($result)==1){
+        		$appointments_limit = $result[0]['appointments_limit'];
+        		$from_time = $result[0]['from_time'];
+        		$to_time = $result[0]['to_time'];
+        		
+        		$this->db->select('count(*) as count',false);
+        		$this->db->from('patient_visit');
+        
+			
+			$this->db->where('department_id',$this->input->post('department_id'));
+			
+			
+			$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+			
+			
+			$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+			$from_timestamp = $date." ".$from_time;
+			$to_timestamp = $date." ".$to_time;
+
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+			$this->db->where("(ifnull(appointment_status_id,'') not in (select id from appointment_status where is_default=2 and hospital_id=(select hospital_id from department where department_id=". $this->input->post('department_id').") ) )"); 
+        		$query = $this->db->get();
+        		$result = $query->result_array();
+        		$appoints_taken = $result[0]['count'];
+        		
+        		$operation="add";
+        		$curr_appointment_time="";
+        		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
+        		$this->db->from('patient_visit');
+        		 if($this->input->post('visit_id')){
+            			$this->db->where('visit_id',$this->input->post('visit_id'));
+        		}
+        		else {
+        			return 1;
+        		}
+        				
+			
+			
+        		$query = $this->db->get();
+        		$result = $query->result_array();
+        		if (count($result) > 0) {
+				$curr_appointment_time = $result[0]['appointment_time'];
+				$department_id = $result[0]['department_id'];
+				$visit_name_id = $result[0]['visit_name_id'];
+				//echo("<script>console.log('from_timestamp: " . $from_timestamp . "');</script>");
+				//echo("<script>console.log('curr_appointment_time: " . $curr_appointment_time . "');</script>");
+				//echo("<script>console.log('to_timestamp: " . $to_timestamp . "');</script>");
+				if($curr_appointment_time!=""){
+					if( strtotime($curr_appointment_time) >= strtotime($from_timestamp) && strtotime($curr_appointment_time)<= strtotime($to_timestamp) && $department_id==$this->input->post('department_id') && $visit_name_id==$this->input->post('visit_name_id'))
+					{
+						$operation="update";	
+					}
+				}
+        		}
+        		//echo("<script>console.log('operation: " . $operation . "');</script>");
+        		
+        		if($appoints_taken < $appointments_limit) {
+        			return 0;
+        		}
+        		else{
+        			if ($operation=="update"){
+        				return 0;
+        			}
+        			else {
+        				return 3;
+        			}
+        		}
+        	}
+        	else {
+        		return 2;
+        	}
+      		
+      	}
+       else{
+       
+        	return 0;
+        }
+        
+    	}
+	function add_appointment_slot(){
+	
+	$this->db->select('count(*) as count');
+        $this->db->from('appointment_slot');
+        
+        $appointment_info = array();
+        
+        if($this->input->post('department')){
+            $appointment_info['department_id'] = $this->input->post('department');
+            $this->db->where('department_id',$this->input->post('department'));
+        }
+        if($this->input->post('visit')){
+            $appointment_info['visit_name_id'] = $this->input->post('visit');
+            $this->db->where('visit_name_id',$this->input->post('visit'));
+        }
+        if($this->input->post('date')){
+            $date = date("Y-m-d", strtotime($this->input->post('date')));
+            $appointment_info['date'] =  $date;
+            $this->db->where('date',$date);
+        }
+        $from_time_filter = '';
+        if($this->input->post('from_time')){
+            $from_time = date("H:i:s", strtotime($this->input->post('from_time')));
+            $from_time_filter = $from_time_filter ." (from_time >= '". $from_time."'";
+            $from_time_filter = $from_time_filter ."  or to_time >= '".$from_time."')";
+            $appointment_info['from_time'] = $from_time;
+        }
+        $to_time_filter = '';        
+        if($this->input->post('to_time')){
+            $to_time = date("H:i:s", strtotime($this->input->post('to_time')));
+            $to_time_filter = $to_time_filter ." (from_time <= '". $to_time."'";
+            $to_time_filter = $to_time_filter ."  or to_time <= '".$to_time."')";
+            $appointment_info['to_time'] = $to_time;
+        }
+        $this->db->where('( '.$from_time_filter. ' and '.$to_time_filter.')');
+        $query = $this->db->get();
+        $result = $query->result_array();
+      	if ($result[0]['count'] > 0){
+      		return 2;
+      	}
+       
+        if($this->input->post('appointments')){
+            $appointment_info['appointments_limit'] = $this->input->post('appointments');
+        }
+        
+        
+	$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+	$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+        $this->db->trans_start();
+        $this->db->insert('appointment_slot',$appointment_info);
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+                return 1;              
+        	}
+        else{
+                return 0;
+        	} 
+    	}
+    	function update_appointment_slot(){
+    	$appointment_info = array();
+        if($this->input->post('slot_id')){
+           $this->db->where('slot_id', $this->input->post('slot_id'));
+        }
+        else {
+        	return true;
+        }
+        if($this->input->post('appointments_limit')){
+            $appointment_info['appointments_limit'] = $this->input->post('appointments_limit');
+        }
+        $appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+	$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+        $this->db->trans_start();
+        $this->db->update('appointment_slot',$appointment_info);
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+                return false;
+                
+        	}
+        else{
+                return true;
+        	} 
+    	}
+    	
+    	function delete_appointment_slot(){
+        if($this->input->post('slot_id')){
+           $this->db->where('slot_id', $this->input->post('slot_id'));
+        }
+        else {
+        	return true;
+        }
+       
+        $this->db->trans_start();
+        $this->db->delete('appointment_slot');
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+                return false;
+                
+        	}
+        else{
+                return true;
+        	} 
+    	}
+    	
 	function update_appointment(){
         $appointment_info = array();
         if($this->input->post('department_id')){
@@ -1635,6 +2741,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
+                
         	}
         else{
                 return true;
@@ -2026,15 +3133,20 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
 		else {		
+			
 			if($icdchapter != "-1") {
-				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				if ($icdchapter == "0") {
+					$this->db->where('icd_chapter.chapter_id IS NULL');
+				} else {
+					$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				}
 			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
 			$this->db->where('department.department_id',$department);
 		}
-		if(!!$unit){
+		if(!!$unit && $unit != "-1"){
 			if($this->input->post('unit')) $unit=$this->input->post('unit');
 			$this->db->select('IF(unit!="",unit,0) unit',false);
 			$this->db->where('patient_visit.unit',$unit);
@@ -2042,7 +3154,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		else{
 			$this->db->select('"0" as unit_id',false);
 		}
-		if(!!$area){
+		if(!!$area && $area != "-1"){
 			if($this->input->post('area')) $area=$this->input->post('area');
 			$this->db->select('IF(area!="",area,0) area',false);
 			$this->db->where('patient_visit.area',$area);
@@ -2072,7 +3184,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		}
 		$this->db->select("hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,
-		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,outcome,final_diagnosis,
+		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,icd_code.code_title,outcome,final_diagnosis,
 		outcome_date,outcome_time",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
@@ -2132,21 +3244,32 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 		else {		
 			if($icdchapter != "-1") {
-				$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				if ($icdchapter == "0") {
+					$this->db->where('icd_chapter.chapter_id IS NULL');
+				} else {
+					$this->db->where('icd_chapter.chapter_id',$icdchapter);
+				}
 			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
 			$this->db->where('department.department_id',$department);
 		}
-		if(!!$unit){
+		if(!!$unit && $unit != "-1"){
 			if($this->input->post('unit')) $unit=$this->input->post('unit');
+			$this->db->select('IF(unit!="",unit,0) unit',false);
 			$this->db->where('patient_visit.unit',$unit);
 		}
-		
-		if(!!$area){
+		else{
+			$this->db->select('"0" as unit_id',false);
+		}
+		if(!!$area && $area != "-1"){
 			if($this->input->post('area')) $area=$this->input->post('area');
+			$this->db->select('IF(area!="",area,0) area',false);
 			$this->db->where('patient_visit.area',$area);
+		}
+		else{
+			$this->db->select('"0" as area',false);
 		}
 	
 		if($gender!='0'){
@@ -2614,6 +3737,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                        $this->db->group_by('date(signin_date_time)');                  	
                  }
                
+		if($this->input->post('hospital')){
+			$this->db->where("hospital.hospital_id",$this->input->post('hospital'));
+		}
 		
 		$from_timestamp = $from_date." ".$from_time;
 		$to_timestamp = $to_date." ".$to_time;
@@ -2624,7 +3750,12 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		SUM(CASE WHEN 1 THEN 1 ELSE 0 END) 'total',
           SUM(CASE WHEN is_success = 1  THEN 1 ELSE 0 END) 'no_of_success',
            SUM(CASE WHEN is_success = 0  THEN 1 ELSE 0 END) 'no_of_un_success',
-		");
+		")	
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
+		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
 		$this->db->from('user_signin');
 		$resource=$this->db->get();
 		return $resource->result();

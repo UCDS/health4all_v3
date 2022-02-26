@@ -10,6 +10,7 @@ class Helpline extends CI_Controller {
 		$this->load->model('hospital_model');
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
+		$this->config->load('callandsms');
 		$user_id=$userdata['user_id'];
 		$this->data['hospitals']=$this->staff_model->user_hospital($user_id);
 		$this->data['functions']=$this->staff_model->user_function($user_id);
@@ -19,7 +20,7 @@ class Helpline extends CI_Controller {
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
 		$this->data['sms_templates']=$this->helpline_model->get_sms_templates();	
 	}
-
+	
 	function detailed_report(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();
@@ -87,6 +88,83 @@ class Helpline extends CI_Controller {
 		}
 		else show_404();
 	}
+	
+	function completed_calls_report(){
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		$add_sms_access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="completed_calls_report"){
+					$access=1;
+			}
+		}
+		
+		
+		if($access==1){
+			$this->load->helper('form');
+			$this->load->library('form_validation');
+			$user=$this->session->userdata('logged_in');
+			$this->data['user_id']=$user['user_id'];
+			$this->data['title']="Completed Calls Report";		
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
+			$this->load->view('templates/header',$this->data);	 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+			$this->data['calls']=$this->helpline_model->get_completed_calls_report($this->data['rowsperpage']);
+			$this->data['calls_count']=$this->helpline_model->get_completed_calls_report_count();
+	   		$this->data['helpline']=$this->helpline_model->get_helpline("report");
+			$this->load->view('pages/helpline/completed_calls_report',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else show_404();
+	}
+	
+	function missed_calls_report(){
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$access=0;
+		$add_sms_access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="missed_calls_report"){
+					$access=1;
+			}
+		}
+		
+		
+		if($access==1){
+			$this->load->helper('form');
+			$this->load->library('form_validation');
+			$user=$this->session->userdata('logged_in');
+			$this->data['user_id']=$user['user_id'];
+			$this->data['title']="Missed Calls Report";		
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
+			$this->load->view('templates/header',$this->data);	 
+		 	foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+			$this->data['calls']=$this->helpline_model->get_missed_calls_report($this->data['rowsperpage']);
+			$this->data['calls_count']=$this->helpline_model->get_missed_calls_report_count();
+	   		$this->data['helpline']=$this->helpline_model->get_helpline("report");
+			$this->load->view('pages/helpline/missed_calls_report',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else show_404();
+	}
+	
 	function sms_detailed_report(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();
@@ -364,15 +442,50 @@ class Helpline extends CI_Controller {
 
 	function helpline_receivers(){
 		if($this->session->userdata('logged_in')){
-			$this->load->helper('form');
-			$this->data['title']="User Helpline Receivers";
-			$this->data['userdata']=$this->session->userdata('logged_in');
-			$this->data['user_functions']=$this->staff_model->get_user_function();
-			$this->data['receivers'] = $this->helpline_model->getHelplineReceivers();
-			$this->load->view('templates/header',$this->data);
-			$this->load->view('templates/leftnav',$this->data);			
-			$this->load->view('pages/helpline_receiver_list',$this->data);
-			$this->load->view('templates/footer');
+			$access=0;
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="helpline_receiver"){
+					$access=1;
+					if($function->add=="1"){
+						$this->data['helpline_receiver_add']=1;
+					}
+					else{
+						$this->data['helpline_receiver_add']=0;
+					}
+					
+					if($function->edit=="1"){
+						$this->data['helpline_receiver_edit']=1;					
+					}
+					else{
+						$this->data['helpline_receiver_edit']=0;
+						
+					}
+					break;
+				}
+			}
+			if($access==1){
+				$this->load->helper('form');
+				$this->data['title']="User Helpline Receivers";
+				$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+			 	foreach($this->data['defaultsConfigs'] as $default){		 
+			 	if($default->default_id=='pagination'){
+			 			$this->data['rowsperpage'] = $default->value;
+			 			$this->data['upper_rowsperpage']= $default->upper_range;
+			 			$this->data['lower_rowsperpage']= $default->lower_range;
+			 		}
+				}
+				$this->data['helpline']=$this->helpline_model->get_helpline("report");
+				$this->data['userdata']=$this->session->userdata('logged_in');
+				$this->data['user_functions']=$this->staff_model->get_user_function();
+				$this->data['report_count'] = $this->helpline_model->getHelplineReceiversCount();
+				$this->data['receivers'] = $this->helpline_model->getHelplineReceivers(array('default_rowsperpage' => $this->data['rowsperpage']));
+				$this->load->view('templates/header',$this->data);			
+				$this->load->view('pages/helpline_receiver_list',$this->data);
+				$this->load->view('templates/footer');
+			}
+			else{
+				show_404();
+			}
 		}
 		else{
 			show_404();
@@ -396,61 +509,73 @@ class Helpline extends CI_Controller {
 		if($access != 1){
 			show_404();
 		}*/
-		
-		$this->load->helper('form');										
-		$this->load->library('form_validation'); 							
-		$this->data['title']="Add Helpline Receiver";										
-		$this->load->view('templates/header', $this->data);				
-		$this->load->view('templates/leftnav');	
-		$config=array(
-           array( 'field'   => 'full_name', 'label'   => 'Full Name', 'rules'   => 'required|trim|xss_clean' ),
-           array( 'field'   => 'short_name', 'label'   => 'Short Name', 'rules'   => 'required|trim|xss_clean' ),
-           array( 'field'   => 'email', 'label'   => 'Email', 'rules'   => 'required|trim|xss_clean' ),
-           array( 'field'   => 'category', 'label'   => 'Category', 'rules'   => 'required|trim|xss_clean' ),
-           array( 'field'   => 'app_id', 'label'   => 'App ID', 'rules'   => 'trim|xss_clean' )
-		);
-		if(!$receiver_id){
-			$config[] = array( 'field'   => 'phone', 'label'   => 'Phone', 'rules'   => 'required|trim|xss_clean' );
-		}
-		$this->form_validation->set_rules($config);
-
-		$this->data['users']=$this->masters_model->get_users();
-		$this->data['helplines']=$this->helpline_model->get_helplines();
-		$this->data['proficiency']=$this->helpline_model->get_proficiency();
-		$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
-		$this->data['languages']=$this->helpline_model->get_helpline_languages($receiver_id);
-		$this->data['count_languages']= count($this->data['receiver_languages']);	
-		$existing_receivers = false;
-		if($this->input->post('phone')){
-			$this->data['receivers_exists_msg'] = "The receiver with this phone already exists";
-			$this->data['receivers'] = $existing_receivers = $this->helpline_model->getHelplineReceivers(array('phone' => $this->input->post('phone')));
-			if($existing_receivers){
-				$this->load->view('pages/helpline_receiver_list', $this->data);
-			}
-        }
-
-        if(!$existing_receivers){
-			if($this->form_validation->run()===FALSE) {	
-
-			} else {
-				if($this->helpline_model->save_helpline_receiver($receiver_id)){
-				$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
-					$this->data['msg']="Helpline Receiver Saved Succesfully";					
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="helpline_receiver"){				
+				if($function->edit=="1" || $function->add=="1"){
+						$access=1;					
 				}
+				break;
 			}
-        }
+		}
+		if($access==1){
+			$this->load->helper('form');										
+			$this->load->library('form_validation'); 							
+			$this->data['title']="Add Helpline Receiver";										
+			$this->load->view('templates/header', $this->data);					
+			$config=array(
+		   array( 'field'   => 'full_name', 'label'   => 'Full Name', 'rules'   => 'required|trim|xss_clean' ),
+		   array( 'field'   => 'short_name', 'label'   => 'Short Name', 'rules'   => 'required|trim|xss_clean' ),
+		   array( 'field'   => 'email', 'label'   => 'Email', 'rules'   => 'required|trim|xss_clean' ),
+		   array( 'field'   => 'category', 'label'   => 'Category', 'rules'   => 'required|trim|xss_clean' ),
+		   array( 'field'   => 'app_id', 'label'   => 'App ID', 'rules'   => 'trim|xss_clean' )
+			);
+			if(!$receiver_id){
+				$config[] = array( 'field'   => 'phone', 'label'   => 'Phone', 'rules'   => 'required|trim|xss_clean' );
+			}
+			$this->form_validation->set_rules($config);
 
-        $this->data['submitLink'] = "helpline/helpline_receivers_form";
-        $this->data['usersList'] = array();
-        if($receiver_id){
-        	$helpline_receiver = $this->helpline_model->getHelplineReceiverById($receiver_id)[0];
-        	$this->data['edit_data'] = json_encode(['helpline_receiver' => $helpline_receiver, 'helpline_receiver_link' => $this->helpline_model->getHelplineReceiverLinksById($receiver_id), 'userList' => $this->staff_model->search_staff_user("", $helpline_receiver->user_id)]);
-        	$this->data['submitLink'] = "helpline/helpline_receivers_form/" . $receiver_id;
-        }
+			$this->data['users']=$this->masters_model->get_users();
+			$this->data['helplines']=$this->helpline_model->get_helplines();
+			$this->data['proficiency']=$this->helpline_model->get_proficiency();
+			$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
+			$this->data['languages']=$this->helpline_model->get_helpline_languages($receiver_id);
+			$this->data['count_languages']= count($this->data['receiver_languages']);	
+			$existing_receivers = false;
+			if($this->input->post('phone')){
+				$this->data['receivers_exists_msg'] = "The receiver with this phone already exists";
+				$this->data['receivers'] = $existing_receivers = $this->helpline_model->getHelplineReceivers(array('phone' => $this->input->post('phone')));
+				if($existing_receivers){
+					$this->load->view('pages/helpline_receiver_list', $this->data);
+				}
+		}
 
-		$this->load->view('pages/helpline_receiver_form',$this->data);							
-		$this->load->view('templates/footer');								
-    }	
+		if(!$existing_receivers){
+				if($this->form_validation->run()===FALSE) {	
+
+				} else {
+					if($this->helpline_model->save_helpline_receiver($receiver_id)){
+					$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
+						$this->data['msg']="Helpline Receiver Saved Succesfully";					
+					}
+				}
+		}
+
+		$this->data['submitLink'] = "helpline/helpline_receivers_form";
+		$this->data['usersList'] = array();
+		if($receiver_id){
+			$helpline_receiver = $this->helpline_model->getHelplineReceiverById($receiver_id)[0];
+			$this->data['edit_data'] = json_encode(['helpline_receiver' => $helpline_receiver, 'helpline_receiver_link' => $this->helpline_model->getHelplineReceiverLinksById($receiver_id), 'userList' => $this->staff_model->search_staff_user("", $helpline_receiver->user_id)]);
+			$this->data['submitLink'] = "helpline/helpline_receivers_form/" . $receiver_id;
+		}
+
+			$this->load->view('pages/helpline_receiver_form',$this->data);							
+			$this->load->view('templates/footer');								
+    	}
+    	else{
+            	show_404(); 													
+            } 
+        }	
 
 	function search_staff_user(){
 		if($results = $this->staff_model->search_staff_user($this->input->post('query'))){			
@@ -479,19 +604,21 @@ class Helpline extends CI_Controller {
 
 	function initiate_call(){
 
-		// TODO: TO BE MOVED TO config/exotel.php  <---- HAD TO PLACE BELOW AS CONFIG LOADING WAS NOT WORKING...
-		/*$api_key = $this->config->item('exotel_api_key');
-		$api_token = $this->config->item('exotel_api_token');
+		$api_key = $this->config->item('exotel_call_api_key');
+		$api_token = $this->config->item('exotel_call_api_token');
 		$account_sid = $this->config->item('exotel_account_sid');
 		$account_subdomain = $this->config->item('exotel_account_subdomain');
-		$call_type = $this->config->item('exotel_call_type');*/
-		$api_key = '';
-		$api_token = '';
-		$account_sid = '';
-		$account_subdomain = 'api.exotel.com';
-		$call_type = 'trans';
-
-
+		$call_type = $this->config->item('exotel_call_type');
+		//$api_key = '';
+		//$api_token = '';
+		//$account_sid = '';
+		//$account_subdomain = 'api.exotel.com';
+		//$call_type = 'trans';
+		//echo("<script>console.log('Call: " . $api_key . "');</script>");
+		//echo("<script>console.log('Call: " . $api_token . "');</script>");
+		//echo("<script>console.log('Call: " . $account_sid . "');</script>");
+		//echo("<script>console.log('Call: " . $account_subdomain . "');</script>");
+		//echo("<script>console.log('Call: " . $call_type . "');</script>");
 		$from = $this->input->post('from');
 		$app_url = 'http://my.exotel.in/exoml/start/' . $this->input->post('app_id');
 		$calledId = $this->input->post('called_id');
@@ -540,10 +667,21 @@ class Helpline extends CI_Controller {
 			'DltEntityId' => $dltEntityId,
 			'DltTemplateId'=>$dlttid
 		);
-		$api_key="";
-		$api_token =  "";
-		$account_sid = "";
-		$account_subdomain = 'api.exotel.com';
+		
+		$api_key = $this->config->item('exotel_sms_api_key');
+		$api_token = $this->config->item('exotel_sms_api_token');
+		$account_sid = $this->config->item('exotel_account_sid');
+		$account_subdomain = $this->config->item('exotel_account_subdomain');
+		//echo("<script>console.log('SMS: " . $api_key . "');</script>");
+		//echo("<script>console.log('SMS: " . $api_token . "');</script>");
+		//echo("<script>console.log('SMS: " . $account_sid . "');</script>");
+		//echo("<script>console.log('SMS: " . $account_subdomain . "');</script>");
+
+		
+		//$api_key="";
+		//$api_token =  "";
+		//$account_sid = "";
+		//$account_subdomain = 'api.exotel.com';
 		
 		$url = "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Sms/send";	  
 		$ch = curl_init();
@@ -628,7 +766,8 @@ class Helpline extends CI_Controller {
 
 			if ($this->input->post('rows_per_page')) {
 				// The submit for the current search has been entered.
-				$this->data['report'] = $this->helpline_model->get_helpline_session_report();
+				$this->data['report_count'] = $this->helpline_model->get_helpline_session_report_count();
+				$this->data['report'] = $this->helpline_model->get_helpline_session_report($this->data['rowsperpage']);
 			}
 			else {
 			// $this->data['report'] = $this->helpline_model->get_helpline_session_report();
@@ -680,6 +819,8 @@ class Helpline extends CI_Controller {
 					$this->data['lower_rowsperpage']= $default->lower_range;
 				}
 			}
+			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id,$this->data['rowsperpage'] );
+			$this->data['report_count'] = $this->helpline_model->get_helpline_receiver_report_count($helpline_session_id);
 			if ($this->input->post('helpline_update_session_plan_id')) {
 				if($this->input->post('helpline_session_plan_operation') && $this->input->post('helpline_session_plan_operation') == "Edit") {
 					$this->helpline_model->update_helpline_session_plan_id($this->input->post('helpline_update_session_plan_id'));

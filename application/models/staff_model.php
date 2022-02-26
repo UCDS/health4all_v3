@@ -2,6 +2,7 @@
 class Staff_model extends CI_Model{
 	function __construct(){
 		parent::__construct();
+		$this->config->load('ipinfo');
 	}
 	//login() accepts the username and password, searches the database for match and if found, returns the 
 	//query result else returns false
@@ -94,7 +95,8 @@ class Staff_model extends CI_Model{
     		foreach ($browser_array as $regex => $value)
         	if (preg_match($regex, $user_agent))
             		$browser = $value;
-            	$token = '84d9300a2bfb6a';
+            	$token = $this->config->item('ipinfo_api_token');
+            	//echo("<script>console.log('IP Info: " . $token . "');</script>");
             	$details = "IP Address: ".$ipaddress;
 		$details = $details.", Browser: ".$browser;
 		$details = $details.", OS: ".$os_platform;
@@ -152,7 +154,7 @@ class Staff_model extends CI_Model{
 	function user_hospital($user_id = false){
 		if(!!$user_id)
 			$this->db->where('user_hospital_link.user_id',$user_id);
-		$this->db->select("hospital.hospital_id,hospital,hospital_short_name,description,place,district.district,state.state,logo,telehealth,helpline.helpline as helpline,helpline.note as helpline_note,CONCAT(hospital_short_name,' - ',place,' - ',district.district,' - ',state.state) as customdata",false)->from('user')
+		$this->db->select("hospital.hospital_id,hospital,hospital_short_name,description,place,district.district,state.state,logo,telehealth,helpline.helpline as helpline,helpline.note as helpline_note,CONCAT(hospital,' - ',hospital_short_name,IFNULL(CONCAT(' - ',place),''),IFNULL(CONCAT(' - ',district.district ),''),IFNULL(CONCAT(' - ',state.state),'')) as customdata",false)->from('user')
 		->join('user_hospital_link','user.user_id=user_hospital_link.user_id')
 		->join('hospital','user_hospital_link.hospital_id=hospital.hospital_id')	
 		->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
@@ -374,11 +376,22 @@ class Staff_model extends CI_Model{
 		else return true;
 	}
 	//get_visit_name() selects the visit names from the database and returns the result
-	function get_visit_name(){
-		$hospital = $this->session->userdata('hospital');
-		$this->db->where('hospital_id',$hospital['hospital_id']);
+	function get_visit_name($all=0){
+		if($all==0){
+			$hospital = $this->session->userdata('hospital');
+			$this->db->where('hospital_id',$hospital['hospital_id']);
+		}
+		else {
+			$userdata=$this->session->userdata('logged_in');        
+                    	$user_id=$userdata['user_id'];  
+                    	$this->db->where('user.user_id',$user_id);
+                    	$this->db->join('hospital','hospital.hospital_id=visit_name.hospital_id');
+                    	$this->db->join('user_hospital_link','user_hospital_link.hospital_id=hospital.hospital_id');
+                    	$this->db->join('user','user.user_id=user_hospital_link.user_id');
+					
+		}
 		$this->db->where('inuse',1);
-		$this->db->select("visit_name_id,visit_name")->from("visit_name");
+		$this->db->select("visit_name.hospital_id,visit_name_id,visit_name")->from("visit_name");
 		$query=$this->db->get();
 		return $query->result();
 	}
@@ -695,16 +708,58 @@ class Staff_model extends CI_Model{
 		return $query->result();
 	}
 
-	function get_user() {
+	function get_user($default_rowsperpage=0) {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		if($this->input->post('phone')){
+			$this->db->like('staff.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('staff_user_name')){
+			$this->db->like('lower(user.username)',strtolower($this->input->post('staff_user_name')));
+		}
 		$this->db->select("staff.staff_id,staff.hospital_id, staff.designation, 
 		staff.first_name, staff.last_name,
 		user.user_id, user.username, staff.phone")
 			->from("user")
 			->join("staff", "user.staff_id = staff.staff_id");
+		if($default_rowsperpage!=0){
+			$this->db->limit($rows_per_page,$start);
+		}	
 		$query=$this->db->get();
 		return $query->result();
 	}
 
+	function get_user_count() {
+		
+		
+		if($this->input->post('phone')){
+			$this->db->like('staff.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('staff_user_name')){
+			$this->db->like('lower(user.username)',strtolower($this->input->post('staff_user_name')));
+		}
+		$this->db->select("count(*) as count")
+			->from("user")
+			->join("staff", "user.staff_id = staff.staff_id");
+		$query=$this->db->get();
+		return $query->result();
+	}
+	
+	
 	function get_prescription_frequency(){
 
 		$this->db->select("frequency")

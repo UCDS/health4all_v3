@@ -186,3 +186,41 @@ CREATE TABLE `user_signin` ( `id` INT NOT NULL AUTO_INCREMENT , `username` VARCH
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'login_report', 'Login Report', 'To check whether user having access for Login Activity Report');
 
 ALTER TABLE `appointment_status` ADD `is_default` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Stores whether the status is default or not' AFTER `appointment_status`;
+
+CREATE TABLE `appointment_slot` (
+ `slot_id` int(11) NOT NULL AUTO_INCREMENT,
+ `date` date NOT NULL,
+ `from_time` time NOT NULL,
+ `to_time` time NOT NULL,
+ `department_id` int(11) NOT NULL,
+ `visit_name_id` int(11) NOT NULL,
+ `appointments_limit` int(11) NOT NULL,
+ `appointment_update_by` int(50) NOT NULL,
+ `appointment_update_time` datetime NOT NULL,
+ PRIMARY KEY (`slot_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_slot', 'appointment_slot', 'Access for Appointment slot');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'completed_calls_report', 'Completed Calls Report', 'Access for completed calls report');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'missed_calls_report', 'Missed Calls Report', 'Access for missed calls report');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'appointment_by_staff', 'Appointment by staff', 'Access for Appointment by staff');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'dashboard', 'Dashboard', 'Access for dashboards');
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'patient_location_report', 'Patient Location Report', 'Access for District wise summary report');
+
+ALTER TABLE `helpline_receiver` ADD `helpline_receiver_note` VARCHAR(250) NULL COMMENT 'To save helpline receiver note' AFTER `activity_status`;
+
+ALTER TABLE `helpline_receiver` CHANGE `helpline_receiver_note` `helpline_receiver_note` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT 'To save helpline receiver note';
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'helpline_receiver', 'Helpline Receiver', 'Access for Helpline Receiver');
+
+ALTER TABLE `appointment_status` CHANGE `is_default` `is_default` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Stores whether the status can be considered in effective appointment (1) or not (2) otherwise value would be zero';
+
+ALTER TABLE `helpline_resolution_status` ADD `helpline_id` INT NULL AFTER `note`;
+
+ALTER TABLE `helpline_resolution_status` ADD `status` TINYINT NULL AFTER `helpline_id`;
+

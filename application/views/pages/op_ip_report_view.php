@@ -159,7 +159,13 @@ $(function(){
 
   }
 
-			
+function handleClick() {
+	var groupbystate = document.getElementById("groupbystate");
+	var groupbydistrict = document.getElementById("groupbydistrict");
+	if ( !groupbystate.checked && !groupbydistrict.checked ) {
+		groupbystate.checked = true;
+	}
+}
 
 </script>
 <script type="text/javascript">
@@ -316,6 +322,22 @@ $(function(){
 						
 					</div> 
 			</div>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-2">
+						<?php if(!$this->input->post('postback')) { ?>
+							<input type="checkbox" id="groupbystate" name="groupbystate" value="1" checked onclick="handleClick();">
+						<?php } else { ?>
+							<input type="checkbox" id="groupbystate" name="groupbystate" value="1" <?php if($this->input->post('groupbystate')) echo "checked"; ?> onclick="handleClick();">
+						<?php }  ?>
+						<label for="groupbystate"> Group by State</label><br>
+					</div>
+					<div class="col-md-2">
+						<input type="checkbox" id="groupbydistrict" name="groupbydistrict" value="1" <?php if($this->input->post('groupbydistrict')) echo "checked"; ?> onclick="handleClick();">
+						<label for="groupbydistrict"> Group by District</label><br>
+					</div>
+				</div>
+			</div>
 	<div class="container" style="padding-top:20px;">
 		<div class="row">
 				<div class="col-md-2">
@@ -368,8 +390,12 @@ $(function(){
 				<thead>
 					<tr>
 						<th style="text-align:center" rowspan="2">S.no</th>
-						<th style="text-align:center" rowspan="2">State</th>
-						<th style="text-align:center" rowspan="2">District</th>
+						<?php if($this->input->post('groupbystate')) { ?>
+							<th style="text-align:center" rowspan="2">State</th>
+						<?php } ?>
+						<?php if($this->input->post('groupbydistrict')) { ?>
+							<th style="text-align:center" rowspan="2">District</th>
+						<?php } ?>
 						<th style="text-align:center" colspan="3"><=14 Years</th>
 						<th style="text-align:center" colspan="3">14 to 30 Years</th>
 						<th style="text-align:center" colspan="3">30 to <60 Years</th>
@@ -403,12 +429,19 @@ $(function(){
 				$total_female=0;
 				$total=0;
 				foreach($report as $s){
+					$val_count = 0;
 				?>
 				<tr>
 							<!--data is retrieved from database to the html table-->
 					<td><?php echo $s_no++; ?></td>
-					<td><?php echo $s->state; ?></td>
-					<td><?php echo $s->district; ?></td>					
+					<?php if($this->input->post('groupbystate')) { ?>
+						<td><?php echo $s->state; ?></td>
+						<?php $val_count = $val_count +1;?>
+					<?php } ?>
+					<?php if($this->input->post('groupbydistrict')) { ?>
+						<td><?php echo $s->district; ?></td>
+						<?php $val_count = $val_count +1;?>
+					<?php } ?>
 					<td class="text-right"><?php echo $s->mchild;?></td>
 					<td class="text-right"><?php echo $s->fchild;?></td>
 					<td class="text-right"><?php echo $s->child;?></td>
@@ -445,9 +478,10 @@ $(function(){
 				}
 				?>
 					<tfoot>
-						<th></th>
-						<th></th>
 						<th>Total </th>
+						<?php for ($i = 0; $i < $val_count; $i++) {
+							echo "<th></th>";
+						} ?>
 						<th class="text-right" ><?php echo $total_mchild;?></th>
 						<th class="text-right" ><?php echo $total_fchild;?></th>
 						<th class="text-right" ><?php echo $total_child;?></th>

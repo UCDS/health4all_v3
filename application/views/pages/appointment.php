@@ -5,7 +5,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
-
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
@@ -76,11 +76,42 @@ $(document).ready(function(){$("#from_date").datepicker({
 
 </script>
 <script type="text/javascript">
-        $(document).ready(function(){
-	// find the input fields and apply the time select to them.
-        $('#from_time').ptTimeSelect();
-	$('#to_time').ptTimeSelect();
-        });
+$(document).ready(function(){
+// find the input fields and apply the time select to them.
+$('#from_time').ptTimeSelect();
+$('#to_time').ptTimeSelect();
+});
+function submit_appointment(e) {
+	e.preventDefault();
+	var event_prop = e;
+	var visitid=$(event_prop.target).data('visitid');
+	var doctor=$(event_prop.target).data('doctor');
+	var formName = "submit_appointment_"+visitid;
+	if (doctor.length ==0 ){		
+		var form =  document.getElementById(formName);
+		var data = new FormData(form);
+		target = '<?php echo base_url();?>reports/validate_appointment_slot';
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: target,
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			success: function (data) {
+				   $('#'+formName).submit();
+			},
+			error: function (error) {  
+				   bootbox.alert(error.responseJSON.Message);
+				}
+			});
+	}else {
+	
+		 $('#'+formName).submit();
+	}
+	
+    }
 </script>
 <script type="text/javascript">
 function doPost(page_no){
@@ -111,7 +142,7 @@ function transformUser(res){
 }
 
 function initAppointmentDoctorSelectize(modal_id){
-	console.log(window['userList']);
+	//console.log(window['userList']);
 	var modal = $('#'+modal_id);
 	console.log(modal);
 	var user_list_data = {};
@@ -231,6 +262,17 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+
+input[type='checkbox'] {
+    width:15px;
+    height:15px; 
+}
+ label.checkbox-label input[type=checkbox]{
+        position: relative;
+        vertical-align: middle;
+        bottom: 3px;
+    }
+
 </style>
 
 <style type="text/css">
@@ -260,7 +302,6 @@ display: inline-grid;
                         <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option> 
                         <option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>          
                         </select>
-                      
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 	                From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
@@ -305,7 +346,14 @@ display: inline-grid;
 				}
 				?>
 			</select>
+			Phone : <input type="number" class="form-custom form-control" placeholder="Phone Number" name="phone" id="phone" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('phone')) { echo $this->input->post('phone');  } ?>"  /> 
+			 OP No : <input type="number" class="form-custom form-control" name="opno" placeholder="OP Number" id="opno" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('opno')) { echo $this->input->post('opno'); } ?>" /> <br/>
+			Manual ID : <input type="text" class="form-custom form-control" name="manualid" placeholder="Manual ID" id="manualid" value="<?php if($this->input->post('manualid')) { echo $this->input->post('manualid'); } ?>"  /> 
+			  H4All ID : <input type="number" class="form-custom form-control" placeholder="Health4All ID" name="patientid" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('patientid')) { echo $this->input->post('patientid'); } ?>"   />  			
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+		
+  			<label class="checkbox-label" style="font-weight:normal"><input type="checkbox" id="myactivity"  name="myactivity" value="1" <?php if($this->input->post('myactivity')) echo "checked"; ?>> Show my activity</label>
+  			
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
@@ -456,6 +504,7 @@ echo "</select></li>";
 		<th>SNo</th>
 		<th>Patient ID</th>
 		<th>OP No.</th>
+		<th>Patient ID Manual</th>
 		<th>PatientInfo</th>
 		<th>Address</th>
 		<th>Phone</th>
@@ -487,6 +536,7 @@ echo "</select></li>";
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
+		<td><?php echo $s->patient_id_manual;?></td>
 		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
 		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
 		if (!!$s->district) echo "<br/>, ".$s->district." District";
@@ -672,20 +722,26 @@ echo "</select></li>";
 				</p>	
 			</div>	
 
-			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom')); ?>
+			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'submit_appointment_'.$s->visit_id,'enctype'=>'multipart/form-data')); ?>
 			<input type="hidden" name="appointment" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">
+			<input type="hidden" name="visit_name_id" value="<?php echo $s->visit_name_id;?>">
 			<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
 			<input type="hidden" name="to_date" value="<?php echo $this->input->post('to_date');?>">
 			<input type="hidden" name="from_time" value="<?php echo $this->input->post('from_time');?>">
 			<input type="hidden" name="to_time" value="<?php echo $this->input->post('to_time');?>">
 			<input type="hidden" name="dateby" value="<?php echo $this->input->post('dateby');?>">	
 			<input type="hidden" name="page_no" id="page_no" value='<?php echo $this->input->post('page_no');?>'>			
-			<input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>				
+			<input type="hidden" name="rows_per_page" id="rows_per_page" value='<?php echo $this->input->post('rows_per_page');?>'>		
+			<input type="hidden" name="phone" value="<?php echo $this->input->post('phone');?>">
+			<input type="hidden" name="patientid" value="<?php echo $this->input->post('patientid');?>">
+			<input type="hidden" name="opno" value="<?php echo $this->input->post('opno');?>">
+			<input type="hidden" name="manualid" value="<?php echo $this->input->post('manualid');?>">
+					
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">
-					<option>Select Department</option>
+					<option value="">Select Department</option>
 					<?php 
 					foreach($all_departments as $dept){
 						echo "<option value='".$dept->department_id."'";
@@ -730,7 +786,7 @@ echo "</select></li>";
 				<input name="summary_sent_time" type="datetime-local" class="form-control" >
 			</div>
 
-			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="button" class="btn btn-default" onclick="submit_appointment(event)" data-visitid="<?php echo $s->visit_id; ?>" data-doctor="<?php echo $s->doctor; ?>">Submit</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
 			</form> 

@@ -94,8 +94,14 @@ function get_dist_summary(){
 		 ->join('district','patient.district_id=district.district_id','left')
 		 ->join('state','district.state_id=state.state_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
-		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
-		 ->group_by('district')->order_by('state.state,district.district ','asc');
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		 if ($this->input->post('groupbystate')) {
+			$this->db->group_by('state.state_id');
+		 }
+		 if ($this->input->post('groupbydistrict')) {
+			$this->db->group_by('district');
+		 }
+		 $this->db->order_by('state.state,district.district ','asc');
 		 
 		$resource=$this->db->get();
 		

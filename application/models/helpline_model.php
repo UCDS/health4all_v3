@@ -373,6 +373,7 @@ class Helpline_model extends CI_Model{
 	}
 	function get_resolution_status(){
 		$this->db->select('*')->from('helpline_resolution_status');
+		$this->db->order_by('resolution_status','ASC');
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -574,6 +575,214 @@ class Helpline_model extends CI_Model{
 		$query = $this->db->get();
 		return $query->result();
 	}
+	
+	function get_completed_calls_report($default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		$user = $this->session->userdata('logged_in');
+
+		if($this->input->post('from_number')){
+			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
+		}
+		if($this->input->post('to_number')){
+			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
+		}
+
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else{
+			$this->db->where('date(start_time)',date("Y-m-d"));
+		}
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		$this->db->select("DATE(helpline_call.start_time) AS date,helpline_receiver.full_name AS receiver,COUNT(DISTINCT helpline_call.from_number ) AS customers,SUM(CASE WHEN helpline_call.direction =  'incoming' THEN 1 ELSE 0 END) AS incoming_calls,
+SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS outboundcalls",FALSE)
+		->from('helpline_call')
+		->join('helpline', 'helpline_call.to_number=helpline.helpline')
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
+		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone')
+		->where('helpline_call.call_type','completed')			
+		->where('user_helpline_link.user_id', $user['user_id'])
+		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')	
+		->group_by('DATE(helpline_call.start_time)')	
+		->group_by('helpline_receiver.full_name')	
+		->order_by('DATE(helpline_call.start_time)','desc')
+		->order_by('helpline_receiver.full_name');
+		$this->db->limit($rows_per_page,$start);	
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_completed_calls_report_count(){
+		$user = $this->session->userdata('logged_in');
+
+		if($this->input->post('from_number')){
+			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
+		}
+		if($this->input->post('to_number')){
+			$this->db->like('helpline_call.dial_whom_number', $this->input->post('to_number'));
+		}
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else{
+			$this->db->where('date(start_time)',date("Y-m-d"));
+		}
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		$this->db->select("count(DISTINCT DATE(helpline_call.start_time),helpline_receiver.full_name) as count",FALSE)
+		->from('helpline_call')
+		->join('helpline', 'helpline_call.to_number=helpline.helpline')
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
+		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone')
+		->where('helpline_call.call_type','completed')			
+		->where('user_helpline_link.user_id', $user['user_id']);	
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
+	function get_missed_calls_report($default_rowsperpage){
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		$user = $this->session->userdata('logged_in');
+
+
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else{
+			$this->db->where('(date(start_time) BETWEEN "'.date("Y-m-d").'" AND "'.date("Y-m-d").'")');
+		}
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		$this->db->select("from_number,SUM(CASE WHEN call_type =  'client-hangup' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InClientHangup, SUM(CASE WHEN call_type =  'call-attempt' AND helpline_call.direction =  'incoming' THEN 1 ELSE 0 END) AS InCallAttempt, SUM(CASE WHEN call_type = 'incomplete' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InIncomplete, SUM(CASE WHEN call_type =  'completed' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InCompleted, SUM(CASE WHEN call_type =  'client-hangup' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutClientHangup, SUM(CASE WHEN call_type =  'call-attempt' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutCallAttempt, SUM(CASE WHEN call_type =  'incomplete' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutIncomplete, SUM(CASE WHEN call_type =  'completed' AND helpline_call.direction = 'outbound-dial' THEN 1 ELSE 0 END) AS OutCompleted",FALSE)
+		->from('helpline_call')
+		->join('helpline', 'helpline_call.to_number=helpline.helpline')
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')	
+		->where('user_helpline_link.user_id', $user['user_id'])
+		->group_by('from_number')
+		->order_by('InClientHangup','desc');
+		$this->db->limit($rows_per_page,$start);	
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_missed_calls_report_count(){
+		$user = $this->session->userdata('logged_in');
+
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+		}
+		else{
+			$this->db->where('(date(start_time) BETWEEN "'.date("Y-m-d").'" AND "'.date("Y-m-d").'")');
+		}
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		$this->db->select("count(DISTINCT from_number) as count",FALSE)
+		->from('helpline_call')
+		->join('helpline', 'helpline_call.to_number=helpline.helpline')
+		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')		
+		->where('user_helpline_link.user_id', $user['user_id']);	
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
+	
 	function get_sms_detailed_report($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
@@ -847,33 +1056,7 @@ class Helpline_model extends CI_Model{
 			$this->db->select('dial_call_duration');
 			$this->db->order_by('dial_call_duration');
 			$this->db->where('call_type','completed');
-		}
-		if($type == "resolution_status"){
-			$this->db->select('
-			SUM(CASE WHEN resolution_status_id != 1 THEN 1 ELSE 0 END) as open,
-			SUM(CASE WHEN resolution_status_id = 1 THEN 1 ELSE 0 END) as closed
-			');
-			$this->db->where('call_type','completed');
-		}
-		if($type == "closed_tat"){
-			$this->db->select('
-			SUM(CASE WHEN resolution_status_id = 1 AND TIMESTAMPDIFF(HOUR,start_time,resolution_date_time) < 24 THEN 1 ELSE 0 END) count24hrs,
-			SUM(CASE WHEN resolution_status_id = 1 AND TIMESTAMPDIFF(HOUR,start_time,resolution_date_time) >= 24 AND  TIMESTAMPDIFF(HOUR,start_time,resolution_date_time) < 48  THEN 1 ELSE 0 END) count24_48hrs,
-			SUM(CASE WHEN resolution_status_id = 1 AND TIMESTAMPDIFF(HOUR,start_time,resolution_date_time) >=48  AND TIMESTAMPDIFF(HOUR,start_time,resolution_date_time) < 168 THEN 1 ELSE 0 END) count3_7days,
-			SUM(CASE WHEN resolution_status_id = 1 AND TIMESTAMPDIFF(HOUR,start_time,resolution_date_time) >= 168 THEN 1 ELSE 0 END) count7plus,
-			',false);
-			$this->db->where('call_type','completed');
-		}
-		if($type == "open_tat"){
-			$this->db->select('
-			SUM(CASE WHEN resolution_status_id != 1 AND TIMESTAMPDIFF(HOUR,start_time,NOW()) < 24 THEN 1 ELSE 0 END) count24hrs,
-			SUM(CASE WHEN resolution_status_id != 1 AND TIMESTAMPDIFF(HOUR,start_time,NOW()) >= 24 AND  TIMESTAMPDIFF(HOUR,start_time,NOW()) < 48  THEN 1 ELSE 0 END) count24_48hrs,
-			SUM(CASE WHEN resolution_status_id != 1 AND TIMESTAMPDIFF(HOUR,start_time,NOW()) >=48  AND TIMESTAMPDIFF(HOUR,start_time,NOW()) < 168 THEN 1 ELSE 0 END) count3_7days,
-			SUM(CASE WHEN resolution_status_id != 1 AND TIMESTAMPDIFF(HOUR,start_time,NOW()) >= 168 THEN 1 ELSE 0 END) count7plus,
-			',false);
-			$this->db->where('call_type','completed');
-		}
-		
+		}		
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
 			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
@@ -935,79 +1118,59 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
 			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->db->where('(summary_calls.date BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
 		}
 		else if($this->input->post('from_date') || $this->input->post('to_date')){
 			$from_date;
 			$to_date;
 			if($this->input->post('from_date')){
 				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
-				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
+				$to_date = $this->db->where('summary_calls.date',date("Y-m-d"));
 			}
 			if($this->input->post('to_date')){
 				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
 				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
 			}
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->db->where('(summary_calls.date BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
 		}
 		else{
 			$from_date = date("Y-m-d",strtotime("-1 months"));
 			$to_date = date("Y-m-d");
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->db->where('(summary_calls.date BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
 		}
 
-		if($this->input->post('caller_type')){
-			$this->db->where('helpline_caller_type.caller_type_id',$this->input->post('caller_type'));
-		}
-		if($this->input->post('call_category')){
-			$this->db->where('helpline_call_category.call_category_id',$this->input->post('call_category'));
-		}
-		if($this->input->post('hospital')){
-			$this->db->where('hospital.hospital_id',$this->input->post('hospital'));
-		}
-		if($this->input->post('district')){
-			$this->db->where('hospital.district',$this->input->post('district'));
-		}
-		if($this->input->post('visit_type')){
-			$this->db->where('helpline_call.ip_op',$this->input->post('visit_type'));
-		}
 		if($this->input->post('trend_type')){
 	    	$trend=$this->input->post('trend_type');
 			if($trend=="Month"){
-			$this->db->select("DATE_FORMAT(helpline_call.start_time ,\"%b-%Y\") as date",false);
-			$this->db->group_by('date','desc');
+				$this->db->select("DATE_FORMAT(summary_calls.date ,\"%b-%Y\") as datefield",false);
+				$this->db->group_by('datefield');
 			}
 			else if($trend=="Year"){
-			$this->db->select("DATE_FORMAT(helpline_call.start_time ,\"%Y\") as date",false);
-			$this->db->group_by('date','desc');
+				$this->db->select("DATE_FORMAT(summary_calls.date ,\"%Y\") as datefield",false);
+				$this->db->group_by('datefield');
 			}
 			else{
-			$this->db->select("DATE_FORMAT(helpline_call.start_time ,\"%d-%b-%Y\") as date",false);
-			$this->db->group_by('date','desc');
+				$this->db->select("DATE_FORMAT(summary_calls.date ,\"%d-%b-%Y\") as datefield",false);
+				$this->db->group_by('datefield');
 			}
 		}
 		else{
-			$this->db->select("DATE_FORMAT(helpline_call.start_time ,\"%d-%b-%Y\") as date",false);
-			$this->db->group_by('date','desc');
+			$this->db->select("DATE_FORMAT(summary_calls.date ,\"%d-%b-%Y\") as datefield",false);
+			$this->db->group_by('datefield');
 		}
-		if($this->input->post('helpline_id')){
-			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		if($this->input->post('helpline')){
+			$this->db->where('summary_calls.helpline',$this->input->post('helpline'));
 		}
 		if($this->input->post('call_direction')){
-			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+			$this->db->where('summary_calls.call_direction',$this->input->post('call_direction'));
 		}
 		if($this->input->post('call_type')){
-			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
+			$this->db->where('summary_calls.call_type',$this->input->post('call_type'));
 		}
 
-		$this->db->select("count(call_id) calls ")
-		->from('helpline_call')
-		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	//20 Dec 18 -> gokulakrishna@yousee.in
-		->join('helpline_caller_type','helpline_call.caller_type_id = helpline_caller_type.caller_type_id','left')
-		->join('helpline_call_category','helpline_call.call_category_id = helpline_call_category.call_category_id','left')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
-		->join('hospital','helpline_call.hospital_id = hospital.hospital_id','left')
-		->order_by('start_time','asc');
+		$this->db->select("sum(call_count) as calls")
+		->from('summary_calls')
+		->order_by('summary_calls.date','asc');
 
 		$query = $this->db->get();
 		return $query->result();
@@ -1107,14 +1270,121 @@ class Helpline_model extends CI_Model{
 		if($this->db->trans_status()===TRUE) return true; else { $this->db->trans_rollback(); return false; }	
 	}
 
-	function getHelplineReceivers($data=array()){
+	function getHelplineReceiversCount(){		
+		
+		
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline_receiver.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
+		}
+		
+		if($this->input->post('isdoctor')){
+		    	if($this->input->post('isdoctor')=="Yes"){
+				$this->db->like('helpline_receiver.doctor',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.doctor',0);
+			}
+		}
+		
+		if($this->input->post('outboundcall')){
+		    	if($this->input->post('outboundcall')=="Yes"){
+				$this->db->like('helpline_receiver.enable_outbound',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.enable_outbound',0);
+			}
+		}
+		
+		if($this->input->post('activitystatus')){
+		    	if($this->input->post('activitystatus')=="Yes"){
+				$this->db->like('helpline_receiver.activity_status',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.activity_status',0);
+			}
+		}
+		
+		$this->db->select("count(*) as count", false)
+		->from('helpline_receiver')
+		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
+	
+	function getHelplineReceivers($data=array()){		
+		if(isset($data['default_rowsperpage'])){
+			$default_rowsperpage=$data['default_rowsperpage'];
+		}
+		else{
+			$default_rowsperpage = 0;
+		}
+		
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		if($this->input->post('helpline_id')){
+			$this->db->where('helpline_receiver.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
+		}		
+		
+		
+		if($this->input->post('isdoctor')){
+		    	if($this->input->post('isdoctor')=="Yes"){
+				$this->db->like('helpline_receiver.doctor',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.doctor',0);
+			}
+		}
+		
+		if($this->input->post('outboundcall')){
+		    	if($this->input->post('outboundcall')=="Yes"){
+				$this->db->like('helpline_receiver.enable_outbound',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.enable_outbound',0);
+			}
+		}
+		
+		if($this->input->post('activitystatus')){
+		    	if($this->input->post('activitystatus')=="Yes"){
+				$this->db->like('helpline_receiver.activity_status',1);
+			}
+			else{
+				$this->db->like('helpline_receiver.activity_status',0);
+			}
+		}
+		
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);
 		}
-		$this->db->select("receiver_id, full_name, phone, email, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline", false)
+		$this->db->select("receiver_id, full_name, phone, email, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
 		->order_by('full_name', 'asc');
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1212,6 +1482,10 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('category')){														
             $helpline_receiver['category'] = $this->input->post('category');							
         }
+        
+        	if($this->input->post('helpline_receiver_note')){														
+            $helpline_receiver['helpline_receiver_note'] = $this->input->post('helpline_receiver_note');							
+        }
 
         $helpline_receiver['user_id'] = $this->input->post('user_id') ? $this->input->post('user_id') : '0';
 
@@ -1298,8 +1572,51 @@ class Helpline_model extends CI_Model{
 		$query = $this->db->get();
 		return $query->result();
 	}
+	
+	function get_helpline_session_report_count(){
+		if ($this->input->post('weekday')) {
+			$this->db->where('hs.weekday',$this->input->post('weekday'));
+		} 
+		if ($this->input->post('helpline')) {
+			$this->db->where('hs.helpline_id',$this->input->post('helpline'));
+		}
+		if ($this->input->post('role')){
+			$this->db->where('hsp.helpline_session_role_id', $this->input->post('role'));
+		}
+		if ($this->input->post('session_name')){
+			$this->db->where('hs.helpline_session_id',$this->input->post('session_name'));
+		}
 
-	function get_helpline_session_report(){
+		$this->db->select("count(*) as count");
+		$this->db->from('helpline_session_plan as hsp');
+		$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
+		$this->db->join('helpline_session_role as role', 'hsp.helpline_session_role_id =role.helpline_session_role_id');
+		$this->db->join('helpline', 'helpline.helpline_id= hs.helpline_id');
+		$this->db->where('hs.session_status = 1');
+		$this->db->where('hsp.soft_deleted = 0');
+		// $this->db->group_by('hs.helpline_id');
+		 $this->db->group_by('hs.helpline_session_id');
+		 $this->db->order_by('hs.weekday');
+		 $this->db->group_by('hsp.helpline_session_role_id');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_helpline_session_report($default_rowsperpage){
+	
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
 		if ($this->input->post('weekday')) {
 	       echo("<script>console.log('PHP: weekday " . json_encode($this->input->post('weekday')) . "');</script>");
 			$this->db->where('hs.weekday',$this->input->post('weekday'));
@@ -1325,6 +1642,7 @@ class Helpline_model extends CI_Model{
 		 $this->db->group_by('hs.helpline_session_id');
 		 $this->db->order_by('hs.weekday');
 		 $this->db->group_by('hsp.helpline_session_role_id');
+		 $this->db->limit($rows_per_page,$start);	
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1382,10 +1700,41 @@ class Helpline_model extends CI_Model{
 	       echo("<script>console.log('PHP: " . json_encode($session_role_id) . "');</script>");
 	}
 
-	function get_helpline_receiver_report($helpline_session_id) {
+	function get_helpline_receiver_report($helpline_session_id,$default_rowsperpage) {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
 		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
 			$this->db->select("hsp.receiver_id as receiver_id, hsp.helpline_session_id as helpline_session_id, helpline_receiver.full_name as full_name, helpline_receiver.email as email, helpline_receiver.phone as phone, hsp.helpline_session_plan_id as helpline_session_plan_id, hsp.helpline_session_role_id,hsr.helpline_session_role,hsr.helpline_session_role_id,hsp.helpline_session_note");
 			$this->db->select("(SELECT GROUP_CONCAT(language.language) as languages FROM helpline_receiver JOIN helpline_receiver_language on helpline_receiver_language.receiver_id = helpline_receiver.receiver_id JOIN language on language.language_id = helpline_receiver_language.language_id WHERE helpline_receiver.receiver_id = hsp.receiver_id ORDER BY helpline_receiver_language.proficiency) as languages ");
+			$this->db->from('helpline_session_plan as hsp');
+			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
+			$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
+			$this->db->join('helpline_receiver', 'hsp.receiver_id = helpline_receiver.receiver_id');
+			$this->db->where('hs.session_status = 1');
+			$this->db->where('hsp.soft_deleted = 0');
+			$this->db->where('hs.helpline_session_id', $helpline_session_id);
+			$this->db->order_by('hsr.helpline_session_role','asc');
+			$this->db->limit($rows_per_page,$start);	
+			$query = $this->db->get();
+
+		return $query->result();
+	}
+	
+	function get_helpline_receiver_report_count($helpline_session_id) {
+		//echo("<script>console.log('PHP: Query Model " . json_encode($helpline_session_id) . "');</script>");
+			$this->db->select("count(*) as count");
+			
 			$this->db->from('helpline_session_plan as hsp');
 			$this->db->join('helpline_session_role as hsr', 'hsr.helpline_session_role_id=hsp.helpline_session_role_id');
 			$this->db->join('helpline_session as hs', 'hs.helpline_session_id=hsp.helpline_session_id');
@@ -1398,6 +1747,8 @@ class Helpline_model extends CI_Model{
 
 		return $query->result();
 	}
+	
+	
 	function update_helpline_session_plan_id($helpline_session_plan_id) {
 		$helpline_session_plan_id = $this->input->post('helpline_update_session_plan_id');
 		$this->db->trans_start();
@@ -1438,6 +1789,17 @@ class Helpline_model extends CI_Model{
 		}
 
 
+	}
+	function get_weekdays_array() {
+		$data = 	array('0' => 'Sunday',
+				'1' => 'Monday' ,
+				'2'  => 'Tuesday' ,
+				'3' => 'Wednesday',
+				'4' => 'Thursday',
+				'5' => 'Friday' ,
+				'6' => 'Saturday'
+				 );
+		return $data;
 	}
 	function get_weekdays() {
 		$data = 	array('1' => 'Monday' ,

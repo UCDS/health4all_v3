@@ -21,6 +21,25 @@ class Hospital_model extends CI_Model {
         return $result;
     }
     
+    function get_hospitals_selectize($filter_selected_hospital=false){  //Function that returns all the details of the hospitals.
+       	if($filter_selected_hospital){
+			$hospital=$this->session->userdata('hospital');
+				if($hospital){
+					$this->db->where('hospital.hospital_id !=',$hospital['hospital_id']);
+			}
+		}
+        	$this->db->select("hospital.hospital_id,hospital,hospital_short_name,description,place,district.district,state.state,logo,telehealth,helpline.helpline as helpline,helpline.note as helpline_note,CONCAT(hospital,' - ',hospital_short_name,IFNULL(CONCAT(' - ',place),''),IFNULL(CONCAT(' - ',district.district ),''),IFNULL(CONCAT(' - ',state.state),'')) as customdata",false)
+            ->from('hospital')
+            ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+	    ->join('district','hospital.district_id=district.district_id','left')
+	    ->join('state','state.state_id=district.state_id','left')
+	    ->order_by('hospital_short_name');
+             $query = $this->db->get();
+             $result = $query->result();
+        
+             return $result;
+    }
+    
     function get_hospital_types(){
         $this->db->select('*')
             ->from('hospital_type');
@@ -333,14 +352,14 @@ class Hospital_model extends CI_Model {
                 return true;
         } 
     }
-	function get_department(){   //This for evaluation.
-		if($this->input->post('hospital')){
+	function get_department($fromallhospital=0){   //This for evaluation.
+		if($this->input->post('hospital') && $fromallhospital !=1){
 			$this->db->where('department.hospital_id',$this->input->post('hospital'));
 		}
-		if($this->input->post('department_id')){
+		if($this->input->post('department_id') && $fromallhospital !=1){
 			$this->db->where('department.department_id',$this->input->post('department_id'));
 		}
-        if($this->input->post('department')){
+        if($this->input->post('department') && $fromallhospital !=1){
 			$this->db->where('department',$this->input->post('department'));
          
         }
@@ -386,7 +405,8 @@ class Hospital_model extends CI_Model {
         }  
        $this->db->select('department.*,hospital')
           ->from('department')
-		  ->join('hospital','department.hospital_id = hospital.hospital_id');                              
+		  ->join('hospital','department.hospital_id = hospital.hospital_id')
+		  ->order_by('department');                             
        $query = $this->db->get();
        $result = $query->result();
        if($result){

@@ -57,7 +57,7 @@
           <ul class="nav navbar-nav">
 			<?php if($this->session->userdata('logged_in')) {
 			//Loop through the session data to check if the user has access to each function and only display those.
-
+			$more_reports=0;
 			foreach($functions as $f){
 					//Check if the user has access to Out Patient Registration forms or In Patient Registration forms
 					if($f->user_function=="Out Patient Registration" || $f->user_function=="In Patient Registration" || $f->user_function == "View Patients" || $f->user_function == "Update Patients"){
@@ -104,7 +104,7 @@
 							<?php
 								foreach($functions as $f){
 									if($f->user_function == "Update Patients"){ ?>
-										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patients</a></li>
+										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patient/Visits</a></li>
 									<?php
 									break;
 									}
@@ -261,7 +261,7 @@
 					$f->user_function=="OP Detail" || $f->user_function=="IP Detail" ||
 					$f->user_function=="Diagnostics - Detail" || $f->user_function=="Diagnostics - Summary" ||
 					($f->user_function == "Sanitation Evaluation" && $f->view==1) ||
-					$f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary" || $f->user_function == "Helpline Reports"|| $f->user_function == "follow_up_report" || $f->user_function =="appointment_status" || $f->user_function =="referral"){ ?>
+					$f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary" || $f->user_function == "Helpline Reports"|| $f->user_function == "follow_up_report" || $f->user_function =="appointment_status"){ ?>
 					<li class="dropdown  <?php if(preg_match("^".base_url()."reports^",current_url())){ echo "active";}?>">
 						<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown"><i class="fa fa-line-chart"></i> Reports <b class="caret"></b></a>
 						<ul class="dropdown-menu">
@@ -281,14 +281,16 @@
 				
 				if($f->user_function=="appointment_status"){ ?>
                                             <li><a href="<?php echo base_url()."reports/appointment_summary";?>">Appointment Summary</a></li>
-				<?php	}
+                               <?php	} 
+				if($f->user_function=="appointment_slot"){ ?>
+				 	     <li><a href="<?php echo base_url()."reports/appointment_slot";?>">Appointment Slot</a></li>
+				<?php	} 
                                 }
                                 
                                 
 				foreach($functions as $f){
 					if($f->user_function=="IP Summary"){ ?>
 						  <li><a href="<?php echo base_url()."reports/ip_summary";?>">IP Summary</a></li>
-						  <li><a href="<?php echo base_url()."op_ip_report/op_ip_summary_report";?>">District Wise IP/OP Summary</a></li>
 						  <li><a href="<?php echo base_url()."patient/casesheet_mrd_status";?>">MRD Report</a></li>
 						  <li><a href="<?php echo base_url()."staff_report/get_patient_records";?>">Staff Activity OP/IP</a></li>
 						  <li><a href="<?php echo base_url()."staff_report/get_doctor_activity";?>">Doctor Activity OP/IP</a></li>
@@ -304,11 +306,7 @@
 				<?php                      }
                       if($f->user_function=="Patient Transport Report"){ ?>
 						  <li><a href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a></li>
-				<?php                      }
-				 if($f->user_function=="referral"){ ?>
-						  <li><a href="<?php echo base_url()."reports/referrals";?>">Referrals</a></li>
-				<?php                      }
-				
+				<?php                      }				
 				}
 				foreach($functions as $f){
 					if($f->user_function=="Diagnostics - Summary"){ ?>
@@ -327,12 +325,19 @@
 				<?php
 					}
 				?>
+				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report" ||  $f->user_function=="helpline_receiver" || $f->user_function=="referral"){ $more_reports=1; ?>
+					
+				<?php } ?>
 				<?php
 					if($f->user_function=="prescription_report"){ ?>
            <!--       		<li><a href="<?php echo base_url()."report/get/vitals_report";?>"><i class="glyphicon glyphicon-heart"></i> Vitals Report</a></li> -->
 						<li><a href="<?php echo base_url()."report/get/prescription_report";?>"><i class="glyphicon glyphicon-pencil"></i> Prescription Report</a></li>
 					<?php }?>
+					
 			<?php	}	?>
+			<?php if ($more_reports == 1){ ?>
+				<li><a href="<?php echo base_url()."reports/more_reports";?>">More Reports</a></li>
+			<?php } ?>
 			<li class="divider"></li>
 			<?php foreach($functions as $f){
 			?>
@@ -342,12 +347,13 @@
 			<?php	break;
 			}
 			}
+			
 			foreach($functions as $f){
 			if($f->user_function=="OP Detail"){ //OP Detail?>
-						<li><a href="<?php echo base_url()."report/get/op_vitals_detailed";?>">OP Detail - 1</a></li>
-			<?php	}
+						<li><a href="<?php // echo base_url()."report/get/op_vitals_detailed";?>"></a></li>
+			<?php }
 			if($f->user_function=="OP Detail"){ //OP Detail?>
-						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail - 2</a></li>
+						<li><a href="<?php echo base_url()."reports/op_detail_2";?>">OP Detail</a></li>
 			<?php	}
 			if($f->user_function=="create_appointment"){ ?>	
                                 <li><a href="<?php echo base_url()."reports/appointment";?>">Registrations/Appointments</a></li>
@@ -430,14 +436,6 @@
 					}				
 				}
 				?>
-				<?php
-				foreach($functions as $f){
-				if($f->user_function=="login_report"){ ?>
-                  <li><a href="<?php echo base_url()."reports/login_report";?>"><i class="fa fa-eye"></i>Login Report</a></li>
-				<?php break;
-					}				
-				}
-				?>
                   <li><a href="<?php echo base_url()."user_panel/change_password";?>"><i class="fa fa-edit"></i> Change Password</a></li>
 				  <li><a href="<?php echo base_url();?>home/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
                 </ul>
@@ -447,6 +445,9 @@
 				<a href="<?php echo base_url()."home/login";?>"><i class="fa fa-sign-in"></i> Login</a>
 			</li>
 			<?php } ?>
+	<?php if($this->session->userdata('logged_in')) { 
+		foreach($functions as $f){
+			if($f->user_function=="dashboard"){ ?>
             <li class="dropdown  <?php if(preg_match("^".base_url()."dashboard^",current_url())){ echo "active";}?>">
 				<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown">
 				<i class="fa fa-bar-chart"></i> Dashboards
@@ -468,6 +469,9 @@
 				 <?php } ?>				 
                 </ul>
 			</li>
+		<?php } 
+		}
+	    } ?>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
