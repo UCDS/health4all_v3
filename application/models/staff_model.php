@@ -732,7 +732,7 @@ class Staff_model extends CI_Model{
 		}
 		$this->db->select("staff.staff_id,staff.hospital_id, staff.designation, 
 		staff.first_name, staff.last_name,
-		user.user_id, user.username, staff.phone")
+		user.user_id, user.username, staff.phone, user.active")
 			->from("user")
 			->join("staff", "user.staff_id = staff.staff_id");
 		if($default_rowsperpage!=0){
@@ -786,7 +786,7 @@ class Staff_model extends CI_Model{
            'LOWER(username)'=>strtolower($query),
            'phone'=>$query,
         );
-		$this->db->select("staff.first_name, staff.last_name, staff.phone, user.user_id, user.username")
+		$this->db->select("staff.first_name, staff.last_name, staff.phone, user.user_id, user.username, user.active")
 			->from("user")
 			->join("staff", "user.staff_id = staff.staff_id")
 			->or_like($search, 'both');
