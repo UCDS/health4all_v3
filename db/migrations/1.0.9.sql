@@ -15,3 +15,7 @@ CREATE TABLE `summary_unique_callers` (
  `unique_callers` int(11) NOT NULL,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `user` ADD `active` TINYINT(1) NOT NULL DEFAULT '1'; 
+
+Insert into defaults values ('login_status_deactive','Account Deactivated','','Text','','','','Account has been deactivated. Please contact admin.');
