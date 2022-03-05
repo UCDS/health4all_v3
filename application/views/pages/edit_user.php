@@ -100,7 +100,7 @@ $(document).ready(function(){
 	
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h4>Create User</h4>
+			<h4>Edit User</h4>
 		</div>
 		<div class="panel-body">
 				<p class="lead">Login details</p>	
@@ -145,9 +145,17 @@ $(document).ready(function(){
 						if($user[0]->staff_id == $s->staff_id) echo " selected ";
 						echo ">".$s->staff_name."</option>";	
 						}
-						?>
-					
+						?>					
 						</select>
+						</div>
+					</div>					
+					<div class="form-group  col-md-12">
+						<div class="col-md-3">
+							<label for="staff_type" class="control-label">Active</label>
+						</div>
+						<div class="col-md-6">
+							<input type ='radio' id="active" name="active" value ='1' <?php if($user[0]->active== 1) echo "checked"; ?> >Yes</input>
+							<input type ='radio' id="active" name="active" value ='0' <?php if($user[0]->active== 0) echo "checked"; ?> >No</input>
 						</div>
 					</div>
 					<div class="col-md-12">
@@ -228,6 +236,7 @@ $(document).ready(function(){
 		<th style="text-align:center">Email</th>
 		<th style="text-align:center">User Name</th>
 		<th style="text-align:center">Phone</th>
+		<th style="text-align:center">Active</th>
 		
 	</thead>
 	<tbody>
@@ -251,7 +260,10 @@ $(document).ready(function(){
 		<input type="hidden" value="select" name="select" />
 		</td>
 		<td>
-			<?php echo $a->phone;?>
+			<?php echo $a->phone;?>		
+		</td>
+		<td>
+			<?php echo $a->active;?>
 			</form>
 		</td>
 	</tr>
