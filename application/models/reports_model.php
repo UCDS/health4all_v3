@@ -2682,7 +2682,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         else {
         	return true;
         }
-        if($this->input->post('appointments_limit')>=0){
+        if($this->input->post('appointments_limit')!=""){
             $appointment_info['appointments_limit'] = $this->input->post('appointments_limit');
         }
         $appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];

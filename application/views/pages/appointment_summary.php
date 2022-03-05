@@ -176,7 +176,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 			<th><?php echo $default_appointment_status_remove; ?></th>
 			<th>Appointments - Effective</th>
 		<?php } ?>
-		
+		<th>Appointments Remaining</th>
 		<?php if ($default_appointment_status_add !=""){ ?>
 			<th><?php echo $default_appointment_status_add; ?></th>
 			<th style="text-align:center"><?php echo $default_appointment_status_add." (%)"; ?></th>
@@ -192,6 +192,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 	$total_slots=0;
 	$total_default_status_count_add=0;
 	$total_default_status_count_remove=0;
+	$total_remaining_appointments=0;
 	foreach($report as $s){ ?>
 		<tr>      
 		<td> <?php echo date("d-M-Y", strtotime($s->appointment_date))." - ".$weekdays[date("w", strtotime($s->appointment_date))];  ?></td>		
@@ -208,7 +209,13 @@ $(document).ready(function(){$("#from_date").datepicker({
 		
 		$total_appointmnets_effective = $total_appointmnets_effective + $appointments_effective;
 		?>
-		
+		<td class="text-right"><?php 
+		if($s->slots_alloted!="") {
+			$remaining_appointments = $s->slots_alloted - $appointments_effective;		}
+		else{
+			echo 'NA';
+		}
+		if ($remaining_appointments >= 0) { echo $remaining_appointments; $total_remaining_appointments = $total_remaining_appointments + $remaining_appointments;} else {echo 0;} ?></td>
 		<?php  if ($default_appointment_status_add !=""){ ?>
 		<td style="text-align:right"> <?php echo $s->default_status_count_add;$total_default_status_count_add = $total_default_status_count_add + $s->default_status_count_add;?></td>		
 		<td style="text-align:right"> <?php echo round(($s->default_status_count_add/$appointments_effective)*100,0)."%"; ?></td>
@@ -225,6 +232,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		<td style="text-align:right"><b><?php echo $total_default_status_count_remove; ?></b></td>
 		<td style="text-align:right"><b><?php echo $total_appointmnets_effective; ?></b></td>
 		<?php } ?>
+		<td style="text-align:right"><b><?php echo $total_remaining_appointments; ?></b></td>
 		<?php if ($default_appointment_status_add !=""){ ?>
 		<td style="text-align:right"><b><?php echo $total_default_status_count_add; ?></b></td>
 		<td style="text-align:right"><b><?php echo round(($total_default_status_count_add/$total_appointmnets_effective)*100,0)."%"; ?></b></td>
