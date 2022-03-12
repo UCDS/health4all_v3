@@ -224,20 +224,38 @@ class Home extends CI_Controller {
 	   }
 	   //query the database
 	   $result = $this->staff_model->login($username, $password);
+	   $loginMessage="";
 	   if($result)
 	   {
 	     foreach($result as $row)
 	     {
-			 $staff_details = $this->staff_model->get_staff_details($row->staff_id);
-	         $sess_array = array(
-	         'user_id' => $row->user_id,
-			 'username' => $row->username,
-			 'staff_id' => $row->staff_id,
-			 'staff_first_name' => $staff_details->first_name,
-			 'staff_last_name' => $staff_details->last_name
-			 );
-		   $this->session->set_userdata('logged_in', $sess_array);		   
-		   break;
+			 $active = $row->active;
+			 if ($active == 0)
+			{	
+				$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+			 	foreach($this->data['defaultsConfigs'] as $default){		 
+			 	if($default->default_id=='login_status_deactive'){
+			 			$loginMessage = $default->value;
+			 			 break;
+			 		}
+				}		
+				$this->form_validation->set_message('check_database',$loginMessage);
+				return false;					
+			}
+			else
+			{
+				 $staff_details = $this->staff_model->get_staff_details($row->staff_id);
+				 $sess_array = array(
+				 'user_id' => $row->user_id,
+				 'username' => $row->username,				
+				 'staff_id' => $row->staff_id,
+				 'active' => $row->active,
+				 'staff_first_name' => $staff_details->first_name,
+				 'staff_last_name' => $staff_details->last_name
+				 );
+			   $this->session->set_userdata('logged_in', $sess_array);		   
+			   break;
+			}
 	     }
 	     return TRUE;
 	   }

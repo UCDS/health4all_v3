@@ -43,7 +43,7 @@ class Masters_model extends CI_Model{
 			$hospital_id = $this->session->userdata('hospital')['hospital_id'];
 			if($hospital_id != '')
 					$this->db->where('staff.hospital_id', $hospital_id);
-			$this->db->select("hospital.hospital,user.user_id,username,password,user.staff_id,first_name,last_name,gender, specialisation, email, designation,phone,department")
+			$this->db->select("hospital.hospital,user.user_id,username,password,user.staff_id,user.active,first_name,last_name,gender, specialisation, email, designation,phone,department")
 			->from("user")
 			->join('staff','user.staff_id=staff.staff_id')
 			->join('hospital','staff.hospital_id=hospital.hospital_id')
@@ -664,6 +664,7 @@ function update_data($type){
 		else
 			$data=array(
 			'username'=>$this->input->post('username'),
+			'active' =>$this->input->post('active'),
 			'staff_id'=>$this->input->post('staff')
 			);
 		$this->db->trans_start();
