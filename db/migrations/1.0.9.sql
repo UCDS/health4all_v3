@@ -21,9 +21,3 @@ ALTER TABLE `user` ADD `active` TINYINT(1) NOT NULL DEFAULT '1';
 Insert into defaults values ('login_status_deactive','Account Deactivated','','Text','','','','Account has been deactivated. Please contact admin.');
 
 ALTER TABLE `defaults` CHANGE `value` `value` VARCHAR(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
-
-/* Deleting the user_function 'follow_up_report' and dependent tables */
-DELETE FROM user_function_link where function_id = (SELECT user_function_id FROM `user_function` WHERE `user_function` = 'follow_up_report');
-
-DELETE FROM `user_function` WHERE `user_function` = 'follow_up_report';
-/* End Deleting user_function 'follow_up_report' */
