@@ -1665,7 +1665,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
 			$this->db->order_by('UNIX_TIMESTAMP(appointment_time)','ASC');
 		}
-		
+		if($this->input->post('appointment_status_id')){
+			$this->db->where('pv.appointment_status_id',$this->input->post('appointment_status_id'));
+		}
 		if($this->input->post('visit_name')){
 			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
 		}
@@ -1798,7 +1800,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$to_timestamp = $to_date." ".$to_time;
 			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
 		}
-		
+		if($this->input->post('appointment_status_id')){
+			$this->db->where('pv.appointment_status_id',$this->input->post('appointment_status_id'));
+		}
 		if($this->input->post('visit_name')){
 			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
 		}

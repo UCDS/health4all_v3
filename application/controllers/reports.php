@@ -596,6 +596,7 @@ class Reports extends CI_Controller {
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
 		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
