@@ -395,7 +395,7 @@ echo "</select></li>";
 				<th>SMS Content</th>
 				<th>Status Code</th>
 				<th>Sent Time</th>				
-				<th>Team Member @ Helpline</th>			
+				<th>Team Member @ Helpline</th>
 				
 			</thead>
 			<tbody>
@@ -430,7 +430,7 @@ echo "</select></li>";
 							}?>
 						</td>
 						<td>
-							<?php echo $sms->short_name.' @ '.$sms->helpline;?>
+							<?php echo $sms->short_name.' '.$sms->phone.' @ '.$sms->helpline;?>
 						</td>
 						
 					</tr>
