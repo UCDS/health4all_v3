@@ -836,7 +836,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->where('sms_template.sms_template_id',$this->input->post('sms_template'));
 		}
 		
-		$this->db->select('user.user_id,helpline_receiver.short_name,sms_helpline.id,sms_helpline.from_helpline as from_helpline, sms_helpline.sms_body as body,staff.staff_id,sms_helpline.to_receiver as receiver, sms_helpline.sent_by_staff as user,sms_helpline.from_helpline as from_number,helpline.note as helpline, sms_template.template_name, date(sms_helpline.date_created) as created_date, time(sms_helpline.date_created) as created_time ,sms_helpline.status,date(sms_helpline.date_sent) as sent_date, time(sms_helpline.date_sent) as sent_time, sms_helpline.status_code')
+		$this->db->select('user.user_id,helpline_receiver.short_name, helpline_receiver.phone, sms_helpline.id,sms_helpline.from_helpline as from_helpline, sms_helpline.sms_body as body,staff.staff_id,sms_helpline.to_receiver as receiver, sms_helpline.sent_by_staff as user,sms_helpline.from_helpline as from_number,helpline.note as helpline, sms_template.template_name, date(sms_helpline.date_created) as created_date, time(sms_helpline.date_created) as created_time ,sms_helpline.status,date(sms_helpline.date_sent) as sent_date, time(sms_helpline.date_sent) as sent_time, sms_helpline.status_code')
 		->from('sms_helpline')
 		//->join('user_helpline_link', 'sms_helpline.from_helpline = user_helpline_link.helpline_id')
 		//->join('helpline', 'sms_helpline.from_helpline = user_helpline_link.helpline_id and user_helpline_link.helpline_id = helpline.helpline_id')
@@ -1430,7 +1430,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 
 	function get_sms_templates(){
 		$this->db->select("helpline_id, sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url")->from("sms_template");
-		$this->db->where('use_status', 1);
+		$this->db->where('use_status', 1)
+		->order_by('sms_template.template_name');
 		return $this->db->get()->result();
 	}
 
