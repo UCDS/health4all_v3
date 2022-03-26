@@ -389,10 +389,10 @@ echo "</select></li>";
 			<thead>
 				<th>#</th>
 				<th>SMS ID</th>
-				<th>To Number</th>
+				<th>Initiated Time</th>	
+				<th>Customer</th>
 				<th>SMS Template</th>
 				<th>SMS Content</th>
-				<th>Initiated Time</th>	
 				<th>Status Code</th>
 				<th>Sent Time</th>				
 				<th>Team Member @ Helpline</th>			
@@ -410,6 +410,9 @@ echo "</select></li>";
 							<?php echo $sms->id;?>
 						</td>
 						<td>
+							<?php echo date("j-M-Y", strtotime("$sms->created_date")).' '.date("h:i A.", strtotime("$sms->created_time"));?>
+						</td>
+						<td>
 							<?php echo $sms->receiver;?>
 						</td>
 						<td>
@@ -418,9 +421,6 @@ echo "</select></li>";
 						<td>
 							<?php echo $sms->body;?>
 						</td>						
-						<td>
-							<?php echo date("j-M-Y", strtotime("$sms->created_date")).' '.date("h:i A.", strtotime("$sms->created_time"));?>
-						</td>
 						<td style="text-align:center;">
 							<?php echo $sms->status_code;?>
 						</td>

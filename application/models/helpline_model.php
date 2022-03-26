@@ -293,7 +293,8 @@ class Helpline_model extends CI_Model{
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')
 		->where('user_helpline_link.user_id', $user['user_id'])
 		->where('update_access',1)
-		->order_by('start_time','desc');
+		->order_by('start_time','desc')
+		->order_by('language', 'asc');
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -361,7 +362,8 @@ class Helpline_model extends CI_Model{
 		return $query->result();
 	}
 	function get_language(){
-		$this->db->select('*')->from('language');
+		$this->db->select('*')->from('language')
+		->order_by('language',`asc`);
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1415,7 +1417,8 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$this->db->select('*')->from('sms_template')
 		//->join('user_helpline_link', 'sms_template.helpline_id = user_helpline_link.helpline_id')
 		->join('helpline', 'sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id')
-		->where('user_helpline_link.user_id', $user['user_id']);
+		->where('user_helpline_link.user_id', $user['user_id'])
+		->order_by('sms_template.template_name');
 		$query = $this->db->get();
 		return $query->result();
 	}
