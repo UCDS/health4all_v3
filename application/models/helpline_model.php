@@ -15,7 +15,6 @@ class Helpline_model extends CI_Model{
 		$call_type = $this->input->get('CallType');
 		$recording_url = $this->input->get('RecordingUrl');
 		$dial_whom_number = $this->input->get('DialWhomNumber');
-
 		$hospital_id = 0;
 		$helpline_category = 0;
 		$helpline_caller_type = 0;
