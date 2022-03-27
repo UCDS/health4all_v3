@@ -346,8 +346,9 @@ display: inline-grid;
 				}
 				?>
 			</select>
-			<select name="appointment_status_id" id="appointment_status_id" class="form-control">
-				<option value="">Appointment Status</option>
+			Appointment Status : <select name="appointment_status_id" id="appointment_status_id" class="form-control">
+				<option value="">All</option>
+				<option value="-1" <?php if($this->input->post('appointment_status_id') && $this->input->post('appointment_status_id') == -1) echo " selected "; ?>>Not set</option>
 				<?php 
 				foreach($all_appointment_status as $status){
 					echo "<option value='".$status->id."'";
@@ -356,12 +357,13 @@ display: inline-grid;
 				}
 				?>
 			</select>
-			Phone : <input type="number" class="form-custom form-control" placeholder="Phone Number" name="phone" id="phone" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('phone')) { echo $this->input->post('phone');  } ?>"  /> <br/>
-			 OP No : <input type="number" class="form-custom form-control" name="opno" placeholder="OP Number" id="opno" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('opno')) { echo $this->input->post('opno'); } ?>" /> 
+			 <br/>
+			Phone : <input type="number" class="form-custom form-control" placeholder="Phone Number" name="phone" id="phone" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('phone')) { echo $this->input->post('phone');  } ?>"  /> 
+			 OP No : <input type="number" class="form-custom form-control" name="opno" placeholder="OP Number" id="opno" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('opno')) { echo $this->input->post('opno'); } ?>" />
 			Manual ID : <input type="text" class="form-custom form-control" name="manualid" placeholder="Manual ID" id="manualid" value="<?php if($this->input->post('manualid')) { echo $this->input->post('manualid'); } ?>"  /> 
+			<br/>
 			  H4All ID : <input type="number" class="form-custom form-control" placeholder="Health4All ID" name="patientid" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('patientid')) { echo $this->input->post('patientid'); } ?>"   />  			
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			<br/>
   			<label class="checkbox-label" style="font-weight:normal"><input type="checkbox" id="myactivity"  name="myactivity" value="1" <?php if($this->input->post('myactivity')) echo "checked"; ?>> Show my activity</label>
   			
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
