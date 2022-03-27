@@ -11,7 +11,6 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 
-
 <style>
 	.call_now_img{
 	    cursor: pointer;
