@@ -100,7 +100,7 @@ class Helpline_model extends CI_Model{
 				$resolution_date_time = date("Y-m-d H:i:s",strtotime($this->input->post('resolution_date_time_'.$call)));
 			}
 			else $resolution_date_time = 0;
-			$data[]=array(
+			$data=array(
 				'call_id'=>$call,
 				'caller_type_id'=>$this->input->post("caller_type_".$call),
 				'language_id'=>$this->input->post("language_".$call),
@@ -116,17 +116,17 @@ class Helpline_model extends CI_Model{
 				'resolution_date_time'=>$resolution_date_time,
 				'updated'=>1
 			);
+			$this->db->trans_start();
+			$this->db->where('call_id', $call);
+			$this->db->update('helpline_call',$data);
+			$this->db->trans_complete();
+			if($this->db->trans_status()===FALSE){
+				$this->db->trans_rollback();
+				return false;
+			}
 		}
-		$this->db->trans_start();
-		$this->db->update_batch('helpline_call',$data,'call_id');
-		$this->db->trans_complete();
-		if($this->db->trans_status()===TRUE){
-			return true;
-		}
-		else {
-			$this->db->trans_rollback();
-			return false;
-		}
+		return true;
+		
 	}
 
 	function send_email(){
@@ -1412,13 +1412,17 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
         return $this->db->get()->result();
 	}
 
-	function get_sms_template(){
-		$user = $this->session->userdata('logged_in');
+	function get_sms_template($user_specific=1){
 		$this->db->select('*')->from('sms_template')
 		//->join('user_helpline_link', 'sms_template.helpline_id = user_helpline_link.helpline_id')
-		->join('helpline', 'sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id')
-		->where('user_helpline_link.user_id', $user['user_id'])
-		->order_by('sms_template.template_name');
+		->join('helpline', 'sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id');
+		if ($user_specific == 1){
+			$user = $this->session->userdata('logged_in');
+			$this->db->where('user_helpline_link.user_id', $user['user_id']);
+		}else{
+			$this->db->where('use_status', 1);
+		}
+		$this->db->order_by('template_name');
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1426,13 +1430,6 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$this->db->select('*')->from('http_status_code');
 		$query = $this->db->get();
 		return $query->result();
-	}
-
-	function get_sms_templates(){
-		$this->db->select("helpline_id, sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url")->from("sms_template");
-		$this->db->where('use_status', 1)
-		->order_by('sms_template.template_name');
-		return $this->db->get()->result();
 	}
 
 	function set_sms_helpline($calledId, $from, $template, $templateId, $smstype, $dlttid, $status_code, $status, $sms_id, $detailedStatusCode, $detailedStatus){

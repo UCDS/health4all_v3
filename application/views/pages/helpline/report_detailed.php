@@ -830,9 +830,9 @@ echo "</select></li>";
 			</div>	
 			<script type="text/javascript">
 
-			var smstemplate='<?php echo json_encode($sms_templates); ?>';
+			var smstemplate=<?php echo json_encode($sms_templates); ?>;
 			var inputF = document.getElementById("smsModal-template");
-			var json=JSON.parse(smstemplate);
+			var json=JSON.parse(JSON.stringify(smstemplate));
 
 			function setSmsTemplate(helpline_id){
 				smsDetails.templateName=$('#smsModal-templatewithname-dropdown').val();
@@ -972,6 +972,7 @@ async function openCallModalOnRowClick(from, to, to_name, note){
 	callDetails.from = from;
 	callDetails.called_id = to;
 	callDetails.app_id = receiver.app_id;
+	
 
 
 	$('#callModal-customer').val(from).attr('readonly', 'readonly');
@@ -1011,7 +1012,8 @@ function openSmsModal(){
 
 	for (var key in json) {
 		if (json.hasOwnProperty(key)) {
-			if (json[key].helpline_id==smsDetails.called_id){
+		
+			if (json[key].helpline==smsDetails.called_id){
 			if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
 				$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
 				document.getElementById("smsModal-template").value=json[key].template;

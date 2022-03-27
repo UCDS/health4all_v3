@@ -54,7 +54,7 @@ class Register extends CI_Controller {
 			//The OP and IP forms in the application are loaded into a data variable for the menu.
 			$this->data['op_forms'] = $this->staff_model->get_forms("OP");
 			$this->data['ip_forms'] = $this->staff_model->get_forms("IP");
-			$this->data['sms_templates']=$this->helpline_model->get_sms_templates();	
+				
 		}
 	}
 	
@@ -98,6 +98,7 @@ class Register extends CI_Controller {
 			$this->data['units']=$this->staff_model->get_unit();
 			$this->data['areas']=$this->staff_model->get_area();
 			$this->data['districts']=$this->staff_model->get_district();
+			$this->data['sms_templates']=$this->helpline_model->get_sms_template();
 			$this->data['countries']=$this->masters_model->get_data('country_codes');
 			$this->data['states_codes']=$this->masters_model->get_data('state_codes');
 			$this->data['userdata']=$this->session->userdata('logged_in');//Load the session data into a variable to use in headers and models.
@@ -618,6 +619,7 @@ class Register extends CI_Controller {
 		$this->data['defaults'] = $this->staff_model->get_transport_defaults();
 		$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 		$this->data['drugs_available'] = $this->hospital_model->get_drugs();
+		$this->data['sms_templates']=$this->helpline_model->get_sms_template();
 		$this->data['patient_document_add_access']=$patient_document_add_access;
 		$this->data['patient_document_remove_access']=$patient_document_remove_access;
 		$this->data['patient_document_edit_access']=$patient_document_edit_access;
