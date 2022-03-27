@@ -141,7 +141,7 @@
                 </div>
                 <div class="row updateCallStatus alert hidden" style="margin-left: 8px; margin-right: 8px;"></div>
                 <div class="row" style="text-align: center">
-                    <button class="submit btn btn-primary btn-sm"  >Update</button>
+                    <button class="submit btn btn-primary btn-sm" id="submitmodal">Update</button>
                     <button class="closeUpdateModal btn btn-danger btn-sm"  >Close</button>
                 </div>
             </div>
@@ -241,6 +241,8 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     $('#district_id').attr("data-previous-value", callData.district_id);
     initDistrictSelectize();
     registerHospitalChangeListener();
+    var element = document.getElementById("submitmodal");
+    element.classList.add("submitmodal"+callData.call_id);
     registerOnUpdateFormSubmitted(callData);
    
 }
@@ -295,24 +297,27 @@ function hideUpdateCallStatusMessage() {
 }
 function registerOnUpdateFormSubmitted(callData) {
     const modal = $("#updateCallModal");
-    modal.find(".submit").on("click", function(e) {
+    modal.find(".submitmodal"+callData.call_id).on("click", function(e) {
         e.preventDefault();
-        const postData = {};
-        const callId = callData.call_id;
-        postData["call"] = [callId];
-        postData[`caller_type_${callId}`] = modalData.caller_type_id = modal.find(".caller_type").val();
-        postData[`language_${callId}`] = modalData.language_id =modal.find(".language").val();
-        postData[`call_category_${callId}`] = modalData.call_category_id = modal.find(".call_category").val();
-        postData[`resolution_status_${callId}`] = modalData.resolution_status_id = modal.find(".resolution_status").val();
-        postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
-        postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
-        postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
-        postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
-        postData[`group_${callId}`] = modal.find(".language").val();
-        postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
-        postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
-        postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
-        updateCallData(postData);   
+        var element = document.getElementById("submitmodal");
+        if(element.classList.contains("submitmodal"+callData.call_id)) {
+		const postData = {};
+		const callId = callData.call_id;
+		postData["call"] = [callId];
+		postData[`caller_type_${callId}`] = modalData.caller_type_id = modal.find(".caller_type").val();
+		postData[`language_${callId}`] = modalData.language_id =modal.find(".language").val();
+		postData[`call_category_${callId}`] = modalData.call_category_id = modal.find(".call_category").val();
+		postData[`resolution_status_${callId}`] = modalData.resolution_status_id = modal.find(".resolution_status").val();
+		postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
+		postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
+		postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
+		postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
+		postData[`group_${callId}`] = modal.find(".language").val();
+		postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
+		postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
+		postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
+		updateCallData(postData);   
+	}
     });
     modal.find(".closeUpdateModal").on("click", function(e) {
     	e.preventDefault();
@@ -416,18 +421,22 @@ function registerOnUpdateFormSubmitted(callData) {
     		},
     		callback: function (result) {
     			bootbox.hideAll();
-        		if(result){        		 	
+        		if(result){         				 	
         			modal.modal('hide');
-        			$(this).data('modal', null);	
+        			$(this).data('modal', null);
+        			 var element = document.getElementById("submitmodal");
+    				element.classList.remove("submitmodal"+callData.call_id);
         			if(isupdatedOnce){    
     	 				window.location.reload();
     				}
         		}
     		}
 	});
-    	} else {
+    	} else {    		
     		modal.modal('hide');
     		$(this).data('modal', null);
+    		 var element = document.getElementById("submitmodal");
+    		element.classList.remove("submitmodal"+callData.call_id);
     		if(isupdatedOnce){    
     	 		window.location.reload();
     		}
