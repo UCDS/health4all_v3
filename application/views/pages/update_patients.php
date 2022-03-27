@@ -2660,7 +2660,7 @@ function initDistrictSelectize(){
 				document.getElementById('smsModal-template').readOnly = false;
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == smsDetails.templateName){
+						if(json[key].helpline==helpline_id && json[key].sms_template_id == smsDetails.templateName){
 							if (json[key].edit_text_area==0){
 								document.getElementById('smsModal-template').readOnly = true;
 							}
@@ -2732,7 +2732,7 @@ function initDistrictSelectize(){
 				document.getElementById('smsModal-template').readOnly = false;
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == templateName ){
+						if(json[key].helpline==helpline_id && json[key].sms_template_id == templateName ){
 							document.getElementById("smsModal-template").value=json[key].template;
 							if (json[key].edit_text_area==0){
 								document.getElementById('smsModal-template').readOnly = true;
@@ -2814,7 +2814,7 @@ function initDistrictSelectize(){
 				document.getElementById("smsModal-templatewithname-dropdown").innerHTML = null; 
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==smsDetails.called_id){
+						if(json[key].helpline==smsDetails.called_id){
 						if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
                 $('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
             }
