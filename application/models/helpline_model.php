@@ -1411,27 +1411,28 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
         return $this->db->get()->result();
 	}
 
-	function get_sms_template($user_specific=1,$use_status=1){
-		$this->db->select('sms_template.helpline_id,helpline.helpline,sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url',false)->from('sms_template')
-		->join('helpline', 'sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id');
-		if ($user_specific == 1){
-			$user = $this->session->userdata('logged_in');
-			$this->db->where('user_helpline_link.user_id', $user['user_id']);
-		}
+	function get_sms_template($use_status=1){
+		$this->db->select("sms_template.helpline_id,helpline.helpline,sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url",false)->from("sms_template")
+		->join("helpline", "sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id");
+		
+		$user = $this->session->userdata('logged_in');
+		$this->db->where("user_helpline_link.user_id", $user['user_id']);
+		$this->db->where("(user_helpline_link.update_access=1 OR user_helpline_link.reports_access=1)");
+		
 		if ($use_status == 1){
-			$this->db->where('use_status', 1);
+			$this->db->where("use_status", 1);
 		}		
-		$this->db->order_by('template_name');
+		$this->db->order_by("template_name");
 		$query = $this->db->get();
 		return $query->result();
 	}
 	
-	function get_sms_template_all(){
+	/*function get_sms_template_all(){
 		$this->db->select('helpline_id,sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url',false)->from('sms_template');		
 		$this->db->order_by('template_name');
 		$query = $this->db->get();
 		return $query->result();
-	}
+	}*/
 	function get_sms_sent_status(){
 		$this->db->select('*')->from('http_status_code');
 		$query = $this->db->get();
