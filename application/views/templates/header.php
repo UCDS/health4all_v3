@@ -382,7 +382,7 @@
 								<li><a href="<?php echo base_url()."helpline/report_groupwise";?>">Helpline Group Wise</a></li>-->
 					<?php	}
 					if($f->user_function=="sms"){ ?>
-						<li><a href="<?php echo base_url()."helpline/sms_detailed_report";?>">Helpline SMS</a></li>
+						<li><a href="<?php echo base_url()."helpline/sms_sent_report";?>">Helpline SMS</a></li>
 					<?php }
 
 			} ?>

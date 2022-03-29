@@ -784,7 +784,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 	}
 	
 	
-	function get_sms_detailed_report($default_rowsperpage){
+	function get_sms_sent_report($default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -851,7 +851,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		return $query->result();
 	}
 
-	function get_sms_detailed_report_count(){
+	function get_sms_sent_report_count(){
 		$user = $this->session->userdata('logged_in');
 
 		if($this->input->post('to_number')){
