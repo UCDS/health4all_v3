@@ -1411,16 +1411,17 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
         return $this->db->get()->result();
 	}
 
-	function get_sms_template($user_specific=1){
+	function get_sms_template($user_specific=1,$use_status=1){
 		$this->db->select('*')->from('sms_template')
 		//->join('user_helpline_link', 'sms_template.helpline_id = user_helpline_link.helpline_id')
 		->join('helpline', 'sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id');
 		if ($user_specific == 1){
 			$user = $this->session->userdata('logged_in');
 			$this->db->where('user_helpline_link.user_id', $user['user_id']);
-		}else{
-			$this->db->where('use_status', 1);
 		}
+		if ($user_specific == 1){
+			$this->db->where('use_status', 1);
+		}		
 		$this->db->order_by('template_name');
 		$query = $this->db->get();
 		return $query->result();
