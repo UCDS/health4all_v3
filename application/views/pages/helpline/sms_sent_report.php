@@ -202,7 +202,7 @@ $(function(){
 				$to_date = date("d-M-Y",strtotime($this->input->post('to_date')));
 			}
 			else $to_date = date("d-M-Y");
-			echo form_open('helpline/sms_detailed_report',array('role'=>'form','class'=>'form-custom','id'=>'sms_detailed_report','name'=>'sms_detailed_report'));
+			echo form_open('helpline/sms_sent_report',array('role'=>'form','class'=>'form-custom','id'=>'sms_detailed_report','name'=>'sms_detailed_report'));
 	?>
 			<h4>SMS during</h4>
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
