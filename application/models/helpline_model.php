@@ -707,29 +707,42 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$start = ($page_no -1 )  * $rows_per_page;
 		
 		$user = $this->session->userdata('logged_in');
-
-
+		
 		if($this->input->post('from_date') && $this->input->post('to_date')){
-			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
-			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
 		}
 		else if($this->input->post('from_date') || $this->input->post('to_date')){
-			$from_date;
-			$to_date;
-			if($this->input->post('from_date')){
-				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
-				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
-			}
-			if($this->input->post('to_date')){
-				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
-				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
-			}
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
 		}
 		else{
-			$this->db->where('(date(start_time) BETWEEN "'.date("Y-m-d").'" AND "'.date("Y-m-d").'")');
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
 		}
+
+		if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		$from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where('(start_time BETWEEN "'.$from_timestamp.'" AND "'.$to_timestamp.'")');
+		
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}
@@ -750,26 +763,41 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$user = $this->session->userdata('logged_in');
 
 		if($this->input->post('from_date') && $this->input->post('to_date')){
-			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
-			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
 		}
 		else if($this->input->post('from_date') || $this->input->post('to_date')){
-			$from_date;
-			$to_date;
-			if($this->input->post('from_date')){
-				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
-				$to_date = $this->db->where('date(start_time)',date("Y-m-d"));
-			}
-			if($this->input->post('to_date')){
-				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
-				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
-			}
-			$this->db->where('(date(start_time) BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
 		}
 		else{
-			$this->db->where('(date(start_time) BETWEEN "'.date("Y-m-d").'" AND "'.date("Y-m-d").'")');
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
 		}
+
+		if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+		$from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where('(start_time BETWEEN "'.$from_timestamp.'" AND "'.$to_timestamp.'")');
+		
+		
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}

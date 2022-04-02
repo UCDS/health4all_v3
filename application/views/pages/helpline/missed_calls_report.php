@@ -1,3 +1,5 @@
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.ptTimeSelect.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
@@ -6,12 +8,18 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
-
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 
 <script type="text/javascript">
+$(document).ready(function(){
+// find the input fields and apply the time select to them.
+$('#from_time').ptTimeSelect();
+$('#to_time').ptTimeSelect();
+});
 function doPost(page_no){	
 	var page_no_hidden = document.getElementById("page_no");
   	page_no_hidden.value=page_no;
@@ -151,13 +159,17 @@ $(function(){
 				$to_date = date("d-M-Y",strtotime($this->input->post('to_date')));
 			}
 			else $to_date = date("d-M-Y");
+			$from_time=0;$to_time=0;
+			if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
+			if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
 			echo form_open('helpline/missed_calls_report',array('role'=>'form','class'=>'form-custom','id'=>'call_detailed_report','name'=>'call_detailed_report' ));
 	?>
 			<h4>Missed Calls</h4>
-			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
-			<input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
-
-			<select name="helpline_id" id="helplineSelect" style="width:170px" class="form-control">
+			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> 
+			<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/> 
+			to <input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />			
+                   	<input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" id="to_time" size="7px"/>
+			<select name="helpline_id" id="helplineSelect" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
 					<option value="<?php echo $line->helpline_id;?>"
@@ -167,7 +179,7 @@ $(function(){
 			</select>			
 			<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
 			 Rows per page : <input type="number" class="rows_per_page" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			 <br />
+			 
 			<input type="submit" value="Go" name="submitBtn" class="btn btn-primary btn-sm" />
 		</form></h4><br />
 	<?php
