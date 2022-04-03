@@ -193,7 +193,8 @@ class Helpline extends CI_Controller {
 			$this->data['sms_data']=$this->helpline_model->get_sms_sent_report($this->data['rowsperpage']);
 			$this->data['sms_count']=$this->helpline_model->get_sms_sent_report_count();
 			$this->data['sent_status']=$this->helpline_model->get_sms_sent_status();
-			$this->data['sms_template']=$this->helpline_model->get_sms_template($user_specific=0,$use_status=0);
+			$this->data['sms_template']=$this->helpline_model->get_sms_template($use_status=0);
+			//$this->data['sms_template']=$this->helpline_model->get_sms_template_all();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
 			$this->load->view('templates/header',$this->data);
