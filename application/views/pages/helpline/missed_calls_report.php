@@ -176,7 +176,21 @@ $(function(){
 					<?php if($this->input->post('helpline_id') == $line->helpline_id) echo " selected "; ?>
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
-			</select>			
+			</select>
+			<select name="call_direction" style="width:130px" class="form-control">
+					<option value="">Call Direction</option>
+					<option <?php if($this->input->post('call_direction') == "incoming") echo " selected "; ?> value="incoming">Incoming calls</option>
+					<option <?php if($this->input->post('call_direction') == "outbound-dial") echo " selected "; ?> value="outbound-dial">Outgoing calls</option>
+			</select>
+			<select name="call_type" style="width:120px" class="form-control">
+					<option value="">Call Type</option>
+					<option <?php if($this->input->post('call_type') == "completed") echo " selected "; ?> value="completed">Completed</option>
+					<option <?php if($this->input->post('call_type') == "client-hangup") echo " selected "; ?> value="client-hangup">Client Hangup</option>
+					<option <?php if($this->input->post('call_type') == "voicemail") echo " selected "; ?> value="voicemail">Voicemail</option>
+					<option <?php if($this->input->post('call_type') == "incomplete") echo " selected "; ?> value="incomplete">Incomplete</option>
+					<option <?php if($this->input->post('call_type') == "call-attempt") echo " selected "; ?> value="call-attempt">Call Attempt</option>
+			</select>	
+			<br/>		
 			<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
 			 Rows per page : <input type="number" class="rows_per_page" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			 

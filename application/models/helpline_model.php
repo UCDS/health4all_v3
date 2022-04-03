@@ -747,6 +747,14 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}
 		
+		if($this->input->post('call_direction')){
+			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+		}
+		
+		if($this->input->post('call_type')){
+			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
+		}
+		
 		$this->db->select("from_number,SUM(CASE WHEN call_type =  'client-hangup' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InClientHangup, SUM(CASE WHEN call_type =  'call-attempt' AND helpline_call.direction =  'incoming' THEN 1 ELSE 0 END) AS InCallAttempt, SUM(CASE WHEN call_type = 'incomplete' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InIncomplete, SUM(CASE WHEN call_type =  'completed' AND helpline_call.direction = 'incoming' THEN 1 ELSE 0 END) AS InCompleted, SUM(CASE WHEN call_type =  'client-hangup' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutClientHangup, SUM(CASE WHEN call_type =  'call-attempt' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutCallAttempt, SUM(CASE WHEN call_type =  'incomplete' AND helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS OutIncomplete, SUM(CASE WHEN call_type =  'completed' AND helpline_call.direction = 'outbound-dial' THEN 1 ELSE 0 END) AS OutCompleted",FALSE)
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline')
@@ -800,6 +808,14 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
+		}
+		
+		if($this->input->post('call_direction')){
+			$this->db->where('helpline_call.direction',$this->input->post('call_direction'));
+		}
+		
+		if($this->input->post('call_type')){
+			$this->db->where('helpline_call.call_type',$this->input->post('call_type'));
 		}
 		
 		$this->db->select("count(DISTINCT from_number) as count",FALSE)
