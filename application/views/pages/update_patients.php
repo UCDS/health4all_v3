@@ -750,6 +750,7 @@ function initDistrictSelectize(){
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
