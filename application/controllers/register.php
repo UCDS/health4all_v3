@@ -749,6 +749,7 @@ class Register extends CI_Controller {
 				$this->data['transfers'] = $this->patient_model->get_transfers_info();
 				$this->data['transport'] = $this->staff_model->get_transport_log();
 				$this->data['patients']=$this->register_model->search();
+				$this->data['registered'] = $this->data['patients'][0];
 				$this->data['msg'] = "Patient information has been updated successfully";
 				$this->data['previous_visits']=$this->register_model->get_visits($patient_id);
 				$this->data['patient_visits'] = $this->gen_rep_model->simple_join('patient_visits_all', false);
@@ -772,6 +773,7 @@ class Register extends CI_Controller {
 			}
 			else{
 				$this->data['patients']=$this->register_model->search();
+				$this->data['registered'] = $this->data['patients'][0];
 				if(count($this->data['patients'])==1){
 					$this->load->model('diagnostics_model');
 					$visit_id = $this->data['patients'][0]->visit_id;
