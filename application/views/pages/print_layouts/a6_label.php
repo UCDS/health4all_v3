@@ -34,7 +34,7 @@
   $admit_date = date_create($registered->admit_date);
   $admit_date = date_format($admit_date, 'd-M-Y');
   $admit_time = strtotime($registered->admit_time);
-  $admit_time = date('h:m A', $admit_time);
+  $admit_time = date('h:i A', $admit_time);
 ?>
 <div class='padding-adjustment'>
 <table cellpadding='8' class='a6-label-css'>
