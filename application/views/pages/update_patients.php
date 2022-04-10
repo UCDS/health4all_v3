@@ -742,6 +742,17 @@ function initDistrictSelectize(){
                         <img src="<?php echo base_url()."assets/images/patients/".$patient->patient_id;?>.jpg" alt="Image" style="width:50%;height:50%" onError="this.onerror=null;this.src='<?php echo base_url()."assets/images/patients/default.png";?>';" />
                     </div>
                 </div>
+                <div id="a6-label" class="sr-only"> 
+			<?php $this->load->view('pages/print_layouts/a6_label');?>
+		</div>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 		<iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
 		<div class="sr-only" id="print-div" style="width:100%;height:100%;"> 
 			<?php $this->load->view('pages/print_layouts/patient_summary');?>
@@ -2480,6 +2491,7 @@ function initDistrictSelectize(){
 			$visits = sizeof($patient_visits);
 		?>
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div-all')">(<?php echo $visits; ?>)-Print Summary All Visits</button>
+		<button type="button" class="btn btn-md btn-warning" onclick="printDiv('a6-label')">Print Label</button>
 		<?php if ($add_sms_access==1){ ?>			
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="openSmsModal()">Send SMS</button> 
 		<?php } ?>
