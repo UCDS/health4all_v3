@@ -20,7 +20,16 @@ class Home extends CI_Controller {
 		$this->data['title']="Home";
 		$this->load->helper('form');
 		if($this->session->userdata('logged_in')){
-			$this->data['title']="Home";
+			$this->data['title']="Home"; 
+			$this->session->set_userdata('loggedin_time',time());	
+			$this->data['defaultValue'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultValue'] as $row){
+				if($row->default_id=='Session_Iddle_Time'){
+			 			$maximumiddletime = $row->value;
+			 			 break;
+			 		}
+			}					
+			$this->session->set_userdata('iddle_time',$maximumiddletime);
 			if(count($this->data['hospitals'])>1){
 			$this->load->library('form_validation');
 				$this->form_validation->set_rules('organisation', 'Organisation',
