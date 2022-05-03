@@ -89,7 +89,7 @@
 									to: 6.5,
 									color: 'rgba(68, 170, 213, .2)'
 								}],
-								categories: [<?php $i=1;foreach($report as $a)  { echo "'".$a->date;if($i<count($report)) echo "' ,"; else echo "'"; $i++; }?>]
+								categories: [<?php $i=1;foreach($report as $a)  { echo "'".$a->datefield;if($i<count($report)) echo "' ,"; else echo "'"; $i++; }?>]
 								},
                         yAxis: {
                             title: {
@@ -140,11 +140,11 @@
 
         	<?php echo form_open('dashboard/helpline_trend/',array('role'=>'form','class'=>'form-custom')); ?>
 			<div style="position:relative;display:inline;">
-            <span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <select name="helpline_id" style="width:300px" class="form-control">
+            <span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <select name="helpline" style="width:300px" class="form-control">
 				<option value="">Helpline</option>
 				<?php foreach($helpline as $line){ ?>
-					<option value="<?php echo $line->helpline_id;?>"
-					<?php if($this->input->post('helpline_id') == $line->helpline_id) echo " selected "; ?>
+					<option value="<?php echo $line->helpline;?>"
+					<?php if($this->input->post('helpline') == $line->helpline) echo " selected "; ?>
 					><?php echo $line->helpline.' - '.$line->note;?></option>
 				<?php } ?>
 			</select></span>
@@ -166,51 +166,10 @@
 			</div>
 			<div  style="position:relative;display:inline;">
 			<input type="text" class="date form-control" name="to_date" class="form-control" value="<?php echo $to_date;?>" />	
-			</div>
-			<select name="hospital" style="width:100px" class="form-control">
-				<option value="">Hospital</option>
-				<?php foreach($all_hospitals as $hosp){ ?>
-					<option value="<?php echo $hosp->hospital_id;?>"
-					<?php if($this->input->post('hospital') == $hosp->hospital_id) echo " selected "; ?>																		
-					><?php echo $hosp->hospital;?></option>
-				<?php } ?>
-			</select>
-			<select name="district" style="width:100px" class="form-control">
-				<option value="">District</option>
-				<?php foreach($hospital_districts as $district){ ?>
-					<option value="<?php echo $district->district;?>"
-					<?php if($this->input->post('district') == $district->district) echo " selected "; ?>																		
-					><?php echo $district->district;?></option>
-				<?php } ?>
-			</select>	
-			<select name="call_category" style="width:100px" class="form-control">
-				<option value="">Category</option>
-				<?php foreach($call_category as $cc){ ?>
-					<option value="<?php echo $cc->call_category_id;?>"
-					<?php if($this->input->post('call_category') == $cc->call_category_id) echo " selected "; ?>									
-					><?php echo $cc->call_category;?></option>
-				<?php } ?>
-			</select>	
-			<select name="caller_type" style="width:100px" class="form-control">
-				<option value="">Caller</option>
-				<?php foreach($caller_type as $ct){ ?>
-					<option value="<?php echo $ct->caller_type_id;?>"
-					<?php if($this->input->post('caller_type') == $ct->caller_type_id) echo " selected "; ?>
-					><?php echo $ct->caller_type;?></option>
-				<?php } ?>
-			</select>
-			<select name="visit_type" style="width:100px" class="form-control">
-				<option value="">Visit Type</option>
-					<option value="OP"
-					<?php if($this->input->post('visit_type') == "OP") echo " selected "; ?>																		
-					>OP</option>
-					<option value="IP"
-					<?php if($this->input->post('visit_type') == "IP") echo " selected "; ?>																		
-					>IP</option>
-			</select>	
+			</div>	
 			<label><input type ="radio" name="trend_type" class ="form-control" value="Day" checked > Daily</label>
             <label><input type="radio" name="trend_type" class ="form-control" value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
-            <label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label><br>
+            <label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label>
 			<input type="submit" name="submit" value="Go" class="btn btn-primary btn-sm" style="align:left" />
 			<a href="<?php echo base_url()."dashboard/helpline/";?>" class="btn btn-warning btn-sm"><i class="fa fa-pie-chart"></i> Dashboard</a>
             <?php  echo form_close();?>
@@ -246,22 +205,22 @@
                     if($this->input->post('trend_type')){
                         $trend_type=$this->input->post('trend_type');
                         if($trend_type == "Month"){
-                            $date = date("M, Y",strtotime($s->date));
+                            $date = date("M, Y",strtotime($s->datefield));
                         }
                         else if($trend_type == "Year"){
                             $date = $s->date;
                         }
                         else{
-                            $date = date("d-M-Y",strtotime($s->date));
+                            $date = date("d-M-Y",strtotime($s->datefield));
                         }
                     }
                     else{
-                        $date = date("d-M-Y",strtotime($s->date));
+                        $date = date("d-M-Y",strtotime($s->datefield));
                     }
                 
             ?>
             <tr>
-            	<td class="text-right"><?php echo $s->date;?></td>
+            	<td class="text-right"><?php echo $s->datefield;?></td>
 	        	<td class="text-right"><?php echo $s->calls;?></td>
 	        </tr>
             <?php 

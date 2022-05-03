@@ -11,7 +11,6 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 
-
 <style>
 	.call_now_img{
 	    cursor: pointer;
@@ -203,7 +202,7 @@ $(function(){
 				$to_date = date("d-M-Y",strtotime($this->input->post('to_date')));
 			}
 			else $to_date = date("d-M-Y");
-			echo form_open('helpline/sms_detailed_report',array('role'=>'form','class'=>'form-custom','id'=>'sms_detailed_report','name'=>'sms_detailed_report'));
+			echo form_open('helpline/sms_sent_report',array('role'=>'form','class'=>'form-custom','id'=>'sms_detailed_report','name'=>'sms_detailed_report'));
 	?>
 			<h4>SMS during</h4>
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
@@ -389,13 +388,13 @@ echo "</select></li>";
 			<thead>
 				<th>#</th>
 				<th>SMS ID</th>
-				<th>To Number</th>
+				<th>Initiated Time</th>	
+				<th>Customer</th>
 				<th>SMS Template</th>
 				<th>SMS Content</th>
-				<th>Initiated Time</th>	
 				<th>Status Code</th>
 				<th>Sent Time</th>				
-				<th>Team Member @ Helpline</th>			
+				<th>Team Member @ Helpline</th>
 				
 			</thead>
 			<tbody>
@@ -410,6 +409,9 @@ echo "</select></li>";
 							<?php echo $sms->id;?>
 						</td>
 						<td>
+							<?php echo date("j-M-Y", strtotime("$sms->created_date")).' '.date("h:i A.", strtotime("$sms->created_time"));?>
+						</td>
+						<td>
 							<?php echo $sms->receiver;?>
 						</td>
 						<td>
@@ -418,9 +420,6 @@ echo "</select></li>";
 						<td>
 							<?php echo $sms->body;?>
 						</td>						
-						<td>
-							<?php echo date("j-M-Y", strtotime("$sms->created_date")).' '.date("h:i A.", strtotime("$sms->created_time"));?>
-						</td>
 						<td style="text-align:center;">
 							<?php echo $sms->status_code;?>
 						</td>
@@ -430,7 +429,7 @@ echo "</select></li>";
 							}?>
 						</td>
 						<td>
-							<?php echo $sms->short_name.' @ '.$sms->helpline;?>
+							<?php echo $sms->short_name.' '.$sms->phone.' @ '.$sms->helpline;?>
 						</td>
 						
 					</tr>

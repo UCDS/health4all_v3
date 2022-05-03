@@ -21,6 +21,25 @@ class Hospital_model extends CI_Model {
         return $result;
     }
     
+    function get_hospitals_selectize($filter_selected_hospital=false){  //Function that returns all the details of the hospitals.
+       	if($filter_selected_hospital){
+			$hospital=$this->session->userdata('hospital');
+				if($hospital){
+					$this->db->where('hospital.hospital_id !=',$hospital['hospital_id']);
+			}
+		}
+        	$this->db->select("hospital.hospital_id,hospital,hospital_short_name,description,place,district.district,state.state,logo,telehealth,helpline.helpline as helpline,helpline.note as helpline_note,CONCAT(hospital,' - ',hospital_short_name,IFNULL(CONCAT(' - ',place),''),IFNULL(CONCAT(' - ',district.district ),''),IFNULL(CONCAT(' - ',state.state),'')) as customdata",false)
+            ->from('hospital')
+            ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+	    ->join('district','hospital.district_id=district.district_id','left')
+	    ->join('state','state.state_id=district.state_id','left')
+	    ->order_by('hospital_short_name');
+             $query = $this->db->get();
+             $result = $query->result();
+        
+             return $result;
+    }
+    
     function get_hospital_types(){
         $this->db->select('*')
             ->from('hospital_type');

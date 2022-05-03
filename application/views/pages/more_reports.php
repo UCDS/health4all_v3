@@ -21,7 +21,7 @@ $appointments=0;
 $helpline=0;
 $admin=0;
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report"){
+			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral"){
 				$appointments=1;
 				
 				?>
@@ -44,6 +44,11 @@ if($function->user_function=="appointment_by_staff"){ ?>
 	if($function->user_function== "patient_location_report"){ ?>
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
 	<?php		 }
+	
+	if($function->user_function== "referral"){ ?>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
+				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
+	<?php		 }
 
 		} ?>
 </div> <?php
@@ -52,11 +57,15 @@ if($function->user_function=="appointment_by_staff"){ ?>
 
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report"){
+			if($function->user_function=="missed_calls_report"){
 				$helpline=1;
 				?>
+				
 				<button class="accordion">Helpline</button>
+				
 <?php			break; }
+
+
 		}
 ?>
 

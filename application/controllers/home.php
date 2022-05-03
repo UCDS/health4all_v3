@@ -243,7 +243,7 @@ class Home extends CI_Controller {
 			{	
 				$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
 			 	foreach($this->data['defaultsConfigs'] as $default){		 
-			 	if($default->default_id=='Login_Status_Deactive'){
+			 	if($default->default_id=='login_status_deactive'){
 			 			$loginMessage = $default->value;
 			 			 break;
 			 		}

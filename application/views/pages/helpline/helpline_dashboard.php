@@ -261,65 +261,7 @@
 		}]
 	});
 	
-	<?php if($resolution_status[0]->open){ ?>
 	
-	Highcharts.chart('resolutionStatus', {
-		chart: pie_chart,
-		credits: pie_credits,
-		title: false,
-		tooltip: pie_tooltip,
-		plotOptions: pie_plotOptions,
-		legend: pie_legend,
-		series: [{
-			name: 'Calls',
-			colorByPoint: true,
-			data: [<?php echo "{ name: 'Open', y: ".$resolution_status[0]->open." }, { name: 'Closed', y: ".$resolution_status[0]->closed." }"; ?>]
-		}]
-	});
-	<?php } ?>
-	<?php if($closed_tat[0]->count24hrs){ ?>
-	
-	Highcharts.chart('closedTat', {
-		chart: pie_chart,
-		credits: pie_credits,
-		title: false,
-		tooltip: pie_tooltip,
-		plotOptions: pie_plotOptions,
-		legend: pie_legend,
-		series: [{
-			name: 'Time',
-			colorByPoint: true,
-			data: [<?php echo "
-			{ name: '7+ Days', y: ".$closed_tat[0]->count7plus."  },
-			{ name: '3-7 Days', y: ".$closed_tat[0]->count3_7days."  },
-			{ name: '24-48 hrs', y: ".$closed_tat[0]->count24_48hrs."  },
-				{ name: '<24h', y: ".$closed_tat[0]->count24hrs." }
-			 "; ?>]
-		}]
-	});
-	<?php } ?>
-
-	<?php if($open_tat[0]->count24hrs){ ?>
-
-	Highcharts.chart('openTat', {
-		chart: pie_chart,
-		credits: pie_credits,
-		title: false,
-		tooltip: pie_tooltip,
-		plotOptions: pie_plotOptions,
-		legend: pie_legend,
-		series: [{
-			name: 'Time',
-			colorByPoint: true,
-			data: [<?php echo "
-			{ name: '7+ Days', y: ".$open_tat[0]->count7plus."  },
-			{ name: '3-7 Days', y: ".$open_tat[0]->count3_7days."  },
-			{ name: '24-48 hrs', y: ".$open_tat[0]->count24_48hrs."  },
-			{ name: '<24h', y: ".$open_tat[0]->count24hrs." }
-			 "; ?>]
-		}]
-	});
-	<?php } ?>
 	});
 	</script>
 <div class="row" style="position:relative;">
@@ -515,39 +457,6 @@
 			</div>
 		</div>
 
-		<div class="col-md-4">
-			<div class="panel panel-default">
-			    <div class="panel panel-heading">
-				    <h4><i class="fa fa-check" aria-hidden="true"></i>&nbsp Resolution Status</h4>
-    			</div>
-	    		<div class="panel-body">
-		        	<div id="resolutionStatus" style="width:300px;height:250px"></div>
-			    </div>
-			</div>
-		</div>
-		
-		<div class="col-md-4">
-			<div class="panel panel-default">
-			    <div class="panel panel-heading">
-				    <h4><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp Closed Call TAT</h4>
-    			</div>
-	    		<div class="panel-body">
-		        	<div id="closedTat" style="width:300px;height:250px"></div>
-			    </div>
-			</div>
-		</div>
-		
-		<div class="col-md-4">
-			<div class="panel panel-default">
-			    <div class="panel panel-heading">
-				    <h4><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp Open Call TAT</h4>
-    			</div>
-	    		<div class="panel-body">
-		        	<div id="openTat" style="width:300px;height:250px"></div>
-			    </div>
-			</div>
-		</div>
-		
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel panel-heading">

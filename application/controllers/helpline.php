@@ -17,8 +17,7 @@ class Helpline extends CI_Controller {
 		$this->data['departments']=$this->staff_model->user_department($user_id);
 		}
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");
-		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
-		$this->data['sms_templates']=$this->helpline_model->get_sms_templates();	
+		$this->data['ip_forms']=$this->staff_model->get_forms("IP");	
 	}
 	
 	function detailed_report(){
@@ -69,6 +68,7 @@ class Helpline extends CI_Controller {
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
 			$this->data['user_hospitals']=$this->staff_model->user_hospital($user['user_id']);
 			$this->data['emails_sent']=$this->helpline_model->get_emails();
+			$this->data['sms_templates']=$this->helpline_model->get_sms_template();
 			$this->data['add_sms_access']=$add_sms_access;
 			
 
@@ -146,8 +146,7 @@ class Helpline extends CI_Controller {
 			$user=$this->session->userdata('logged_in');
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="Missed Calls Report";		
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
-			$this->load->view('templates/header',$this->data);	 
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");				 
 		 	foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
@@ -159,13 +158,14 @@ class Helpline extends CI_Controller {
 			$this->data['calls']=$this->helpline_model->get_missed_calls_report($this->data['rowsperpage']);
 			$this->data['calls_count']=$this->helpline_model->get_missed_calls_report_count();
 	   		$this->data['helpline']=$this->helpline_model->get_helpline("report");
+	   		$this->load->view('templates/header',$this->data);
 			$this->load->view('pages/helpline/missed_calls_report',$this->data);
 			$this->load->view('templates/footer');
 		}
 		else show_404();
 	}
 	
-	function sms_detailed_report(){
+	function sms_sent_report(){
 		if(!$this->session->userdata('logged_in')){
 			show_404();
 		}
@@ -181,7 +181,6 @@ class Helpline extends CI_Controller {
 			$user=$this->session->userdata('logged_in');
 			$this->data['user_id']=$user['user_id'];
 			$this->data['title']="HelpLine SMS";
-			$this->load->view('templates/header',$this->data);
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
@@ -191,14 +190,15 @@ class Helpline extends CI_Controller {
 
 		 		}
 			}
-			$this->data['sms_data']=$this->helpline_model->get_sms_detailed_report($this->data['rowsperpage']);
-			$this->data['sms_count']=$this->helpline_model->get_sms_detailed_report_count();
+			$this->data['sms_data']=$this->helpline_model->get_sms_sent_report($this->data['rowsperpage']);
+			$this->data['sms_count']=$this->helpline_model->get_sms_sent_report_count();
 			$this->data['sent_status']=$this->helpline_model->get_sms_sent_status();
-			$this->data['sms_template']=$this->helpline_model->get_sms_template();
+			$this->data['sms_template']=$this->helpline_model->get_sms_template($use_status=0);
+			//$this->data['sms_template']=$this->helpline_model->get_sms_template_all();
 			$this->data['helpline']=$this->helpline_model->get_helpline("report");
 			$this->data['all_hospitals']=$this->staff_model->get_hospital();
-		
-			$this->load->view('pages/helpline/sms_report_detailed',$this->data);
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('pages/helpline/sms_sent_report',$this->data);
 			$this->load->view('templates/footer');
 		}
 		else show_404();

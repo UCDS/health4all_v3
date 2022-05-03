@@ -11,6 +11,18 @@
                     <div class="col-md-3">Call ID: </div>
                     <div class="col-md-6">
                         <span class="callId"></span>
+                    </div>                    
+                </div>                
+                <div class="row">
+                    <div class="col-md-3">From Number: </div>
+                    <div class="col-md-6">
+                        <span class="fromnumber"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">Received by: </div>
+                    <div class="col-md-6">
+                        <span class="receivedby"></span>
                     </div>
                 </div>
                 <div class="row">
@@ -100,12 +112,7 @@
                     <div class="col-md-3">Resolution Status</div>
                     <div class="col-md-6">
                         <select class="resolution_status form-control" name="resolution_status_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
-                            <option value="">Select</option>
-                            <?php foreach($resolution_status as $rs){ ?>
-                                <option value="<?php echo $rs->resolution_status_id;?>"
-                                <?php if($call->resolution_status_id == $rs->resolution_status_id) echo " selected "; ?>
-                                ><?php echo $rs->resolution_status;?></option>
-                            <?php } ?>
+                            <option value="">Select</option>                         
                         </select>
                       <div class="form-group">
 				<input name="resolution_update_date_time" id="resolution_update_date_time" type="datetime-local" class="resolution_update_date_time form-control" style="width:250px"/>
@@ -134,7 +141,7 @@
                 </div>
                 <div class="row updateCallStatus alert hidden" style="margin-left: 8px; margin-right: 8px;"></div>
                 <div class="row" style="text-align: center">
-                    <button class="submit btn btn-primary btn-sm"  >Update</button>
+                    <button class="submit btn btn-primary btn-sm" id="submitmodal">Update</button>
                     <button class="closeUpdateModal btn btn-danger btn-sm"  >Close</button>
                 </div>
             </div>
@@ -173,12 +180,21 @@ function initDistrictSelectize(){
 	
 }
 
-function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect) {
+function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,resolutionStatusSelect) {
    
     const modal = $("#updateCallModal");
     modalData = callData;
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
+    modal.find(".fromnumber").html(callData.from_number);
+    var recievedby = "";
+    if(callData.short_name==null){
+    	recievedby =callData.line_note.concat(' - ',callData.to_number);  
+    }
+    else {
+    	recievedby =callData.short_name.concat(' - ',callData.dial_whom_number,' <br />  ',callData.line_note,' - ',callData.to_number);
+    }
+    modal.find(".receivedby").html(recievedby);
     modal.find(".notes").val(callData.note);
     modal.find(".caller_type").val(callData.caller_type_id);
     //modal.find(".language").val(callData.language_id); 
@@ -192,6 +208,10 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect) {
     const callCategorySelectVal = buildCallCategoryOptions(callCategorySelect);
     modal.find(".call_category").html(callCategorySelectVal ? callCategorySelectVal: buildEmptyOption("Call Category"));
     modal.find(".call_category").val(callData.call_category_id);
+    
+    const callresolutionStatusSelectVal = buildResolutionOptions(resolutionStatusSelect);
+    modal.find(".resolution_status").html(callresolutionStatusSelectVal ? callresolutionStatusSelectVal: buildEmptyOption("Resolution Status"));
+  
     modal.find(".resolution_status").val(callData.resolution_status_id);
     //console.log(callData.resolution_date_time);
     var res = callData.resolution_date_time.split(" ");
@@ -221,6 +241,8 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect) {
     $('#district_id').attr("data-previous-value", callData.district_id);
     initDistrictSelectize();
     registerHospitalChangeListener();
+    var element = document.getElementById("submitmodal");
+    element.classList.add("submitmodal"+callData.call_id);
     registerOnUpdateFormSubmitted(callData);
    
 }
@@ -275,24 +297,27 @@ function hideUpdateCallStatusMessage() {
 }
 function registerOnUpdateFormSubmitted(callData) {
     const modal = $("#updateCallModal");
-    modal.find(".submit").on("click", function(e) {
+    modal.find(".submitmodal"+callData.call_id).on("click", function(e) {
         e.preventDefault();
-        const postData = {};
-        const callId = callData.call_id;
-        postData["call"] = [callId];
-        postData[`caller_type_${callId}`] = modalData.caller_type_id = modal.find(".caller_type").val();
-        postData[`language_${callId}`] = modalData.language_id =modal.find(".language").val();
-        postData[`call_category_${callId}`] = modalData.call_category_id = modal.find(".call_category").val();
-        postData[`resolution_status_${callId}`] = modalData.resolution_status_id = modal.find(".resolution_status").val();
-        postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
-        postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
-        postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
-        postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
-        postData[`group_${callId}`] = modal.find(".language").val();
-        postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
-        postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
-        postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
-        updateCallData(postData);   
+        var element = document.getElementById("submitmodal");
+        if(element.classList.contains("submitmodal"+callData.call_id)) {
+		const postData = {};
+		const callId = callData.call_id;
+		postData["call"] = [callId];
+		postData[`caller_type_${callId}`] = modalData.caller_type_id = modal.find(".caller_type").val();
+		postData[`language_${callId}`] = modalData.language_id =modal.find(".language").val();
+		postData[`call_category_${callId}`] = modalData.call_category_id = modal.find(".call_category").val();
+		postData[`resolution_status_${callId}`] = modalData.resolution_status_id = modal.find(".resolution_status").val();
+		postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
+		postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
+		postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
+		postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
+		postData[`group_${callId}`] = modal.find(".language").val();
+		postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
+		postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
+		postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
+		updateCallData(postData);   
+	}
     });
     modal.find(".closeUpdateModal").on("click", function(e) {
     	e.preventDefault();
@@ -396,18 +421,22 @@ function registerOnUpdateFormSubmitted(callData) {
     		},
     		callback: function (result) {
     			bootbox.hideAll();
-        		if(result){        		 	
+        		if(result){         				 	
         			modal.modal('hide');
-        			$(this).data('modal', null);	
+        			$(this).data('modal', null);
+        			 var element = document.getElementById("submitmodal");
+    				element.classList.remove("submitmodal"+callData.call_id);
         			if(isupdatedOnce){    
     	 				window.location.reload();
     				}
         		}
     		}
 	});
-    	} else {
+    	} else {    		
     		modal.modal('hide');
     		$(this).data('modal', null);
+    		 var element = document.getElementById("submitmodal");
+    		element.classList.remove("submitmodal"+callData.call_id);
     		if(isupdatedOnce){    
     	 		window.location.reload();
     		}

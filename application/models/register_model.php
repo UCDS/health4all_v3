@@ -142,6 +142,7 @@ class Register_model extends CI_Model{
 		if($this->input->post('id_proof_type'))$id_proof_type=$this->input->post('id_proof_type'); else $id_proof_type="";
 		if($this->input->post('id_proof_no'))$id_proof_no=$this->input->post('id_proof_no'); else $id_proof_no="";
 		if($this->input->post('occupation'))$occupation=$this->input->post('occupation'); else $occupation=0;
+		if($this->input->post('referral_by_hospital_id'))$referral_by_hospital_id=$this->input->post('referral_by_hospital_id'); else $referral_by_hospital_id=0;
 		if($this->input->post('education_level'))$education_level=$this->input->post('education_level'); else $education_level="";
 		if($this->input->post('education_qualification'))$education_qualification=$this->input->post('education_qualification'); else $education_qualification="";
 		if($this->input->post('blood_group'))$blood_group=$this->input->post('blood_group'); else $blood_group="";
@@ -355,6 +356,7 @@ class Register_model extends CI_Model{
 			'outcome_time'=>$outcome_time,
 			'final_diagnosis'=>$final_diagnosis,
                         'insert_by_user_id'=>$user_id,
+                        'referral_by_hospital_id'=>$referral_by_hospital_id,
                         'insert_datetime'=>date("Y-m-d H:i:s")
 		);
 		if($this->input->post('visit_id')){

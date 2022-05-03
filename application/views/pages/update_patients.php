@@ -64,6 +64,9 @@
     	background: #6DF48F;
     	font-weight: bold;
     }
+    .selectize-inline {
+    display: inline-grid;
+}
    /*   .pictures {
       list-style: none;
       margin: 0;
@@ -170,9 +173,6 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 <script type="text/javascript">
 
-function escapeSpecialChars(str) {
-    return str.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
-}
 
 var smsDetails = {};
 var user_details = <?php echo $user_details; ?>;
@@ -252,7 +252,7 @@ function openSmsModal(){
 
 	for (var key in json) {
 		if (json.hasOwnProperty(key)) {
-			if (json[key].helpline_id==smsDetails.called_id){
+			if (json[key].helpline==smsDetails.called_id){
 			if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
 				$('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
 				document.getElementById("smsModal-template").value=json[key].template;
@@ -286,8 +286,35 @@ function openSmsModal(){
     
 </script>
 <script type="text/javascript">
+function initHospitalSelectize(){
+	var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
+
+	var selectize = $('#hospital_id').selectize({
+	    valueField: 'hospital_id',
+	    labelField: 'customdata',
+	    searchField: ['hospital','hospital_short_name', 'place', 'district','state'],
+		options: helpline_hospitals,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	      if (!query.length) return callback();
+		},
+	});
+	var selected_hospital = '<?php echo $this->input->post('hospital'); ?>';
+	if(selected_hospital){
+		selectize[0].selectize.setValue(selected_hospital);
+	}
+}
 function initDistrictSelectize(){
-        var districts = JSON.parse(escapeSpecialChars('<?php echo json_encode($districts); ?>'));
+        var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
 	var selectize = $('#district_id').selectize({
 	    valueField: 'district_id',
 	    labelField: 'custom_data',
@@ -715,6 +742,18 @@ function initDistrictSelectize(){
                         <img src="<?php echo base_url()."assets/images/patients/".$patient->patient_id;?>.jpg" alt="Image" style="width:50%;height:50%" onError="this.onerror=null;this.src='<?php echo base_url()."assets/images/patients/default.png";?>';" />
                     </div>
                 </div>
+                <div id="a6-label" class="sr-only"> 
+			<?php $this->load->view('pages/print_layouts/a6_label');?>
+		</div>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
+		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 		<iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
 		<div class="sr-only" id="print-div" style="width:100%;height:100%;"> 
 			<?php $this->load->view('pages/print_layouts/patient_summary');?>
@@ -822,7 +861,7 @@ function initDistrictSelectize(){
 				<option value="">--Enter district-- </option>				
 				</select>
 				<script>
-					var patient = JSON.parse(escapeSpecialChars('<?php echo json_encode($patient); ?>')); 
+					var patient = JSON.parse(JSON.stringify(<?php echo json_encode($patient); ?>)); 
 					$('#district_id').attr("data-previous-value", patient['district_id']);
 					initDistrictSelectize();	
 				</script>
@@ -1185,16 +1224,14 @@ function initDistrictSelectize(){
                                      <div class="col-md-8 col-xs-6">
                                         <label class="control-label">Referred by Hospital</label>
                                         <?php if($f->edit==1 && empty($patient->referral_by_hospital_id)){ ?>
-                                        <select name="referral_by_hospital_id" id="referral_by_hospital_id" class="form-control referral_by_hospital_id">
-                                            <option value="">--Select--</option>
-                                            <?php 
-                                            foreach($hospitals as $hospital){
-                                                echo "<option value='".$hospital->hospital_id."' class='".$hospital->hospital_id."'";
-                                                if($hospital->hospital_id==$patient->referral_by_hospital_id) echo " selected ";
-                                                echo ">".$hospital->hospital."</option>";
-                                            }
-                                            ?>
+               			<select id="hospital_id" class="selectize-inline" name="referral_by_hospital_id" style="width: 340px;" class="" placeholder="       --Enter hospital--                      ">
+					<option value="">        --Enter hospital--                       </option>
                                         </select>
+                                        <script>
+						
+						initHospitalSelectize();
+	
+					</script>
                                         <?php 
                                             }else{
                                                
@@ -2455,6 +2492,7 @@ function initDistrictSelectize(){
 			$visits = sizeof($patient_visits);
 		?>
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div-all')">(<?php echo $visits; ?>)-Print Summary All Visits</button>
+		<button type="button" class="btn btn-md btn-warning" onclick="printDiv('a6-label')">Print Label</button>
 		<?php if ($add_sms_access==1){ ?>			
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="openSmsModal()">Send SMS</button> 
 		<?php } ?>
@@ -2626,16 +2664,16 @@ function initDistrictSelectize(){
 			</div>	
 			<script type="text/javascript">
 		
-			var smstemplate='<?php echo json_encode($sms_templates); ?>';
+			var smstemplate=<?php echo json_encode($sms_templates); ?>;
 			var inputF = document.getElementById("smsModal-template");
-			var json=JSON.parse(escapeSpecialChars(smstemplate));
+			var json=JSON.parse(JSON.stringify(smstemplate));
 
 			function setSmsTemplate(helpline_id){	
 				smsDetails.templateName=$('#smsModal-templatewithname-dropdown').val();
 				document.getElementById('smsModal-template').readOnly = false;
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == smsDetails.templateName){
+						if(json[key].helpline==helpline_id && json[key].sms_template_id == smsDetails.templateName){
 							if (json[key].edit_text_area==0){
 								document.getElementById('smsModal-template').readOnly = true;
 							}
@@ -2707,7 +2745,7 @@ function initDistrictSelectize(){
 				document.getElementById('smsModal-template').readOnly = false;
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==helpline_id && json[key].sms_template_id == templateName ){
+						if(json[key].helpline==helpline_id && json[key].sms_template_id == templateName ){
 							document.getElementById("smsModal-template").value=json[key].template;
 							if (json[key].edit_text_area==0){
 								document.getElementById('smsModal-template').readOnly = true;
@@ -2789,7 +2827,7 @@ function initDistrictSelectize(){
 				document.getElementById("smsModal-templatewithname-dropdown").innerHTML = null; 
 				for (var key in json) {
 					if (json.hasOwnProperty(key)) {
-						if(json[key].helpline_id==smsDetails.called_id){
+						if(json[key].helpline==smsDetails.called_id){
 						if ($("select[id$='smsModal-templatewithname-dropdown'] option:contains('" + json[key].template_name + "')").length == 0) {
                 $('#smsModal-templatewithname-dropdown').append('<option value="'+json[key].sms_template_id+'">'+json[key].template_name+'</option>');
             }
@@ -3195,7 +3233,7 @@ function initDistrictSelectize(){
 
 	}
 
-	var defaultsConfigs = JSON.parse(escapeSpecialChars('<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>'));
+	var defaultsConfigs = JSON.parse(JSON.stringify(<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>));
 	var defaultsConfigsObj = {};
 	defaultsConfigs.map(function(dc){
 		defaultsConfigsObj[dc.default_id] = dc;
@@ -3550,7 +3588,7 @@ function initDistrictSelectize(){
 		});
 
 		// prescription dropdown selectize
-		mergeDrugsAvailableToDrugs({drugs: JSON.parse(escapeSpecialChars('<?php echo json_encode($drugs); ?>')), drugs_available: JSON.parse(escapeSpecialChars('<?php echo json_encode($drugs_available); ?>'))});
+		mergeDrugsAvailableToDrugs({drugs: JSON.parse(JSON.stringify(<?php echo json_encode($drugs); ?>)), drugs_available: JSON.parse(JSON.stringify(<?php echo json_encode($drugs_available); ?>))});
 		initPrescriptionDrugSelectize();
 
 		initUpdatePatientValidations();
@@ -3772,7 +3810,7 @@ $(function(){
 
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
-		var valHospital = JSON.parse(escapeSpecialChars('<?php echo json_encode($staff_hospital); ?>'));		
+		var valHospital = JSON.parse(JSON.stringify(<?php echo json_encode($staff_hospital); ?>));		
 		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');
 			
 		

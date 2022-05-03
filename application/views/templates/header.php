@@ -104,7 +104,7 @@
 							<?php
 								foreach($functions as $f){
 									if($f->user_function == "Update Patients"){ ?>
-										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patients</a></li>
+										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patient/Visits</a></li>
 									<?php
 									break;
 									}
@@ -261,7 +261,7 @@
 					$f->user_function=="OP Detail" || $f->user_function=="IP Detail" ||
 					$f->user_function=="Diagnostics - Detail" || $f->user_function=="Diagnostics - Summary" ||
 					($f->user_function == "Sanitation Evaluation" && $f->view==1) ||
-					$f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary" || $f->user_function == "Helpline Reports"|| $f->user_function == "follow_up_report" || $f->user_function =="appointment_status" || $f->user_function =="referral"){ ?>
+					$f->user_function == "Bloodbank" || $f->user_function == "Outcome Summary" || $f->user_function == "Helpline Reports" || $f->user_function =="appointment_status"){ ?>
 					<li class="dropdown  <?php if(preg_match("^".base_url()."reports^",current_url())){ echo "active";}?>">
 						<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown"><i class="fa fa-line-chart"></i> Reports <b class="caret"></b></a>
 						<ul class="dropdown-menu">
@@ -306,11 +306,7 @@
 				<?php                      }
                       if($f->user_function=="Patient Transport Report"){ ?>
 						  <li><a href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a></li>
-				<?php                      }
-				 if($f->user_function=="referral"){ ?>
-						  <li><a href="<?php echo base_url()."reports/referrals";?>">Referrals</a></li>
-				<?php                      }
-				
+				<?php                      }				
 				}
 				foreach($functions as $f){
 					if($f->user_function=="Diagnostics - Summary"){ ?>
@@ -329,7 +325,7 @@
 				<?php
 					}
 				?>
-				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report"){ $more_reports=1; ?>
+				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report" ||  $f->user_function=="helpline_receiver" || $f->user_function=="referral"){ $more_reports=1; ?>
 					
 				<?php } ?>
 				<?php
@@ -368,10 +364,6 @@
 			if($f->user_function=="doctor_patient_list"){ ?>
 				<li><a href="<?php echo base_url()."reports/doctor_patient_list";?>">Doctor Patient List</a></li>	
 			<?php	}
-			if($f->user_function=="follow_up_report"){ ?>
-				<li><a href="<?php echo base_url()."report/get/follow_up_report";?>">Follow Up Report</a></li>
-						
-			<?php	}
 			if($f->user_function=="IP Detail"){ ?>
 						<li><a href="<?php echo base_url()."reports/ip_detail";?>">IP Detail</a></li>
 						<li><a href="<?php echo base_url()."reports/icd_detail";?>">ICD Code Detail</a></li>
@@ -390,7 +382,7 @@
 								<li><a href="<?php echo base_url()."helpline/report_groupwise";?>">Helpline Group Wise</a></li>-->
 					<?php	}
 					if($f->user_function=="sms"){ ?>
-						<li><a href="<?php echo base_url()."helpline/sms_detailed_report";?>">Helpline SMS</a></li>
+						<li><a href="<?php echo base_url()."helpline/sms_sent_report";?>">Helpline SMS</a></li>
 					<?php }
 
 			} ?>

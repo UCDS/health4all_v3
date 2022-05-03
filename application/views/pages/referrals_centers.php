@@ -154,6 +154,39 @@ function initHospitalSelectize(){
 </script>
 
 <style type="text/css">
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+.rows_per_page{
+    display: inline-block;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.428571429;
+    color: #555555;
+    vertical-align: middle;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+.rows_per_page:focus{
+    border-color: #66afe9;
+    outline: 0;	
+}
 .page_dropdown{
     position: relative;
     float: left;
@@ -227,8 +260,8 @@ display: inline-grid;
 	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");	
 	?>
 <div class="row">
-		<h4>Referrals</h4>	
-		<?php echo form_open("reports/referrals",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
+		<h4>Referral Centers</h4>	
+		<?php echo form_open("reports/referrals_centers",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
                         Search by : <select name="dateby" id="dateby" class="form-control">   
                         <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option> 
                         <option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>          
@@ -236,7 +269,7 @@ display: inline-grid;
                       
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-			<select name="department" id="department" class="form-control">
+			<select name="department" id="department" style="width:160px" class="form-control">
 				<option value="">Department</option>
 				<?php 
 				foreach($all_departments as $dept){
@@ -266,7 +299,7 @@ display: inline-grid;
 				}
 				?>
 			</select>
-			<select name="visit_name" id="visit_name" class="form-control" >
+			<select name="visit_name" id="visit_name" style="width:160px" class="form-control" >
 				<option value="">Visit Type</option>
 				<?php 
 				foreach($visit_names as $v){
@@ -276,10 +309,7 @@ display: inline-grid;
 				}
 				?>
 			</select>
-			  <select name="hospitalsearchtype" id="hospitalsearchtype" class="form-control">   
-			  <option value="HospitalReferredto" <?php echo ($this->input->post('hospitalsearchtype') == 'HospitalReferredto') ? 'selected' : ''; ?> >Hospital Referred to</option> 
-                        <option value="HospitalReferredby" <?php echo ($this->input->post('hospitalsearchtype') == 'HospitalReferredby') ? 'selected' : ''; ?> >Hospital Referred by</option>                                  
-                        </select>
+			  Referred From:
                         <select id="hospital_id" name="hospital" style="width: 340px;display: inline-grid;" class="" placeholder="       --Enter hospital--                      ">
 							<option value="">        --Enter hospital--                       </option>
 						
@@ -316,7 +346,7 @@ display: inline-grid;
                         <option value="OP" <?php echo ($this->input->post('visittype') == 'OP') ? 'selected' : ''; ?> >OP</option> 
                         <option value="IP" <?php echo ($this->input->post('visittype') == 'IP') ? 'selected' : ''; ?> >IP</option>          
                         </select>
-                        Rows per page (For Detail) : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 						   
+                        Rows per page (For Detail) : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" />  						   
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
@@ -335,14 +365,15 @@ display: inline-grid;
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<tr>
-			<th style="text-align:center" rowspan="2">S.no</th>
-		 	<th style="text-align:center" rowspan="2">State</th>
-			<th style="text-align:center" rowspan="2">District</th>
-			<th style="text-align:center" colspan="5"><?php  if($this->input->post('visittype')){ echo $this->input->post('visittype');} else {echo 'OP';} ?></th>
-			</tr>
-		<tr>
+			<th style="text-align:center">S.no</th>
+		 	<th style="text-align:center">State</th>
+			<th style="text-align:center">District</th>
+			<th style="text-align:center">Hospital Type</th>
+			<th style="text-align:center">Referred From</th>
 			<th>Male</th><th>Female</th><th>Others</th><th>Not Specified</th><th>Total</th> 
-		</tr>
+			
+			</tr>
+		
 		
 	</thead>
 	<tbody>
@@ -353,17 +384,13 @@ display: inline-grid;
 	$total_other=0;
 	$total_not_specified= 0;
 	$total_grand= 0;
-	$hospitalsearchtype="HospitalReferredto";
-	if($this->input->post('hospitalsearchtype')=="HospitalReferredby"){
-			$hospitalsearchtype="HospitalReferredby";
-	}
-	if($this->input->post('rows_per_page')){
-        	$rowsperpage = $this->input->post('rows_per_page');
-        }
 	$date_filter_field="Registration";
 	if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
 		$date_filter_field="Appointment";
 	}
+	if($this->input->post('rows_per_page')){
+        	$rowsperpage = $this->input->post('rows_per_page');
+        }
 	$visittype='OP'; 
 	if($this->input->post('visittype') && $this->input->post('visittype')){
 		$visittype=$this->input->post('visittype');
@@ -396,38 +423,49 @@ display: inline-grid;
 	if($this->input->post('state') && $this->input->post('state')){
 		$state=$this->input->post('state');
 	}
+	$hospital_row = -1;
 	foreach($report as $s){	
 	?>
 	<tr>
+		<?php 
+			if ($s->hospital_id) {
+				$hospital_row = $s->hospital_id;
+			} else {
+				$hospital_row = -1;
+			} 
+		
+		?>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->state;?></td>
 		<td><?php echo $s->district;?> </td>
+		<td><?php echo $s->type1;?> </td>
+		<td><?php echo $s->hospital_short_name.' - '.$s->hospital;?> </td>		
 		<?php if ($s->male > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->male;?> </td>		
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospital_row/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->male;?> </td>		
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->male;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->female > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->female;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospital_row/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->female;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->female;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->others > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->others;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospital_row/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->others;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->others;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->not_specified > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->not_specified;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospital_row/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->not_specified;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->not_specified;?> </td>
 		<?php }  ?>
 		
 		<?php if ($s->total > 0) { ?>	
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->total;?>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospital_row/$from_date/$to_date/$rowsperpage/$s->district_id/$s->state_id";?>"><?php echo $s->total;?>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $s->total;?> </td>
 		<?php }  ?>
@@ -443,33 +481,35 @@ display: inline-grid;
 	<tfoot>
 	 	<th> </th>
 	 	<th> </th>
+	 	<th> </th>
+	 	<th> </th>
 		<th>Total </th>
 		<?php if ($total_m > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_m;?> </td>		
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/M/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_m;?> </td>		
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_m;?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_f > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_f;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/F/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_f;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_f?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_other > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_other;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/O/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_other;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_other;?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_not_specified > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$district/$state/";?>"><?php echo $total_not_specified;?> </td>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/0/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_not_specified;?> </td>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_not_specified;?> </td>
 		<?php }  ?>
 		
 		<?php if ($total_grand > 0) { ?>	
-		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospitalsearchtype/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_grand;?>
+		<td class="text-right"><a href="<?php echo base_url()."reports/referrals_centers_detail/$date_filter_field/$visittype/$visit_name/$department_id/$unit/$area/-1/$hospital/$from_date/$to_date/$rowsperpage/$district/$state";?>"><?php echo $total_grand;?>
 		<?php } else { ?>
 		<td class="text-right"><?php echo $total_grand;?> </td>
 		<?php }  ?>
