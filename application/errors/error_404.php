@@ -2,9 +2,13 @@
 	// Legacy code work around
 	$CI =& get_instance();
 	$CI->load->model('masters_model');
-	$sessionTimeOut = $CI->masters_model->get_defaultvalue('Session_Timeout_Message');	 
+	$sessionTimeOut = $CI->masters_model->get_defaultvalue('session_timeout_message');	 
     $uc_url =  	$CI->masters_model->get_defaultvalue('uc_url');	
-	$sessiongoback = 	$CI->masters_model->get_defaultvalue('Session_GoBack_Message');	
+	$sessiongoback = 	$CI->masters_model->get_defaultvalue('session_goback_message');	
+	$maxidletime = $CI->session->userdata('idle_time');
+	$loggedintime = $CI->session->userdata('loggedin_time');
+	$idletime = time() - $loggedintime;
+	
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,11 +69,20 @@ p {
  
 	<div class="row" id="container" >				
 		<h1 align="center"><img src="<?php echo base_url('assets/images/health4all_PNF.jpg'); ?>" /> </h1>
-		<h1 align="center"> <?php foreach($sessionTimeOut as $message){ ?>
-					   <?php echo $message->value; ?> 
-				 <?php } ?> </h1>		
-		<h1 align="center"><a href="<?php echo base_url(); ?>"><?php foreach($sessiongoback as $message){ ?>
+		<h1 align="center"> <?php if ($idletime > ($maxidletime*60)){ ?>
+		
+					<?php foreach($sessionTimeOut as $message1){ ?>
+					   <?php echo $message1->value; ?> 
+				 <?php } ?> 
+		<?php } ?>
+		<?php if ($idletime < ($maxidletime*60)){ ?>
+			<?php echo $message; ?>
+		<?php } ?>
+		</h1>		
+		<h1 align="center"><a href="<?php echo base_url(); ?>"><?php if ($idletime > ($maxidletime*60)){ ?>
+					<?php foreach($sessiongoback as $message){ ?>
 					  <?php echo $message->value; ?> 
+				 <?php } ?>
 				 <?php } ?></a></h1> 		
 		 
 	</div>

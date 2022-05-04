@@ -24,12 +24,12 @@ class Home extends CI_Controller {
 			$this->session->set_userdata('loggedin_time',time());	
 			$this->data['defaultValue'] = $this->masters_model->get_data("defaults");
 			foreach($this->data['defaultValue'] as $row){
-				if($row->default_id=='Session_Iddle_Time'){
-			 			$maximumiddletime = $row->value;
+				if($row->default_id=='session_idle_time'){
+			 			$maximumidletime = $row->value;
 			 			 break;
 			 		}
 			}					
-			$this->session->set_userdata('iddle_time',$maximumiddletime);
+			$this->session->set_userdata('idle_time',$maximumidletime);
 			if(count($this->data['hospitals'])>1){
 			$this->load->library('form_validation');
 				$this->form_validation->set_rules('organisation', 'Organisation',
