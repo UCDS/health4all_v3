@@ -462,7 +462,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					    <?php if ($patient->gender == 'M' || $patient->gender == 'F' || $patient->gender == 'O') {
 						?>
 						<div class="radio">
-						<label class="control-label"><input type="radio" class="gender" value="<?php echo $patient->gender;?>" name="gender" <?php if($patient)  if($patient->gender=="M") echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> /> <?php echo $patient->gender;?></label>
+						<label class="control-label"><input type="radio" class="gender" value="<?php echo $patient->gender;?>" name="gender" <?php if($patient)  if($patient->gender) echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> /> <?php echo $patient->gender;?></label>
 						</div>						
 						<?php
 						}
