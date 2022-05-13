@@ -1,6 +1,10 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.ptTimeSelect.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
@@ -169,6 +173,15 @@ $(function(){
 			$("#table-sort").tablesorter(options);
   });
 </script>
+
+<script type="text/javascript">
+        $(document).ready(function(){
+			// find the input fields and apply the time select to them.
+        $('#from_time').ptTimeSelect();
+        $('#to_time').ptTimeSelect();
+        });
+</script>
+
 <!--
 <div class="row">
 	<?php // if(!!$msg) { ?>
@@ -189,10 +202,15 @@ $(function(){
 			}
 			else $to_date = date("d-M-Y");
 			echo form_open('helpline/detailed_report',array('role'=>'form','class'=>'form-custom','id'=>'call_detailed_report','name'=>'call_detailed_report' ));
+			if($this->input->post('from_time')) $from_time=date("H:i:s",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+			if($this->input->post('to_time')) $to_time=date("H:i:s",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
 	?>
 			<h4>Calls during</h4>
-			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" /> to 
+			<input type="text" style="width:120px" class="date form-control" value="<?php echo $from_date;?>" name="from_date" />
+			<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/> to
 			<input type="text" style="width:120px" class="date form-control" value="<?php echo $to_date;?>" name="to_date" />
+          		<input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" id="to_time" size="7px"/>
+
 
 			<select name="helpline_id" id="helplineSelect" style="width:170px" class="form-control">
 				<option value="">Helpline</option>
