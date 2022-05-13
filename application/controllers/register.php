@@ -57,7 +57,7 @@ class Register extends CI_Controller {
 				
 		}
 	}
-	
+	//sairam
 	//custom_form() accepts a form ID to display the selected form (OP or IP) 
 	//and also an optional visit_id when a patient is selected.
 	public function custom_form($form_id="",$visit_id=0)

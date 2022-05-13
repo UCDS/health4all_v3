@@ -80,7 +80,7 @@ $(function(){
 	}
 	?>
 	<div class="row">
-		<h4>Outcome- Summary Report</h4>	
+		<h4>Outcome- Summary - IP</h4>	
 		<?php echo form_open("reports/outcome_summary",array('role'=>'form','class'=>'form-custom')); ?>
 					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />

@@ -87,6 +87,8 @@ class Reports extends CI_Controller {
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['from_date']=$from_date;
+		$this->data['to_date']=$to_date;
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
@@ -1036,6 +1038,8 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
+		$this->data['from_date']=$from_date;
+		$this->data['to_date']=$to_date;
 
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		foreach ($this->data['defaultsConfigs'] as $default) {
@@ -1090,6 +1094,8 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
+		$this->data['from_date']=$from_date;
+		$this->data['to_date']=$to_date;
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 		foreach ($this->data['defaultsConfigs'] as $default) {
 			if ($default->default_id == 'pagination') {
@@ -1140,7 +1146,9 @@ class Reports extends CI_Controller {
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
 		$this->data['visit_names']=$this->staff_model->get_visit_name();
-		$this->data['visit_type_param']=$visit_type;		
+		$this->data['visit_type_param']=$visit_type;
+		$this->data['from_date']=$from_date;
+		$this->data['to_date']=$to_date;		
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
