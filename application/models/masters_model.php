@@ -1602,5 +1602,14 @@ else if($type=="dosage"){
    		$this->db->select("user_id, username")->from("user");
         return $this->db->get()->result();
    }
+   
+   
+	function get_defaultvalue($filter_value) {
+		$this->db->select("value")
+			->from("defaults")
+			->where('default_id',$filter_value);
+		$query=$this->db->get();
+		return $query->result();
+	}
 }
 ?>

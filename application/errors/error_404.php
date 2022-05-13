@@ -1,3 +1,15 @@
+<?php
+	// Legacy code work around
+	$CI =& get_instance();
+	$CI->load->model('masters_model');
+	$sessionTimeOut = $CI->masters_model->get_defaultvalue('session_timeout_message');	 
+    $uc_url =  	$CI->masters_model->get_defaultvalue('uc_url');	
+	$sessiongoback = 	$CI->masters_model->get_defaultvalue('session_goback_message');	
+	$maxidletime = $CI->session->userdata('idle_time');
+	$loggedintime = $CI->session->userdata('loggedin_time');
+	$idletime = time() - $loggedintime;
+	
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +37,7 @@ h1 {
 	color: #444;
 	background-color: transparent;
 	border-bottom: 1px solid #D0D0D0;
-	font-size: 19px;
+	font-size: 15px;
 	font-weight: normal;
 	margin: 0 0 14px 0;
 	padding: 14px 15px 10px 15px;
@@ -54,9 +66,25 @@ p {
 </style>
 </head>
 <body>
-	<div id="container">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
+ 
+	<div class="row" id="container" >				
+		<h1 align="center"><img src="<?php echo base_url('assets/images/health4all_PNF.jpg'); ?>" /> </h1>
+		<h1 align="center"> <?php if ($idletime > ($maxidletime*60)){ ?>
+		
+					<?php foreach($sessionTimeOut as $message1){ ?>
+					   <?php echo $message1->value; ?> 
+				 <?php } ?> 
+		<?php } ?>
+		<?php if ($idletime < ($maxidletime*60)){ ?>
+			<?php echo $message; ?>
+		<?php } ?>
+		</h1>		
+		<h1 align="center"><a href="<?php echo base_url(); ?>"><?php if ($idletime > ($maxidletime*60)){ ?>
+					<?php foreach($sessiongoback as $message){ ?>
+					  <?php echo $message->value; ?> 
+				 <?php } ?>
+				 <?php } ?></a></h1> 		
+		 
 	</div>
 </body>
 </html>

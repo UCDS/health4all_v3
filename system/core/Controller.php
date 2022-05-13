@@ -51,6 +51,23 @@ class CI_Controller {
 		$this->load->initialize();
 		
 		log_message('debug', "Controller Class Initialized");
+		
+		if($this->session->userdata('logged_in') &&  $this->session->userdata('loggedin_time')){
+		//Logic to handle session idle time.
+		$minutesBeforeSessionExpire = $this->session->userdata('idle_time');
+		$loggedInTime = $this->session->userdata('loggedin_time');
+		$IdleTime = time()- $loggedInTime;	
+	
+		if ($IdleTime > ($minutesBeforeSessionExpire*60)){			
+			$this->session->sess_destroy();		 
+			show_404();
+		}
+		else
+		{
+			$this->session->set_userdata('loggedin_time',time());	 
+		}
+		//End
+		}
 	}
 
 	public static function &get_instance()
