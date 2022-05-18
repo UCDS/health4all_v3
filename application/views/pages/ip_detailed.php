@@ -72,6 +72,23 @@ $(document).ready(function(){$("#from_date").datepicker({
 			// find the input fields and apply the time select to them.
            $('#from_time').ptTimeSelect();
 			$('#to_time').ptTimeSelect();
+        
+        $("#from_date").datepicker({
+		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
+		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,beforeShow: function (input) {
+                    $(input).css({
+                        "position": "relative",
+                        "z-index": 1
+                    });
+                },onClose: function () { $('.ui-datepicker').css({ 'z-index': 0  } ); } })
+		$("#to_date").datepicker("option","minDate",sdt)},beforeShow: function (input) {
+                    $(input).css({
+                        "position": "relative",
+                        "z-index": 1
+                    });
+                },
+                onClose: function () { $('.ui-datepicker').css({ 'z-index': 0  } ); } 
+                });
         });
 		
     </script>
@@ -188,7 +205,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 </style>
 
 	<?php 
-	$from_date=0;$to_date=0;
+	//$from_date=0;$to_date=0;
 	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); //else $from_date = date("Y-m-d");
 	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); //else $to_date = date("Y-m-d");
 	$from_time=0;$to_time=0;
@@ -203,7 +220,6 @@ $(document).ready(function(){$("#from_date").datepicker({
 					From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 					To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 					From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
-					to
                    To Time:<input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($to_time)); ?>" name="to_time" id="to_time" size="7px"/>
 					<select name="department" id="department" class="form-control">
 					<option value="">Department</option>
