@@ -29,3 +29,4 @@ Insert into defaults values ('session_idle_time','Session Iddle Time','','Numeri
 
 ALTER TABLE `sms_template` ADD `hospital_id` int(1) ; 
 
+ALTER TABLE `sms_template` ADD `default_sms` TINYINT(1) DEFAULT 0; 
