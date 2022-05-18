@@ -302,7 +302,7 @@
 
 				<?php	}
                       if($f->user_function=="Outcome Summary"){ ?>
-						  <li><a href="<?php echo base_url()."reports/outcome_summary";?>">Outcome Summary</a></li>
+						  <li><a href="<?php echo base_url()."reports/outcome_summary";?>">Outcome Summary - IP</a></li>
 				<?php                      }
                       if($f->user_function=="Patient Transport Report"){ ?>
 						  <li><a href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a></li>

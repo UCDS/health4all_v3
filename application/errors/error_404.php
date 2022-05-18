@@ -68,7 +68,7 @@ p {
 <body>
  
 	<div class="row" id="container" >				
-		<h1 align="center"><img src="<?php echo base_url('assets/images/health4all_PNF.jpg'); ?>" /> </h1>
+		<h1 align="center"><img src="<?php echo base_url('assets/images/uc-logo.png'); ?>" style="width:100px;height:100px"/> </h1>
 		<h1 align="center"> <?php if ($idletime > ($maxidletime*60)){ ?>
 		
 					<?php foreach($sessionTimeOut as $message1){ ?>
