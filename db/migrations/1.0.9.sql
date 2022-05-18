@@ -26,3 +26,6 @@ Insert into defaults values ('session_timeout_message','Session TimeOut','','Tex
 Insert into defaults values ('session_goback_message','Session GoBack','','Text','','','','Go back to home page');
 
 Insert into defaults values ('session_idle_time','Session Iddle Time','','Numeric','','','',15);
+
+ALTER TABLE `sms_template` ADD `hospital_id` int(1) ; 
+

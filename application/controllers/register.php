@@ -592,8 +592,13 @@ class Register extends CI_Controller {
 			}
 			// Fetch user functions and check if the user has 
         		// access to documentation access rights
-			if($function->user_function=="sms"){
-                		if ($function->add==1 && $this->data['staff_hospital']["helpline"] && $this->data['staff_hospital']["helpline"]!="" && !empty($this->data['staff_hospital']["helpline"])) $add_sms_access=1;
+			if($function->user_function=="sms"){		 
+		 
+                		if ($function->add==1 && $this->data['staff_hospital']["helpline"] && $this->data['staff_hospital']["helpline"]!="" && !empty($this->data['staff_hospital']["helpline"]))
+						{							
+						  $add_sms_access=1;
+						}
+					 
             		}
 		}
 		if($access==1){
