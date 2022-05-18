@@ -169,8 +169,7 @@ $(document).ready(function(){
 		outline: 0;
 	}
 </style>
-	<?php 
-	$from_date=0;$to_date=0;
+	<?php
 	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); //else $from_date = date("Y-m-d");
 	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); //else $to_date = date("Y-m-d");
 	$from_time=0;$to_time=0;
@@ -179,7 +178,7 @@ $(document).ready(function(){
 	?>
 	<div class="row">
 		<h4>Outcome Detailed report</h4>	
-		<?php echo form_open("reports/ip_detail",array('role'=>'form','class'=>'form-custom')); ?> 
+		<?php echo form_open("reports/outcome_detail",array('role'=>'form','class'=>'form-custom')); ?> 
 					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 					<select name="department" id="department" class="form-control">
