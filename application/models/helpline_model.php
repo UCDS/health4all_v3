@@ -1474,12 +1474,20 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 	}
 
 	function get_sms_template($use_status=1){
-		$this->db->select("sms_template.helpline_id,helpline.helpline,sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url",false)->from("sms_template")
-		->join("helpline", "sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id");
+		$hospitaldata = $this->session->userdata('hospital');	
+		$hospital_id = $hospitaldata['hospital_id'];	
+		
+		$this->db->select("sms_template.helpline_id,helpline.helpline,sms_template_id,dlt_header, dlt_entity_id, template,template_name,sms_type,dlt_tid, use_status, edit_text_area,generate_by_query,generation_method,report_download_url, 
+		default_sms",false)->from("sms_template")
+		->join("helpline", "sms_template.helpline_id =  helpline.helpline join user_helpline_link on helpline.helpline_id = user_helpline_link.helpline_id")
+		->order_by('sms_template.default_sms Desc');
+
 		
 		$user = $this->session->userdata('logged_in');
 		$this->db->where("user_helpline_link.user_id", $user['user_id']);
 		$this->db->where("(user_helpline_link.update_access=1 OR user_helpline_link.reports_access=1)");
+		$this->db->where("sms_template.hospital_id", $hospital_id );
+	 
 		
 		if ($use_status == 1){
 			$this->db->where("use_status", 1);
