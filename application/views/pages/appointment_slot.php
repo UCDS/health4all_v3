@@ -401,7 +401,7 @@ $(function() {
 				</div>				
 			</div>	
 			<div class="form-group">
-				<label for="visit_modal" class="control-label col-sm-4">Department: </label>
+				<label for="visit_modal" class="control-label col-sm-4">Visit Name: </label>
 				<div class="col-sm-8">
 				<select name="visit" id="visit_modal" required class="form-control">
 				<?php 
