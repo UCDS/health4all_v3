@@ -139,6 +139,18 @@ class Register extends CI_Controller {
 				if($this->input->post('search_patients')){
 					//if the user searches for a patient, get the list of patients that matched the query.
 					$this->data['patients']=$this->register_model->search();
+					
+					//get auto ip number from hospital table - 194214
+					$this->data['autoIP']=$this->register_model->get_auto_ip($this->data['patients'][0]->hospital_id);
+					
+					
+					//AutoIP check here - 194214
+					if($this->data['autoIP'] == 1)
+					{
+						$this->data['counter_needed'] = $this->register_model->create_ip_counter($this->data['patients'][0]->hospital_id);
+						$this->data['ip_no'] = $this->register_model->assignIP($this->data['patients'][0]->patient_id, $this->data['patients'][0]->hospital_id);
+					}
+					
 					if(count($this->data['patients'])==1 || $this->data['form_type']=="OP") {
 						$visit_id = $this->data['patients'][0]->visit_id;
 						$this->data['patient']=$this->register_model->select($visit_id);
@@ -149,6 +161,22 @@ class Register extends CI_Controller {
 					}
 				}
 				else if($this->input->post('select_patient') && $visit_id!=0){
+					// for a selected patient - in case of multiple entries - 194214
+					$c = $this->input->post('select_patient');
+
+					$this->data['hid']=$this->register_model->get_hid($c);
+
+					$this->data['autoIP']=$this->register_model->get_auto_ip($this->data['hid']);
+
+					if($this->data['autoIP'] == 1)
+					{
+
+						$this->data['counter_needed'] = $this->register_model->create_ip_counter($this->data['hid']);
+						
+						$this->data['ip_no'] = $this->register_model->assignIP($c, $this->data['hid']);
+
+					} 
+					
 					//else if the user has selected a patient after searching, get the patient details.
 					$this->data['patient']=$this->register_model->select($visit_id);
                                          $this->data['ip_count'] = $this->counter_model->get_counters("IP");
