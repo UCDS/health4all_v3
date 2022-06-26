@@ -1315,7 +1315,9 @@ function initAppointmentDoctorSelectize(modal_id){
 							<?php  echo "| H4A Patient ID : ".$p->patient_id." | ";
 							 echo "Patient Name : ".$p->name." | ";
 							 echo "Age : ".$p->age_years."Y ".$p->age_months."M ".$p->age_days."D"." | ";
-							 echo "Patient's Sex : ".$p->gender." | ";
+							 if ($p->gender!="0"){							 
+							 	echo "Patient's Sex : ".$p->gender." | ";			 
+							 }
 							 echo "Phone No : ".$p->phone." | ";
 							 echo "Address : ".$p->address." | ";
 							 echo "Parent/Spouse : ".$p->parent_spouse." | ";
@@ -1348,7 +1350,7 @@ function initAppointmentDoctorSelectize(modal_id){
 											<td style="text-align:center"><?php echo $p->hospital; ?></td>
 											<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
 											<td style="text-align:center"><?php echo $p->department;?></td>
-											<td style="text-align:center"><?php echo $p->appointment_date; ?></td>
+											<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
 										</tr>
 										<?php $prev = $p;
 										} ?>
