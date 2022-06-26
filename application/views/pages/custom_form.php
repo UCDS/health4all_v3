@@ -368,8 +368,25 @@ function initAppointmentDoctorSelectize(modal_id){
 				<?php if($update){ ?>
 				<input type="text" name="visit_id" class="form-control sr-only" size="3" value="<?php echo $patient->visit_id;?>" readonly />
 				<?php } ?>
+                                <!-- Added code which will operate based on auto_IP value - 194214 -->
+							<?php if($autoIP == 0) { ?>
+
                                 <input type="text" name="hosp_file_no" <?php if(!$update){ ?> value='<?php //echo $ip_count[0]->count; ?>' <?php } ?><?php if($update){?> readonly value="<?php echo $patient->hosp_file_no;?>" <?php } ?> class="form-control" size="5" required />
                                
+							<?php }  else { 
+										if($update == 1) { ?>
+											<input type="text" name="n" class="form-control" size="5" readonly value="<?php echo $patient->hosp_file_no;?>" readonly />
+											 <?php }
+
+										else { ?>
+											<input type="hidden" name="hosp_file_no" class="form-control" size="5" readonly value="<?php echo $ip_no;?>" readonly />
+										
+
+											<input type="text" name="n" class="form-control" size="5" readonly value="<?php echo AUTO;?>" readonly /> <?php } ?> 
+
+
+								 
+							<?php } ?>
 				<?php } 
                                     foreach($fields as $field){
 					if($field->field_name == "patient_id_manual")

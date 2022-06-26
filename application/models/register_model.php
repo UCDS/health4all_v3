@@ -82,6 +82,137 @@ class Register_model extends CI_Model{
 		return $key;
 	}
 	
+	// Added function to get auto_ip_number value for a given patient's hospital - 194214
+	
+	function get_auto_ip($hospital_id){
+		//echo("<script>console.log('inside get_auto_ip: " . $hospital_id . "');</script>");
+		$this->db->select("hospital.auto_ip_number")->from("hospital");
+		$this->db->where("hospital_id", $hospital_id);
+		$query=$this->db->get();
+		
+		if ($query->num_rows() > 0)
+		{
+   			foreach ($query->result() as $row)
+   			{
+      			return $row->auto_ip_number;
+      
+   			}
+		}
+
+	}
+
+	//function ends
+	
+	// Added function to get check if there is an ip counter and if not, create a new one for a given hospital - 194214
+	function create_ip_counter($hospital_id){
+		$this->db->select('counter.counter_id')->from('counter')->where('counter_name','IP')->where('hospital_id',$hospital_id);
+
+		$query=$this->db->get();
+		$result=$query->row();
+		$c = $result->counter_id+1;
+
+		if(isset($result->counter_id) )
+			return 0;
+
+		else
+		{
+			$data = array(
+				'counter_name'=> 'IP',
+				'count'=>0,
+				'hospital_id'=> $hospital_id,
+				'counter_id'=> $c
+
+			);
+			$this->db->insert('counter',$data);
+			return 1;
+		}
+
+	}
+	//function ends
+	
+	// function to assign new unique ip number to the patient and then updating it in the controller - 194214
+
+	function assignIP($patient_id, $hospital_id){
+
+		$this->db->select("counter.count")->from("counter");
+		$this->db->where("hospital_id", $hospital_id);
+		$this->db->where("counter_name", "IP");
+		$query=$this->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+   			{
+   				$t = $row->count;
+      			$n = $row->count;
+      
+   			}
+
+		}
+		echo("<script>console.log('ip num after retreiving from db t " . $t . "');</script>");
+		echo("<script>console.log('ip num after retreiving from db n " . $n . "');</script>");
+
+		$this->db->select("patient_visit.hosp_file_no")->from("patient_visit");
+		$this->db->where("hospital_id", $hospital_id);
+		$this->db->where("visit_type", "IP");
+
+		$query=$this->db->get();
+		
+		if ($query->num_rows() > 0)
+		{
+			//$res = 0;
+			foreach ($query->result() as $row)
+   			{
+   				
+      			if ($n == $row->hosp_file_no){
+      				$n++;
+      				echo("<script>console.log('comparing $n with : " . $row->hosp_file_no . "');</script>");
+      				//$n = $row->hosp_file_no;
+      				
+      			}
+
+      
+   			}
+   			//if($res > 0)
+   				//$n++;
+   			
+		}
+
+		echo("<script>console.log('ip num after if: " . $n . "');</script>");
+
+		$data = array(
+    		'count' => $n,
+    		'counter_name' => 'IP'
+			
+		);
+
+		$this->db->where('counter_name', 'IP');
+		$this->db->where('hospital_id', $hospital_id);
+		$this->db->update('counter', $data); // updating the db with new count value
+
+		return $n;
+	}
+
+	// function ends
+
+	//194214 - function to get hospital id from patient id
+	function get_hid($c){
+
+		$this->db->select("patient_visit.hospital_id")->from("patient_visit");
+		$this->db->where("patient_id", $c);
+		$query=$this->db->get();
+		if ($query->num_rows() > 0)
+		{
+   			foreach ($query->result() as $row)
+   			{
+      			return $row->hospital_id;
+      
+   			}
+		}
+	}
+	// function ends
+
+	
 	function insert_update_summary_link($summary_link_patient_id,$summary_link_patient_visit_id,$summary_link_contents){
 		$base64_encode_summary_link_contents = base64_encode($summary_link_contents);
 		$summary_link_contents_md5 = md5($base64_encode_summary_link_contents);
