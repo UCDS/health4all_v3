@@ -361,7 +361,7 @@ function initAppointmentDoctorSelectize(modal_id){
 				<div class="form-group">
 				<?php if($patient){ ?>
 				<label class="control-label">Patient ID</label>
-				<input type="text" name="patient_id" class="form-control" size="5" value="<?php echo $patient->patient_id;?>" readonly />
+				<input type="text" name="patient_id" class="form-control" size="5" value="<?php if(!$patients[0]) echo $patient->patient_id;?>" readonly />
 				<?php } ?>
 				<?php if($form_type=="IP"){ ?>
 				<label class="control-label">IP No</label>
@@ -410,7 +410,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">First Name<?php if($field->mandatory) { ?><span class="mandatory">*</span><?php } ?></label>
-						<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if($patient) echo $patient->first_name;?>" <?php if($patient && $patient->first_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if(!$patients[0]){ echo $patient->first_name;}?>" <?php if($patient && $patient->first_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -420,7 +420,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Last Name<?php if($field->mandatory) { ?><span class="mandatory">*</span><?php } ?></label>
-						<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if($patient) echo $patient->last_name;?>" <?php if($patient && $patient->last_name) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if(!$patients[0]) echo $patient->last_name;?>" <?php if($patient && $patient->last_name) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -450,9 +450,9 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Age<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="age_years" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />Y
-						<input type="text" name="age_months" class="form-control" size="1" tabindex="1000"  value="<?php if($patient)  echo $patient->age_months;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />M
-						<input type="text" name="age_days" class="form-control" size="1"  tabindex="1001" value="<?php if($patient)  echo $patient->age_days;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />D
+						<input type="text" name="age_years" class="form-control" size="1"  value="<?php if(!$patients[0])  echo $patient->age_years;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />Y
+						<input type="text" name="age_months" class="form-control" size="1" tabindex="1000"  value="<?php if(!$patients[0])  echo $patient->age_months;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />M
+						<input type="text" name="age_days" class="form-control" size="1"  tabindex="1001" value="<?php if(!$patients[0])  echo $patient->age_days;?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />D
 						</div>
 					</div>
 				<?php 
@@ -462,7 +462,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					    <?php if ($patient->gender == 'M' || $patient->gender == 'F' || $patient->gender == 'O') {
 						?>
 						<div class="radio">
-						<label class="control-label"><input type="radio" class="gender" value="<?php echo $patient->gender;?>" name="gender" <?php if($patient)  if($patient->gender) echo " checked ";?> <?php if($patient && $patient->gender) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> /> <?php echo $patient->gender;?></label>
+						<label class="control-label"><input type="radio" class="gender" value="<?php echo $patient->gender;?>" name="gender" <?php if(!$patients[0])  if($patient->gender) echo " checked ";?> <?php if($field->mandatory) echo "required"; ?> /> <?php if(!$patients[0])echo $patient->gender;?></label>
 						</div>						
 						<?php
 						}
@@ -486,7 +486,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Address<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<textarea rows="1" cols="30" name="address" class="form-control" <?php if($patient && $patient->address) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?>><?php if($patient) echo $patient->address;?></textarea>
+						<textarea rows="1" cols="30" name="address" class="form-control" <?php if($patient && $patient->address) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?>><?php if(!$patients[0]) echo $patient->address;?></textarea>
 						</div> 
 					</div>
 				<?php 
@@ -561,7 +561,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Phone<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="phone" class="form-control" value="<?php if(!$patients[0]) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -570,7 +570,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Alt. Phone<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($patient && $patient->alt_phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="alt_phone" class="form-control" value="<?php if(!$patients[0]) echo $patient->alt_phone;?>" <?php if($patient && $patient->alt_phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -579,7 +579,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Father's Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="father_name" class="form-control" value="<?php if($patient) echo $patient->father_name;?>" <?php if($patient && $patient->father_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="father_name" class="form-control" value="<?php if(!$patients[0]) echo $patient->father_name;?>" <?php if($patient && $patient->father_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				
@@ -589,7 +589,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Mother's Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="mother_name" class="form-control" value="<?php if($patient) echo $patient->mother_name;?>" <?php if($patient && $patient->mother_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="mother_name" class="form-control" value="<?php if(!$patients[0]) echo $patient->mother_name;?>" <?php if($patient && $patient->mother_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -598,7 +598,7 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Spouse Name<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="spouse_name" id="spouse_name" class="form-control" value="<?php if ($patient) echo $patient->spouse_name;?>" <?php if($patient && $patient->spouse_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
+						<input type="text" name="spouse_name" id="spouse_name" class="form-control" value="<?php if(!$patients[0]) echo $patient->spouse_name;?>" <?php if($patient && $patient->spouse_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
 					</div>
 				<?php 
@@ -1277,9 +1277,74 @@ function initAppointmentDoctorSelectize(modal_id){
 		</div>
 		</form>	
 		<?php } ?>
+		<?php if(isset($patients) && count($patients)!=0){
+		echo("<script>console.log('PHP: patient before : ". $patients[0]->patient_id ." ');</script>");
+		$prev = $patients[0]; $i = 1;
+		 for($j=0; $j < count($patients) ; $j++){
+		 	$p = $patients[$j];
+			 if($j == 0 || $p->patient_id != $prev->patient_id){
+				 $i = 1;
+				if ($j != 0){?>
+			        	</tbody>
+								</table>
+
+						 </div> </div><?php } ?>
+			        <div class="panel panel-default">
+						<div class="panel-heading">
+							<h4>Search Results</h4>
+							<?php
+								echo("<script>console.log('PHP: patient after : $p->name');</script>");?>
+
+							<?php  echo "| H4A Patient ID : ".$p->patient_id." | ";
+							 echo "Patient Name : ".$p->name." | ";
+							 echo "Age : ".$p->age_years."Y ".$p->age_months."M ".$p->age_days."D"." | ";
+							 echo "Patient's Sex : ".$p->gender." | ";
+							 echo "Phone No : ".$p->phone." | ";
+							 echo "Address : ".$p->address." | ";
+							 echo "Parent/Spouse : ".$p->parent_spouse." | ";
+							?>
+							<table class="table table-striped table-hover">
+									<thead>
+										<tr>
+											<th style="text-align:center">#</th>
+											<th style="text-align:center">Date</th>
+											<th style="text-align:center">Hospital</th>
+											<th style="text-align:center">Visit Type</th>
+											<th style="text-align:center">Department</th>
+											<th style="text-align:center">Appointment Date</th>
+										</tr>
+									</thead>
+									</div>
+									<div class="panel-body">
+									<tbody><?php } ?>
+										<tr onclick="$('#form_<?php echo $p->visit_id;?>').submit()" style="cursor:pointer">
+													<?php
+													echo("<script>console.log('PHP: Form ID : $form_id');</script>");?>
+
+											<td><?php echo form_open("register/custom_form/$form_id/$p->visit_id",array("role"=>"form","id"=>"form_$p->visit_id"));?>
+												<input type="text" class="sr-only" value="1" name="select_patient" />
+												<input type="text" class="sr-only" value="<?php echo $p->visit_type;?>" name="visit_type" />
+												</form>
+												<?php echo $i++; ?>
+											</td>
+											<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
+											<td style="text-align:center"><?php echo $p->hospital; ?></td>
+											<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
+											<td style="text-align:center"><?php echo $p->department;?></td>
+											<td style="text-align:center"><?php echo $p->appointment_date; ?></td>
+										</tr>
+										<?php $prev = $p;
+										} ?>
+										</tbody>
+								</table>
+					</div>
+				</div>
+					<?php } ?>
 		
 		<div class="row">
-			<?php echo form_open("register/custom_form/$form_id",array('role'=>'form','class'=>'form-custom')); ?>
+			<?php echo form_open("register/custom_form/$form_id",array('role'=>'form','class'=>'form-custom','form_id'=>$form_id)); ?>
+			<form action="update_patients.php" name="form_id" method="post">
+				<input type="hidden" id="form_id" name="form_id" value="<?php $form_id?>"/>
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<?php echo $form_name;?> - Search for a patient
@@ -1344,83 +1409,6 @@ function initAppointmentDoctorSelectize(modal_id){
 			</div>
 			</form>
 			
-			<?php if(isset($patients) && count($patients)!=1){ 
-			?>
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4>Search Results</h4> | 
-							<?php if($this->input->post('search_patient_id')) echo "H4A Patient ID : ".$this->input->post('search_patient_id')." | "; ?>
-							<?php if($this->input->post('search_patient_name')) echo "Patient name starting with : ".$this->input->post('search_patient_name')." | "; ?>
-							<?php if($this->input->post('search_op_number')) echo "OP Number : ".$this->input->post('search_op_number')." | "; ?>
-							<?php if($this->input->post('search_phone')) echo "Phone Number : ".$this->input->post('search_phone')." | "; ?>
-							<?php if($this->input->post('search_patient_id_manual')) echo "Patient ID Manual: ".$this->input->post('search_patient_id_manual')." | "; ?>
-						</div>
-						<div class="panel-body">
-							<?php if(count($patients)>1){ ?>
-								<table class="table table-striped table-hover">
-									<thead>
-										<tr>
-											<th>#</th>
-											<th>Hospital</th>
-											<th>Visit Type</th>
-											<th>Name</th>
-											<th>Age</th>
-											<th>Sex</th>
-											<th>Department</th>
-											<th>Date</th>
-											<th>Phone</th>
-											<th>Parent/Spouse</th>
-										</tr>
-									</thead>
-									<tbody>
-									<?php 
-										$i=1;
-										foreach($patients as $patient){ ?>
-										<tr onclick="$('#form_<?php echo $patient->visit_id;?>').submit()">
-											<td>
-												<?php echo form_open("register/custom_form/$form_id/$patient->visit_id",array("role"=>"form","id"=>"form_$patient->visit_id"));?>
-												<input type="text" class="sr-only" value="1" name="select_patient" />
-												<input type="text" class="sr-only" value="<?php echo $patient->visit_type;?>" name="visit_type" />
-												</form>
-												<?php echo $i++; ?>
-											</td>
-											<td><?php echo $patient->hospital; ?></td>
-											<td><?php echo $patient->visit_type; ?></td>
-											<td><?php echo $patient->name; ?></td>
-											<td>
-												<?php 
-													if($patient->age_years!=0) echo $patient->age_years."Y ";
-													if($patient->age_months) echo $patient->age_months."M "; 
-													if($patient->age_days) echo $patient->age_days."D "; 
-													if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
-												?>
-											</td>
-											<td><?php echo $patient->gender;?></td>
-											<td><?php echo $patient->department;?></td>
-											<td><?php echo date("d-M-Y",strtotime($patient->admit_date));?></td>
-											<td><?php echo $patient->phone;?></td>
-											<td><?php echo $patient->parent_spouse;?></td>
-										</tr>
-										<?php } ?>
-									</tbody>
-								</table>
-								<div class="row text-center">
-									<?php echo form_open("register/custom_form/$form_id",array("role"=>"form","class"=>"form-custom")) ?>
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_patient_id');?>" name="search_patient_id" />
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_patient_name');?>" name="search_patient_name" />
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_op_number');?>" name="search_op_number" />
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_ip_number');?>" name="search_ip_number" />
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_phone');?>" name="search_phone" />
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_patient_id_manual');?>" name="search_patient_id_manual" />
-									<input type="text" class="sr-only" value="<?php echo $this->input->post('search_year');?>" name="search_year" />
-									<input type="text" class="sr-only" value="1" name="load_other_hospitals" />
-									<input type="submit" value="Search All Hospitals" name="search_patients" class="btn btn-primary btn-sm text-center">
-									</form>
-							<?php }  else echo "No patients matched your search.";?>
-						</div>
-					</div>
-				<?php } ?>
-				</div>
 <!-- Modal -->
 <div class="modal fade" id="smsModal" tabindex="-1" role="dialog" aria-labelledby="smsModalLabel">
   <div class="modal-dialog" role="document" style="width:90%">
