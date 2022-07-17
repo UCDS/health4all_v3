@@ -306,11 +306,13 @@ $(function(){
 	else{
 		$page_no = 1;
 	}
-	$tmp_count = 0;
-	foreach($calls_count as $count){
-		$tmp_count = $tmp_count + 1;
-	}
-	$total_records = $tmp_count;		
+	//$tmp_count = 0;
+	//foreach($calls_count as $count){
+	//	$tmp_count = $tmp_count + 1;
+	//}
+	//$total_records = $tmp_count;
+	//echo("<script>console.log('PHP: " . json_encode($calls_count) . "');</script>");
+	$total_records = $calls_count[0]->count ;		
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages==0)
 		$total_no_of_pages = 1;
@@ -1322,7 +1324,7 @@ function getCallCategoryForHelpline(helplineId) {
 
 function getHospitalsForHelpline(helplineId) {
 	const helplineHospitals = hospitals.filter(hospital => hospital.helpline_id == helplineId);
-	let optionsHtml = buildEmptyOption("Hospitals"); 
+	let optionsHtml = buildEmptyOption("Hospital"); 
 	if(helplineHospitals.length > 0) {		
 		optionsHtml += helplineHospitals.map(hospital => {
 			return `	<option value="${hospital.hospital_id}">
@@ -1348,7 +1350,7 @@ function getDepartmentOptionsForHospital(hospitalId) {
 }
 function buildHospitalOptions(hospitals = []) {
 	if(hospitals && hospitals.length > 0) {
-		let optionsHtml = buildEmptyOption("Select"); 
+		let optionsHtml = buildEmptyOption("Hospital"); 
 		optionsHtml += hospitals.map(hospital => {
 			return `	<option value="${hospital.hospital_id}">
 							${hospital.hospital_short_name}

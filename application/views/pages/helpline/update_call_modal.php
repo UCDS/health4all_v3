@@ -35,7 +35,7 @@
                     <div class="col-md-3">Caller Type</div>
                     <div class="col-md-6">
                         <select class="caller_type form-control" name="caller_type_<?php echo $call->call_id;?>"  id="caller_type_<?php echo $call->call_id;?>" style="width:250px" class="form-control">
-                            <option value="">Select</option>
+                            <option value="">Caller Type</option>
                             <?php foreach($caller_type as $ct){ ?>
                                 <option value="<?php echo $ct->caller_type_id;?>"
                                 <?php if($call->caller_type_id == $ct->caller_type_id) echo " selected "; ?>
@@ -48,7 +48,7 @@
                     <div class="col-md-3">Language</div>
                     <div class="col-md-6">
                         <select class="language form-control"  name="language_<?php echo $call->call_id;?>"  id="language_	<?php echo $call->call_id;?>" style="width:250px">
-                            <option value="">Select</option>
+                            <option value="">Language</option>
                             <?php foreach($language as $lng){ ?>
                                 <option value="<?php echo $lng->language_id;?>"
                                     <?php if($call->language_id == $lng->language_id) echo " selected "; ?>
@@ -196,7 +196,12 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     }
     modal.find(".receivedby").html(recievedby);
     modal.find(".notes").val(callData.note);
-    modal.find(".caller_type").val(callData.caller_type_id);
+    if (callData.caller_type_id!=0){
+    	modal.find(".caller_type").val(callData.caller_type_id);
+    }else{
+    	modalData.caller_type_id = "";
+    	modal.find(".caller_type").val("");
+    }
     //modal.find(".language").val(callData.language_id); 
     if (callData.language_id!=0){
     	modal.find(".language").val(callData.language_id);
@@ -208,11 +213,24 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     const callCategorySelectVal = buildCallCategoryOptions(callCategorySelect);
     modal.find(".call_category").html(callCategorySelectVal ? callCategorySelectVal: buildEmptyOption("Call Category"));
     modal.find(".call_category").val(callData.call_category_id);
-    
+    if (callData.call_category_id!=0){
+    	modal.find(".call_category").val(callData.call_category_id);
+    }
+    else{
+    	modalData.call_category_id = "";
+    	modal.find(".call_category").val("");
+    }
     const callresolutionStatusSelectVal = buildResolutionOptions(resolutionStatusSelect);
     modal.find(".resolution_status").html(callresolutionStatusSelectVal ? callresolutionStatusSelectVal: buildEmptyOption("Resolution Status"));
   
     modal.find(".resolution_status").val(callData.resolution_status_id);
+    if (callData.resolution_status_id!=0){
+    	modal.find(".resolution_status").val(callData.resolution_status_id);
+    }
+    else{
+    	modalData.resolution_status_id = "";
+    	modal.find(".resolution_status").val("");
+    }
     //console.log(callData.resolution_date_time);
     var res = callData.resolution_date_time.split(" ");
     var dateval=res[0]+"T"+res[1];
@@ -224,8 +242,25 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     //modal.find(".resolution_time").val(resolutionMoment.isValid()? new Date(callData.resolution_date_time).toLocaleTimeString(): "");
     const hospitals_val = buildHospitalOptions(hospitalSelect);
     modal.find(".updateHospitalSelect").html(hospitals_val ? hospitals_val: buildEmptyOption("Hospital"));
-    modal.find(".updateHospitalSelect").val(callData.hospital_id);
-    modal.find(".patient_type").val(callData.ip_op);
+    //modal.find(".updateHospitalSelect").val(callData.hospital_id);	
+    //console.log(callData.hospital_id);
+    if (callData.hospital_id!=0){
+    	modal.find(".updateHospitalSelect").val(callData.hospital_id);
+    }
+    else{
+    	modalData.hospital_id = "";
+    	modal.find(".updateHospitalSelect").val("");
+    }
+    //modal.find(".patient_type").val(callData.ip_op);
+    
+    if (callData.ip_op!=0){
+    	modal.find(".patient_type").val(callData.ip_op);
+    }
+    else{
+    	modalData.hospital_id = "";
+    	modal.find(".patient_type").val("");
+    }
+    
     modal.find(".visit_id").val(callData.visit_id);    
 
     let departmentOptions = getDepartmentOptionsForHospital(callData.hospital_id);
@@ -323,41 +358,42 @@ function registerOnUpdateFormSubmitted(callData) {
     	e.preventDefault();
     	var changed = false;
     	
-    	if ((modal.find(".notes").val() !== modalData.note) && !changed){
+    	if (modal.find(".notes").val() && (modal.find(".notes").val() !== modalData.note) && !changed){
     		changed = true;
     		console.log("notes");
     	}  
     	
-    	if ((modal.find("#district_id").val() !== modalData.district_id) && !changed){
+    	if ( modal.find("#district_id").val() &&  (modal.find("#district_id").val() !== modalData.district_id) && !changed){
     		changed = true;
     		console.log("district_id");
     	} 
     	
     	
-    	if ((modal.find(".caller_type").val() !== modalData.caller_type_id) && !changed){
+    	if (modal.find(".caller_type").val() && (modal.find(".caller_type").val() !== modalData.caller_type_id) && !changed){
     		changed = true;    		
     		console.log("caller_type");
     	}
     	
     	 
     
-    	if ((modal.find(".language").val() !== modalData.language_id) && !changed){
+    	if (modal.find(".language").val() && (modal.find(".language").val() !== modalData.language_id) && !changed){
     		changed = true;
     		console.log("language");
     	}  
     	
     	
     	
-    	if ((modal.find(".call_category").val() !== modalData.call_category_id) && !changed){
+    	if (modal.find(".call_category").val() && (modal.find(".call_category").val() !== modalData.call_category_id) && !changed){
     		changed = true;
     		console.log("call_category");
     	}  
     	
     	
     	
-    	if ((modal.find(".resolution_status").val() !== modalData.resolution_status_id) && !changed){
+    	if (modal.find(".resolution_status").val() && (modal.find(".resolution_status").val() !== modalData.resolution_status_id) && !changed){
     		changed = true;
     		console.log("resolution_status");
+    		console.log(modal.find(".resolution_status").val());
     	} 
     	
     	
@@ -365,27 +401,28 @@ function registerOnUpdateFormSubmitted(callData) {
     		var dateval=modalData.resolution_date_time;
     	} else { 
     		var res = modalData.resolution_date_time.split(" ");
-    		var time = res[1].split(":");
-    		var dateval=res[0]+"T"+time[0]+":"+time[1]+":00";
+		var time = res[1].split(":");
+		//var dateval=res[0]+"T"+time[0]+":"+time[1]+":00";
+    		var dateval=res[0]+"T"+time[0]+":"+time[1];
     		
     	}
     	if (modal.find(".resolution_update_date_time").val() && !changed) {
     		var valModal = modal.find(".resolution_update_date_time").val();
     		if ( valModal !== dateval){
     			changed = true;			
-    			console.log("resolution_update_date_time");
+			console.log("resolution_update_date_time");
     		} 
     	}
     	
     	
-    	if ((modal.find(".updateHospitalSelect").val() !== modalData.hospital_id) && !changed){
+    	if (modal.find(".updateHospitalSelect").val() && (modal.find(".updateHospitalSelect").val() !== modalData.hospital_id) && !changed){
     		changed = true;
     		console.log("updateHospitalSelect");
     	} 
     	
     	
    
-    	if ((modal.find(".patient_type").val() !== modalData.ip_op) && !changed){
+    	if (modal.find(".patient_type").val() && (modal.find(".patient_type").val() !== modalData.ip_op) && !changed){
     		changed = true;
     		console.log("patient_type");
     	} 
@@ -400,7 +437,7 @@ function registerOnUpdateFormSubmitted(callData) {
     	}
     	
     	
-    	if ((modal.find(".updateDepartmentSelect").val() !== modalData.department_id) && !changed){
+    	if ( modal.find(".updateDepartmentSelect").val() && (modal.find(".updateDepartmentSelect").val() !== modalData.department_id) && !changed){
     		changed = true;
     		console.log("updateDepartmentSelect");
     	} 
