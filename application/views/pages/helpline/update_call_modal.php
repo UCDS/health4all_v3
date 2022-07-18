@@ -257,7 +257,7 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     	modal.find(".patient_type").val(callData.ip_op);
     }
     else{
-    	modalData.hospital_id = "";
+    	modalData.ip_op = "";
     	modal.find(".patient_type").val("");
     }
     
