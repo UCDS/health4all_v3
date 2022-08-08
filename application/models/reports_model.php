@@ -1522,7 +1522,33 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 	
 	
 	function get_appointment_slot($default_rowsperpage){
-	
+		$hospital=$this->session->userdata('hospital');
+		
+		$default_appointment_status_add = "";
+		
+		$this->db->select('id');
+        $this->db->from('appointment_status aps');
+		$this->db->where('aps.is_default',1);
+		$this->db->where('aps.hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result_array();
+		//echo("<script>console.log('default_appointment_status_add: " . json_encode($result) . "');</script>");
+		if (count($result)==1){
+			$default_appointment_status_add = " SUM(case when pv.appointment_status_id = ". $result[0]['id'] ." then 1 else 0 end) as default_appointment_status_add ";
+		}
+
+		$default_appointment_status_remove = "";
+		$this->db->select('id');
+        $this->db->from('appointment_status aps');
+		$this->db->where('aps.is_default',2);
+		$this->db->where('aps.hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result_array();
+		//echo("<script>console.log('default_appointment_status_remove: " . json_encode($result) . "');</script>");
+		if (count($result)==1){
+			$default_appointment_status_remove = " SUM(case when pv.appointment_status_id = ". $result[0]['id'] ." then 1 else 0 end) as default_appointment_status_remove ";
+		}
+
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -1563,26 +1589,27 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->where('aps.department_id',$this->input->post('department'));
 		}
 		
-		$hospital=$this->session->userdata('hospital');
+		
 		
 		$this->db->where('hospital.hospital_id',$hospital['hospital_id']);
 		
 		
-		$taken_appointments = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time) as taken_appointments";
-		$default_appointment_status_add = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=1 and appointment_status.hospital_id='".$hospital['hospital_id']."')) as default_appointment_status_add";
-		$default_appointment_status_remove = "(Select count(*) from patient_visit pv where pv.visit_name_id = aps.visit_name_id and pv.department_id = aps.department_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time and pv.appointment_status_id = (select id from appointment_status  where appointment_status.is_default=2 and appointment_status.hospital_id='".$hospital['hospital_id']."')) as default_appointment_status_remove";
+		$taken_appointments = "SUM(case when pv.visit_id is null then 0 else 1 end) as taken_appointments ";
+		
 		$this->db->select("aps.slot_id,aps.date,aps.from_time,aps.to_time,aps.department_id,aps.visit_name_id,aps.appointment_update_by,aps.appointment_update_time,
-		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit, ".$taken_appointments.", ".$default_appointment_status_add.",".$default_appointment_status_remove,false);
+		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit ,".$taken_appointments.", ".$default_appointment_status_add.",".$default_appointment_status_remove,false);
 		 $this->db->from('appointment_slot as aps')
 		 ->join('department as d','aps.department_id=d.department_id','left')
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
 		 ->join('staff','aps.appointment_update_by=staff.staff_id','left')
-		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left');
+		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left')
+		 ->join('patient_visit as pv',"aps.department_id=pv.department_id and pv.hospital_id = hospital.hospital_id and pv.visit_name_id = aps.visit_name_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time",'left');
 		 $this->db->order_by('aps.department_id','ASC');
 		 $this->db->order_by('aps.visit_name_id','ASC');
 		 $this->db->order_by('aps.date','ASC');
 		 $this->db->order_by('aps.from_time','ASC');	
 		 $this->db->order_by('aps.to_time','ASC');
+		 $this->db->group_by('aps.slot_id');
 		 $this->db->limit($rows_per_page,$start);		
 		$resource=$this->db->get();
 		return $resource->result();
