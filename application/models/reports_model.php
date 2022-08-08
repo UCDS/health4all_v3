@@ -398,7 +398,7 @@ class Reports_model extends CI_Model{
 		}
 
 		$this->db->select("patient.patient_id, patient.address, hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
-		gender,IF(gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name,father_name) parent_spouse,unit_name,area_name,
+		gender,IF(gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name,father_name) parent_spouse,
 		age_years,age_months,age_days,patient.place,phone,department,unit_name,area_name, admit_date, admit_time, mlc_number, mlc_number_manual",false);
 		 $this->db->from('patient_visit')
 		 ->join('patient','patient_visit.patient_id=patient.patient_id')
