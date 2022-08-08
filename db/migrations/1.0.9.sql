@@ -37,12 +37,6 @@ ALTER TABLE `helpline_call` ADD INDEX `start_time_index` (`start_time`);
 
 ALTER TABLE `patient_visit` DROP INDEX `hospital_id`;
 
-ALTER TABLE `patient_visit` DROP INDEX `unit`;
-
-ALTER TABLE `patient_visit` DROP INDEX `department_id`;
-
-ALTER TABLE `patient_visit` DROP INDEX `area`;
-
 ALTER TABLE `patient_visit` DROP INDEX `visit_type`;
 
 ALTER TABLE `helpline_call` DROP INDEX `call_id`;
