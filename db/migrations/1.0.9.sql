@@ -41,3 +41,4 @@ ALTER TABLE `patient_visit` DROP INDEX `visit_type`;
 
 ALTER TABLE `helpline_call` DROP INDEX `call_id`;
 
+ALTER TABLE `admin_health4all`.`patient_visit` ADD INDEX `appointment_time` (`appointment_time`);
