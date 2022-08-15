@@ -50,21 +50,18 @@ function showImageHereFunc() {
         var xhr = $.ajaxSettings.xhr();
         var gi =  JSON.parse(JSON.stringify(globalIndex)); 
         xhr.upload.onprogress = function(e) {
-           var percentValue = Math.floor(e.loaded / e.total *100);
+        if (e.lengthComputable) {   
+           var percentComplete = e.loaded / e.total;                    
+           var percentValue = Math.round(percentComplete*100);
            if(percentValue <= 100){
-           	var percentCompleted = percentValue + '%';
-    	    
-    	            
-    	              $("#progressBar"+gi).animate({
-    	                width: '' + percentCompleted + ''
-    	            }, {
-    	                duration: 5000,
-    	                easing: "linear",
-    	                step: function (x) {
-    	                    $("#percent"+gi).text(percentCompleted);
-    	                }
-    	            });
+           	if(percentValue <= 100){
+                   var percentCompletedText = percentValue + '%';
+                   $("#progressBar"+gi).css("width",percentCompletedText);
+                   $("#percent"+gi).text(percentCompletedText);
+              }	
+    	     
     	     }
+    	   }
     	          
         };
         return xhr;

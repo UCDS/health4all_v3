@@ -23,4 +23,7 @@ tr {page-break-inside: avoid}
     }
 </style>
 <title>Invalid Page</title>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
 <div class="centerDiv"> The page you are looking for is either removed or invaild. <br> Please contact administrator for more details.</div>
