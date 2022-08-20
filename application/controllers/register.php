@@ -427,12 +427,15 @@ class Register extends CI_Controller {
 		$document_link = $this->input->post('document_link');
 		if ($remove_spaces == "TRUE"){
 			$document_link = str_replace(' ', '_', $document_link);
-			$document_link = str_replace('<', '_', $document_link);
-			$document_link = str_replace('>', '_', $document_link);
-			$document_link = str_replace('%', '_', $document_link);
-			$document_link = str_replace('#', '_', $document_link);
-			$document_link = str_replace('+', '_', $document_link);
+			
 		}
+		$document_link = str_replace('<', '_', $document_link);
+		$document_link = str_replace('>', '_', $document_link);
+		$document_link = str_replace('%', '_', $document_link);
+		$document_link = str_replace('#', '_', $document_link);
+		$document_link = str_replace('+', '_', $document_link);
+		$document_link = str_replace('(', '_', $document_link);
+		$document_link = str_replace(')', '_', $document_link);	
 		$document_link =  $patient_id."_".$document_link;
 		if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
 					$this->delete_document($document_link);
@@ -497,7 +500,20 @@ class Register extends CI_Controller {
                 // Upload file and add document record
                 $msg = "Error: ";
                 $uploadOk = 1;
-                $target_file = $dir_path . basename($files["uploadImageFile"]["name"][$i]);
+                $target_file = basename($files["uploadImageFile"]["name"][$i]);
+                if ($remove_spaces == "TRUE"){
+			$target_file = str_replace(' ', '_', $target_file);
+			
+		}
+		$target_file = str_replace('<', '_', $target_file);
+		$target_file = str_replace('>', '_', $target_file);
+		$target_file = str_replace('%', '_', $target_file);
+		$target_file = str_replace('#', '_', $target_file);
+		$target_file = str_replace('+', '_', $target_file);
+		$target_file = str_replace('(', '_', $target_file);
+		$target_file = str_replace(')', '_', $target_file);
+		$originalFile = $target_file;	
+		$target_file = $dir_path . basename($files["uploadImageFile"]["name"][$i]);
                 $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
 
                 if ($files['uploadImageFile']['size'][$i] <= 0 && $uploadOk == 1) {
@@ -512,7 +528,7 @@ class Register extends CI_Controller {
                 }
                 else {
 				    // if everything is ok, try to upload file
-				    $new_name = $this->input->post('patient_id').'_'.$files["uploadImageFile"]['name'][$i];
+				    $new_name = $this->input->post('patient_id').'_'.$originalFile;
 				    
                     //$config['file_name'] = $new_name;
                     $this->load->library('upload', $config);
