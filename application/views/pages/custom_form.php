@@ -1341,11 +1341,11 @@ function initAppointmentDoctorSelectize(modal_id){
 													echo("<script>console.log('PHP: Form ID : $form_id');</script>");?>
 
 											<td><?php echo form_open("register/custom_form/$form_id/$p->visit_id",array("role"=>"form","id"=>"form_$p->visit_id"));?>
-												<input type="text" class="sr-only" value="1" name="select_patient" />
+												<input type="text" class="sr-only" value="<?php echo $p->patient_id; ?>" name="select_patient" />
 												<input type="text" class="sr-only" value="<?php echo $p->visit_type;?>" name="visit_type" />
 												</form>
 												<?php echo $i++; ?>
-											</td>
+											</td>	
 											<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
 											<td style="text-align:center"><?php echo $p->hospital; ?></td>
 											<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
