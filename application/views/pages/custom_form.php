@@ -1361,8 +1361,8 @@ function initAppointmentDoctorSelectize(modal_id){
 					<?php } ?>
 		
 		<div class="row">
-			<?php echo form_open("register/custom_form/$form_id",array('role'=>'form','class'=>'form-custom','form_id'=>$form_id)); ?>
-			<form action="update_patients.php" name="form_id" method="post">
+			<?php echo form_open("register/custom_form/$form_id",array('role'=>'form','class'=>'form-custom','form_id'=>$form_id,'id'=>'patient_search','onSubmit'=>'validateInput(event)')); ?>
+			<form action="update_patients.php" name="form_id" method="post" >
 				<input type="hidden" id="form_id" name="form_id" value="<?php $form_id?>"/>
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -1387,38 +1387,38 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">OP Number</label>
-						<input type="text" name="search_op_number" class="form-control" />
+						<input type="text" id="search_op_number" name="search_op_number" class="form-control" />
 						</div>
 					</div>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">IP Number</label>
-						<input type="text" name="search_ip_number" class="form-control" />
+						<input type="text" id="search_ip_number" name="search_ip_number" class="form-control" />
 						</div>
 					</div>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">H4A Patient ID</label>
-						<input type="text" name="search_patient_id" class="form-control" />
+						<input type="text" id="search_patient_id" name="search_patient_id" class="form-control" />
 						</div>
 					</div>
 					<!--
 					<div class="<?php // echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Patient Name</label>
-						<input type="text" name="search_patient_name" class="form-control" />
+						<input type="text" id="search_patient_name" name="search_patient_name" class="form-control" />
 						</div>
 					</div> -->
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Phone Number</label>
-						<input type="text" name="search_phone" class="form-control" />
+						<input type="text" id="search_phone" name="search_phone" class="form-control" />
 						</div>
 					</div>
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Patient ID Manual</label>
-						<input type="text" name="search_patient_id_manual" class="form-control" />
+						<input type="text" id="search_patient_id_manual" name="search_patient_id_manual" class="form-control" />
 						</div>
 					</div>
 				</div>
@@ -1915,9 +1915,17 @@ $("#appointment").submit(function(e) {
 		    bootbox.alert(error.responseJSON.Message);
 		   }
 		});
-    
-    
-
-    
 });
+function validateInput(event){
+      var search_op_number = document.forms[event.target.id]["search_op_number"].value;
+      var search_ip_number = document.forms[event.target.id]["search_ip_number"].value;
+      var search_patient_id = document.forms[event.target.id]["search_patient_id"].value;
+      var search_phone = document.forms[event.target.id]["search_phone"].value;
+      var search_patient_id_manual = document.forms[event.target.id]["search_patient_id_manual"].value;
+      
+      if (search_op_number.length <=0 && search_ip_number.length <=0  && search_patient_id.length <=0 && search_phone.length <=0 && search_patient_id_manual<=0){
+      	bootbox.alert("Please enter a field to search");
+      	event.preventDefault();
+      }
+}
 </script>
