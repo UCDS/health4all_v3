@@ -2561,12 +2561,12 @@ function initDistrictSelectize(){
 		<h4>Search Patients</h4>	
 		</div>
 		<div class="panel-body">
-		<?php echo form_open("register/update_patients",array('role'=>'form','class'=>'form-custom')); ?>
+		<?php echo form_open("register/update_patients",array('role'=>'form','class'=>'form-custom','id'=>'patient_search','onSubmit'=>'validateInput(event)')); ?>
 					<div class="row">
 					<div class="col-md-10">
 						<div class="form-group">
 						<label class="control-label">H4A Patient ID</label>
-						<input type="text" name="search_patient_id" size="5" class="form-control" />
+						<input type="text" id="search_patient_id" name="search_patient_id" size="5" class="form-control" />
 						<label class="control-label">Year</label>
 						<select class="form-control" name="search_year">
 							<?php 
@@ -2587,7 +2587,7 @@ function initDistrictSelectize(){
 								<option value='OP'>OP</option>
 							</select>
 						<label class="control-label">IP/OP Number</label>
-						<input type="text" name="search_patient_number" size="5" class="form-control" />
+						<input type="text" id="search_patient_number" name="search_patient_number" size="5" class="form-control" />
 						</div>
 					<!--	<div class="form-group">
 						<label class="control-label">Patient Name</label>
@@ -2595,11 +2595,11 @@ function initDistrictSelectize(){
 						</div> -->
 						<div class="form-group">
 						<label class="control-label">Phone Number</label>
-						<input type="text" name="search_phone" class="form-control" />
+						<input type="text" id="search_phone" name="search_phone" class="form-control" />
 						</div>
 						<div class="form-group">
 						<label class="control-label">Patient ID Manual</label>
-						<input type="text" name="search_patient_id_manual" size="5" class="form-control" />
+						<input type="text" id="search_patient_id_manual" name="search_patient_id_manual" size="5" class="form-control" />
 						</div>
 					</div>
 				</div>
@@ -3811,18 +3811,23 @@ $(function(){
 	if(receiver && receiver.enable_outbound == "1"){
 		$('.sms_button').show();
 		var valHospital = JSON.parse(JSON.stringify(<?php echo json_encode($staff_hospital); ?>));		
-		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');
-			
-		
-		
+		$('#smsModal-helplinewithname-dropdown').append('<option value="'+valHospital.helpline+'">'+valHospital.helpline_note+' - '+valHospital.helpline+'</option>');	
 		
 	}
-
-	
-
-
-	
 });
+function validateInput(event){
+
+      var search_patient_id = document.forms[event.target.id]["search_patient_id"].value;
+      var search_patient_number = document.forms[event.target.id]["search_patient_number"].value;
+      var search_phone = document.forms[event.target.id]["search_phone"].value;
+      var search_patient_id_manual = document.forms[event.target.id]["search_patient_id_manual"].value;
+      
+      
+      if (search_patient_id.length <=0 && search_patient_number.length <=0 && search_phone.length <=0  && search_patient_id_manual.length <=0){
+      	bootbox.alert("Please enter a field to search");
+      	event.preventDefault();
+      }
+}
 </script>
 
 
