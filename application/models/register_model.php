@@ -195,22 +195,15 @@ class Register_model extends CI_Model{
 
 	// function ends
 
-	//194214 - function to get hospital id from patient id
-	function get_hid($c){
+	
+	function select_patient_from_id($c){
 
-		$this->db->select("patient_visit.hospital_id")->from("patient_visit");
+		$this->db->select("patient.*")->from("patient");
 		$this->db->where("patient_id", $c);
-		$query=$this->db->get();
-		if ($query->num_rows() > 0)
-		{
-   			foreach ($query->result() as $row)
-   			{
-      			return $row->hospital_id;
-      
-   			}
-		}
+		$resource=$this->db->get();
+		return $resource->row();
 	}
-	// function ends
+	
 
 	
 	function insert_update_summary_link($summary_link_patient_id,$summary_link_patient_visit_id,$summary_link_contents){
@@ -1188,16 +1181,17 @@ class Register_model extends CI_Model{
 				$this->db->where('patient_visit.visit_id',$this->input->post('visit_id'));
 			}
 			if($this->input->post('search_year')){
-				$this->db->where('YEAR(patient_visit.admit_date)',$this->input->post('search_year'));
+				$this->db->where("(patient_visit.admit_date IS NULL OR YEAR(patient_visit.admit_date)='".$this->input->post('search_year')."')");
 			}
-			if(!$this->input->post('load_other_hospitals'))
+			if(!$this->input->post('load_other_hospitals')){
 				$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+			}
 		}
 		//Build the query to retrieve the patient records based on the search query.
 		$this->db->select("patient.*,patient_visit.*,CONCAT(patient.first_name,' ',patient.last_name) name,
 		IF(father_name IS NULL OR father_name='',spouse_name,father_name) parent_spouse, mlc.*,occupation.occupation,id_proof_type, area_name,state.state_id,state.state,mainhospital.hospital,unit_name,unit.unit_id,code_title,area.area_id,district.district,department,patient.patient_id,patient_visit.visit_id, 		patient_procedure.procedure_duration, patient_procedure.procedure_note, patient_procedure.procedure_findings, visit_name.visit_name, CONCAT(staff.first_name,' ',staff.last_name) doctor_name,staff.ima_registration_number as ima_registration_number, staff.doctor_flag as doctor_flag, designation,IFNULL(visit_name.summary_header,0) as summary_header,visit_name.visit_name,referral.hospital as referral_by_hospital_name, appointment_time",false)
 		->from('patient')
-		->join('patient_visit','patient.patient_id=patient_visit.patient_id')
+		->join('patient_visit','patient.patient_id=patient_visit.patient_id','left')
                 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')
                 ->join('patient_procedure','patient_procedure.visit_id = patient_visit.visit_id','left')
 		->join('department','patient_visit.department_id=department.department_id','left')
@@ -1222,9 +1216,8 @@ class Register_model extends CI_Model{
 		if($visit_id!=0) //if the visit_id is true, select the patient where visit_id equals the given visit id
 			$this->db->where('patient_visit.visit_id',$visit_id);
 		else return false; 
-		
 		$this->db->select('patient.*,patient_visit.*,hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.area_name,mlc.mlc_number,mlc.mlc_number_manual,mlc.ps_name')
-		->from('patient')->join('patient_visit','patient.patient_id=patient_visit.patient_id')
+		->from('patient')->join('patient_visit','patient.patient_id=patient_visit.patient_id','left')
 		->join('department','patient_visit.department_id=department.department_id','left')
 		->join('unit','patient_visit.unit=unit.unit_id','left')
 		->join('area','patient_visit.area=area.area_id','left')

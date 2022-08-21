@@ -425,7 +425,7 @@ function initAppointmentDoctorSelectize(modal_id){
 				switch($field->field_name){
 				case "first_name": ?>   
 					<div class="<?php echo $class;?>">
-						<div class="form-group">
+						<div class="form-group">	
 						<label class="control-label">First Name<?php if($field->mandatory) { ?><span class="mandatory">*</span><?php } ?></label>
 						<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if(!$patients[0]){ echo $patient->first_name;}?>" <?php if($patient && $patient->first_name) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
 						</div>
@@ -1300,7 +1300,11 @@ function initAppointmentDoctorSelectize(modal_id){
 		 for($j=0; $j < count($patients) ; $j++){
 		 	$p = $patients[$j];
 			 if($j == 0 || $p->patient_id != $prev->patient_id){
-				 $i = 1;
+				$i = 1; 
+				echo form_open("register/custom_form/$form_id",array("role"=>"form","id"=>"form_$p->patient_id"));?>
+				<input type="text" class="sr-only" value="<?php echo $p->patient_id; ?>" name="select_patient" />
+				</form>	
+				<?php		
 				if ($j != 0){?>
 			        	</tbody>
 								</table>
@@ -1308,48 +1312,68 @@ function initAppointmentDoctorSelectize(modal_id){
 						 </div> </div><?php } ?>
 			        <div class="panel panel-default">
 						<div class="panel-heading">
-							<h4>Search Results</h4>
+							<h4><b>Search Results</b></h4>
 							<?php
 								echo("<script>console.log('PHP: patient after : $p->name');</script>");?>
 
-							<?php  echo "| H4A Patient ID : ".$p->patient_id." | ";
-							 echo "Patient Name : ".$p->name." | ";
-							 echo "Age : ".$p->age_years."Y ".$p->age_months."M ".$p->age_days."D"." | ";
-							 if ($p->gender!="0"){							 
-							 	echo "Patient's Sex : ".$p->gender." | ";			 
+							<?php  echo "| <b>H4A Patient ID</b> : ".$p->patient_id." | ";
+							if(isset($p->patient_id_manual) and $p->patient_id_manual!="")
+							 {
+							 	echo "<b>Manual Patient ID</b> : ".$p->patient_id_manual." | ";
 							 }
-							 echo "Phone No : ".$p->phone." | ";
-							 echo "Address : ".$p->address." | ";
-							 echo "Parent/Spouse : ".$p->parent_spouse." | ";
+							 echo "<b>Patient</b> : ".$p->name." | ";
+							 echo "<b>Age</b> : ".$p->age_years."Y ".$p->age_months."M ".$p->age_days."D"." | ";
+							 if ($p->gender!="0"){							 
+							 	echo "<b>Gender</b> : ".$p->gender." | ";			 
+							 }
+							 echo "<b>Phone</b> : ".$p->phone." | ";
+							 echo "<b>Address</b> : ".$p->address. " | ";
+							 if(isset($p->district))
+							 {
+							 	echo "<b>District</b> : ".$p->district." | ";
+							 	echo "<b>State</b> : ".$p->state." | ";
+							 }
+							
+							 echo "<b>Relative</b> : ".$p->parent_spouse." | ";
+							
+							?>
+							<br/>
+							<a name="select_patient" value="1" onclick="$('#form_<?php echo $p->patient_id;?>').submit()" style="cursor:pointer">Select Patient</a>
+							<?php 
+							if (!isset($p->visit_id)){
+							 	echo("<script>console.log('PHP: inside if');</script>");
+							 	continue;
+							 }
+							
 							?>
 							<table class="table table-striped table-hover">
+								<caption><h4><b>Visit History</b></h4></caption>
 									<thead>
 										<tr>
 											<th style="text-align:center">#</th>
 											<th style="text-align:center">Date</th>
 											<th style="text-align:center">Hospital</th>
-											<th style="text-align:center">Visit Type</th>
+											<th style="text-align:center">OP/IP No</th>
 											<th style="text-align:center">Department</th>
+											<th style="text-align:center">Visit Name</th>
 											<th style="text-align:center">Appointment Date</th>
 										</tr>
 									</thead>
 									</div>
 									<div class="panel-body">
 									<tbody><?php } ?>
-										<tr onclick="$('#form_<?php echo $p->visit_id;?>').submit()" style="cursor:pointer">
+										<tr>
 													<?php
-													echo("<script>console.log('PHP: Form ID : $form_id');</script>");?>
+													//echo("<script>console.log('PHP: Form ID : $form_id');</script>");?>
 
-											<td><?php echo form_open("register/custom_form/$form_id/$p->visit_id",array("role"=>"form","id"=>"form_$p->visit_id"));?>
-												<input type="text" class="sr-only" value="<?php echo $p->patient_id; ?>" name="select_patient" />
-												<input type="text" class="sr-only" value="<?php echo $p->visit_type;?>" name="visit_type" />
-												</form>
+											<td>
 												<?php echo $i++; ?>
 											</td>	
 											<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
 											<td style="text-align:center"><?php echo $p->hospital; ?></td>
 											<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
 											<td style="text-align:center"><?php echo $p->department;?></td>
+											<td style="text-align:center"><?php echo $p->visit_name;?></td>
 											<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
 										</tr>
 										<?php $prev = $p;

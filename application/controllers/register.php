@@ -151,34 +151,32 @@ class Register extends CI_Controller {
 						$this->data['ip_no'] = $this->register_model->assignIP($this->data['patients'][0]->patient_id, $this->data['patients'][0]->hospital_id);
 					}
 					
-					if(count($this->data['patients'])==1 || $this->data['form_type']=="OP") {
-						$visit_id = $this->data['patients'][0]->visit_id;
-						$this->data['patient']=$this->register_model->select($visit_id);
-                        $this->data['ip_count'] = $this->counter_model->get_counters("IP");
+					if($this->data['form_type']=="OP") {
+                        			$this->data['ip_count'] = $this->counter_model->get_counters("IP");
 						if($this->data['patient']->visit_type == "IP") {
-                            $this->data['update']=1;                                                    
-                        }
+                            				$this->data['update']=1;                                                    
+                        			}
 					}
 				}
-				else if($this->input->post('select_patient') && $visit_id!=0){
+				else if($this->input->post('select_patient')){
 					// for a selected patient - in case of multiple entries - 194214
 					$c = $this->input->post('select_patient');
 
-					$this->data['hid']=$this->register_model->get_hid($c);
-
-					$this->data['autoIP']=$this->register_model->get_auto_ip($this->data['hid']);
+					$this->data['autoIP']=$this->register_model->get_auto_ip($hospital['hospital_id']);
 
 					if($this->data['autoIP'] == 1)
 					{
 
-						$this->data['counter_needed'] = $this->register_model->create_ip_counter($this->data['hid']);
+						$this->data['counter_needed'] = $this->register_model->create_ip_counter($$hospital['hospital_id']);
 						
-						$this->data['ip_no'] = $this->register_model->assignIP($c, $this->data['hid']);
+						$this->data['ip_no'] = $this->register_model->assignIP($c, $hospital['hospital_id']);
 
 					} 
 					
 					//else if the user has selected a patient after searching, get the patient details.
-					$this->data['patient']=$this->register_model->select($visit_id);
+					$this->data['patient']=$this->register_model->select_patient_from_id($c);
+					//$this->data['patient'] = $this->data['patient'][0];
+					//echo("<script>console.log('".json_encode($this->data['patient'])."');</script>");
                                          $this->data['ip_count'] = $this->counter_model->get_counters("IP");
 					if($this->input->post('visit_type')=="IP"){
 						//If the selected visit type is IP, the form only updates the values, else it inserts by default.
