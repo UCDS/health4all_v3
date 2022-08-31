@@ -22,7 +22,7 @@ class Helpline_model extends CI_Model{
 		$resolution_status = 0;
 		$resolution_date_time = 0;
 		if($call_type == 'voicemail'){
-			$this->db->select('*')->from('helpline_numbers')->where('number',$from_number);
+			$this->db->select('helpline_number_id,number,hospital_id,helpline_category_id,caller_type_id,visit_type,resolution_status_id')->from('helpline_numbers')->where('number',$from_number);
 			$query = $this->db->get();
 			$result = $query->row();
 			if(!!$result){
@@ -234,7 +234,16 @@ class Helpline_model extends CI_Model{
 		else{
 			$this->db->where('date(start_time)',date("Y-m-d"));
 		}
-		$this->db->select('helpline_email.*')->from('helpline_email')->join('helpline_call','helpline_email.call_id = helpline_call.call_id')
+		$this->db->select('helpline_email.helpline_email_id,
+		helpline_email.call_id,
+		helpline_email.to_email,
+		helpline_email.cc_email,
+		helpline_email.greeting,
+		helpline_email.phone_shared,
+		helpline_email.note,
+		helpline_email.user_id,
+		helpline_email.email_date_time
+		')->from('helpline_email')->join('helpline_call','helpline_email.call_id = helpline_call.call_id')
 		->order_by('email_date_time','desc');
 		$query = $this->db->get();
 		return $query->result();
@@ -279,7 +288,32 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('language')){
 			$this->db->where('helpline_call.language_id',$this->input->post('language'));
 		}
-		$this->db->select('helpline_call.*, helpline_receiver.short_name as short_name, group_name,caller_type,call_category,resolution_status,hospital, helpline.note as line_note')->from('helpline_call')
+		$this->db->select('helpline_call.call_id, 
+		helpline_call.callsid, 
+		helpline_call.from_number, 
+		helpline_call.to_number, 
+		helpline_call.direction, 
+		helpline_call.dial_call_duration, 
+		helpline_call.start_time, 
+		helpline_call.current_server_time, 
+		helpline_call.end_time, 
+		helpline_call.call_type, 
+		helpline_call.recording_url, 
+		helpline_call.dial_whom_number, 
+		helpline_call.caller_type_id, 
+		helpline_call.call_category_id, 
+		helpline_call.hospital_id, 
+		helpline_call.ip_op, 
+		helpline_call.visit_id, 
+		helpline_call.resolution_status_id, 
+		helpline_call.note, 
+		helpline_call.updated, 
+		helpline_call.resolution_date_time, 
+		helpline_call.call_group_id, 
+		helpline_call.language_id, 
+		helpline_call.district_id, 
+		helpline_call.department_id,	
+		helpline_receiver.short_name as short_name, group_name,caller_type,call_category,resolution_status,hospital, helpline.note as line_note')->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
 		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
@@ -339,7 +373,31 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
 		}
-		$this->db->select('helpline_call.*,group_name,caller_type,call_category,resolution_status,hospital')->from('helpline_call')
+		$this->db->select('helpline_call.call_id, 
+		helpline_call.callsid, 
+		helpline_call.from_number, 
+		helpline_call.to_number, 
+		helpline_call.direction, 
+		helpline_call.dial_call_duration, 
+		helpline_call.start_time, 
+		helpline_call.current_server_time, 
+		helpline_call.end_time, 
+		helpline_call.call_type, 
+		helpline_call.recording_url, 
+		helpline_call.dial_whom_number, 
+		helpline_call.caller_type_id, 
+		helpline_call.call_category_id, 
+		helpline_call.hospital_id, 
+		helpline_call.ip_op, 
+		helpline_call.visit_id, 
+		helpline_call.resolution_status_id, 
+		helpline_call.note, 
+		helpline_call.updated, 
+		helpline_call.resolution_date_time, 
+		helpline_call.call_group_id, 
+		helpline_call.language_id, 
+		helpline_call.district_id, 
+		helpline_call.department_id,group_name,caller_type,call_category,resolution_status,hospital')->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
 		->join('helpline_numbers','helpline_call.from_number = helpline_numbers.number')
@@ -356,24 +414,24 @@ class Helpline_model extends CI_Model{
 		return $query->result();
 	}
 	function get_caller_type(){
-		$this->db->select('*')->from('helpline_caller_type');
+		$this->db->select('caller_type_id,caller_type,note')->from('helpline_caller_type');
 		$query = $this->db->get();
 		return $query->result();
 	}
 	function get_language(){
-		$this->db->select('*')->from('language')
+		$this->db->select('language_id,language')->from('language')
 		->order_by('language',`asc`);
 		$query = $this->db->get();
 		return $query->result();
 	}
 	function get_call_category(){
-		$this->db->select('*')->from('helpline_call_category');
+		$this->db->select('call_category_id,call_category,note,helpline_id,status')->from('helpline_call_category');
 		$this->db->order_by('call_category','ASC');
 		$query = $this->db->get();
 		return $query->result();
 	}
 	function get_resolution_status(){
-		$this->db->select('*')->from('helpline_resolution_status');
+		$this->db->select('resolution_status_id,resolution_status,note,helpline_id,status')->from('helpline_resolution_status');
 		$this->db->order_by('resolution_status','ASC');
 		$query = $this->db->get();
 		return $query->result();
@@ -1465,18 +1523,20 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 	}
 
 	function getHelplineReceiverByUserId($user_id){
-		$this->db->select("*")->from("helpline_receiver")->join('helpline','helpline_receiver.helpline_id = helpline.helpline_id')->where('user_id', $user_id);
+		$this->db->select("helpline_receiver.receiver_id,helpline_receiver.phone,helpline_receiver.full_name,helpline_receiver.short_name,helpline_receiver.email,
+		helpline_receiver.category,helpline_receiver.user_id,helpline_receiver.doctor,helpline_receiver.enable_outbound,helpline_receiver.enable_sms,helpline_receiver.app_id,helpline_receiver.helpline_id,helpline_receiver.activity_status,
+		helpline_receiver.helpline_receiver_note,helpline.helpline,helpline.note")->from("helpline_receiver")->join('helpline','helpline_receiver.helpline_id = helpline.helpline_id')->where('user_id', $user_id);
 		$result = $this->db->get()->result();
         return count($result) > 0 ? $result[0] : false;
 	}
 
 	function getHelplineReceiverById($receiver_id){
-		$this->db->select("*")->from("helpline_receiver")->where('receiver_id', $receiver_id);
+		$this->db->select("receiver_id,phone,full_name,short_name,email,category,user_id,doctor,enable_outbound,enable_sms,app_id,helpline_id,activity_status,helpline_receiver_note")->from("helpline_receiver")->where('receiver_id', $receiver_id);
         return $this->db->get()->result();
 	}
 
 	function getHelplineReceiverLinksById($receiver_id){
-		$this->db->select("*")->from("helpline_receiver_link")->join('helpline','helpline_receiver_link.helpline_id = helpline.helpline_id')->where('receiver_id', $receiver_id);
+		$this->db->select("helpline_receiver_link.id,helpline_receiver_link.receiver_id,helpline_receiver_link.helpline_id,helpline.helpline,helpline.note")->from("helpline_receiver_link")->join('helpline','helpline_receiver_link.helpline_id = helpline.helpline_id')->where('receiver_id', $receiver_id);
         return $this->db->get()->result();
 	}
 
@@ -1516,7 +1576,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		return $query->result();
 	}*/
 	function get_sms_sent_status(){
-		$this->db->select('*')->from('http_status_code');
+		$this->db->select('status_code,status_text')->from('http_status_code');
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1914,13 +1974,6 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		$this->db->order_by('hsr.helpline_session_role','asc');
 		$query = $this->db->get();
 //			echo("<script>console.log('PHP: report_sessions" . json_encode($query->result()) . "');</script>");
-		return $query->result();
-	}
-	
-	function get_helpline_languages(){
-		$this->db->select("*");
-		$this->db->from('language');
-		$query = $this->db->get();
 		return $query->result();
 	}
 	
