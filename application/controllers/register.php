@@ -141,14 +141,14 @@ class Register extends CI_Controller {
 					$this->data['patients']=$this->register_model->search();
 					
 					//get auto ip number from hospital table - 194214
-					$this->data['autoIP']=$this->register_model->get_auto_ip($this->data['patients'][0]->hospital_id);
+					$this->data['autoIP']=$this->register_model->get_auto_ip($hospital['hospital_id']);
 					
 					
 					//AutoIP check here - 194214
 					if($this->data['autoIP'] == 1)
 					{
-						$this->data['counter_needed'] = $this->register_model->create_ip_counter($this->data['patients'][0]->hospital_id);
-						$this->data['ip_no'] = $this->register_model->assignIP($this->data['patients'][0]->patient_id, $this->data['patients'][0]->hospital_id);
+						$this->data['counter_needed'] = $this->register_model->create_ip_counter($hospital['hospital_id']);
+						$this->data['ip_no'] = $this->register_model->assignIP($this->data['patients'][0]->patient_id, $hospital['hospital_id']);
 					}
 					
 					if($this->data['form_type']=="OP") {
@@ -167,7 +167,7 @@ class Register extends CI_Controller {
 					if($this->data['autoIP'] == 1)
 					{
 
-						$this->data['counter_needed'] = $this->register_model->create_ip_counter($$hospital['hospital_id']);
+						$this->data['counter_needed'] = $this->register_model->create_ip_counter($hospital['hospital_id']);
 						
 						$this->data['ip_no'] = $this->register_model->assignIP($c, $hospital['hospital_id']);
 
