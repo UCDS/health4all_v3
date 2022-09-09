@@ -1170,7 +1170,7 @@ class Register_model extends CI_Model{
 			}
 			if($this->input->post('search_phone')){
 			    $search_phone_withoutzero = ltrim($this->input->post('search_phone'), '0');
-			    $this->db->where("(patient.phone='".$this->input->post('search_phone')."' OR patient.phone='".$search_phone_withoutzero."')");
+			    $this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
 				
 							}
 			if($this->input->post('selected_patient')){
