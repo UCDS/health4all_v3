@@ -1171,7 +1171,6 @@ class Register_model extends CI_Model{
 			if($this->input->post('search_phone')){
 				$search_phone_withoutzero = ltrim($this->input->post('search_phone'), '0');
 				$this->db->like("TRIM(LEADING '0' FROM patient.phone)",$search_phone_withoutzero,'none');
-				$this->db->or_like("TRIM(LEADING '0' FROM patient.alt_phone)",$search_phone_withoutzero,'none');
 				
 							}
 			if($this->input->post('selected_patient')){
