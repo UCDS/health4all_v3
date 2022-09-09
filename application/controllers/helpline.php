@@ -539,7 +539,7 @@ class Helpline extends CI_Controller {
 			$this->data['helplines']=$this->helpline_model->get_helplines();
 			$this->data['proficiency']=$this->helpline_model->get_proficiency();
 			$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
-			$this->data['languages']=$this->helpline_model->get_helpline_languages($receiver_id);
+			$this->data['languages']=$this->helpline_model->get_language($receiver_id);
 			$this->data['count_languages']= count($this->data['receiver_languages']);	
 			$existing_receivers = false;
 			if($this->input->post('phone')){
