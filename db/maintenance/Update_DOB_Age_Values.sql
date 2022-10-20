@@ -1,9 +1,8 @@
 /*Date in table --> Update age years only if Age >= 2years else year, months and days*/
-
  
 UPDATE `patient`
 SET dob =  datediff(CURRENT_DATE,dob) DIV 365
-WHERE dob != 0 and (datediff(CURRENT_DATE,dob) DIV 365) >= 2 
+WHERE dob != 0 and (datediff(CURRENT_DATE,dob) DIV 365) >= 2  /* Year Only */
  
 UPDATE `patient`
 SET dob = datediff(CURRENT_DATE,dob) DIV 365
@@ -22,7 +21,7 @@ WHERE dob != 0 and (datediff(CURRENT_DATE,dob) DIV 365) < 2 /* Days */
 /*Date NOT in Table*/
 UPDATE `patient`
 SET age_years = (datediff(CURRENT_DATE,insert_datetime) Div 365) + age_years
-WHERE dob = 0 and age_years >= 2  
+WHERE dob = 0 and age_years >= 2   /* Year Only */
 
 UPDATE `patient`
 SET age_years = (datediff(CURRENT_DATE,insert_datetime) Div 365) + age_years 
