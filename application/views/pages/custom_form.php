@@ -450,16 +450,8 @@ function initAppointmentDoctorSelectize(modal_id){
 						<label class="control-label">Birth Date<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
 						<input type="text" name="dob" class="form-control" id="dob" value="<?php if($update) echo $patient->dob;?>" <?php if($patient && $patient->dob) echo "readonly"; ?><?php if($field->mandatory) echo "required"; ?> />
 						</div>
-					</div>
-					
-					<div class="<?php echo $class;?> sr-only">
-						<div class="form-group">
-						<label class="control-label">Age<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" id="age_years" name="age_years" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_years; else echo '0' ?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />Y
-						<input type="text" id="age_months" name="age_months" class="form-control" size="1" value="<?php if($patient)  echo $patient->age_months; else echo '0' ?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />M
-						<input type="text" id="age_days" name="age_days" class="form-control" size="1"  value="<?php if($patient)  echo $patient->age_days; else echo '0' ?>" <?php if($patient && ($patient->age_years || $patient->age_months || $patient->age_days)) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />D
-						</div>
-					</div>
+					</div>					
+
 				<?php 
 					break;
 					

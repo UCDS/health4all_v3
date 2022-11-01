@@ -166,6 +166,13 @@
 						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
 						</div>
 					</div>
+					<div class="layout-div col-md-4 dob">
+						<div class="form-group">
+						<label class="control-label">   Date of Birth          </label>
+						<input type="text" name="dob" style="width: 170px" class="form-control"/>
+						<span class="star" title="Click to toggle mandatory">*<input type="checkbox" value="1" class="mandatory" hidden /></span>
+						</div>
+					</div>
 					<div class="layout-div col-md-4 age">
 						<div class="form-group">
 						<label class="control-label">   Age          </label>
@@ -788,6 +795,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="last_name" class="checklist" />Last name</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="dob" class="checklist" />Date of Birth</label>
 					</div>
 				</li>
 				<li>  
