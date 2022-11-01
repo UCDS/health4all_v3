@@ -148,7 +148,12 @@ $(function(){
 	<br />
         <!--table is displayed only when there is atleast one registration is done-->
 	<?php if(isset($report) && count($report)>0){ ?>
-	
+
+	<div style='padding: 0px 2px;'>
+
+	<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+
+	</div>
 	<button type="button" class="btn btn-default btn-md print">
            <span class="glyphicon glyphicon-print"></span> Print
 		</button>

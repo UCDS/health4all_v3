@@ -2161,19 +2161,20 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		}		
 	
 		if($this->input->post('phone')){
-			$this->db->like('p.phone',$this->input->post('phone'));
+			$search_phone_withoutzero = ltrim($this->input->post('phone'), '0');
+			$this->db->where("(p.phone='0".$search_phone_withoutzero."' OR p.phone='".$search_phone_withoutzero."')");
 		}
 		
 		if($this->input->post('h4allid')){
-			$this->db->like('p.patient_id',$this->input->post('h4allid'));
+			$this->db->where('p.patient_id',$this->input->post('h4allid'));
 		}
 		
 		if($this->input->post('opno')){
-			$this->db->like('hosp_file_no',$this->input->post('opno'));
+			$this->db->where('hosp_file_no',$this->input->post('opno'));
 		}
 		
 		if($this->input->post('manualid')){
-			$this->db->like('p.patient_id_manual',$this->input->post('manualid'));
+			$this->db->where('p.patient_id_manual',$this->input->post('manualid'));
 		}		
 		
 		if($this->input->post('department')){
@@ -2263,19 +2264,20 @@ pv.appointment_status_update_time,pv.appointment_status_update_by as appointment
 		}
 		
 		if($this->input->post('phone')){
-			$this->db->like('p.phone',$this->input->post('phone'));
+			$search_phone_withoutzero = ltrim($this->input->post('phone'), '0');
+			$this->db->where("(p.phone='0".$search_phone_withoutzero."' OR p.phone='".$search_phone_withoutzero."')");
 		}
 		
 		if($this->input->post('h4allid')){
-			$this->db->like('p.patient_id',$this->input->post('h4allid'));
+			$this->db->where('p.patient_id',$this->input->post('h4allid'));
 		}
 		
 		if($this->input->post('opno')){
-			$this->db->like('hosp_file_no',$this->input->post('opno'));
+			$this->db->where('hosp_file_no',$this->input->post('opno'));
 		}
 		
 		if($this->input->post('manualid')){
-			$this->db->like('p.patient_id_manual',$this->input->post('manualid'));
+			$this->db->where('p.patient_id_manual',$this->input->post('manualid'));
 		}
 		
 		if($this->input->post('department')){
