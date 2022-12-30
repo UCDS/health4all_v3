@@ -821,12 +821,15 @@ function initDistrictSelectize(){
 				<input type="text" name="age_days" class="form-control" maxlength="2" size="2"  value="<?php if($patient)  echo $patient->age_days;?>" <?php if($f->edit==1 && empty($patient->age_days)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>D
 			</div>			
 			</div>
-                    <div class ="row alt">
-                        <div class="col-md-12 col-xs-12">
-                                <label class="control-label">Date of Birth</label>
-                             <!--   <input type="date" name="dob" class="form-control dob" value="<?php if($patient->dob!='0000-00-00') echo date("d-M-Y",strtotime($patient->dob)); else echo ""; ?>" <?php if($f->edit==1&& empty($patient->dob)) echo ''; else echo ' readonly'; ?>  /> -->
-                                <input type="date" name="dob" class="form-control" value="<?php if($patient)  echo $patient->dob;?>" <?php if($f->edit==1 && empty($patient->dob)) echo '';  ?>/>
-                        </div>
+                    <div class ="row alt">                       
+						<div>
+						<?php if(empty($patient->dob)) { ?> 
+							 <input type="date" name="dob" class="form-control" value="<?php if($patient)  echo $patient->dob;?><?php echo date("Y-m-d"); ?>" max="<?php echo date("Y-m-d"); ?>" <?php if($f->edit==1 && empty($patient->dob)) echo '';  ?>/>
+							<?php } else { ?>
+							 <input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->dob));?>" <?php if($f->edit==1 && empty($patient->dob)) echo ''; else echo ' readonly'; ?>/>
+						<?php } ?>
+					</div>
+						
                     </div>
                  </div>
                <div class="col-md-12">

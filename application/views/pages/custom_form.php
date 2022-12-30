@@ -94,11 +94,11 @@ function getAge(dateString) {
         m--;
         d += DaysInMonth(age, m);
 		}
-		/*
+		
    document.getElementsByName("age_years")[0].value=age;
    document.getElementsByName("age_months")[0].value=m;
    document.getElementsByName("age_days")[0].value=d;
-   */
+
 }
 function initHospitalSelectize(){
 	var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
