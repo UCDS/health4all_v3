@@ -3075,8 +3075,9 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		 ->join('mlc','patient_visit.visit_id=mlc.visit_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
-		 ->where('visit_type','IP')
-		 ->order_by('hosp_file_no','ASC');
+		 ->where('visit_type','IP');
+		 //Commented temporarily for improving the query performance
+		 //->order_by('hosp_file_no','ASC');
 		if ($rows_per_page>0) {
 			$this->db->limit($rows_per_page, $start);
 		}
