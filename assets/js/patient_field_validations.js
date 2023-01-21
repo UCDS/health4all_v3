@@ -1,6 +1,6 @@
 // for id update_patients, age_years, age_months, age_days
 $().ready(function () {
-    
+
     $('form[id="update_patients"]').validate({
         rules: {
             age_years: {
@@ -14,7 +14,11 @@ $().ready(function () {
             age_days: {
                 range: [0, 31],
                 digits: true
-            }
+            },
+            phone: {
+                minlength: 10,
+                number: true
+            },
         },
         ignore: ".date_custom",
         submitHandler: function (form) {
