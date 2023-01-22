@@ -34,10 +34,14 @@ class Indent_model extends CI_Model {
 		$order['issue_date_time']=$call_date;
 		} else {
 			$order['indent_date']=$call_date;
-		$order['indent_status']='Indented';
-		$order['hospital_id']=$hospital['hospital_id'];
-		$order['orderby_id']=$staff->staff_id;
+			$order['indent_status']='Indented';
+			$order['hospital_id']=$hospital['hospital_id'];
+			$order['orderby_id']=$staff->staff_id;
+			
 		}
+		$order['insert_user_id'] = $order['update_user_id'] = $staff->staff_id;
+		// $current_datetime = date("Y-m-d H:i:s");
+		$order['insert_datetime'] = $order['update_datetime'] = $call_date;
 		$this->db->trans_start();
         $this->db->insert('indent', $order);
         $indent_id = $this->db->insert_id();
@@ -55,7 +59,9 @@ class Indent_model extends CI_Model {
 				'quantity_approved'=>$quantity_indented[$i],
 				'quantity_issued'=>$quantity_indented[$i],
 				'indent_status' => 'Issued',
-				'indent_id' => $indent_id
+				'indent_id' => $indent_id, 
+				'hospital_id' => $hospital['hospital_id'], 
+				'issue_date' => $call_date
 				
 			);
 			}else{
@@ -63,7 +69,8 @@ class Indent_model extends CI_Model {
 				'item_id'=>$item[$i],
 			    'quantity_indented'=>$quantity_indented[$i],
 				'indent_status' => 'Indented',
-				'indent_id' => $indent_id
+				'indent_id' => $indent_id, 
+				'hospital_id' => $hospital['hospital_id']
 				);
 			}
 		}

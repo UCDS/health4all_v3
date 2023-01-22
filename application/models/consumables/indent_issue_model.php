@@ -98,25 +98,28 @@ class Indent_issue_model extends CI_Model{                                      
 		$staff=$query->row();
 		if($this->input->post('indent_item')){                                                    //indent_item is an array which contains indent_item_id values and checking whether it is valid or not
 		    $data = array();                                                                      //declaring an array with name data
+			$call_date = date("Y-m-d H:i:s");
 			foreach($this->input->post('indent_item') as $i){                                     //foreach loop for storing indent_item_id,issued quantity,indent status into data array
 				$data[]=array(
 					'indent_item_id'=>$i,
 					'quantity_issued'=>$this->input->post('quantity_issued_'.$i),
-					'indent_status'=>"Issued"
+					'indent_status'=>"Issued", 
+					'issue_date' => $call_date, 
 				);
 			}
 			$data_d=array(                                                                          //Set indent_status as Issued in indent table
-				'indent_status'=>'Issued'
+				'indent_status'=>'Issued', 
+				'update_user_id' => $staff->staff_id,     
+
 			);
 			$array=array(                                                                           //get staff_id in an array
                     'issuer_id'=>$staff->staff_id
 			);
-			$call_date = date("Y-m-d H:i:s");
 			$this->db->trans_start();
 			$this->db->update_batch('indent_item',$data,'indent_item_id');                         //all these are update queries to store values in arrays into database
 		    $this->db->where('indent_id', $this->input->post('indent'));
             $this->db->update('indent', $data_d); 
-			$date_time = array ( "issue_date_time" => $call_date, ); 
+			$date_time = array ( "issue_date_time" => $call_date, "update_datetime" => $call_date); 
 			$this->db->where('indent_id', $this->input->post('indent'));
             $this->db->update('indent', $date_time);
 		    $this->db->where('indent_id', $this->input->post('indent'));

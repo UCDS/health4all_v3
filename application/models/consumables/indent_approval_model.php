@@ -119,16 +119,20 @@ class Indent_approval_model extends CI_Model {                                  
 			);
 			}
 			$array_d=array(
-                    'approver_id'=>$staff->staff_id                                                           //get staff_id in an array
+                    'approver_id'=>$staff->staff_id, 
+					'update_user_id' => $staff->staff_id,                                                            //get staff_id in an array
 			);
-				$call_date = date("Y-m-d H:i:s");
-				$date_time = array ( "approve_date_time" => $call_date, ); 
+			$call_date = date("Y-m-d H:i:s");
+			$updated_timestamps = array ( "approve_date_time" => $call_date, 
+									"update_datetime" => $call_date, 
+								); 
+			$updated_user_ids = array ();
 			$this->db->trans_start();
 			$this->db->update_batch('indent_item',$data,'indent_item_id');                                     //all these are update queries to store values in arrays into database
 		    $this->db->where('indent_id', $this->input->post('indent'));
             $this->db->update('indent', $data_d); 
 			$this->db->where('indent_id', $this->input->post('indent'));
-           $this->db->update('indent', $date_time);
+           $this->db->update('indent', $updated_timestamps);
 		   $this->db->where('indent_id', $this->input->post('indent'));
            $this->db->update('indent', $array_d);
 		    $this->db->trans_complete();                                               

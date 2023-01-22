@@ -40,3 +40,8 @@ ALTER TABLE `patient_visit` DROP INDEX `hospital_id`;
 ALTER TABLE `patient_visit` DROP INDEX `visit_type`;
 
 ALTER TABLE `patient_visit` ADD INDEX `appointment_time` (`appointment_time`);
+
+ALTER TABLE `indent` CHANGE `insert_user_id` `insert_user_id` INT(11) NOT NULL COMMENT 'staff_id';
+
+ALTER TABLE `indent` CHANGE `update_user_id` `update_user_id` INT(11) NOT NULL COMMENT 'staff_id';
+
