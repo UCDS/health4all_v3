@@ -124,7 +124,14 @@ $(function(){
 		</form>
 	<br />
 	<?php if(isset($report) && count($report)>0){ ?>
-	
+
+		<!-- added 23rd January 2023 start-->
+		<div style='padding: 0px 2px;'>
+		
+	    <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+	    </div>
+	    <!-- added 23rd January 2023 end-->
+		
 		<button type="button" class="btn btn-default btn-md print">
 		  <span class="glyphicon glyphicon-print"></span> Print
 		</button>

@@ -570,8 +570,10 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Phone<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="phone" id="phone" class="form-control"  value="<?php if(!$patients[0]) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
-						</div>
+						<input type="text" name="phone" id="custom_phone" class="form-control"   value="<?php if(!$patients[0]) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?>  />
+						<span style="color:red;" id="phone_less" hidden="hidden">Number of digits less than 10</span>
+						<span style="color:red;" id="phone_more" hidden="hidden">Number of digits greater than 10</span>
+					</div>
 					</div>
 				<?php 
 					break;

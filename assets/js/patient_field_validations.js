@@ -1,5 +1,5 @@
 // for id update_patients, age_years, age_months, age_days
-$().ready(function () {
+ $().ready(function () {
 
     $('form[id="update_patients"]').validate({
         rules: {
@@ -16,7 +16,6 @@ $().ready(function () {
                 digits: true
             },
             phone: {
-                minlength: 10,
                 number: true
             },
         },
@@ -25,6 +24,29 @@ $().ready(function () {
             form.submit();
         }
     });
+   
+    $('#custom_phone').keyup(function() {
+        var phone_val = $('#custom_phone').val();
+        
+        $('#phone_more').hide();
+        $('#phone_less').hide();
+        if(phone_val.length < 10)
+        {
+         $('#phone_more').hide();
+         $('#phone_less').show();
+        }
+         else if(!phone_val.length < 10){            
+           $('#phone_less').hide();  
+         } 
+        if(phone_val.length > 10){
+         $('#phone_less').hide();  
+         $('#phone_more').show();     
+        }      
+        // else if(!phone_val.length > 10){
+           
+        //     $('#phone_more').hide();  
+        // }  
+      });    
 });
 
 // doctor_id, arrival_mode
