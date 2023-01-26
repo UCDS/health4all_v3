@@ -1,5 +1,7 @@
 
 <head>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
+
 <script type='text/javascript'>
 $(window).load(function(){<!--from   w  w  w.  ja v a 2s.  c  om-->
 $(function () {
@@ -16,6 +18,38 @@ $(document).click(function () {
     $('.tooltip').remove();
     $('[title]').tooltip();
   });
+});
+</script>
+<script type="text/javascript">
+$(window).load(function() {
+
+	let current_quantities = { <?php foreach ($indent_approval as $all_int) {
+		echo "quantity_approved_$all_int->indent_item_id : $all_int->quantity_indented, ";
+	} ?> };
+	let current_quanitities_changed_status = { <?php foreach ($indent_approval as $all_int) {
+		echo "quantity_approved_$all_int->indent_item_id : false, ";
+	} ?> 
+
+	};
+	console.log(current_quantities);
+	let quantity_changed = false;
+
+	for(const quantity_name in current_quantities){
+		$(`[name=${quantity_name}]`).change(() => {
+			if($(`[name=${quantity_name}]`).val() !== current_quantities[quantity_name]){
+				console.log(`Quantity ${quantity_name} changed`);
+				current_quanitities_changed_status[quantity_name] = true;
+				quantity_changed = true;
+			}
+		})
+	}
+
+	$('#approval_form').submit((event) => {
+		if(quantity_changed){
+			bootbox.alert("You have changed the quantity of the items originally indented");
+			event.preventDefault();
+		}
+	});
 });
 </script>
 </head>
@@ -36,7 +70,7 @@ $(document).click(function () {
 	</div>
 	</div>
 	</div>
-    <?php echo form_open('consumables/indent_approve/indent_approval',array('class'=>'form-custom','role'=>'form'))?> <!-- Approval details form open-->
+    <?php echo form_open('consumables/indent_approve/indent_approval',array('class'=>'form-custom','role'=>'form', 'id' => 'approval_form'))?> <!-- Approval details form open-->
 			<div class="container">
             	<div class="row" >
 			 		<div class = "col-md-4">
@@ -60,6 +94,7 @@ $(document).click(function () {
 								<th><center>Items</center></th>
 								<th><center>Quantity Indented</center></th>
 								<th><center>Quantity Approved</center></th>
+								<th><center>Note</center></th>
 								<th><center>Indent Status</center></th>
 							</thead>
 				           <tbody>
@@ -82,6 +117,10 @@ $(document).click(function () {
 					                </div>
 					                <div class="form-group">
 					                      <td align="right"><input type="number" class="form-control" min="1"  step="1"  name="quantity_approved_<?= $all_int->indent_item_id;?>" id="quantity_id" value="<?php echo $all_int->quantity_indented;?>" placeholder="Enter Quantity " required>
+					                      </td>
+					                </div>
+									<div class="form-group">
+					                      <td align="right"><input type="textarea" class="form-control" name="indent_item_note" id="indent_item_note" value="" placeholder="Enter note " required>
 					                      </td>
 					                </div>
 					                <td align="center">
@@ -114,7 +153,7 @@ $(document).click(function () {
 			</div>
 		</div>
 	  </div>
-	  <?php echo form_close();?><!-- End of approval details form-->
+	  <?php echo form_close();?><!-- End of approval details form -->
     </div>
 </body>
 

@@ -14,6 +14,14 @@ class Indent_model extends CI_Model {
 		  $staff=$query->row();
 		
 		$call_date = date("Y-m-d H:i:s");
+		$input_indent_date = $this->input->post('indent_date');
+		$input_indent_time = $this->input->post('indent_time');
+		//https://stackoverflow.com/questions/19375184/merge-date-time
+		$final_indent_datetime = date("Y-m-d H:i:s", strtotime("$input_indent_date $input_indent_time"));					
+		if($final_indent_datetime > $call_date){
+			$final_indent_datetime = $call_date;
+		}
+		log_message("info", "SAIRAM FROM ADD INDENT " . $final_indent_datetime);
         $order= array();
        
         if($this->input->post('from_id')){
@@ -29,11 +37,11 @@ class Indent_model extends CI_Model {
 		$order['orderby_id']=$staff->staff_id;
 		$order['approver_id']=$staff->staff_id;
 		$order['issuer_id']=$staff->staff_id;
-		$order['indent_date']=$call_date;
-		$order['approve_date_time']=$call_date;
-		$order['issue_date_time']=$call_date;
+		$order['indent_date']=$final_indent_datetime;
+		$order['approve_date_time']=$final_indent_datetime;
+		$order['issue_date_time']=$final_indent_datetime;
 		} else {
-			$order['indent_date']=$call_date;
+			$order['indent_date']=$final_indent_datetime;
 			$order['indent_status']='Indented';
 			$order['hospital_id']=$hospital['hospital_id'];
 			$order['orderby_id']=$staff->staff_id;
@@ -61,7 +69,7 @@ class Indent_model extends CI_Model {
 				'indent_status' => 'Issued',
 				'indent_id' => $indent_id, 
 				'hospital_id' => $hospital['hospital_id'], 
-				'issue_date' => $call_date
+				'issue_date' => $final_indent_datetime
 				
 			);
 			}else{

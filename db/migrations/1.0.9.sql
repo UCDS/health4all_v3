@@ -45,3 +45,4 @@ ALTER TABLE `indent` CHANGE `insert_user_id` `insert_user_id` INT(11) NOT NULL C
 
 ALTER TABLE `indent` CHANGE `update_user_id` `update_user_id` INT(11) NOT NULL COMMENT 'staff_id';
 
+ALTER TABLE `indent_item` ADD `note` TEXT NOT NULL DEFAULT '' AFTER `consumption_status`; 

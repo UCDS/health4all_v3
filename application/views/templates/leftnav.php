@@ -159,13 +159,13 @@
 							</div> -->
 						</div>
 
-						<div class="panel panel-default"	>
-						<div class="panel-heading">
+						<div class="panel panel-default">
+							<div class="panel-heading">
 
-							<h4 class="panel-title">
-								<a href="<?php echo base_url(); ?>consumables/indent_issue/indent_issued">Issue</a>
-							</h4>
-						</div>
+								<h4 class="panel-title">
+									<a href="<?php echo base_url(); ?>consumables/indent_issue/indent_issued">Issue</a>
+								</h4>
+							</div>
 							<!-- <div class="panel-body">
 
 							</div> -->
@@ -182,7 +182,7 @@
 									if($group == "masters"){
 										return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
 									}else if($group == "reports"){
-										return (preg_match("^get_indent_summary^", current_url()));
+										return (preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()));
 									}
 								}
 								function activate_item(str $item_regexp)
@@ -244,15 +244,17 @@
 											echo 'list-group-item active';
 										else
 											echo 'list-group-item' ?>" href="<?php echo base_url(); ?>hospital/drugs_available">Add Drugs</a>
-									</ul>
-								</div>
-							</div>
-						</div>
+									
 
 					<?php
 
 									}
 								} ?>
+
+									</ul>
+								</div>
+							</div>
+						</div>
 				<?php foreach ($functions as $f) {
 					if ($f->user_function == "Consumables") { ?>
 						<div class="panel panel-default">
@@ -270,6 +272,8 @@
 									<ul class="list-group">
 										<a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indent
 												Reports </span></a>
+										<a class="<?php echo (activate_item("^indents_list^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/indents_list">Indents
+										List </span></a>
 
 									</ul>
 								</div>
@@ -277,12 +281,13 @@
 							</div>
 						</div>
 
-					</div>
-					</ul>
+					
 				<?php
 
 					}
 				} ?>
+				</div>
+				</ul>
 			<ul>
 	</div>
 <?php } ?>
