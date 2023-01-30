@@ -197,7 +197,7 @@ $('#to_id').change(function(){
 							<!--Input field Item Type-->
 								<label for="inputitem_type" >Item Type</label>
 									<select name="item_type" id="item_type" class="form-control">
-									<option value="">select</option>
+									<option value="" selected>select</option>
 										<?php
 										//foreach loop for displaying all item types.
 											foreach($all_item_type as $it)
