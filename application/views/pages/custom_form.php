@@ -570,8 +570,10 @@ function initAppointmentDoctorSelectize(modal_id){
 					<div class="<?php echo $class;?>">
 						<div class="form-group">
 						<label class="control-label">Phone<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
-						<input type="text" name="phone" class="form-control" value="<?php if(!$patients[0]) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?> />
-						</div>
+						<input type="text" name="phone" id="custom_phone" class="form-control"   value="<?php if(!$patients[0]) echo $patient->phone;?>" <?php if($patient && $patient->phone) echo "readonly"; ?> <?php if($field->mandatory) echo "required"; ?>  />
+						<span style="color:red;" id="phone_less" hidden="hidden">Number of digits less than 10</span>
+						<span style="color:red;" id="phone_more" hidden="hidden">Number of digits greater than 10</span>
+					</div>
 					</div>
 				<?php 
 					break;
@@ -1280,7 +1282,7 @@ function initAppointmentDoctorSelectize(modal_id){
 			?>
 			</div>
 			<div class="panel-footer">
-				<button class="btn btn-primary btn-lg col-md-offset-5" name="register" value="1" ><?php if($update) echo "Update"; else echo "Submit";?></button>
+				<button class="btn btn-primary btn-lg col-md-offset-5" id="register" name="register" value="1" ><?php if($update) echo "Update"; else echo "Submit";?></button>
 			</div>
 			</div>
 		</div>
@@ -1346,7 +1348,7 @@ function initAppointmentDoctorSelectize(modal_id){
 											<th style="text-align:center">Date</th>
 											<th style="text-align:center">Hospital</th>
 											<th style="text-align:center">OP/IP No</th>
-											<th style="text-align:center">Department</th>
+											<th style="text-align:center">Department -- Unit Name</th>
 											<th style="text-align:center">Visit Name</th>
 											<th style="text-align:center">Appointment Date</th>
 										</tr>
@@ -1361,10 +1363,11 @@ function initAppointmentDoctorSelectize(modal_id){
 											<td>
 												<?php echo $i++; ?>
 											</td>	
+											
 											<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
 											<td style="text-align:center"><?php echo $p->hospital; ?></td>
 											<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
-											<td style="text-align:center"><?php echo $p->department;?></td>
+											<td style="text-align:center"><?php echo $p->department;?> -- <?php echo $p->unit_name;?></td>
 											<td style="text-align:center"><?php echo $p->visit_name;?></td>
 											<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
 										</tr>
