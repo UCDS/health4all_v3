@@ -28,8 +28,12 @@ class Indent_approval_model extends CI_Model {                                  
 		}
 		if($this->input->post('to_id')){
 			$this->db->where('to_party.supply_chain_party_id',$this->input->post('to_id'));
-		}  
-	    $this->db->select('indent.*,item_type.item_type_id,item_type,item_form,dosage_unit,dosage,item_name,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party')->from('indent')
+		}
+
+		$user_id = $this->session->userdata('user')['user_id'];
+
+
+	    $this->db->select('indent.*,indent_item.indent_item_id, item_type.item_type_id,item_type,item_form,dosage_unit,dosage,item_name,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party')->from('indent')
 	    ->join('indent_item','indent.indent_id=indent_item.indent_id','left')
 		->join('item','item.item_id=indent_item.item_id','left')                                        //This is the select statement which joins all the tables (indent,indent_item,item,generic_item,
         ->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')               //item_type,item_form,dosage,supply_chain_party) and getting required field values
@@ -46,13 +50,16 @@ class Indent_approval_model extends CI_Model {                                  
 	    if($this->input->post('indent_id')){
 			$this->db->where('indent.indent_id',$this->input->post('indent_id'));
 	    }
+
+		
+					
         $query=$this->db->get();
 	    return $query->result();   
     }//get_indents
 	
 	function display_approve_details(){                                                                       //definition of a function :display_approve_details
 		$hospital=$this->session->userdata('hospital'); 	                                                  //Storing user data who logged into the hospital into a var:hospital
-		$this->db->select('indent.indent_status,indent_item.indent_item_id,indent.indent_date,indent_item.quantity_indented,indent.indent_id,indent.approver_id,indent.approve_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party ,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,item_name,indent_item.quantity_approved,indent_item.indent_status')->from('indent')
+		$this->db->select('indent.indent_status,indent_item.indent_item_id,indent.indent_date,indent_item.quantity_indented,indent.indent_id,indent.approver_id,indent.approve_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party ,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,item_name,indent_item.quantity_approved,indent_item.indent_status, indent_item.note')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                              //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')                     //item_type,item_form,dosage,supply_chain_party,staff,hospital)
@@ -71,7 +78,8 @@ class Indent_approval_model extends CI_Model {                                  
 		return $query->result();   
 	}//display_approve_details
 	
-	 function get_supply_chain_party($type=""){                                                                            //function definition with name :get_data
+	 function get_supply_chain_party($type=""){    
+		$hospital=$this->session->userdata('hospital');                                                                         //function definition with name :get_data
 	    if($type=="item_type")                                                                               //all these are if conditions to select particular data from database
 		$this->db->select("*")->from("item_type")->order_by('item_type');
 		else if($type=="item")
@@ -82,7 +90,7 @@ class Indent_approval_model extends CI_Model {                                  
 		->join('item_type','item_type.item_type_id=generic_item.item_type_id','left')
 		->join('dosage','dosage.dosage_id=item.dosage_id','left');
 		else if($type=="party")
-		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->order_by('supply_chain_party_name');
+		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name');
 		$resource=$this->db->get();
 		return $resource->result();
 	}//get_data
@@ -97,10 +105,12 @@ class Indent_approval_model extends CI_Model {                                  
 		if($this->input->post('indent_item')){                                                               //indent_item is an array which contains indent_item_id values and checking whether it is valid or not
 		    $data = array();                                                                                 //declaring an array with name data
 			foreach($this->input->post('indent_item') as $i){                                                //foreach loop for storing indent_item_id,approved quantity,indent status into data array
+				// log_message('info', "SAIRAM ".$this->input->post("quantity_approved_$i"));
 				$data[]=array(
 					'indent_item_id'=>$i,
 					'quantity_approved'=>$this->input->post('quantity_approved_'.$i),
-					'indent_status'=>$this->input->post('indent_status_'.$i),
+					'indent_status'=>$this->input->post('indent_status_'.$i), 
+					'note'=>$this->input->post("indent_item_note_$i")."Additional notes:\n".$this->input->post("item_additional_notes_$i"), 
 					
 				);
 			}
@@ -123,7 +133,11 @@ class Indent_approval_model extends CI_Model {                                  
 					'update_user_id' => $staff->staff_id,                                                            //get staff_id in an array
 			);
 			$call_date = date("Y-m-d H:i:s");
-			$updated_timestamps = array ( "approve_date_time" => $call_date, 
+			$approval_datetime = $call_date;
+			if($this->input->post('approval_date') && $this->input->post('approval_time')){
+				$approval_datetime = date("Y-m-d H:i:s", strtotime($this->input->post('approval_date')." ".$this->input->post('approval_time')));
+			}
+			$updated_timestamps = array ( "approve_date_time" => $approval_datetime, 
 									"update_datetime" => $call_date, 
 								); 
 			$updated_user_ids = array ();

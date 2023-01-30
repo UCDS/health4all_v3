@@ -32,7 +32,7 @@ class Indent_approve extends CI_Controller{                                     
 		$this->data['userdata']=$this->session->userdata('indent');                         //Store user data into data array of index:userdata
         $this->load->helper('form');                                                        //load form helper
         $this->load->library('form_validation');                                            //load form_validation from library
-        $this->data['title']="Indent_approval";                                             //Store title into data array of title                                                            
+        $this->data['title']="Indent Approval";                                             //Store title into data array of title                                                            
         $this->load->view('templates/header',$this->data);                                  //load header(view) file and pass the data array to it
         $this->load->view('templates/leftnav',$this->data);                                 //load leftnav(view) file and pass the data array to it
         $this->load->model('consumables/indent_approval_model');                                        //load indent_approval model file

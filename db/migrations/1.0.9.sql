@@ -46,3 +46,11 @@ ALTER TABLE `indent` CHANGE `insert_user_id` `insert_user_id` INT(11) NOT NULL C
 ALTER TABLE `indent` CHANGE `update_user_id` `update_user_id` INT(11) NOT NULL COMMENT 'staff_id';
 
 ALTER TABLE `indent_item` ADD `note` TEXT NOT NULL DEFAULT '' AFTER `consumption_status`; 
+
+-- Recent additions as of Jan 26, 2023
+
+ALTER TABLE `vendor_type` CHANGE `vendor_type_id` `vendor_type_id` INT(11) NOT NULL AUTO_INCREMENT; 
+
+ALTER TABLE `vendor` CHANGE `vendor_id` `vendor_id` INT(11) NOT NULL AUTO_INCREMENT; 
+
+ALTER TABLE `supply_chain_party` CHANGE `supply_chain_party_id` `supply_chain_party_id` INT(11) NOT NULL AUTO_INCREMENT; 

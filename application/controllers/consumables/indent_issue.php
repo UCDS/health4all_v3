@@ -32,7 +32,7 @@ class Indent_issue extends CI_Controller{                                       
 		$this->data['userdata']=$this->session->userdata('indent');                               //Store user data into data array of index:userdata
         $this->load->helper('form');                                                              //load form helper
         $this->load->library('form_validation');                                                  //load form_validation from library
-        $this->data['title']="Indent_issue";                                                      //Store title into data array of title                                                 
+        $this->data['title']="Indent Issue";                                                      //Store title into data array of title                                                 
         $this->load->view('templates/header',$this->data);                                        //load header(view) file and pass the data array to it
         $this->load->view('templates/leftnav',$this->data);                                       //load leftnav(view) file and pass the data array to it
         $this->load->model('consumables/indent_issue_model');                                                 //load indent_issue model file
