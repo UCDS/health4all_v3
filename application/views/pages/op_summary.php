@@ -144,6 +144,7 @@ $(function(){
 					}
 					?>
 					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+					
 		</form>
 	<br />
         <!--table is displayed only when there is atleast one registration is done-->
