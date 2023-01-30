@@ -199,7 +199,7 @@ $('#to_id').change(function(){
 							<!--input field item type-->
 								<label for="inputitem_type" >Item Type</label>
 									<select name="item_type" id="item_type" class="form-control">
-									<option value="">Select</option>
+									<option value="" selected>Select</option>
 										<?php
 											foreach($all_item_type as $it)
 												{
@@ -269,6 +269,7 @@ $('#to_id').change(function(){
 							<th>Quantity Indented</th>
 							<th>Quantity Approved</th>
 							<th>Quantity Issued</th>
+							<th>Item type id</th>
 						</thead>
 						<tbody>
 							<?php
@@ -279,14 +280,19 @@ $('#to_id').change(function(){
 				foreach($search_indent_summary as $indent){?>
 
 					<tr>
-					<td><?php echo $i++; $sub_url="consumables/indent_reports/get_indent_detailed/";?></td>
+					<td><?php echo $i++; $sub_url="consumables/indent_reports/get_indent_detailed/";
+					$item_type_id = '0';
+					if ($indent->item_type_id) {
+						$item_type_id = $indent->item_type_id;
+					}?></td>
 
 
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$indent->item_type_id/$indent->item_id";?>"><?php echo $indent->item_type;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$indent->item_type_id/$indent->item_id";?>"><?php echo $indent->item_name;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Indented/$indent->item_type_id/$indent->item_id";?>"><?php echo $indent->total_quantity;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Approved/$indent->item_type_id/$indent->item_id";?>"><?php echo $indent->approved;	?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Issued/$indent->item_type_id/$indent->item_id";?>"><?php echo $indent->issued;?></td>
+						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_type;?></td>
+						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_name;?></td>
+						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Indented/$item_type_id/$indent->item_id";?>"><?php echo $indent->total_quantity;?></td>
+						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Approved/$item_type_id/$indent->item_id";?>"><?php echo $indent->approved;	?></td>
+						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id";?>"><?php echo $indent->issued;?></td>
+						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id";?>"><?php echo $indent->indent_item_id;?></td>
 					</tr>
 					<?php
 	                $total_quantity+=$indent->total_quantity;

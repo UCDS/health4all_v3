@@ -267,9 +267,9 @@ $('#to_id').change(function(){
 							<th> S.no </th>
 							<th>Indent Id</th>
 							<th>Hospital Id</th>
-							<!-- <th>Indent datetime</th>
+							<th>Indent datetime</th>
 							<th>Approval datetime</th>
-							<th>Issue datetime</th> -->
+							<th>Issue datetime</th>
 							<th>From</th>
 							<th>To</th>
 							<th>Ordered by</th>
@@ -277,7 +277,10 @@ $('#to_id').change(function(){
 							<th>Issued by</th>
 							<th>Indent Status</th>
 							<th>Inserted by</th>
+							<th>Inserted at</th>
 							<th>Last Updated by</th>
+							<th>Last Updated at</th>
+							<th></th>
 							<!-- <th>Insertion datetime</th>
 							<th>Updation datetime</th> -->
 
@@ -293,11 +296,11 @@ $('#to_id').change(function(){
 
 				foreach($search_indent_detailed as $indent){?>
 					<?php
-						$f_indent_datetime = date("d-M-Y",strtotime($indent->indent_datetime));
-						$f_approval_datetime = date("d-M-Y",strtotime($indent->approval_datetime));
-						$f_issue_datetime = date("d-M-Y",strtotime($indent->issue_datetime));
-						$f_insert_datetime = date("d-M-Y",strtotime($indent->insert_datetime));
-						$f_update_datetime = date("d-M-Y",strtotime($indent->update_datetime));
+						$f_indent_datetime = date("Y-m-d H:i:s",strtotime($indent->indent_datetime));
+						$f_approval_datetime = date("Y-m-d H:i:s",strtotime($indent->approval_datetime));
+						$f_issue_datetime = date("Y-m-d H:i:s",strtotime($indent->issue_datetime));
+						$f_insert_datetime = date("Y-m-d H:i:s",strtotime($indent->insert_datetime));
+						$f_update_datetime = date("Y-m-d H:i:s",strtotime($indent->update_datetime));
 
 					?>
 
@@ -307,17 +310,35 @@ $('#to_id').change(function(){
 						<td><?php echo $indent->indent_id;?></td>
 						<td><?php echo $indent->hospital_id;?></td>
 						
+<!-- 
+						
+						<td><?php //echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname." (".$f_indent_datetime.")";	?></td>
+						<td><?php //echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname." (".$f_approval_datetime.")";	?></td>
+						<td><?php //echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname." (".$f_issue_datetime.")";?></td>
+						<td><?php //echo $indent->indent_status;?></td>
+						<td><?php //echo $indent->inserted_by_id." - ".$indent->inserted_by_fname." ".$indent->inserted_by_lname." (".$f_insert_datetime.")";?></td>
+						<td><?php //echo $indent->updated_by_id." - ".$indent->updated_by_fname." ".$indent->updated_by_lname." (".$f_update_datetime.")";?></td> -->
 
-						<td><?php echo $indent->from_party_name." (".$indent->from_party_id.")";?></td>
-						<td><?php echo $indent->to_party_name." (".$indent->to_party_id.")";?></td>
-						<td><?php echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname." (".$f_indent_datetime.")";	?></td>
-						<td><?php echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname." (".$f_approval_datetime.")";	?></td>
-						<td><?php echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname." (".$f_issue_datetime.")";?></td>
+						<td><?php echo  $f_indent_datetime; ?></td>
+						<td><?php if ($indent->indent_status == "Approved" || $indent->indent_status == "Issued")
+							echo $f_approval_datetime;
+						else
+							echo "NA"; ?></td>
+						<td><?php if ($indent->indent_status == "Issued")
+							echo $f_issue_datetime;
+						else
+							echo "NA"; ?></td>
+						<td><?php echo $indent->from_party_id." - $indent->from_party_name";?></td>
+						<td><?php echo $indent->to_party_id." - $indent->to_party_name.";?></td>
+						<td><?php echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
+						<td><?php echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname;	?></td>
+						<td><?php echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname?></td>
 						<td><?php echo $indent->indent_status;?></td>
-						<td><?php echo $indent->inserted_by_id." - ".$indent->inserted_by_fname." ".$indent->inserted_by_lname." (".$f_insert_datetime.")";?></td>
-						<td><?php echo $indent->updated_by_id." - ".$indent->updated_by_fname." ".$indent->updated_by_lname." (".$f_update_datetime.")";?></td>
-
-
+						<td><?php echo $indent->inserted_by_id." - ".$indent->inserted_by_fname." ".$indent->inserted_by_lname;?></td>
+						<td><?php echo $f_insert_datetime; ?></td>
+						<td><?php echo $indent->updated_by_id." - ".$indent->updated_by_fname." ".$indent->updated_by_lname;?></td> 
+						<td><?php echo $f_update_datetime; ?></td>
+						<td><a href='<?php echo base_url()."consumables/indent_reports/indents_list_detailed/".$indent->indent_id?>' class="btn btn-success">View detailed</a></td>
 					</tr>
 					<?php
 	                // $total_quantity+=$indent->quantity_indented;

@@ -119,10 +119,12 @@ $('#to_id').change(function(){
 </center>	 	
       <hr>
 	  <center>	 
-		<label style="float:left"><b>Indent Id : </b> <?php echo " ".$all_approve->indent_id;?></br></label><!-- Indent id label-->
-	    <label style="float:right"> <b>From : </b>  <?php echo " ".$all_approve->from_party;?></label><br><!-- From party label -->
-		<label style="float:left"><b>Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_approve->approve_date_time));?></label><!-- Date time label-->
-		<label style="float:right"><b>To : </b> <?php echo " ".$all_approve->to_party;?></label><br><!-- To party label-->
+	  <label style="float:left"><b>Indent Id : </b><?php echo " ".$all_approve->indent_id;?></label><!-- Indent_id label -->
+				<label style="float:right"><b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_approve->indent_date));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_approve->approve_date_time));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Issue Date Time : </b>NA</label><br><br><!--Date Time label -->
+				<label style="float:left"><b>From : </b><?php echo " ".$all_approve->from_party;?></label><!-- From label-->
+				<label style="float:right"><b>To : </b><?php echo " ".$all_approve->to_party;?></label><br><!--  To label -->
       </center>   
 	  <br/><br/><br/>
 		<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
@@ -183,24 +185,31 @@ $('#to_id').change(function(){
 									<div class="panel-content">
 											<div  class="span9">
 												<div class="span3">
-													<div class="col-md-6"><!-- Indent id -->
+													<div class="col-md-4"><!-- Indent id -->
 														<b>Indent Id :</b><?php  echo " ".$all_approve->indent_id;?>
 													</div><!-- End of indent_id -->
-													<div class="col-md-6"><!-- from party-->
+												</div>
+												<div class="span3">
+													<div class="col-md-4"><!-- from party-->
 													    <b>From Party : </b><?php echo " ".$all_approve->from_party;?>
 													</div><!-- End of from party-->
+													<div class="col-md-4"><!-- To party-->
+														<b>To Party : </b><?php echo " ".$all_approve->to_party;?>
+													</div><!-- End of to party-->
 												</div>
 											</div>
-											<div class="span3">
-												<div class="col-md-6"><!-- Date time-->
-													<b>Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->approve_date_time));?>
-												</div><!-- End of date time-->
-											</div>
-											<div class="span3">
-												<div class="col-md-6"><!-- To party-->
-													<b>To Party : </b><?php echo " ".$all_approve->to_party;?>
-												</div><!-- End of to party-->
-											</div>
+												<div class="span3">
+														<div class="col-md-6"><!-- Date time-->
+															<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->indent_date));?>
+														</div><!-- End of date time-->
+												</div>
+												<div class="span3">
+													<div class="col-md-6"><!-- Date time-->
+														<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->approve_date_time));?>
+													</div><!-- End of date time-->
+												</div>
+												
+											
 									</div>
 								</div>
 								<div class="container">
@@ -213,6 +222,7 @@ $('#to_id').change(function(){
 														<th class="col-md-2"style="text-align:center">Items</th>
 														<th class="col-md-2"style="text-align:center">Quantity Indented</th>
 														<th class="col-md-2"style="text-align:center">Quantity Approved</th>
+														<th class="col-md-2"style="text-align:center">Notes</th>
 													</thead>
 													<tbody>
 													<?php
@@ -230,6 +240,7 @@ $('#to_id').change(function(){
 															<?php } } else { ?>
 															<td align="right"><?php echo "0";?></td>
 															<?php } ?>
+															<td  align="right"><?php echo $all_approve->note;?></td>
 														</tr>
 													<?php } ?>
 													</tbody>
@@ -401,7 +412,7 @@ $('#to_id').change(function(){
 												<th><center>Indent Date Time</center></th>
 												<th><center>From</center></th>
 												<th><center>To</center></th>
-												<th><center>Status</center></th>
+												<th><center></center></th>
 											</tr>
 										</thead>
 										<tbody>

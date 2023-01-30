@@ -167,6 +167,7 @@ class Indent_report_model extends CI_Model
 			$from_date = date("Y-m-d");
 			$to_date = $from_date;
 		}
+		// log_message("info", "SAIRAM FROM LIST_INDENTS, ".$this->input->post('from_id')." $to_party $indent_status");
 		if (($from_party != '0') || $this->input->post('from_id')) {
 			if ($this->input->post('from_id'))
 				$from_party = $this->input->post('from_id');
@@ -205,9 +206,9 @@ class Indent_report_model extends CI_Model
 		$this->db->from('indent')
 			->join("supply_chain_party scp_from", "scp_from.supply_chain_party_id = indent.from_id")
 			->join("supply_chain_party scp_to", "scp_to.supply_chain_party_id = indent.to_id")
-			->join("staff staff_orderer", "staff_orderer.staff_id = indent.orderby_id")
-			->join("staff staff_approver", "staff_approver.staff_id = indent.approver_id")
-			->join("staff staff_issuer", "staff_issuer.staff_id = indent.issuer_id")
+			->join("staff staff_orderer", "staff_orderer.staff_id = indent.orderby_id", "left")
+			->join("staff staff_approver", "staff_approver.staff_id = indent.approver_id", "left")
+			->join("staff staff_issuer", "staff_issuer.staff_id = indent.issuer_id", "left")
 			->join("staff staff_inserted_by", "staff_inserted_by.staff_id = indent.insert_user_id")
 			->join("staff staff_updated_by", "staff_updated_by.staff_id = indent.update_user_id");
 			
@@ -227,6 +228,8 @@ class Indent_report_model extends CI_Model
 	//calling get data method.
 	function get_data($type)
 	{
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+
 		if ($type == "item_type")
 			$this->db->select("*")->from("item_type");
 		else if ($type == "item")
@@ -239,7 +242,7 @@ class Indent_report_model extends CI_Model
 		else if ($type == "status")
 			$this->db->select("indent_status")->from("indent_item");
 		else if ($type == "party")
-			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party");
+			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->where('supply_chain_party.hospital_id', $hospital['hospital_id']);
 		$resource = $this->db->get();
 		return $resource->result();
 	} //ending of get data method.

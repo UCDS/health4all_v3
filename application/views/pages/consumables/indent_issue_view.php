@@ -14,16 +14,16 @@ $(function(){
 	$("#from_date,#to_date").Zebra_DatePicker({direction:false});
 	$("#indent_time").ptTimeSelect();
 	});
-function printDiv(i)
-{
-var content = document.getElementById(i);
-var pri = document.getElementById("ifmcontentstoprint").contentWindow;
-pri.document.open();
-pri.document.write(content.innerHTML);
-pri.document.close();
-pri.focus();
-pri.print();
-}
+	function printDiv(i)
+	{
+		var content = document.getElementById(i);
+		var pri = document.getElementById("ifmcontentstoprint").contentWindow;
+		pri.document.open();
+		pri.document.write(content.innerHTML);
+		pri.document.close();
+		pri.focus();
+		pri.print();
+	}	
 </script>
 <script>
 $(function(){
@@ -121,9 +121,11 @@ $(function(){
 	</center>	 
 			<hr>
 			<center>
-				<label style="float:left"><b>Indent Id : </b><?php echo " ".$all_issue->indent_id;?></br></label><!-- Indent_id label -->
-				<label style="float:right"><b>From : </b><?php echo " ".$all_issue->from_party;?></label><br><!-- From label-->
-				<label style="float:left"><b>Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));?></label><!--Date Time label -->
+				<label style="float:left"><b>Indent Id : </b><?php echo " ".$all_issue->indent_id;?></label><!-- Indent_id label -->
+				<label style="float:right"><b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_issue->indent_date));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Issue Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>From : </b><?php echo " ".$all_issue->from_party;?></label><!-- From label-->
 				<label style="float:right"><b>To : </b><?php echo " ".$all_issue->to_party;?></label><br><!--  To label -->
 			</center>
 			<br/><br/><br/>
@@ -133,6 +135,7 @@ $(function(){
 					<th style="text-align:center;border:1px solid black;" >Items</th>
 					<th style="text-align:center;border:1px solid black;" >Quantity Approved</th>
 					<th style="text-align:center;border:1px solid black;" >Quantity Issued</th>
+					
 				</thead>
 				<tbody>
 					<?php
@@ -143,6 +146,7 @@ $(function(){
 								<td style="border:1px solid black;   padding: 15px;  height: 50px;" align="left"><?php echo $all_issue->item_name."-".$all_issue->item_form."-".$all_issue->item_type.$all_issue->dosage.$all_issue->dosage_unit;?></td>
 								<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_approved ?></td>
 								<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_issued ?></td>
+								
 							</tr>
 			        <?php } ?>
 				</tbody>
@@ -172,25 +176,32 @@ $(function(){
 							<div class="panel-content">
 								<div  class="span9">
 									<div class="span3">
-										<div class="col-md-6"><!--Indent id label-->
+										<div class="col-md-4"><!--Indent id label-->
 											<b>Indent Id : </b><?php echo " ".$all_issue->indent_id;?>
 										</div><!-- End of indent_id label-->
-										<div class="col-md-6"><!-- From_party label-->
+										<div class="col-md-4"><!-- From_party label-->
 											<b>From Party : </b><?php echo " ".$all_issue->from_party;?>
 										</div><!-- End of from_party label -->
-									</div>
-								</div>
-								<div class="span3">
-									<div class="col-md-6"><!-- Date Time label -->
-										<b>Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->issue_date_time));?>
-									</div><!-- End of date time label-->
-								
-								</div>
-								<div class="span3">
-									<div class="col-md-6"><!-- To party label -->
+										<div class="span3">
+									<div class="col-md-4"><!-- To party label -->
 										<b>To Party : </b><?php echo " ".$all_issue->to_party;?>
 									</div><!-- End of to party label-->
 								</div>
+									</div>
+								</div>
+								<div class="span3">
+								<div class="col-md-6"><!-- Date Time label -->
+										<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->indent_date));?>
+									</div><!-- End of date time label-->
+								<div class="col-md-6"><!-- Date Time label -->
+										<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->approve_date_time));?>
+									</div><!-- End of date time label-->
+									<div class="col-md-6"><!-- Date Time label -->
+										<b>Issue Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->issue_date_time));?>
+									</div><!-- End of date time label-->
+								
+								</div>
+								
 							</div>
 						</div>
 						<div class="container">
@@ -203,6 +214,7 @@ $(function(){
 												<th class="col-md-2"style="text-align:center">Items</th>
 												<th class="col-md-2"style="text-align:center">Quantity Approved</th>
 												<th class="col-md-2"style="text-align:center">Quantity Issued</th>
+												<th class="col-md-2"style="text-align:center">Notes</th>
 											</thead>
 											<tbody>
 												<?php
@@ -213,6 +225,7 @@ $(function(){
 														<td align="left"><?php echo $all_issue->item_name."-".$all_issue->item_form."-".$all_issue->item_type.$all_issue->dosage.$all_issue->dosage_unit;?></td>
 														<td align="right"><?php echo $all_issue->quantity_approved ?></td>
 														<td align="right"><?php echo $all_issue->quantity_issued ?></td>
+														<td align="right"><?php echo $all_issue->note ?></td>
 													</tr>
 												<?php } ?>
 											</tbody>
