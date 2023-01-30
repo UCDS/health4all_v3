@@ -16,12 +16,16 @@ class Indent_model extends CI_Model {
 		$call_date = date("Y-m-d H:i:s");
 		$input_indent_date = $this->input->post('indent_date');
 		$input_indent_time = $this->input->post('indent_time');
-		//https://stackoverflow.com/questions/19375184/merge-date-time
-		$final_indent_datetime = date("Y-m-d H:i:s", strtotime("$input_indent_date $input_indent_time"));					
+		$final_indent_datetime = $call_date;
+		if($input_indent_date && $input_indent_time){
+			//https://stackoverflow.com/questions/19375184/merge-date-time
+			$final_indent_datetime = date("Y-m-d H:i:s", strtotime("$input_indent_date $input_indent_time"));					
+
+		}
 		if($final_indent_datetime > $call_date){
 			$final_indent_datetime = $call_date;
 		}
-		log_message("info", "SAIRAM FROM ADD INDENT " . $final_indent_datetime);
+		// log_message("info", "SAIRAM FROM ADD INDENT " . $final_indent_datetime);
         $order= array();
        
         if($this->input->post('from_id')){
@@ -110,8 +114,9 @@ class Indent_model extends CI_Model {
     }
 	//This is a method used to retreive data from supply_chain_party,item tables depend upon type.
     function get_supply_chain_party($type=""){
+		$hospital=$this->session->userdata('hospital');
 		if($type=="party")
-		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party");
+		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->where("supply_chain_party.hospital_id ", $hospital['hospital_id']);
 		else if($type=="item")
 		$this->db->select('item.item_name,item.item_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
 		->from("item")
