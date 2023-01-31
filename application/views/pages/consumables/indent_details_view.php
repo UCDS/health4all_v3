@@ -14,12 +14,13 @@ pri.print();
 		<div id="print-div" class="sr-only" style="width:100%;height:100%;"> 
 		<center>
 		<h3><?php echo $register[0]->hospital;?></h3>
-		<h3>Indent</h3><hr>
+		<p><h3>Indent ID <?php echo $register[0]->indent_id;?></h3></p><!-- Heading -->
 		</center>
-		<label style="float:left"><b>Indent Id:</b> <?php echo $register[0]->indent_id;?></br></label>
-		<label style="float:right"><b>From:</b> <?php echo $register[0]->from_party_name;?></label><br>
-		 <label style="float:left"> <b>Indent Date:</b> <?php echo date("d-M-Y g:i A", strtotime($register[0]->indent_date)); ?></label>
-		<label style="float:right"><b>To:</b> <?php echo $register[0]->to_party_name;?></label><br><br><br>
+		<label style="float:left"><b>From:</b> <?php echo $register[0]->from_party_name;?></label>
+		<label style="float:right"><b>To:</b> <?php echo $register[0]->to_party_name;?></label><br><br>
+		 <label style="float:left"> <b>Indented By:</b> <?php echo $register[0]->first_name." ".$register[0]->last_name." ".date("d-M-Y g:i A", strtotime($register[0]->indent_date)); ?></label><br><br>
+		 <label style="float:left"><b>Approved By : </b>NA</label><br><br>
+		 <label style="float:left"><b>Issue By : </b>NA</label><br><br>
 		<center>
 		<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
 			<thead style="height:50px">
@@ -38,7 +39,7 @@ pri.print();
 			<?php } ?>
 			</tbody>
 		</table></br>	</center>
-		<b>Indented by:</b><?php echo $register[0]->first_name." ".$register[0]->last_name;?></br></br></br>
+		
 		<b>Signature:</b>
 			
 		

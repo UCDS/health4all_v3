@@ -126,48 +126,48 @@ $(function(){
 			<?php break;
 		} ?>
 		<p>
-		<h3>Indent Order </h3>
+		<h3>Indent ID <?php echo $all_issue->indent_id; ?></h3>
 		</p><!-- Heading -->
 	</center>
 	<hr>
 	<center>
-		<label style="float:left"><b>Indent Id : </b>
-			<?php echo " " . $all_issue->indent_id; ?>
-		</label><!-- Indent_id label -->
-		<label style="float:right"><b>Indent Date Time : </b>
-			<?php echo " " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
-		</label><br><br><!--Date Time label -->
-		<label style="float:left"><b>Approval Date Time : </b>
-			<?php 
-				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
-					echo " " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));}
-				else { 
-					echo " NA";
-				} ?>
-		</label><br><br><!--Date Time label -->
-		<label style="float:left"><b>Issue Date Time : </b>
-		<?php 
-				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
-					echo " " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
-				else { 
-					echo " NA";
-				} ?>
-		</label><br><br><!--Date Time label -->
+		
 		<label style="float:left"><b>From : </b>
 			<?php echo " " . $all_issue->from_party; ?>
 		</label><!-- From label-->
 		<label style="float:right"><b>To : </b>
-			<?php echo " " . $all_issue->to_party; ?>
-		</label><br><!--  To label -->
+			<?php echo $all_issue->issue_first . " " . $all_issue->issue_last." at " . $all_issue->to_party; ?>
+		</label><br><br><!--  To label -->
+		<label style="float:right"><b>Indented by : </b>
+			<?php echo " " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
+		</label><br><br><!--Date Time label -->
+		<label style="float:left"><b>Approval by : </b>
+			<?php 
+				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
+					echo $all_issue->order_first . " " . $all_issue->order_last." at " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));}
+				else { 
+					echo " NA";
+				} ?>
+		</label><br><br><!--Date Time label -->
+		<label style="float:left"><b>Issued by : </b>
+		<?php 
+				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
+					echo $all_issue->approve_first . " " . $all_issue->approve_last." at " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
+				else { 
+					echo " NA";
+				} ?>
+		</label><br><br><!--Date Time label -->
+		
 	</center>
 	<br /><br /><br />
 	<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
 		<thead style="height:50px">
 			<th style="text-align:center;border:1px solid black;">#</th>
 			<th style="text-align:center;border:1px solid black;">Items</th>
+			<th style="text-align:center;border:1px solid black;">Quantity indented</th>
 			<th style="text-align:center;border:1px solid black;">Quantity Approved</th>
 			<th style="text-align:center;border:1px solid black;">Quantity Issued</th>
-
+			<th style="text-align:center;border:1px solid black;">Note</th>	
 		</thead>
 		<tbody>
 			<?php
@@ -183,10 +183,16 @@ $(function(){
 						<?php echo $all_issue->item_name . "-" . $all_issue->item_form . "-" . $all_issue->item_type . $all_issue->dosage . $all_issue->dosage_unit; ?>
 					</td>
 					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
+						<?php echo $all_issue->quantity_indented ?>
+					</td>
+					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
 						<?php echo $all_issue->quantity_approved ?>
 					</td>
 					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
 						<?php echo $all_issue->quantity_issued ?>
+					</td>
+					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
+						<?php echo $all_issue->note ?>
 					</td>
 
 				</tr>
@@ -194,18 +200,7 @@ $(function(){
 		</tbody>
 	</table>
 	<br /><br />
-	<b>
-		<?php echo "Indented" . " " . "by :"; ?>
-	</b>
-	<?php echo $all_issue->order_first . " " . $all_issue->order_last; ?></br></br>
-	<b>
-		<?php echo "Approved" . " " . "by :"; ?>
-	</b>
-	<?php echo $all_issue->approve_first . " " . $all_issue->approve_last; ?></br></br>
-	<b>
-		<?php echo $all_issue->indent_status . " " . "by :"; ?>
-	</b>
-	<?php echo $all_issue->issue_first . " " . $all_issue->issue_last; ?></br></br>
+	
 	<b>
 		<?php echo "Issuer Signature :"; ?>
 	</b></br></br>
