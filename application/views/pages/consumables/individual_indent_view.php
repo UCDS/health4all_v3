@@ -138,13 +138,13 @@ $(function(){
 		<label style="float:right"><b>To : </b>
 			<?php echo $all_issue->issue_first . " " . $all_issue->issue_last." at " . $all_issue->to_party; ?>
 		</label><br><br><!--  To label -->
-		<label style="float:right"><b>Indented by : </b>
-			<?php echo " " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
+		<label style="float:left"><b>Indented by : </b>
+			<?php echo $all_issue->order_first . " " . $all_issue->order_last." at " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
 		</label><br><br><!--Date Time label -->
 		<label style="float:left"><b>Approval by : </b>
 			<?php 
 				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
-					echo $all_issue->order_first . " " . $all_issue->order_last." at " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));}
+					echo $all_issue->approve_first . " " . $all_issue->approve_last." at " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));}
 				else { 
 					echo " NA";
 				} ?>
@@ -152,7 +152,7 @@ $(function(){
 		<label style="float:left"><b>Issued by : </b>
 		<?php 
 				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
-					echo $all_issue->approve_first . " " . $all_issue->approve_last." at " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
+					echo $all_issue->issue_first . " " . $all_issue->issue_last." at " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
 				else { 
 					echo " NA";
 				} ?>
@@ -160,38 +160,38 @@ $(function(){
 		
 	</center>
 	<br /><br /><br />
-	<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
+	<table style=" border:2px solid black;width:100%;border-collapse: collapse;">
 		<thead style="height:50px">
-			<th style="text-align:center;border:1px solid black;">#</th>
-			<th style="text-align:center;border:1px solid black;">Items</th>
-			<th style="text-align:center;border:1px solid black;">Quantity indented</th>
-			<th style="text-align:center;border:1px solid black;">Quantity Approved</th>
-			<th style="text-align:center;border:1px solid black;">Quantity Issued</th>
-			<th style="text-align:center;border:1px solid black;">Note</th>	
+			<th style="text-align:center;border:2px solid black;">#</th>
+			<th style="text-align:center;border:2px solid black;">Items</th>
+			<th style="text-align:center;border:2px solid black;">Quantity indented</th>
+			<th style="text-align:center;border:2px solid black;">Quantity Approved</th>
+			<th style="text-align:center;border:2px solid black;">Quantity Issued</th>
+			<th style="text-align:center;border:2px solid black;">Note</th>	
 		</thead>
 		<tbody>
 			<?php
 			$i = 1;
 			foreach ($issue_details as $all_issue) { ?>
 				<tr>
-					<td style=" border:1px solid black;  padding: 15px;  height: 50px;">
+					<td style="border:2px solid black;  padding: 15px;  height: 50px;">
 						<center>
 							<?php echo $i++; ?>
 						</center>
 					</td>
-					<td style="border:1px solid black;   padding: 15px;  height: 50px;" align="left">
+					<td style="border:2px solid black;   padding: 15px;  height: 50px;" align="left">
 						<?php echo $all_issue->item_name . "-" . $all_issue->item_form . "-" . $all_issue->item_type . $all_issue->dosage . $all_issue->dosage_unit; ?>
 					</td>
-					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
+					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
 						<?php echo $all_issue->quantity_indented ?>
 					</td>
-					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
+					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
 						<?php echo $all_issue->quantity_approved ?>
 					</td>
-					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
+					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
 						<?php echo $all_issue->quantity_issued ?>
 					</td>
-					<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right">
+					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
 						<?php echo $all_issue->note ?>
 					</td>
 

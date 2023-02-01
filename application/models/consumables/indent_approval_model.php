@@ -59,7 +59,7 @@ class Indent_approval_model extends CI_Model {                                  
 	
 	function display_approve_details(){                                                                       //definition of a function :display_approve_details
 		$hospital=$this->session->userdata('hospital'); 	                                                  //Storing user data who logged into the hospital into a var:hospital
-		$this->db->select('indent.indent_status,indent_item.indent_item_id,indent.indent_date,indent_item.quantity_indented,indent.indent_id,indent.approver_id,indent.approve_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party ,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,item_name,indent_item.quantity_approved,indent_item.indent_status, indent_item.note')->from('indent')
+		$this->db->select('indent.indent_status,indent_item.indent_item_id,indent.indent_date,indent_item.quantity_indented,indent.indent_id,indent.approver_id,indent.approve_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party ,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,item_name,indent_item.quantity_approved,indent_item.indent_status, indent_item.note, indent.note indent_note')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                              //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')                     //item_type,item_form,dosage,supply_chain_party,staff,hospital)
@@ -110,7 +110,7 @@ class Indent_approval_model extends CI_Model {                                  
 					'indent_item_id'=>$i,
 					'quantity_approved'=>$this->input->post('quantity_approved_'.$i),
 					'indent_status'=>$this->input->post('indent_status_'.$i), 
-					'note'=>$this->input->post("indent_item_note_$i")."Additional notes:\n".$this->input->post("item_additional_notes_$i"), 
+					'note'=>$this->input->post("indent_item_note_$i"), 
 					
 				);
 			}
@@ -131,6 +131,7 @@ class Indent_approval_model extends CI_Model {                                  
 			$array_d=array(
                     'approver_id'=>$staff->staff_id, 
 					'update_user_id' => $staff->staff_id,                                                            //get staff_id in an array
+					'note' => $this->input->post('indent_note') ? $this->input->post('indent_note'): ""
 			);
 			$call_date = date("Y-m-d H:i:s");
 			$approval_datetime = $call_date;

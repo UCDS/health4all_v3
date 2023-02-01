@@ -39,8 +39,10 @@ class Indent_approve extends CI_Controller{                                     
         $this->data['all_item_type']=$this->indent_approval_model->get_supply_chain_party("item_type"); //get item types from get_supply_chain_party method of indent_approval model and store it into data array of index:all_item_types
         $this->data['all_item']=$this->indent_approval_model->get_supply_chain_party("item");           //get items from get_supply_chain_party method of indent_approval model and store it into data array of index:all_items
         $this->data['parties']=$this->indent_approval_model->get_supply_chain_party("party");           //get parties from get_supply_chain_party method of indent_approval model and store it into data array of index:parties
-        $this->form_validation->set_rules('from_date', 'FROM Date',                         //set form validation rule on from_date
-                    'trim|xss_clean');
+        $this->form_validation->set_rules('from_date', 'FROM Date', 'trim|xss_clean');                  //set form validation rule on from_date
+            
+
+        
         if($this->form_validation->run() == False){                                         //checking whether validation is true or false
 			$this->data['mode']="search";                                                   //if then save search as mode into data array of index:mode
             $this->data['all_indents']= $this->indent_approval_model->get_indents();        //Store data from get_indents method of indent_approval_model and save it into data array of index:all_indents

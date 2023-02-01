@@ -141,7 +141,7 @@ class Indent_report_model extends CI_Model
 		if ($this->input->post('indent_id')) {
 			$this->db->where('indent.indent_id', $this->input->post('indent_id'));
 		}
-		log_message('info', "SAIRAM AGAIN Input ".$this->input->post('from_date'));
+		// log_message('info', "SAIRAM AGAIN Input ".$this->input->post('from_date'));
 		$query = $this->db->get();
 		//echo $this->db->last_query();
 		return $query->result();
@@ -156,37 +156,44 @@ class Indent_report_model extends CI_Model
 	function list_indents($from_date = 0, $to_date = 0, $from_party = 0, $to_party = 0, $indent_status = 0)
 	{
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+		if($this->input->post('indent_id')){
+			$this->db->where('indent.indent_id', $this->input->post('indent_id'));
+		}else{
 
-		if ($this->input->post('from_date') && $this->input->post('to_date')) {
-			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
-			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
-		} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
-			$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
-			$to_date = $from_date;
-		} else if ($from_date == '0' && $to_date == '0') {
-			$from_date = date("Y-m-d");
-			$to_date = $from_date;
-		}
-		// log_message("info", "SAIRAM FROM LIST_INDENTS, ".$this->input->post('from_id')." $to_party $indent_status");
-		if (($from_party != '0') || $this->input->post('from_id')) {
-			if ($this->input->post('from_id'))
-				$from_party = $this->input->post('from_id');
-			$this->db->where('scp_from.supply_chain_party_id', $from_party);
-		}
-		if (($to_party != '0') || $this->input->post('to_id')) {
-			if ($this->input->post('to_id'))
-				$to_party = $this->input->post('to_id');
-			$this->db->where('scp_to.supply_chain_party_id', $to_party);
-		}
-		if (($indent_status != '0') || $this->input->post('indent_status')) {
-			if ($this->input->post('indent_status'))
-				$indent_status = $this->input->post('indent_status');
-			if ($indent_status == "Approved") {
-				$this->db->where('indent.indent_status', "Approved");
-				$this->db->or_where('indent.indent_status', "Issued");
-			} else if ($indent_status = "Issued")
+			if ($this->input->post('from_date') && $this->input->post('to_date')) {
+				$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+				$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+			} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+				$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+				$to_date = $from_date;
+			} else if ($from_date == '0' && $to_date == '0') {
+				$from_date = date("Y-m-d");
+				$to_date = $from_date;
+			}
+			// log_message("info", "SAIRAM FROM LIST_INDENTS, ".$this->input->post('from_id')." $to_party $indent_status");
+			if (($from_party != '0') || $this->input->post('from_id')) {
+				if ($this->input->post('from_id'))
+					$from_party = $this->input->post('from_id');
+				$this->db->where('scp_from.supply_chain_party_id', $from_party);
+			}
+			if (($to_party != '0') || $this->input->post('to_id')) {
+				if ($this->input->post('to_id'))
+					$to_party = $this->input->post('to_id');
+				$this->db->where('scp_to.supply_chain_party_id', $to_party);
+			}
+			if (($indent_status != '0') || $this->input->post('indent_status')) {
+				if ($this->input->post('indent_status'))
+					$indent_status = $this->input->post('indent_status');
+				if ($indent_status == "Approved") {
+					$this->db->where('indent.indent_status', "Approved");
+					$this->db->or_where('indent.indent_status', "Issued");
+				} else if ($indent_status = "Issued")
 				$this->db->where('indent.indent_status', "Issued");
+			}
+			$this->db->where("(DATE(indent_date) BETWEEN '$from_date' AND '$to_date' )"); //here where condition is for only displaying orders between from_date and to_date
 		}
+		
+		
 
 
 		$this->db->select("indent.indent_id indent_id, indent.hospital_id hospital_id, 
@@ -212,11 +219,8 @@ class Indent_report_model extends CI_Model
 			->join("staff staff_inserted_by", "staff_inserted_by.staff_id = indent.insert_user_id")
 			->join("staff staff_updated_by", "staff_updated_by.staff_id = indent.update_user_id");
 			
-		$this->db->where("(DATE(indent_date) BETWEEN '$from_date' AND '$to_date' )"); //here where condition is for only displaying orders between from_date and to_date
 		$this->db->where("indent.hospital_id", $hospital['hospital_id']);
-		if ($this->input->post('indent_id')) {
-			$this->db->where('indent.indent_id', $this->input->post('indent_id'));
-		}
+		
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();
 		log_message('info', $query_string);

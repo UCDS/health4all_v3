@@ -58,7 +58,20 @@ class Indent_reports extends CI_Controller
 				'field' => 'item_name',
 				'label' => 'Item_name',
 				'rules' => 'trim|xss_clean'
-			)
+			), 
+			array(
+				'field' => 'indent_id', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			array(
+				'field' => 'item_type', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			
+			array(
+				'field' => 'indent_status', 
+				'rules' => 'trim|xss_clean', 
+			), 
 
 		);
 		$this->form_validation->set_rules($validations);
@@ -129,7 +142,20 @@ class Indent_reports extends CI_Controller
 				'field' => 'item_name',
 				'label' => 'Item_name',
 				'rules' => 'trim|xss_clean'
-			)
+			), 
+			array(
+				'field' => 'indent_id', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			array(
+				'field' => 'item_type', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			
+			array(
+				'field' => 'indent_status', 
+				'rules' => 'trim|xss_clean', 
+			), 
 
 		);
 		$this->form_validation->set_rules($validations); //load the fields for validation.
@@ -204,7 +230,20 @@ class Indent_reports extends CI_Controller
 				'field' => 'item_name',
 				'label' => 'Item_name',
 				'rules' => 'trim|xss_clean'
-			)
+			), 
+			array(
+				'field' => 'indent_id', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			array(
+				'field' => 'item_type', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			
+			array(
+				'field' => 'indent_status', 
+				'rules' => 'trim|xss_clean', 
+			), 
 
 		);
 		$this->form_validation->set_rules($validations); //load the fields for validation.

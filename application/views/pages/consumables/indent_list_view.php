@@ -229,7 +229,13 @@ $('#to_id').change(function(){
 									</select>-->
 								</div>
 							</div>
-
+							<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-3 col-md-offset-2">
+								<div class="form-group">
+									<!--Input field Indent Status-->
+									<label for="indent_id" >Indent Id</label>
+									<input class="form-control" name="indent_id" placeholder="Indent ID">
+								</div>
+							</div>
 							<div class="container">
 								<div class="row">
 									<div class="col-md-12">
@@ -239,6 +245,7 @@ $('#to_id').change(function(){
 									</div>
 								</div>
 							</div>
+							
 
 					</div>
 				</div>
@@ -266,7 +273,7 @@ $('#to_id').change(function(){
 						<thead>
 							<th> S.no </th>
 							<th>Indent Id</th>
-							<th>Hospital Id</th>
+							<!-- <th>Hospital Id</th> -->
 							<th>Indent datetime</th>
 							<th>Approval datetime</th>
 							<th>Issue datetime</th>
@@ -276,10 +283,7 @@ $('#to_id').change(function(){
 							<th>Approved by</th>
 							<th>Issued by</th>
 							<th>Indent Status</th>
-							<th>Inserted by</th>
-							<th>Inserted at</th>
-							<th>Last Updated by</th>
-							<th>Last Updated at</th>
+							
 							<th></th>
 							<!-- <th>Insertion datetime</th>
 							<th>Updation datetime</th> -->
@@ -308,7 +312,6 @@ $('#to_id').change(function(){
 					<td><?php echo $i++; ?></td>
 
 						<td><?php echo $indent->indent_id;?></td>
-						<td><?php echo $indent->hospital_id;?></td>
 						
 <!-- 
 						
@@ -334,10 +337,6 @@ $('#to_id').change(function(){
 						<td><?php echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname;	?></td>
 						<td><?php echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname?></td>
 						<td><?php echo $indent->indent_status;?></td>
-						<td><?php echo $indent->inserted_by_id." - ".$indent->inserted_by_fname." ".$indent->inserted_by_lname;?></td>
-						<td><?php echo $f_insert_datetime; ?></td>
-						<td><?php echo $indent->updated_by_id." - ".$indent->updated_by_fname." ".$indent->updated_by_lname;?></td> 
-						<td><?php echo $f_update_datetime; ?></td>
 						<td><a href='<?php echo base_url()."consumables/indent_reports/indents_list_detailed/".$indent->indent_id?>' class="btn btn-success">View detailed</a></td>
 					</tr>
 					<?php

@@ -49,24 +49,29 @@ $(window).load(function() {
 	console.log("SAIRAM I EXIST");
 	
 	let current_quantities = { <?php foreach ($indent_issued as $all_int) {
-		echo "$all_int->indent_item_id : {qty: $all_int->quantity_approved, changed: false, change_notes: ''}, ";
+		echo "$all_int->indent_item_id : {qty: $all_int->quantity_approved, }, ";
 	} ?> 
 
 	};
 	console.log(current_quantities);
-	let quantity_changed = false;
+	
 
 	
 	
 	for(const quantity_name in current_quantities){
 		console.log(quantity_name, current_quantities[quantity_name]);
-		$(`[name=indent_qty_change_${quantity_name}]`).click((event) => {
-			console.log("Quantity change button clicked");
-			bootbox.prompt({
-				title: 'Change quantity',
-				inputType: 'number', 
-				value: `${current_quantities[quantity_name].qty}`, 
-				callback: function (result) {
+		let qty_el = $(`[name=quantity_issued_${quantity_name}]`);
+		console.log(qty_el.val(), current_quantities[quantity_name].qty);
+		if(qty_el.val() == current_quantities[quantity_name].qty){
+			$(`.to-be-hidden`).hide();
+			console.log("HIDDEN");
+		}else{
+			$(`.to-be-hidden`).show();
+			console.log("SHOWN");
+		}
+		qty_el.change((event) => {
+				let result = event.target.value;
+			
 					if(result === null || result === "") // Cancel
 						return;
 					console.log(result, typeof(result));
@@ -74,107 +79,21 @@ $(window).load(function() {
 					let new_quantity = result;
 
 					if(new_quantity != current_quantities[quantity_name].qty){
-						new_quantity = result;
-						bootbox.prompt({
-							title: 'Add note to justify change', 
-							inputType: 'textarea', 
-							value: "", 
-							required: true, 
-							callback: function (result) {
-								if(result === "" || result === null){
-									bootbox.alert("Please provide reason for change of quantity.");
-									
-								}else if(result !== ""){
-									current_quantities[quantity_name].change_notes = result;
-									let change_note = `Quantity change reason:\n${result}`;
-									$(`[name=indent_item_note_${quantity_name}]`).val( change_note
-									+ '\n' 
-									);
-									justified = true;							
-								}
-								if(justified){
-									console.log("New quantity", new_quantity);
-									$(`[name=quantity_issued_${quantity_name}]`).val(new_quantity);
-									current_quantities[quantity_name].changed = true;
-								}
-							}
-						});
+						$(`.to-be-hidden`).show();
 						
 					}else{
-						bootbox.alert("No change in quantity");
-						current_quantities[quantity_name].changed = false;
+						$(`.to-be-hidden`).hide();
 					}
-				}
+						
+					
 			});
-		});
+		
 
 
 		
-
-		$(`[name=item_note_change_${quantity_name}]`).click((event) => {
-			if(!current_quantities[quantity_name].changed)
-				return;
-			
-			bootbox.prompt({
-				title: 'Edit reason', 
-				inputType: 'textarea', 
-				value: current_quantities[quantity_name].change_notes, 
-				required: true, 
-				callback: function (result) {
-					let res = result;
-					if(res === null || res === ""){
-						bootbox.alert("Please provide reason");
-						return;
-					}
-					
-
-					current_quantities[quantity_name].change_notes = res;
-
-					$(`[name=indent_item_note_${quantity_name}]`).val(`Quantity change reason:\n${current_quantities[quantity_name].change_notes}`
-								+ '\n' );
-					
-
-
-
-				}
-			});
-		});
 	}
 
-	$('#approval_form').submit((event) => {
-		
-			let result = confirm("Are you sure you want to submit ?");
-			if(!result){
-				event.preventDefault();
-			}
-			
-	});
-	$('#current_date_check').prop('checked', true);
-	if($('#current_date_check').prop('checked') === true){
-		$('#approval_date').prop('disabled', true);
-		$('#approval_time').prop('disabled', true);
-		$('.maybe_hidden').hide();
-	}else{
-		$('#approval_date').prop('disabled', false);
-		$('#approval_time').prop('disabled', false);
-
-		$('.maybe_hidden').show();
-	}
-	// console.log("INITIAL CHECK VALUE", curr_check_val);
-
-	$('#current_date_check').change((event) => {
-		console.log(event.target.checked);
-		if(event.target.checked){
-			$('#approval_date').prop('disabled', true);
-			$('#approval_time').prop('disabled', true);
-			$('.maybe_hidden').hide();
-		}else{
-			$('#approval_date').prop('disabled', false);
-			$('#approval_time').prop('disabled', false);
-			$('.maybe_hidden').show();
-		}
-			
-	});
+	
 });
 </script>
 <div class="col-xs-1 col-md-offset-1">
@@ -196,26 +115,27 @@ $(window).load(function() {
     <?php echo form_open('consumables/indent_issue/indent_issued',array('class'=>'form-custom','role'=>'form'))?><!-- Issued details from open -->
 			<div class="container">
 			<div class="row">
-					<div class="form-group">
-								<label for="current_date_check">Set issue date and time as time of submission</label>
-								<input class="form-control" type="checkbox" checked=false value="set_as_current" name="current_date_check" id="current_date_check" size="10"/>
+					<div class="row">
+						<div class="col">
+							<div class="alert alert-warning to-be-hidden">
+								It is advisable to enter a reason for changing quantity.
 							</div>
+						</div>
 					</div>
-					<div class="row maybe_hidden">
-						<div class="col-md-2">  <!--indent issue date-->
-							<div class="form-group">
-								<label for="issue_date">Issue Date</label>
-								<input class="form-control" type="text" value="<?php echo date("d-M-Y"); ?>" name="issue_date" id="issue_date" size="10"/>
-							</div>
-						</div>					<!-- end of Indent issue Date-->
-						<div class="col-md-2">	<!-- Indent issue Time-->
-							<div class="form-group">
-								<label for="issue_time">Issue Time</label>
-								<input  class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("h:i A"); ?>" name="issue_time" id="issue_time" size="7px"/>
-							</div>
-						</div>					<!-- end of Indent approval Time-->
-						
-				</div>
+			<div class="row">
+				<div class="col-md-2">  <!--indent issue date-->
+					<div class="form-group">
+						<label for="issue_date">Issue Date</label>
+						<input class="form-control" type="text" value="<?php echo date("d-M-Y"); ?>" name="issue_date" id="issue_date" size="10"/>
+					</div>
+				</div>					<!-- end of Indent issue Date-->
+				<div class="col-md-2">	<!-- Indent issue Time-->
+					<div class="form-group">
+						<label for="issue_time">Issue Time</label>
+						<input  class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("h:i A"); ?>" name="issue_time" id="issue_time" size="7px"/>
+					</div>
+				</div>					<!-- end of Indent approval Time-->		
+			</div>
             	<div class="row" >
 			 		<div class = "col-md-4">
 						<div class="form-group"><!-- From label-->
@@ -236,11 +156,11 @@ $(window).load(function() {
 							<thead>
 							    <th><center>#</center></th>
 								<th><center>Item Name</center></th>
+								<th><center>Quantity Indented</center></th>
 								<th><center>Quantity Approved</center></th>
-								<th><center>Approval Note</center></th>
 								<th><center>Quantity Issued</center></th>
-								<th><center>Issue Note</center></th>
-								<th><center>Additional notes</center></th>
+								<th><center>Note</center></th>
+								
 							</thead>
 				           <tbody>
 					            <?php
@@ -256,27 +176,29 @@ $(window).load(function() {
 					                <div class="form-group"> 
 					                      <td align="left"><?php echo  $all_int->item_name."-".$all_int->item_type."-".$all_int->item_form."-".$all_int->dosage.$all_int->dosage_unit ;?></td>
 					                </div>
+									<div class="form-group">
+					                      <td align="right"><?php echo $all_int->quantity_indented;?></td>
+					                </div>
 					                <div class="form-group">
 					                      <td align="right"><?php echo $all_int->quantity_approved;?></td>
 					                </div>
-									<div class="form-group">
-					                      <td align="right"><input type="textarea" name='<?php echo "indent_approved_item_note_$all_int->indent_item_id"; ?>' value='<?php echo $all_int->note; ?>' readonly></td>
-					                </div>
+									
 					                <div class="form-group">
 					                      <td align="right">
-											<input type="number" class="form-control" min="1"  step="1"  name="quantity_issued_<?= $all_int->indent_item_id;?>" id="quantity_id" value="<?php echo $all_int->quantity_approved;?>" placeholder="Enter Quantity " required readonly>
-											<button type="button" name="indent_qty_change_<?php echo $all_int->indent_item_id ?>" class="btn btn-warning">Change quantity</button>
+											<input type="number" class="form-control" min="1"  step="1"  name="quantity_issued_<?= $all_int->indent_item_id;?>" id="quantity_id" value="<?php echo $all_int->quantity_approved;?>" placeholder="Enter Quantity " required>
+											
                                            <input type="hidden" value="<?= $all_int->indent_item_id;?>" class="sr-only" name="indent_item[]" />
 					                      </td>
 					                </div>
 									<div class="form-group">
-					                      <td align="right"><input type="textarea" name='<?php echo "indent_item_note_$all_int->indent_item_id" ?>' placeholder="Enter note" readonly></td>
+					                      <td align="right">
+											<!-- <input type="textarea" name='<?php //echo "indent_item_note_$all_int->indent_item_id"; ?>' value='<?php //echo $all_int->note; ?>'> -->
+											<textarea name='<?php echo "indent_item_note_$all_int->indent_item_id"; ?>'><?php echo $all_int->note; ?>'</textarea>
+										
+										
+										</td>
 					                </div>
-									<div class="form-group">
-					                      <td align="right"><input type="textarea" class="form-control" name="item_additional_notes_<?php echo $all_int->indent_item_id ?>" id="item_additional_notes" value="" placeholder="Enter note ">
-										  
-					                      </td>
-					                </div>
+									
                              <?php   } ?> 
 								 </tr> 
 		              </tbody>
@@ -285,13 +207,22 @@ $(window).load(function() {
 		   </div>
 		   </div>
         <div class="container">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group form-group-lg">
+						<label for="indent_note">Note </label><br>
+						<textarea class="form-control" name="indent_note" id="indent_note" placeholder="Add a note for the indent"><?php echo $all_int->indent_note; ?></textarea>
+					</div>
+
+				</div>
+			</div>	
 		   <div class="row">
 			<div class="col-md-10">
 				<div class="panel-heading"><p class="panel-title">
 					<center>
                         
 						<input type="hidden" value="<?= $indent_issued[0]->indent_id;?>" class="sr-only" name="indent" /> 
-						<Button type="submit" name="issue" value="submit" id="btn" class="btn btn-success">issued</Button>
+						<Button type="submit" name="issue" value="submit" id="btn" class="btn btn-success">Issue</Button>
 						<input type="hidden" name="selected_indent_id" value="<?php echo $all_int->indent_id;?>"/>
 						</center></p>
 				</div>

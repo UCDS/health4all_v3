@@ -157,6 +157,7 @@ $('#to_id').change(function(){
 			</tbody>
 		</table>
 		<br/><br/>
+		<p><b>Note: </b><br> <?php echo $all_approve->indent_note?></p>
 		<b>
 		
 		<?php echo "Approver Signature :" ;?></b></br></br><!-- Display Approver signature-->
@@ -238,6 +239,13 @@ $('#to_id').change(function(){
 													</tbody>
 												</table>
 											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-9">
+											<p><b>Note: </b><br> <?php 
+												echo $all_approve->indent_note
+											?></p>
 										</div>
 									</div>
 								</div>

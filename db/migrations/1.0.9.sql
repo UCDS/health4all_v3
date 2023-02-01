@@ -54,3 +54,5 @@ ALTER TABLE `vendor_type` CHANGE `vendor_type_id` `vendor_type_id` INT(11) NOT N
 ALTER TABLE `vendor` CHANGE `vendor_id` `vendor_id` INT(11) NOT NULL AUTO_INCREMENT; 
 
 ALTER TABLE `supply_chain_party` CHANGE `supply_chain_party_id` `supply_chain_party_id` INT(11) NOT NULL AUTO_INCREMENT; 
+
+ALTER TABLE `indent` ADD `note` TEXT NOT NULL COMMENT 'a note for the entire indent' AFTER `indent_status`; 
