@@ -53,41 +53,58 @@ $(window).load(function() {
 	console.log("SAIRAM I EXIST");
 	
 	let current_quantities = { <?php foreach ($indent_approval as $all_int) {
-		echo "$all_int->indent_item_id : {qty: $all_int->quantity_indented, }, ";
+		echo "$all_int->indent_item_id : {qty: $all_int->quantity_indented, changed: false}, ";
 	} ?> 
 
 	};
 	console.log(current_quantities);
 
 
-	
+	let num_changes = 0;
 	
 	for(const quantity_name in current_quantities){
 		let qty_el = $(`[name=quantity_approved_${quantity_name}]`);
-		console.log(qty_el.val(), current_quantities[quantity_name].qty);
+		num_quantities = Object.keys(current_quantities).length;
+		console.log(qty_el.val(), current_quantities[quantity_name].qty, num_quantities);
 		if(qty_el.val() == current_quantities[quantity_name].qty){
-			$(`.to-be-hidden`).hide();
-			console.log("HIDDEN");
+			// $(`.to-be-hidden`).hide();
+			// console.log("HIDDEN");
+			current_quantities[quantity_name].changed = false;
 		}else{
-			$(`.to-be-hidden`).show();
-			console.log("SHOWN");
+			// $(`.to-be-hidden`).show();
+			// console.log("SHOWN");
+			current_quantities[quantity_name].changed = true;
 		}
+		
 		qty_el.change((event) => {
 				let result = event.target.value;
 			
 					if(result === null || result === "") // Cancel
 						return;
-					console.log(result, typeof(result));
-					let justified = false;
+					// console.log(result, typeof(result));
+					console.log(num_changes);
+					
 					let new_quantity = result;
 
 					if(new_quantity != current_quantities[quantity_name].qty){
-						$(`.to-be-hidden`).show();
-						
+						current_quantities[quantity_name].changed = true;
 					}else{
+						current_quantities[quantity_name].changed = false;
+					}
+					
+					let changed = false;
+					console.log(current_quantities);
+
+					for(const quantity_name in current_quantities){
+						if(current_quantities[quantity_name].changed){
+							changed = true;
+							$(`.to-be-hidden`).show();
+							break;
+						}
+					}
+					if(!changed){
 						$(`.to-be-hidden`).hide();
 					}
-						
 					
 			});
 		
@@ -102,7 +119,21 @@ $(window).load(function() {
 			}
 		});
 
+
+
 		
+	}
+	let changed = false;
+	console.log(current_quantities);
+	for(const quantity_name in current_quantities){
+		if(current_quantities[quantity_name].changed){
+			changed = true;
+			$(`.to-be-hidden`).show();
+			break;
+		}
+	}
+	if(!changed){
+		$(`.to-be-hidden`).hide();
 	}
 	
 	// $('#approval_form').submit((event) => {
@@ -258,4 +289,5 @@ $(window).load(function() {
 	  <?php echo form_close();?><!-- End of approval details form -->
     </div>
 </body>
+
 
