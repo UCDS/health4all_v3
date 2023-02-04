@@ -26,56 +26,29 @@
 				</td>
 				</tr>
 				<tbody height="10%" style="border:1px solid black;">
-				<tr width="95%">
-						<td style="padding:5px;"><b>Name:</b> <?php echo $registered->name; ?></td>
-						<td><b>Sex/Age:</b> <?php echo $registered->gender."/"; 
-								if($registered->age_years!=0){ echo $registered->age_years." Yrs "; } 
-								if($registered->age_months!=0){ echo $registered->age_months." Mths "; }
-								if($registered->age_days!=0){ echo $registered->age_days." Days "; }
-								if($registered->age_years==0 && $registered->age_months == 0 && $registered->age_days==0) echo "0 Days";
-						 ?></td>
-						<td rowspan="4">
-							<div id="qr_code" style="position:absolute;padding-top:5px;"></div>
-							<div style="position:absolute;top:120px;"><b>ID:</b> <?php echo $registered->patient_id;?></div>
+                <tr width="95%">
+						<td style="padding-top:20px;padding:5px;"> <b>Name: </b><?php echo $patient->name; ?></td>
+						<td style="padding-top:20px;padding:5px;"> <b>Age/Sex: </b><?php 
+							if($patient->age_years!=0){ echo $patient->age_years." Yrs "; } 
+							if($patient->age_months!=0){ echo $patient->age_months." Mths "; }
+							if($patient->age_days!=0){ echo $patient->age_days." Days "; }
+							if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
+							echo "/".$patient->gender; ?></td>
 
-							<?php
-								if($registered->gender == "M"){
-									$relation = "S/O";
-								} 
-								else $relation = "D/O";
-								$qr_text = "i:".$registered->patient_id." n:".$registered->name." g:".$registered->gender." a:".$registered->age_years." r:".$relation." s:".$registered->parent_spouse." l:".$registered->place." p:".$registered->phone;
-							?>
-							<script type="text/javascript">
-								document.getElementById("qr_code").innerHTML="";
-								var qrcode = new QRCode(document.getElementById("qr_code"), {
-									width : 75,
-									height : 75
-								});
-								qrcode.makeCode("<?php echo $qr_text;?>");
-							</script>
-						</td> 
+						<td></td>
+							
+						
 				</tr>
 				<tr width="95%">
-						<td style="padding:5px;"><b>Father/Spouse:</b>  <?php echo $registered->parent_spouse; ?></td>
-						<td><b>Address:</b> <?php if(!!$registered->address) echo $registered->address.", "; echo $registered->place; ?></td>
+						<td style="padding:5px;"><b> Father/Spouse: </b> <?php echo $patient->parent_spouse; ?></td>
+						<td style="padding:5px;"> <b>Address: </b><?php echo $patient->address." ".$patient->place; ?></td>
+						<td style="padding:5px;"><b> Phone : </b> <?php echo $patient->phone; ?></td>
+						<td></td>
 				</tr>
 				<tr width="95%">
-						<td style="padding:5px;">
-							<b>OP number:</b> <?php echo $registered->hosp_file_no; ?> 
-						</td>
-						<td><b>Phone:</b> <?php echo $registered->phone; ?></td>
-				</tr>
-				<tr>
-						<td style="padding:5px;">
-							<b>Department 
-							<?php if(!!$registered->unit_name) echo "/Unit:"; else echo ":"; ?>
-							</b>
-							<?php 
-								echo $registered->department; 
-								if(!!$registered->unit_name) echo "/".$registered->unit_name;
-							?> 
-						</td>
-						<td><b>Room No:</b> <?php echo $registered->op_room_no; ?></td>
+						<td style="padding:5px;" > <?php echo $patient->visit_type;?><b> OP number :</b> <?php echo $patient->hosp_file_no; ?></td>
+						<td style="padding:5px;"> <b> Department/Unit:</b> <?php echo $patient->department; ?> </td>
+						<td style="padding:5px;"> <b> Room no : </b><?php echo $patient->phone; ?></td>
 				</tr>
 				</tbody>
 				<tr class="print-element" width="95%" height="100px">
