@@ -53,7 +53,7 @@ $(window).load(function() {
 	console.log("SAIRAM I EXIST");
 	
 	let current_quantities = { <?php foreach ($indent_approval as $all_int) {
-		echo "$all_int->indent_item_id : {qty: $all_int->quantity_indented, changed: false}, ";
+		echo "$all_int->indent_item_id : {qty: $all_int->quantity_indented, changed: false, rejected: false}, ";
 	} ?> 
 
 	};
@@ -61,7 +61,7 @@ $(window).load(function() {
 
 
 	let num_changes = 0;
-	
+	$('.to-be-hidden-two').hide();
 	for(const quantity_name in current_quantities){
 		let qty_el = $(`[name=quantity_approved_${quantity_name}]`);
 		num_quantities = Object.keys(current_quantities).length;
@@ -113,9 +113,21 @@ $(window).load(function() {
 		$(`[name=indent_status_${quantity_name}]`).change((event) => {
 			let indent_status = event.target.value;
 			if(indent_status === "Rejected"){
-				
+				current_quantities[quantity_name].rejected = true;
 			}else if(indent_status === "Approved"){
-				
+				current_quantities[quantity_name].rejected = false;
+			}
+
+			let rejected = false;
+			for(const quantity_name in current_quantities){
+				if(current_quantities[quantity_name].rejected){
+					rejected = true;
+					$('.to-be-hidden-two').show();
+					break;
+				}
+			}
+			if(!rejected){
+				$('.to-be-hidden-two').hide();
 			}
 		});
 
@@ -166,12 +178,16 @@ $(window).load(function() {
 			</div>
 			
 		</div>
+		<!-- <hr style="border: 2px solid black;"> -->
 		<?php echo form_open('consumables/indent_approve/indent_approval',array('class'=>'form-custom','role'=>'form', 'id' => 'approval_form'))?> <!-- Approval details form open-->
 				<div class="container">
 					<div class="row">
 						<div class="col">
 							<div class="alert alert-warning to-be-hidden">
 								It is advisable to enter a reason for changing quantity.
+							</div>
+							<div class="alert alert-warning to-be-hidden-two">
+								It is advisable to enter a reason for rejecting item.
 							</div>
 						</div>
 					</div>

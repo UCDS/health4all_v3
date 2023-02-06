@@ -11,27 +11,20 @@ pri.print();
 }
 </script>
 
-<style>
-	@media print {
-		/* #print-div table, th, td, thead, tbody {
-			border: 1px solid black;
-			border-collapse: collapse;
-		} */
 
-	}
-</style>
 
 		<iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
 		<div id="print-div" class="sr-only" style="width:100%;height:100%;"> 
 		<center>
 		<h3><?php echo $register[0]->hospital;?></h3>
 		<p><h3>Indent ID <?php echo $register[0]->indent_id;?></h3></p><!-- Heading -->
+		<hr style="border: 2px solid black;">
 		</center>
 		<label style="float:left"><b>From:</b> <?php echo $register[0]->from_party_name;?></label>
 		<label style="float:right"><b>To:</b> <?php echo $register[0]->to_party_name;?></label><br><br>
-		 <label style="float:left"> <b>Indented By:</b> <?php echo $register[0]->first_name." ".$register[0]->last_name." ".date("d-M-Y g:i A", strtotime($register[0]->indent_date)); ?></label><br><br>
-		 <label style="float:left"><b>Approved By : </b>NA</label><br><br>
-		 <label style="float:left"><b>Issue By : </b>NA</label><br><br>
+		 <label style="float:left"> <b>Indented By:</b> <?php echo $register[0]->first_name." ".$register[0]->last_name." at ".date("d-M-Y g:i A", strtotime($register[0]->indent_date)); ?></label><br><br>
+		 <label style="float:left"><b>Approved By : </b><?php echo $register[0]->indent_status == "Issued" ? $register[0]->first_name . " " . $register[0]->last_name . " at " . date("d-M-Y g:i A", strtotime($register[0]->indent_date)) : "NA"; ?></label><br><br>
+		 <label style="float:left"><b>Issue By : </b><?php echo $register[0]->indent_status == "Issued" ? $register[0]->first_name . " " . $register[0]->last_name . " at " . date("d-M-Y g:i A", strtotime($register[0]->indent_date)) : "NA"; ?></label><br><br>
 		<center>
 		<table style=" border:2px solid black; width:100%; border-collapse: collapse;">
 			<thead style="height:50px;border:2px solid black;border-collapse: collapse;">
@@ -77,7 +70,7 @@ pri.print();
 				<div class="panel panel-success">
 					<div class="panel-heading">
 						<center>	
-							<h3>Indent Order</h3>
+							<h3>Indent</h3>
 						</center>
 					</div> 
 					<div class="panel-body">
@@ -143,7 +136,6 @@ pri.print();
 	</div>
 	
 	<div class="container">
-		
 		<div class="row">
 			<div class="col-md-9">
 				<div class="panel panel-success">

@@ -119,7 +119,7 @@ $(function(){
 				<?php break; } ?>
 		        <p><h3>Indent ID <?php echo $all_issue->indent_id;?></h3></p><!-- Heading -->
 	</center>	 
-			<hr>
+		<hr style="border: 2px solid black;">
 			<center>
 				
 				<label style="float:left"><b>From : </b><?php echo " ".$all_issue->from_party;?></label><!-- From label-->
@@ -169,7 +169,7 @@ $(function(){
 					<div class="panel panel-success">
 						<div class="panel-heading">
 							<center>
-								<p class="panel-title"><h3>Indent Order </h3></p><!-- Heading -->
+								<p class="panel-title"><h3>Indent</h3></p><!-- Heading -->
 							</center>
 						</div> 							  
 						<div class="panel-body">
@@ -381,7 +381,7 @@ $(function(){
 					<div class="container">
 						<div class="row">
 							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit" class="btn btn-primary">submit</button>
+								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">submit</button>
 								<button type="submit"  name="auto_indent" value="auto_indent" class="btn btn-primary">Auto-Indent</button>
 								<input type="hidden" name="auto_indent" value="1"/>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	

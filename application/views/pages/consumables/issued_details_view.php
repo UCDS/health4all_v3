@@ -46,7 +46,7 @@ $(document).click(function () {
   });
 });
 $(window).load(function() {
-	console.log("SAIRAM I EXIST");
+	// console.log("SAIRAM I EXIST");
 	
 	let current_quantities = { <?php foreach ($indent_issued as $all_int) {
 		echo "$all_int->indent_item_id : {qty: $all_int->quantity_approved, changed: false}, ";
@@ -219,7 +219,7 @@ $(window).load(function() {
 									<div class="form-group">
 					                      <td align="right">
 											<!-- <input type="textarea" name='<?php //echo "indent_item_note_$all_int->indent_item_id"; ?>' value='<?php //echo $all_int->note; ?>'> -->
-											<textarea name='<?php echo "indent_item_note_$all_int->indent_item_id"; ?>'><?php echo $all_int->note; ?>'</textarea>
+											<textarea name='<?php echo "indent_item_note_$all_int->indent_item_id"; ?>'><?php echo $all_int->note; ?></textarea>
 										
 										
 										</td>
@@ -257,6 +257,5 @@ $(window).load(function() {
 	  </div>
 	  <?php echo form_close();?><!-- End of Issued details form -->
     </div>
-
 
 

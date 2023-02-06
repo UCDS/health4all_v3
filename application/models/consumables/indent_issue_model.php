@@ -54,7 +54,7 @@ class Indent_issue_model extends CI_Model{                                      
    
 	function display_issue_details(){                                                              //definition of a function :display_issue_details
 		$hospital=$this->session->userdata('hospital');                                            //Storing user data who logged into the hospital into a var:hospital
-		$this->db->select('quantity_approved,indent.approve_date_time,indent_item.indent_item_id,indent_item.quantity_indented, indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name,indent_item.quantity_issued,indent_item.note, indent.note indent_note, indent.indent_status, indent.indent_date')->from('indent')
+		$this->db->select('quantity_approved,indent.approve_date_time,indent_item.indent_status item_status, indent_item.indent_item_id,indent_item.quantity_indented, indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name,indent_item.quantity_issued,indent_item.note, indent.note indent_note, indent.indent_status, indent.indent_date')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                   //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')          //item_type,item_form,dosage,supply_chain_party,staff,hospital)
@@ -70,6 +70,7 @@ class Indent_issue_model extends CI_Model{                                      
 		if($this->input->post('selected_indent_id')){
 			$this->db->where('indent.indent_id',$this->input->post('selected_indent_id'));
 		}
+		$this->db->where('indent_item.indent_status !=', 'Rejected');
 	    $query=$this->db->get();
 		
 		return $query->result();   
@@ -77,7 +78,9 @@ class Indent_issue_model extends CI_Model{                                      
 
 	function get_single_indent_details($indent_id=0){                                                              //definition of a function :display_issue_details
 		$hospital=$this->session->userdata('hospital');                                            //Storing user data who logged into the hospital into a var:hospital
-		$this->db->select('indent.indent_id, quantity_indented, quantity_approved,indent.approve_date_time,indent_item.indent_item_id,indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name,indent_item.quantity_issued,indent_item.note, indent.indent_status, indent.indent_date')->from('indent')
+		$this->db->select('indent.indent_id, quantity_indented, quantity_approved,indent.approve_date_time,indent_item.indent_item_id,indent_item.quantity_approved, 
+		indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name, 
+		indent_item.quantity_issued,indent_item.note, indent.indent_status, indent.indent_date, indent.note indent_note')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                   //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')          //item_type,item_form,dosage,supply_chain_party,staff,hospital)

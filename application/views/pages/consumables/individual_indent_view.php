@@ -128,15 +128,16 @@ $(function(){
 		<p>
 		<h3>Indent ID <?php echo $all_issue->indent_id; ?></h3>
 		</p><!-- Heading -->
+		
 	</center>
-	<hr>
+	<hr style="border: 2px solid black">
 	<center>
 		
 		<label style="float:left"><b>From : </b>
 			<?php echo " " . $all_issue->from_party; ?>
 		</label><!-- From label-->
 		<label style="float:right"><b>To : </b>
-			<?php echo $all_issue->issue_first . " " . $all_issue->issue_last." at " . $all_issue->to_party; ?>
+			<?php echo " " . $all_issue->to_party; ?>
 		</label><br><br><!--  To label -->
 		<label style="float:left"><b>Indented by : </b>
 			<?php echo $all_issue->order_first . " " . $all_issue->order_last." at " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
@@ -151,7 +152,7 @@ $(function(){
 		</label><br><br><!--Date Time label -->
 		<label style="float:left"><b>Issued by : </b>
 		<?php 
-				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
+				if ($all_issue->indent_status == "Issued") {
 					echo $all_issue->issue_first . " " . $all_issue->issue_last." at " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
 				else { 
 					echo " NA";
@@ -199,7 +200,8 @@ $(function(){
 			<?php } ?>
 		</tbody>
 	</table>
-	<br /><br />
+	<br/><br/>
+		<p><b>Note: </b><br> <?php echo $all_issue->indent_note?></p>
 	
 	<b>
 		<?php echo "Issuer Signature :"; ?>
@@ -215,7 +217,7 @@ $(function(){
 
 			<div class="row bg-success">
 				<div class="col-md-8 bg-success"  style="background-color: #d6e9c6; color: green;">
-					<h1>Indent Order </h1><!-- Heading -->
+					<h1>Indent</h1><!-- Heading -->
 				</div>
 			</div>
 		</div>		
@@ -277,7 +279,7 @@ $(function(){
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Issue Date Time : </b>
 					<?php 
-						if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
+						if ($all_issue->indent_status == "Issued") {
 							echo " " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
 						else { 
 							echo " NA";
@@ -339,6 +341,10 @@ $(function(){
 		</div>
 		</div>
 		<div class="container">
+			<div>
+				<b>Note:</b>
+				<p><?php echo $all_issue->indent_note; ?></p>
+			</div>
 			<div class="span9">
 				<div class="span3">
 					<div class="col-md-12"><!-- Indenter name -->

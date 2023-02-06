@@ -1,4 +1,64 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/fonts/flaticon.css">
+<style type="text/css">
+	.page_link:hover {
+		background-color: blue;
+		color: white;
+	}
+</style>
+
+<?php
+	function check_if_group_active(str $group)
+	{
+		if($group == "masters"){
+			return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
+		}else if($group == "reports"){
+			return (preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()));
+		}
+	}
+	function activate_item(str $item_regexp)
+	{
+		if (preg_match($item_regexp, current_url())){
+			return "list-group-item active";
+		}else{
+			return "list-group-item";
+		}
+	}
+?>
+
+<script>
+	
+	$(document).ready(() => {
+		// let navbar_entries = ['add', 'approve', 'issue', 'masters_div', 'reports_div'];
+		// console.log("SAIRAM X", $("#page_link").val());
+		// for(let i = 0; i < navbar_entries.length; i++){
+		// 	$(`#${navbar_entries[i]}`).hover((e) => {
+		// 		console.log('HOVER');
+		// 		$(`#${navbar_entries[i]}`).toggleClass('panel-primary');
+		// 	});
+		// }
+		let dropDownState = {
+			"masters": '<?php echo check_if_group_active("masters")? 'up':'down';?>', 
+			"reports": '<?php echo check_if_group_active("reports")? 'up':'down';?>'
+		};
+		console.log(dropDownState);
+		for(const type in dropDownState){
+			const type_str = "" + type;
+			console.log(type_str);
+			$(`#${type_str}`).click(() => {
+				console.log("Clicked");
+				$(`#${type_str} span`).removeClass("glyphicon-chevron-up glyphicon-chevron-down");
+				dropDownState[type_str] = dropDownState[type_str] == 'up' ? 'down': 'up';
+				$(`#${type_str} span`).addClass(dropDownState[type_str] == 'up' ? 'glyphicon-chevron-up': 'glyphicon-chevron-down');
+			});
+			console.log($('#reports'));
+		}
+	});
+
+
+</script>
+
+
+
 <?php if (preg_match("^equipments/*^", current_url())) {
 	$userinfo = $this->session->userdata('logged_in'); // Store the session data in a variable, contains all the functions the user has access to.
 	?>
@@ -82,6 +142,18 @@
 <?php } ?>
 
 
+
+<?php
+	function activate_navbar_main_list($pattern)
+	{
+		log_message("info", current_url());
+		if (preg_match($pattern, current_url())){
+			return 'panel-primary';
+		}else{
+			return 'panel-default';
+		}
+	}
+?>
 <?php if (
 	preg_match(
 		"^consumables/*^",
@@ -115,7 +187,7 @@
 		"^indent_approve/*^",
 		current_url()
 	) || preg_match(
-		"^indent_approve/*^",
+		"^indent_issue/*^",
 		current_url()
 	)
 	|| preg_match(
@@ -129,13 +201,16 @@
 		current_url()
 	)
 ) { ?>
-	<div class="col-sm-3 col-md-2 sidebar-left">
+
+
+
+	<div class="col-md-2 sidebar-left">
 		<ul class="nav nav-sidebar">
 			<div class="panel-group" id="accordion">
 				<?php foreach ($functions as $f) {
 					if ($f->user_function == "Consumables") { ?>
 
-						<div class="panel panel-default">
+						<div class="panel <?php echo activate_navbar_main_list("^indent/^") ?>" id="add">
 							<div class="panel-heading ">
 								<h4 class="panel-title">
 									<a href="<?php echo base_url(); ?>consumables/indent/add_indent">Indent</a>
@@ -148,7 +223,7 @@
 								</div> -->
 						</div>
 						
-						<div class="panel panel-default">
+						<div class="panel <?php echo activate_navbar_main_list("^indent_approve/*^") ?>" id="approve">
 							<div class="panel-heading">
 								<h4 class="panel-title">
 									<a href="<?php echo base_url(); ?>consumables/indent_approve/indent_approval">Approval</a>
@@ -159,7 +234,7 @@
 							</div> -->
 						</div>
 
-						<div class="panel panel-default">
+						<div class="panel <?php echo activate_navbar_main_list("^indent_issue/*^") ?>" id="issue">
 							<div class="panel-heading">
 
 								<h4 class="panel-title">
@@ -176,33 +251,19 @@
 
 					}
 				} ?>
-				<?php
-								function check_if_group_active(str $group)
-								{
-									if($group == "masters"){
-										return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
-									}else if($group == "reports"){
-										return (preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()));
-									}
-								}
-								function activate_item(str $item_regexp)
-								{
-									if (preg_match($item_regexp, current_url())){
-										return "list-group-item active";
-									}else{
-										return "list-group-item";
-									}
-								}
-				?>
+				
 
 				<?php foreach ($functions as $f) {
 
 					if ($f->user_function == "Masters - Consumables") { ?>
-						<div class="panel panel-default">
+						<div class="panel panel-default" id="masters_div">
 							<div class="panel-heading">
 								<h4 class="panel-title">
-									<a  style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" >
-										Masters <span style="margin-left: 60%;" class="glyphicon glyphicon-chevron-down"></span>
+									<a id="masters" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" >
+										Masters <span style="margin-left: 60%;" class="glyphicon <?php if (check_if_group_active("masters"))
+											echo 'glyphicon-chevron-up';
+										else
+											echo 'glyphicon-chevron-down';?>"></span>
 									</a>
 								</h4>
 							</div>
@@ -257,11 +318,14 @@
 						</div>
 				<?php foreach ($functions as $f) {
 					if ($f->user_function == "Consumables") { ?>
-						<div class="panel panel-default">
+						<div class="panel panel-default" id="reports_div">
 							<div class="panel-heading">
 								<h4 class="panel-title">
-									<a style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-										Reports <span style="margin-left: 60%;" class="glyphicon glyphicon-chevron-down">
+									<a id="reports" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+										Reports <span style="margin-left: 60%;" class="glyphicon <?php if (check_if_group_active("reports"))
+											echo 'glyphicon-chevron-up';
+										else
+											echo 'glyphicon-chevron-down';?>">
 									</a>
 								</h4>
 							</div>
@@ -461,7 +525,7 @@
 				if ($f->user_function == "Diagnostics - Order") { ?>
 					<li <?php if (preg_match("^test_order^", current_url()))
 						echo 'class="active"'; ?>><a
-							href="<?php echo base_url(); ?>diagnostics/test_order">Order Tests</a></li>
+								href="<?php echo base_url(); ?>diagnostics/test_order">Order Tests</a></li>
 				<?php }
 			}
 			$view_orders = 0;

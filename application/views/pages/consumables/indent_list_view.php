@@ -283,7 +283,7 @@ $('#to_id').change(function(){
 							<th>Approved by</th>
 							<th>Issued by</th>
 							<th>Indent Status</th>
-							
+							<th>Note</th>
 							<th></th>
 							<!-- <th>Insertion datetime</th>
 							<th>Updation datetime</th> -->
@@ -334,9 +334,10 @@ $('#to_id').change(function(){
 						<td><?php echo $indent->from_party_id." - $indent->from_party_name";?></td>
 						<td><?php echo $indent->to_party_id." - $indent->to_party_name.";?></td>
 						<td><?php echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
-						<td><?php echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname;	?></td>
-						<td><?php echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname?></td>
+						<td><?php echo ($indent->indent_status == "Approved" || $indent->indent_status == "Issued") ? $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname: "NA";	?></td>
+						<td><?php echo ($indent->indent_status == "Issued") ? $indent->issued_by_id . " - " . $indent->issued_by_fname . " " . $indent->issued_by_lname : "NA";  ?></td>
 						<td><?php echo $indent->indent_status;?></td>
+						<td><?php echo $indent->note;?></td>
 						<td><a href='<?php echo base_url()."consumables/indent_reports/indents_list_detailed/".$indent->indent_id?>' class="btn btn-success">View detailed</a></td>
 					</tr>
 					<?php

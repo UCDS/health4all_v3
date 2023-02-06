@@ -106,9 +106,13 @@ class Indent_approval_model extends CI_Model {                                  
 		    $data = array();                                                                                 //declaring an array with name data
 			foreach($this->input->post('indent_item') as $i){                                                //foreach loop for storing indent_item_id,approved quantity,indent status into data array
 				// log_message('info', "SAIRAM ".$this->input->post("quantity_approved_$i"));
+				$quantity_approved = $this->input->post('quantity_approved_' . $i);
+				if($this->input->post('indent_status_'.$i) == "Rejected"){
+					$quantity_approved = 0;
+				}
 				$data[]=array(
 					'indent_item_id'=>$i,
-					'quantity_approved'=>$this->input->post('quantity_approved_'.$i),
+					'quantity_approved'=>$quantity_approved,
 					'indent_status'=>$this->input->post('indent_status_'.$i), 
 					'note'=>$this->input->post("indent_item_note_$i"), 
 					

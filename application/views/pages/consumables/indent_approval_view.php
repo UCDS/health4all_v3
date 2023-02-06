@@ -117,7 +117,7 @@ $('#to_id').change(function(){
 				<?php break; } ?>
 					<p><h3>Indent ID  <?php echo $all_approve->indent_id;?></h3></p<!-- Heading -->
 </center>	 	
-      <hr>
+	<hr style="border: 2px solid black;">
 	  <center>	 
 	  
 				<label style="float:left"><b>From : </b><?php echo " ".$all_approve->from_party;?></label><!-- From label-->
@@ -127,31 +127,31 @@ $('#to_id').change(function(){
 				<label style="float:left"><b>Issue By : </b>NA</label><br><br><!--Date Time label -->
       </center>   
 	  <br/><br/><br/>
-		<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
+		<table style=" border:2px solid black;width:100%;border-collapse: collapse;">
 			<thead style="height:50px">
-				<th style="text-align:center;border:1px solid black;" >#</th>
-				<th style="text-align:center;border:1px solid black;" >Items</th>
-				<th style="text-align:center;border:1px solid black;" >Quantity Indented</th>
-				<th style="text-align:center;border:1px solid black;" >Quantity Approved</th>
-				<th style="text-align:center;border:1px solid black;" >Note</th>
+				<th style="text-align:center;border:2px solid black;" >#</th>
+				<th style="text-align:center;border:2px solid black;" >Items</th>
+				<th style="text-align:center;border:2px solid black;" >Quantity Indented</th>
+				<th style="text-align:center;border:2px solid black;" >Quantity Approved</th>
+				<th style="text-align:center;border:2px solid black;" >Note</th>
 			</thead>
 			<tbody>
 				<?php
 					 $i=1;
 					 foreach ($approve_detail as $all_approve){ ?>
 					<tr>
-						<td style=" border:1px solid black; padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
-						<td style="border:1px solid black; padding: 15px;  height: 50px;"  align="left"><?php echo $all_approve->item_name."-".$all_approve->item_form."-".$all_approve->item_type.$all_approve->dosage.$all_approve->dosage_unit;?></center></td>
-					    <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_indented ;?></center></td>
+						<td style=" border:2px solid black; padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
+						<td style="border:2px solid black; padding: 15px;  height: 50px;"  align="left"><?php echo $all_approve->item_name."-".$all_approve->item_form."-".$all_approve->item_type.$all_approve->dosage.$all_approve->dosage_unit;?></center></td>
+					    <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_indented ;?></center></td>
 						<?php if($get_approve==1){ 
 						if($all_approve->indent_status=='Approved'){?>
-                        <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_approved ;?></center></td>
+                        <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_approved ;?></center></td>
 						<?php } else { ?>
-                        <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
+                        <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
 						<?php } } else{ ?>
-					    <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
+					    <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
 						<?php } ?>
-						<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->note ;?></center></td>
+						<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->note ;?></center></td>
 			        </tr>
 			    <?php } ?>
 			</tbody>
@@ -171,7 +171,7 @@ $('#to_id').change(function(){
 							<div class="panel panel-success">
 								<div class="panel-heading">
 									<center>
-										<p class="panel-title"><h3>Indent Order </h3></p><!-- Heading-->
+										<p class="panel-title"><h3>Indent</h3></p><!-- Heading-->
 									</center>
 								</div> 							  
 								<div class="panel-body">

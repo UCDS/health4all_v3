@@ -5,11 +5,22 @@ class Indent_model extends CI_Model {
         parent::__construct();
     }		//end of constructor.
 	//this method is used to insert data into indent and indent item tables and return post values into array which is in controller.
-    function add_indent(){
+
+	function get_indent_info($indent_id, $type="")
+	{
+		$hospital=$this->session->userdata('hospital');                                                                        //function definition with name :get_data
+		$this->db->select('indent.indent_id, indent.hospital_id')->from('indent')->where('indent.indent_id', $indent_id);
+		$query = $this->db->get();
+		$res = $query->row();
+		return $res;
+
+	}
+
+	function add_indent(){
 		 $hospital=$this->session->userdata('hospital');
 		  $user_data=$this->session->userdata('logged_in');
 		  $this->db->select('staff_id')->from('user')
-		  ->where('user.user_id',$user_data['user_id']);
+		  ->where('user.user_id', $user_data['user_id']);
 		  $query=$this->db->get();
 		  $staff=$query->row();
 		

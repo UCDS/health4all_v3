@@ -63,6 +63,8 @@ class Indent_report_model extends CI_Model
 
 
 		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		// log_message("info", $query_string);
 		//echo $this->db->last_query();
 		return $query->result();
 		
@@ -143,7 +145,8 @@ class Indent_report_model extends CI_Model
 		}
 		// log_message('info', "SAIRAM AGAIN Input ".$this->input->post('from_date'));
 		$query = $this->db->get();
-		//echo $this->db->last_query();
+		$query_string = $this->db->last_query();
+		log_message("info", $query_string);
 		return $query->result();
 
 		if ($result) {
@@ -201,7 +204,7 @@ class Indent_report_model extends CI_Model
 						   indent.orderby_id ordered_by_id, indent.approver_id approved_by_id, indent.issuer_id issued_by_id,  
 						   indent.indent_date indent_datetime, indent.approve_date_time approval_datetime, indent.issue_date_time issue_datetime, 
 						   indent.insert_user_id inserted_by_id, indent.update_user_id updated_by_id, 
-						   indent.indent_status, 
+						   indent.indent_status, indent.note, 
 						   indent.insert_datetime insert_datetime, indent.update_datetime update_datetime, 
 						   scp_from.supply_chain_party_name from_party_name, scp_to.supply_chain_party_name to_party_name, 
 						   staff_orderer.first_name ordered_by_fname, staff_orderer.last_name ordered_by_lname, 
