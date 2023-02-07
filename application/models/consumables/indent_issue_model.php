@@ -132,7 +132,12 @@ class Indent_issue_model extends CI_Model{                                      
 			$call_date = date("Y-m-d H:i:s");
 			$issue_datetime = $call_date;
 			if($this->input->post('issue_date') && $this->input->post('issue_time')){
-				$issue_datetime = date("Y-m-d H:i:s", strtotime($this->input->post('issue_date')." ".$this->input->post('issue_time')));
+				$input_datetime = date("Y-m-d H:i:s", strtotime($this->input->post('issue_date')." ".$this->input->post('issue_time')));
+				if($input_datetime > $call_date){
+					$issue_datetime = $call_date;
+				}else{
+					$issue_datetime = $input_datetime;
+				}
 			}
 			foreach($this->input->post('indent_item') as $i){                                     //foreach loop for storing indent_item_id,issued quantity,indent status into data array
 				$data[]=array(

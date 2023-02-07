@@ -140,7 +140,13 @@ class Indent_approval_model extends CI_Model {                                  
 			$call_date = date("Y-m-d H:i:s");
 			$approval_datetime = $call_date;
 			if($this->input->post('approval_date') && $this->input->post('approval_time')){
-				$approval_datetime = date("Y-m-d H:i:s", strtotime($this->input->post('approval_date')." ".$this->input->post('approval_time')));
+				$input_datetime = date("Y-m-d H:i:s", strtotime($this->input->post('approval_date')." ".$this->input->post('approval_time')));
+				// log_message("info", "SAIRAM ip: $input_datetime, a: $call_date");
+				if($input_datetime > $call_date){
+					$approval_datetime = $call_date;
+				}else{
+					$approval_datetime = $input_datetime;
+				}
 			}
 			$updated_timestamps = array ( "approve_date_time" => $approval_datetime, 
 									"update_datetime" => $call_date, 

@@ -211,7 +211,7 @@ $(window).load(function() {
 									
 					                <div class="form-group">
 					                      <td align="right">
-											<input type="number" class="form-control" min="1"  step="1"  name="quantity_issued_<?= $all_int->indent_item_id;?>" id="quantity_id" value="<?php echo $all_int->quantity_approved;?>" placeholder="Enter Quantity " required>
+											<input type="number" class="form-control" min="0"  step="1"  name="quantity_issued_<?= $all_int->indent_item_id;?>" id="quantity_id" value="<?php echo $all_int->quantity_approved;?>" placeholder="Enter Quantity " required>
 											
                                            <input type="hidden" value="<?= $all_int->indent_item_id;?>" class="sr-only" name="indent_item[]" />
 					                      </td>

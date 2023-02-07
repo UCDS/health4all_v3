@@ -14,6 +14,27 @@ class Indent extends CI_Controller {
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");		
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");					
 	}
+    function authorized_party($party_id)
+    {
+
+       for($i = 0; $i < count($this->data['parties']); $i++){
+            if ($this->data['parties'][$i]->supply_chain_party_id == $party_id)
+                return true;
+       }
+        return false;
+    }
+    function valid_item($item_id)
+    {
+        for($i = 0; $i < count($this->data['all_item']); $i++){
+            if ($this->data['all_item'][$i]->item_id == $item_id)
+                return true;
+       }
+        return false;
+    }
+    function ne_from($party_id)
+    {
+        return $this->input->post('from_id') && $party_id != $this->input->post('from_id');
+    }
 	function add_indent(){		                                  
 		 $this->data['userdata']=$this->session->userdata('logged_in');
 		 $user_id=$this->data['userdata']['user_id']; 
@@ -54,13 +75,23 @@ class Indent extends CI_Controller {
             array(
                 'field'=>'from_id',			
                 'label'=>'From Party',
-                'rules'=>'required'
+                'rules'=>'required|callback_authorized_party'
             ),
 			array(
                 'field'=>'to_id',			
                 'label'=>'To Party',
-                'rules'=>'required'
-            )
+                'rules'=>'required|callback_ne_from|callback_authorized_party'
+            ), 
+            array(
+                'field'=>'item[]',			
+                'label'=>'Item',
+                'rules'=>'required|callback_valid_item'
+            ), 
+            array(
+                'field'=>'quantity_indented[]',			
+                'label'=>'Item Quantity',
+                'rules'=>'required|is_natural_no_zero'
+            ),
         );
 		
         $this->form_validation->set_rules($validations);		//load the fields for validation.
@@ -79,19 +110,19 @@ class Indent extends CI_Controller {
 			    $this->load->view('pages/consumables/indent_details_view',$this->data);  
 			}	
 		}			
-		        if($this->input->post('auto_indent')==1){
-			        $this->load->model('consumables/indent_issue_model');
-					$this->data['all_item_type']=$this->indent_issue_model->get_supply_chain_party("item_type");  //get item types from get_supply_chain_party method of indent_issue model and store it into data array of index:all_item_types
-                    $this->data['all_item']=$this->indent_issue_model->get_supply_chain_party("item");            //get items from get_supply_chain_party method of indent_issue model and store it into data array of index:all_items
-                    $this->data['parties']=$this->indent_issue_model->get_supply_chain_party("party"); 
-			        $this->data['all_indents']= $this->indent_issue_model->get_approved_indents();  
-					$this->data['mode']="auto";
-			        $this->load->view('pages/consumables/indent_issue_view',$this->data);
-					
-					
-		        }else{
-                    $this->load->view('pages/consumables/indent_view',$this->data);			//load the department_view file with data.
-		        }
+        if($this->input->post('auto_indent')==1){
+            $this->load->model('consumables/indent_issue_model');
+            $this->data['all_item_type']=$this->indent_issue_model->get_supply_chain_party("item_type");  //get item types from get_supply_chain_party method of indent_issue model and store it into data array of index:all_item_types
+            $this->data['all_item']=$this->indent_issue_model->get_supply_chain_party("item");            //get items from get_supply_chain_party method of indent_issue model and store it into data array of index:all_items
+            $this->data['parties']=$this->indent_issue_model->get_supply_chain_party("party"); 
+            $this->data['all_indents']= $this->indent_issue_model->get_approved_indents();  
+            $this->data['mode']="auto";
+            $this->load->view('pages/consumables/indent_issue_view',$this->data);
+            
+            
+        }else{
+            $this->load->view('pages/consumables/indent_view',$this->data);			//load the department_view file with data.
+        }
 		    
 		
              $this->load->view('templates/footer');	

@@ -27,21 +27,29 @@ $(function(){
 </script>
 <script>
 $(function(){
-$('#to_id  option[value="'+$('#from_id').val()+'"]').hide();
+if($('#from_id').val() !== ''){
+	$('#to_id  option[value="'+$('#from_id').val()+'"]').hide();
+}
 $('#from_id').change(function(){
 	$("#to_id option").show();
     var optionval = this.value;
-    $('#to_id  option[value="'+optionval+'"]').hide();
-    
+	if(optionval !== ''){
+    	$('#to_id  option[value="'+optionval+'"]').hide();
+	}
+
 });
 });
 $(function(){
-$('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
+	if($('#to_id').val() !== ''){
+		$('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
+	}
 $('#to_id').change(function(){
 	$("#from_id option").show();
     var optionval = this.value;
-    $('#from_id  option[value="'+optionval+'"]').hide();
-    
+	if(optionval !== ''){
+		$('#from_id  option[value="'+optionval+'"]').hide();
+	}
+
 });
 });
 </script>

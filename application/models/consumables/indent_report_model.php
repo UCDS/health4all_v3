@@ -127,7 +127,7 @@ class Indent_report_model extends CI_Model
 				$this->db->where('indent_item.indent_status', "Issued");
 		}
 
-		$this->db->select('indent.indent_date,indent.indent_id,item_type.item_type,item.item_name,indent_item.quantity_indented,indent_item.quantity_approved,indent_item.quantity_issued,indent_item.indent_status,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party')
+		$this->db->select('indent.indent_date,indent.indent_id,item_type.item_type,item.item_name,indent_item.quantity_indented,indent_item.quantity_approved,indent_item.quantity_issued,indent_item.indent_status,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party, indent_item.note')
 		->from('indent')
 			->join('indent_item', 'indent.indent_id=indent_item.indent_id', 'left outer')
 			->join('item', 'item.item_id=indent_item.item_id', 'left outer') //This is the select statement which joins all the tables (indent,indent_item,item,generic_item,
@@ -146,7 +146,7 @@ class Indent_report_model extends CI_Model
 		// log_message('info', "SAIRAM AGAIN Input ".$this->input->post('from_date'));
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();
-		log_message("info", $query_string);
+		// log_message("info", $query_string);
 		return $query->result();
 
 		if ($result) {
@@ -226,7 +226,7 @@ class Indent_report_model extends CI_Model
 		
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();
-		log_message('info', $query_string);
+		// log_message('info', $query_string);
 		//echo $this->db->last_query();
 		return $query->result();
 		
