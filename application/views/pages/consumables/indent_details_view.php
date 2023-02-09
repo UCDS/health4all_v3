@@ -10,35 +10,44 @@ pri.focus();
 pri.print();
 }
 </script>
+
+
+
 		<iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
 		<div id="print-div" class="sr-only" style="width:100%;height:100%;"> 
 		<center>
 		<h3><?php echo $register[0]->hospital;?></h3>
-		<h3>Indent</h3><hr>
+		<p><h3>Indent ID <?php echo $register[0]->indent_id;?></h3></p><!-- Heading -->
+		<hr style="border: 2px solid black;">
 		</center>
-		<label style="float:left"><b>Indent Id:</b> <?php echo $register[0]->indent_id;?></br></label>
-		<label style="float:right"><b>From:</b> <?php echo $register[0]->from_party_name;?></label><br>
-		 <label style="float:left"> <b>Indent Date:</b> <?php echo date("d-M-Y g:i A", strtotime($register[0]->indent_date)); ?></label>
-		<label style="float:right"><b>To:</b> <?php echo $register[0]->to_party_name;?></label><br><br><br>
+		<label style="float:left"><b>From:</b> <?php echo $register[0]->from_party_name;?></label>
+		<label style="float:right"><b>To:</b> <?php echo $register[0]->to_party_name;?></label><br><br>
+		 <label style="float:left"> <b>Indented By:</b> <?php echo $register[0]->first_name." ".$register[0]->last_name." at ".date("d-M-Y g:i A", strtotime($register[0]->indent_date)); ?></label><br><br>
+		 <label style="float:left"><b>Approved By : </b><?php echo $register[0]->indent_status == "Issued" ? $register[0]->first_name . " " . $register[0]->last_name . " at " . date("d-M-Y g:i A", strtotime($register[0]->indent_date)) : "NA"; ?></label><br><br>
+		 <label style="float:left"><b>Issue By : </b><?php echo $register[0]->indent_status == "Issued" ? $register[0]->first_name . " " . $register[0]->last_name . " at " . date("d-M-Y g:i A", strtotime($register[0]->indent_date)) : "NA"; ?></label><br><br>
 		<center>
-		<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
-			<thead style="height:50px">
-				<th style="text-align:center;border:1px solid black;">#</th>
-				<th style="text-align:center;border:1px solid black;">Items</th>
-				<th style="text-align:center;border:1px solid black;">Quantity</th>
+		<table style=" border:2px solid black; width:100%; border-collapse: collapse;">
+			<thead style="height:50px;border:2px solid black;border-collapse: collapse;">
+				<th style="text-align:center;border:2px solid black;border-collapse: collapse;">#</th>
+				<th style="text-align:center;border:2px solid black;border-collapse: collapse;">Items</th>
+				<th style="text-align:center;border:2px solid black;border-collapse: collapse;">Quantity</th>
+				<th style="text-align:center;border:2px solid black;border-collapse: collapse;">Note</th>
 			</thead>
-			<tbody>
+			<tbody style="border:2px solid black;border-collapse: collapse;">
 			<?php $i=1; 
 		foreach($register as $r){ ?>
 			<tr>
-				<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="center"><?= $i++; ?></td>
-				<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="left"><?php echo $r->item_name."-".$r->item_form."-".$r->item_type."-".$r->dosage.$r->dosage_unit?></td>
-				<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $r->quantity_indented?></td>
+				<td style="border:2px solid black;border-collapse: collapse;  padding: 15px;  height: 50px;" align="center"><?= $i++; ?></td>
+				<td style="border:2px solid black;border-collapse: collapse;  padding: 15px;  height: 50px;" align="left"><?php echo $r->item_name."-".$r->item_form."-".$r->item_type."-".$r->dosage.$r->dosage_unit?></td>
+				<td style="border:2px solid black;border-collapse: collapse;  padding: 15px;  height: 50px;" align="right"><?php echo $r->quantity_indented?></td>
+				<td style="border:2px solid black;border-collapse: collapse;  padding: 15px;  height: 50px;" align="right"><?php echo $r->note?></td>
 		    </tr>
 			<?php } ?>
 			</tbody>
 		</table></br>	</center>
-		<b>Indented by:</b><?php echo $register[0]->first_name." ".$register[0]->last_name;?></br></br></br>
+
+		<p><b>Note: </b><br> <?php echo $register[0]->indent_note?></p>
+		
 		<b>Signature:</b>
 			
 		
@@ -61,7 +70,7 @@ pri.print();
 				<div class="panel panel-success">
 					<div class="panel-heading">
 						<center>	
-							<h3>Indent Order</h3>
+							<h3>Indent</h3>
 						</center>
 					</div> 
 					<div class="panel-body">
@@ -96,6 +105,7 @@ pri.print();
 												<th class="col-md-1"style="text-align:center" rowspan="3">#</th>
 												<th class="col-md-3"style="text-align:center" rowspan="3">Items</th>
 												<th class="col-md-1"style="text-align:center" rowspan="3">Quantity</th>
+												<th class="col-md-2"style="text-align:center" rowspan="3">Note</th>
 										</thead>
 										<tbody>
 											<?php $i=1; 
@@ -104,11 +114,19 @@ pri.print();
 														<td align="center"><?= $i++; ?></td>
 														<td><?php echo $r->item_name."-".$r->item_form."-".$r->item_type."-".$r->dosage.$r->dosage_unit?></td>
 														<td align="right"><?php echo $r->quantity_indented?></td>
+														<td align="right"><?php echo $r->note?></td>
 													</tr>
 											<?php } ?>
 										</tbody>
 									</table>
 								</div></center>
+							</div>
+							<div class="row">
+								<div class="col-md-9">
+									<p><b>Note: </b><br> <?php 
+										echo $register[0]->indent_note
+									?></p>
+								</div>
 							</div>
 						</div>
 					</div>

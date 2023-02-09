@@ -86,12 +86,7 @@ class Indent extends CI_Controller {
                 'field'=>'item[]',			
                 'label'=>'Item',
                 'rules'=>'required|callback_valid_item'
-            ), 
-            array(
-                'field'=>'quantity_indented[]',			
-                'label'=>'Item Quantity',
-                'rules'=>'required|is_natural_no_zero'
-            ),
+            )
         );
 		
         $this->form_validation->set_rules($validations);		//load the fields for validation.

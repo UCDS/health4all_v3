@@ -5,15 +5,38 @@ class Indent_model extends CI_Model {
         parent::__construct();
     }		//end of constructor.
 	//this method is used to insert data into indent and indent item tables and return post values into array which is in controller.
-    function add_indent(){
+
+	function get_indent_info($indent_id, $type="")
+	{
+		$hospital=$this->session->userdata('hospital');                                                                        //function definition with name :get_data
+		$this->db->select('indent.indent_id, indent.hospital_id')->from('indent')->where('indent.indent_id', $indent_id);
+		$query = $this->db->get();
+		$res = $query->row();
+		return $res;
+
+	}
+
+	function add_indent(){
 		 $hospital=$this->session->userdata('hospital');
 		  $user_data=$this->session->userdata('logged_in');
 		  $this->db->select('staff_id')->from('user')
-		  ->where('user.user_id',$user_data['user_id']);
+		  ->where('user.user_id', $user_data['user_id']);
 		  $query=$this->db->get();
 		  $staff=$query->row();
 		
 		$call_date = date("Y-m-d H:i:s");
+		$input_indent_date = $this->input->post('indent_date');
+		$input_indent_time = $this->input->post('indent_time');
+		$final_indent_datetime = $call_date;
+		if($input_indent_date && $input_indent_time){
+			//https://stackoverflow.com/questions/19375184/merge-date-time
+			$final_indent_datetime = date("Y-m-d H:i:s", strtotime("$input_indent_date $input_indent_time"));					
+
+		}
+		if($final_indent_datetime > $call_date){
+			$final_indent_datetime = $call_date;
+		}
+		// log_message("info", "SAIRAM FROM ADD INDENT " . $final_indent_datetime);
         $order= array();
        
         if($this->input->post('from_id')){
@@ -29,11 +52,11 @@ class Indent_model extends CI_Model {
 		$order['orderby_id']=$staff->staff_id;
 		$order['approver_id']=$staff->staff_id;
 		$order['issuer_id']=$staff->staff_id;
-		$order['indent_date']=$call_date;
-		$order['approve_date_time']=$call_date;
-		$order['issue_date_time']=$call_date;
+		$order['indent_date']=$final_indent_datetime;
+		$order['approve_date_time']=$final_indent_datetime;
+		$order['issue_date_time']=$final_indent_datetime;
 		} else {
-			$order['indent_date']=$call_date;
+			$order['indent_date']=$final_indent_datetime;
 			$order['indent_status']='Indented';
 			$order['hospital_id']=$hospital['hospital_id'];
 			$order['orderby_id']=$staff->staff_id;
@@ -42,6 +65,7 @@ class Indent_model extends CI_Model {
 		$order['insert_user_id'] = $order['update_user_id'] = $staff->staff_id;
 		// $current_datetime = date("Y-m-d H:i:s");
 		$order['insert_datetime'] = $order['update_datetime'] = $call_date;
+		$order['note'] = $this->input->post('indent_note') ? $this->input->post('indent_note') : "";
 		$this->db->trans_start();
         $this->db->insert('indent', $order);
         $indent_id = $this->db->insert_id();
@@ -49,7 +73,8 @@ class Indent_model extends CI_Model {
         $get_item=array();
 		$item=$this->input->post('item');
 		
-		$quantity_indented=$this->input->post('quantity_indented'); 
+		$quantity_indented=$this->input->post('quantity_indented');
+		$item_notes = $this->input->post('item_note');
 		$row_count=count($item); 
 		for($i=0;$i<$row_count;$i++){
 			if($auto_indent){
@@ -61,7 +86,8 @@ class Indent_model extends CI_Model {
 				'indent_status' => 'Issued',
 				'indent_id' => $indent_id, 
 				'hospital_id' => $hospital['hospital_id'], 
-				'issue_date' => $call_date
+				'issue_date' => $final_indent_datetime, 
+				'note' => $item_notes[$i]
 				
 			);
 			}else{
@@ -70,7 +96,8 @@ class Indent_model extends CI_Model {
 			    'quantity_indented'=>$quantity_indented[$i],
 				'indent_status' => 'Indented',
 				'indent_id' => $indent_id, 
-				'hospital_id' => $hospital['hospital_id']
+				'hospital_id' => $hospital['hospital_id'], 
+				'note' => $item_notes[$i]
 				);
 			}
 		}
@@ -81,7 +108,7 @@ class Indent_model extends CI_Model {
                 return false;
         }
         else{
-			$this->db->select('hospital.hospital,dosage.dosage,dosage.dosage_unit,item_form.item_form,item_type.item_type,indent.indent_id,indent.indent_status,indent_date,item_name,quantity_indented,from_party.supply_chain_party_name from_party_name,to_party.supply_chain_party_name to_party_name,staff.first_name,staff.last_name')
+			$this->db->select('hospital.hospital,dosage.dosage,dosage.dosage_unit,item_form.item_form,item_type.item_type,indent.indent_id,indent.indent_status,indent_date,item_name,quantity_indented,from_party.supply_chain_party_name from_party_name,to_party.supply_chain_party_name to_party_name,staff.first_name,staff.last_name,indent_item.note, indent.note indent_note')
 		->from('indent')
 		->join('indent_item','indent.indent_id=indent_item.indent_id','left')
 		->join('item','item.item_id=indent_item.item_id','left')
@@ -102,8 +129,9 @@ class Indent_model extends CI_Model {
     }
 	//This is a method used to retreive data from supply_chain_party,item tables depend upon type.
     function get_supply_chain_party($type=""){
+		$hospital=$this->session->userdata('hospital');
 		if($type=="party")
-		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party");
+		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->where("supply_chain_party.hospital_id ", $hospital['hospital_id']);
 		else if($type=="item")
 		$this->db->select('item.item_name,item.item_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
 		->from("item")
