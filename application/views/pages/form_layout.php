@@ -89,9 +89,20 @@
 				$(this).css('color','red');
 			}
 				
-		});
-		
+		});		
 	});
+
+	function dispPreview()
+	{
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo base_url('user_panel/form_preview');?>',
+			data: { print_layout_id: $('select[name=print_layout]').val() },
+			success: function(data){	
+			$("#print_preview").html(data);					
+			}						
+			});
+	}
   </script>
 <?php echo form_open('user_panel/form_layout',array('role'=>'form','class'=>'form-custom','id'=>'new-form')); ?>
 			<div class="col-md-10" >
@@ -130,8 +141,8 @@
 					<div class="col-md-4">
 						<div class="form-group">
 						<label class="control-label">Print Layout</label>
-						<select class="form-control" name="print_layout" id="print_layout" required >
-							<option value="">Select</option>
+						<select class="form-control" name="print_layout"  onchange="dispPreview();" required >
+							<option value="Select">Select</option>
 							<?php foreach($print_layouts as $layout){
 								echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
 							}
@@ -776,8 +787,15 @@
 				<div class="panel-footer">
 					<button type="submit" class="btn btn-primary" id="save-form">Save</button>
 				</div>
+				<br/>
+				<!-- <p id="show_print" style="padding-left:100px;">  </p>
+				<br/>
+				<br/> -->
+				<div id="print_preview"  style="width:80%;height:40%;margin-left:50px;" ></div>
 				</div>
 			</div>
+			
+			
 			<div class="col-sm-3 col-md-2 sidebar">
 			<strong>Patient Information</strong>
 			  <ul class="nav nav-sidebar">

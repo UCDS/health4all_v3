@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/main.css" media="print" >
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/main.css" <?php if(!isset($preview_only)) echo 'media="print"';?> >
 		<style>
 				 #div1 {
 					 width:100%;

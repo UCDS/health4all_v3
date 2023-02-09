@@ -36,6 +36,15 @@ class User_panel extends CI_Controller {
 		}
 	}
 
+	function form_preview(){
+		$response = $this->input->post();
+		$print_layout_id = $response['print_layout_id'];	
+		 // Load layout data from print_layout table
+		$print_layout = $this->staff_model->get_print_layout($print_layout_id);		
+		$this->data['preview_only'] = true;
+		echo $this->load->view('pages/print_layouts/'.$print_layout->print_layout_page,$this->data);			
+	}
+
 	function create_user(){
 		if($this->session->userdata('logged_in')){
 			$this->load->helper('form');
