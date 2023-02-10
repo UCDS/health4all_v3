@@ -250,7 +250,7 @@ function initAppointmentDoctorSelectize(modal_id){
 		<?php $this->load->view($print_layout);?>
 		</div>
 		<div id="a6-label" class="sr-only"> 
-			<?php $this->load->view('pages/print_layouts/a6_label');?>
+	    	<?php $this->load->view($print_layout_a6);?>
 		</div>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>

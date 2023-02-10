@@ -118,6 +118,7 @@ class Register extends CI_Controller {
 				show_404();
 			}
 			$form=$this->staff_model->get_form($form_id); //Get the form details from database.
+			$form_a6=$this->staff_model->get_form_a6($form_id); 
 			$this->data['columns']=$form->num_columns;
 			$this->data['form_name']=$form->form_name;
 			$this->data['form_type']=$form->form_type;
@@ -125,6 +126,7 @@ class Register extends CI_Controller {
 			$this->data['update']=0;
 			$this->data['add_sms_access']=$add_sms_access;
 			$print_layout_page=$form->print_layout_page;
+			$print_layout_a6=$form_a6->print_layout_page;
 			$this->load->view('templates/header',$this->data);
 			$this->load->library('form_validation');
 			//Set validation rules for the forms
@@ -195,6 +197,7 @@ class Register extends CI_Controller {
 					}					
 					//Set the print layout page based on the form selected.
 					$this->data['print_layout']="pages/print_layouts/$print_layout_page";
+					$this->data['print_layout_a6']="pages/print_layouts/$print_layout_a6";
 				}
 				//load the custom_form page with the data loaded.
 				$this->load->view('pages/custom_form',$this->data);
