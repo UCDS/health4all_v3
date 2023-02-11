@@ -18,9 +18,10 @@
 				item +="<option value='<?php echo $t->item_id;?>'><?php echo $t->item_name."-".$t->item_form."-".$t->item_type."-".$t->dosage.$t->dosage_unit;?></option>";
 			<?php } ?>
 			item += "</select></td>";
+			var note = '<td><div class="form-group"><textarea class="form-control" name="item_note[]" required > </textarea>	</div></td>'
 			var quantity="<td><input type='number' class='number form-control' name='quantity_indented[]' required /></td></br>";
 		    var remove="<td><button value='X' class='btn btn-danger remove show-tip' onclick='$(\"#slot_row_"+rowcount+"\").remove();'><span class='glyphicon glyphicon-trash'></span></button></td>";
-			$("#slot_table").append("<tr id='slot_row_"+rowcount+"'>"+sno+item+quantity+remove+"</tr>");
+			$("#slot_table").append("<tr id='slot_row_"+rowcount+"'>"+sno+item+quantity+ note+remove+"</tr>");
 			rowcount++;
 
 		});
@@ -97,7 +98,7 @@ $('#to_id').change(function(){
 								<?php
 								foreach($parties as $fro)
 									{
-										echo"<option value='".$fro->supply_chain_party_id."'>".$fro->supply_chain_party_name."</option>";
+										echo "<option value='".$fro->supply_chain_party_id."'>".$fro->supply_chain_party_name."</option>";
 									
 									}
 								?>
@@ -131,6 +132,7 @@ $('#to_id').change(function(){
 								<th class="col-md-1"><center>#</center></th>
 								<th class="col-md-4"><center>Item</center></th>
 								<th class="col-md-1"><center>Quantity</center></th>
+								<th class="col-md-3"><center>Note</center></th>
 								<th class="col-md-1"></th>
 							</tr>
 						 </thead>
@@ -155,6 +157,12 @@ $('#to_id').change(function(){
 								<div class="form-group">
 										<input type="number" min="1" step="1" class="number form-control" name="quantity_indented[]" required  /></div>
 								</td>
+								<td>
+								<div class="form-group">
+										
+										<textarea class="form-control" name="item_note[]" required > </textarea>
+								</div>
+								</td>
 								<td><input type="button" id="addbutton" class="btn btn-primary" value="Add+" /></td>
 							</tr>
 						</table>
@@ -162,7 +170,16 @@ $('#to_id').change(function(){
 				 </div>
 			</div>
 				    
-				    <div class="container">						
+				    <div class="container">			
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group form-group-lg">
+										<label for="indent_note">Note </label>
+										<textarea class="form-control" name="indent_note" id="indent_note" placeholder="Add a note for the indent"></textarea>
+									</div>
+
+								</div>
+							</div>			
 							<div class="row">
 								<div class="col-md-9">
 									<center><button class="btn btn-primary" type="submit" name="Submit" value="Submit" id="btn">Submit</button>

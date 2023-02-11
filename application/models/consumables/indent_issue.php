@@ -14,9 +14,9 @@ class Indent_issue extends CI_Controller{                                       
     
     function validate_date_time($approve_date_time)
     {
-        $f_approve_date_time = date("d-M-Y H:i:s", strtotime($approve_date_time));
-        $f_issue_date_time = date("d-M-Y H:i:s", strtotime($this->input->post('issue_date') . " " . $this->input->post('issue_time')));
-        log_message("info", "SAIRAM: a: $f_approve_date_time, i: $f_issue_date_time ".($f_issue_date_time >= $f_approve_date_time ? "True": "False"));
+        $f_approve_date_time = date("d-M-Y h:i:s", strtotime($approve_date_time));
+        $f_issue_date_time = date("d-M-Y h:i:s", strtotime($this->input->post('issue_date') . " " . $this->input->post('issue_time')));
+        // log_message("info", "SAIRAM: a: $f_approve_date_time, i: $f_issue_date_time ".($f_issue_date_time >= $f_approve_date_time ? "True": "False"));
         return $f_issue_date_time >= $f_approve_date_time;
     }
  function indent_issued(){                                                                        //definition of a method :indent_approval
@@ -60,9 +60,9 @@ class Indent_issue extends CI_Controller{                                       
 
         $this->form_validation->set_rules("selected_indent_id", "SELECTED INDENT ID", "required|callback_indent_id_check");
         if($this->form_validation->run() == False){                                               //checking whether validation is true or false
-            // log_message("info", "SAIRAM: VALIDATION FAILED: ". $this->input->post('submit'));
-            if($this->input->post('submit') != 'submit_search_issue' && $this->input->post('auto_indent') == 1){                                                    //it executes when user click on search button
-                // log_message("info", "SAIRAM: AUTO INDENT REQUESTED");
+            log_message("info", "SAIRAM: VALIDATION FAILED: ".$this->input->post('selected_indent_id'));
+            if($this->input->post('auto_indent')){                                                    //it executes when user click on search button
+                log_message("info", "SAIRAM: AUTO INDENT REQUESTED");
                 $this->data['mode']="auto_indent";                                                         //save search in data array of index:mode
                 $this->load->model('consumables/indent_model');
                 $this->load->view('pages/consumables/indent_view',$this->data);                             //load indent_issue view page and pass data array to it

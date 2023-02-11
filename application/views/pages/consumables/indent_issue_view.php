@@ -14,34 +14,42 @@ $(function(){
 	$("#from_date,#to_date").Zebra_DatePicker({direction:false});
 	$("#indent_time").ptTimeSelect();
 	});
-function printDiv(i)
-{
-var content = document.getElementById(i);
-var pri = document.getElementById("ifmcontentstoprint").contentWindow;
-pri.document.open();
-pri.document.write(content.innerHTML);
-pri.document.close();
-pri.focus();
-pri.print();
-}
+	function printDiv(i)
+	{
+		var content = document.getElementById(i);
+		var pri = document.getElementById("ifmcontentstoprint").contentWindow;
+		pri.document.open();
+		pri.document.write(content.innerHTML);
+		pri.document.close();
+		pri.focus();
+		pri.print();
+	}	
 </script>
 <script>
 $(function(){
-$('#to_id  option[value="'+$('#from_id').val()+'"]').hide();
+if($('#from_id').val() !== ''){
+	$('#to_id  option[value="'+$('#from_id').val()+'"]').hide();
+}
 $('#from_id').change(function(){
 	$("#to_id option").show();
     var optionval = this.value;
-    $('#to_id  option[value="'+optionval+'"]').hide();
-    
+	if(optionval !== ''){
+    	$('#to_id  option[value="'+optionval+'"]').hide();
+	}
+
 });
 });
 $(function(){
-$('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
+	if($('#to_id').val() !== ''){
+		$('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
+	}
 $('#to_id').change(function(){
 	$("#from_id option").show();
     var optionval = this.value;
-    $('#from_id  option[value="'+optionval+'"]').hide();
-    
+	if(optionval !== ''){
+		$('#from_id  option[value="'+optionval+'"]').hide();
+	}
+
 });
 });
 </script>
@@ -117,43 +125,47 @@ $(function(){
 			<h3>
 				<?php echo $all_issue->hospital;?> </h3>
 				<?php break; } ?>
-		        <p><h3>Indent Order </h3></p><!-- Heading -->
+		        <p><h3>Indent ID <?php echo $all_issue->indent_id;?></h3></p><!-- Heading -->
 	</center>	 
-			<hr>
+		<hr style="border: 2px solid black;">
 			<center>
-				<label style="float:left"><b>Indent Id : </b><?php echo " ".$all_issue->indent_id;?></br></label><!-- Indent_id label -->
-				<label style="float:right"><b>From : </b><?php echo " ".$all_issue->from_party;?></label><br><!-- From label-->
-				<label style="float:left"><b>Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));?></label><!--Date Time label -->
-				<label style="float:right"><b>To : </b><?php echo " ".$all_issue->to_party;?></label><br><!--  To label -->
+				
+				<label style="float:left"><b>From : </b><?php echo " ".$all_issue->from_party;?></label><!-- From label-->
+				<label style="float:right"><b>To : </b><?php echo " ".$all_issue->to_party;?></label><br><br><!--  To label -->
+				<label style="float:left"><b>Indented by : </b><?php echo $all_issue->order_first." ".$all_issue->order_last." at ".date("d-M-Y g:i A", strtotime($all_issue->indent_date));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Approval by : </b><?php echo $all_issue->approve_first." ".$all_issue->approve_last." at ".date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Issue by : </b><?php echo $all_issue->issue_first." ".$all_issue->issue_last." at ".date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));?></label><br><br><!--Date Time label -->
 			</center>
 			<br/><br/><br/>
-			<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
+			<table style=" border:2px solid black;width:100%;border-collapse: collapse;">
 			    <thead style="height:50px">
-					<th style="text-align:center;border:1px solid black;" >#</th>
-					<th style="text-align:center;border:1px solid black;" >Items</th>
-					<th style="text-align:center;border:1px solid black;" >Quantity Approved</th>
-					<th style="text-align:center;border:1px solid black;" >Quantity Issued</th>
+					<th style="text-align:center;border:2px solid black;" >#</th>
+					<th style="text-align:center;border:2px solid black;" >Items</th>
+					<th style="text-align:center;border:2px solid black;" >Quantity Indented</th>
+					<th style="text-align:center;border:2px solid black;" >Quantity Approved</th>
+					<th style="text-align:center;border:2px solid black;" >Quantity Issued</th>
+					<th style="text-align:center;border:2px solid black;"> Note</th>
+					
 				</thead>
 				<tbody>
 					<?php
 						 $i=1;
 						 foreach ($issue_details as $all_issue){ ?>
 							<tr>
-								<td style=" border:1px solid black;  padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
-								<td style="border:1px solid black;   padding: 15px;  height: 50px;" align="left"><?php echo $all_issue->item_name."-".$all_issue->item_form."-".$all_issue->item_type.$all_issue->dosage.$all_issue->dosage_unit;?></td>
-								<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_approved ?></td>
-								<td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_issued ?></td>
+								<td style=" border:2px solid black;  padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
+								<td style="border:2px solid black;   padding: 15px;  height: 50px;" align="left"><?php echo $all_issue->item_name."-".$all_issue->item_form."-".$all_issue->item_type.$all_issue->dosage.$all_issue->dosage_unit;?></td>
+								<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_indented ?></td>
+								<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_approved ?></td>
+								<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->quantity_issued ?></td>
+								<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_issue->note ?></td>
+								
 							</tr>
 			        <?php } ?>
 				</tbody>
 			</table>
 			<br/><br/>
-			<b><?php echo "Indented"." "."by :" ;?></b>
-				<?php echo $all_issue->order_first." ".$all_issue->order_last;?></br></br>
-				<b><?php echo "Approved"." "."by :" ;?></b>
-				<?php echo $all_issue->approve_first." ".$all_issue->approve_last;?></br></br>
-			<b><?php echo $all_issue->indent_status." "."by :" ;?></b>
-				<?php echo $all_issue->issue_first." ".$all_issue->issue_last;?></br></br>
+			<p><b>Note: </b><br> <?php echo $all_issue->indent_note?></p>
+			
             	<b><?php echo "Issuer Signature :"; ?></b></br></br>			
 </div>
 <?php echo form_open('consumables/indent_issue/indent_issued',array('class'=>'form-group','role'=>'form'));?> <!-- Issue Print Form opened-->
@@ -165,32 +177,39 @@ $(function(){
 					<div class="panel panel-success">
 						<div class="panel-heading">
 							<center>
-								<p class="panel-title"><h3>Indent Order </h3></p><!-- Heading -->
+								<p class="panel-title"><h3>Indent</h3></p><!-- Heading -->
 							</center>
 						</div> 							  
 						<div class="panel-body">
 							<div class="panel-content">
 								<div  class="span9">
 									<div class="span3">
-										<div class="col-md-6"><!--Indent id label-->
+										<div class="col-md-4"><!--Indent id label-->
 											<b>Indent Id : </b><?php echo " ".$all_issue->indent_id;?>
 										</div><!-- End of indent_id label-->
-										<div class="col-md-6"><!-- From_party label-->
+										<div class="col-md-4"><!-- From_party label-->
 											<b>From Party : </b><?php echo " ".$all_issue->from_party;?>
 										</div><!-- End of from_party label -->
-									</div>
-								</div>
-								<div class="span3">
-									<div class="col-md-6"><!-- Date Time label -->
-										<b>Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->issue_date_time));?>
-									</div><!-- End of date time label-->
-								
-								</div>
-								<div class="span3">
-									<div class="col-md-6"><!-- To party label -->
+										<div class="span3">
+									<div class="col-md-4"><!-- To party label -->
 										<b>To Party : </b><?php echo " ".$all_issue->to_party;?>
 									</div><!-- End of to party label-->
 								</div>
+									</div>
+								</div>
+								<div class="span3">
+								<div class="col-md-6"><!-- Date Time label -->
+										<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->indent_date));?>
+									</div><!-- End of date time label-->
+								<div class="col-md-6"><!-- Date Time label -->
+										<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->approve_date_time));?>
+									</div><!-- End of date time label-->
+									<div class="col-md-6"><!-- Date Time label -->
+										<b>Issue Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_issue->issue_date_time));?>
+									</div><!-- End of date time label-->
+								
+								</div>
+								
 							</div>
 						</div>
 						<div class="container">
@@ -201,8 +220,10 @@ $(function(){
 											<thead>
 												<th class="col-md-2"style="text-align:center">#</th>
 												<th class="col-md-2"style="text-align:center">Items</th>
+												<th class="col-md-2"style="text-align:center">Quantity Indented</th>
 												<th class="col-md-2"style="text-align:center">Quantity Approved</th>
 												<th class="col-md-2"style="text-align:center">Quantity Issued</th>
+												<th class="col-md-2"style="text-align:center">Notes</th>
 											</thead>
 											<tbody>
 												<?php
@@ -211,13 +232,16 @@ $(function(){
 													<tr>
 														<td><center><?php echo $i++;?></center></td>
 														<td align="left"><?php echo $all_issue->item_name."-".$all_issue->item_form."-".$all_issue->item_type.$all_issue->dosage.$all_issue->dosage_unit;?></td>
+														<td align="right"><?php echo $all_issue->quantity_indented ?></td>
 														<td align="right"><?php echo $all_issue->quantity_approved ?></td>
 														<td align="right"><?php echo $all_issue->quantity_issued ?></td>
+														<td align="right"><?php echo $all_issue->note ?></td>
 													</tr>
 												<?php } ?>
 											</tbody>
 										</table>
 									</div>
+									<p><b>Note: </b><br> <?php echo $all_issue->indent_note?></p>
 								</div>
 							</div>
 						</div>
@@ -365,7 +389,7 @@ $(function(){
 					<div class="container">
 						<div class="row">
 							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit" class="btn btn-primary">submit</button>
+								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">submit</button>
 								<button type="submit"  name="auto_indent" value="auto_indent" class="btn btn-primary">Auto-Indent</button>
 								<input type="hidden" name="auto_indent" value="1"/>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
