@@ -1,45 +1,116 @@
-  	<center>	
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<style>
+.mandatory{
+	color:red;
+	cursor:default;
+	font-size:15px;
+	font-weight:bold;
+}
+
+</style>
+	<center>	
 <?php if(isset($msg)){  ?>
 	<div class="alert alert-info"><?php echo $msg; ?>
 	</div>
 <?php } ?>
 	<?php echo validation_errors(); ?>
 	</center>
-			
+<script>
+	function initDistrictSelectize(){
+        var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
+		var selectize = $('#district_id').selectize({
+	    valueField: 'district_id',
+	    labelField: 'custom_data',
+	    searchField: ['district','district_alias','state'],
+	    options: districts,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+		},
+
+	});
+	if($('#district_id').attr("data-previous-value")){
+		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
+	}
+	}	
+	function previewLogo(){
+		$("#preview_logo_img").show();
+		 var logo_preview = $('select[name=logo]').val();
+		 var path = 'http://localhost<?php echo base_url('assets/logos');?>'+"/"+logo_preview;
+		  $("#preview_logo_img").attr("src",path);
+		
+	}
+</script>	
 			<h2 align="center">Hospital</h2><br>
 			<?php echo form_open('hospital/add_hospital',array('class'=>'form-group','role'=>'form','id'=>'add_hospital')); ?>
-				<div class="col-md-8 col-md-offset-3">
+	<div class="col-md-8 col-md-offset-3">
 					<div class="row">
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
-								<label for="inputhospital ">Hospital Name</label>
-								<input class="form-control" name="hospital" id="inputhospital" placeholder="enter name" type="TEXT" align="middle">
+								<label for="inputhospital ">Hospital Name <span class="mandatory">*</span> </label>
+								<input class="form-control" name="hospital" id="inputhospital" placeholder="Enter Hospital name" type="TEXT" align="middle">
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="form-group">
-								<label for="Inputplace">Place</label>
-								<input class="form-control" name="place" id="inputplace" placeholder="enter name" type="TEXT" align="middle">
-							</div>
-						</div>
+						
 						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label for="inputhospital_short_name ">Hospital Short Name</label>
-								<input class="form-control" name="hospital_short_name" id="inputhospital_short_name" placeholder="enter name" type="text">
+								<input class="form-control" name="hospital_short_name" id="inputhospital_short_name" placeholder="Enter Hospital short name" type="text">
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						
+						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
-								<label for="Inputdistrict" >District</label>
-								<input class="form-control" name="district" id="inputdistrict" placeholder="enter name" type="TEXT" align="middle">
-							</div>	
+								<label for="Inputdescription">Description</label>
+								<textarea class="form-control" name="description" rows="2" cols="6" ></textarea>
+							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+					</div>
+
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="Inputplace">Place</label>
+								<input class="form-control" name="place" id="inputplace" placeholder="Enter Place" type="TEXT" align="middle">
+						</div> 
+					</div>
+						<!-- <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="Inputstate" >State</label>
-								<input class="form-control" name="state" id="inputstate" placeholder="enter name" type="TEXT" align="middle">
+								<input class="form-control" name="state" id="inputstate" placeholder="Enter State" type="TEXT" align="middle">
 							</div>
+						</div> -->
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">		
+						<div class="form-group">
+							<label class="Inputdistrict">  District    </label>
+							<select id="district_id"  name="district" style=" display: inline-grid;" placeholder="Enter district" <?php if($field->mandatory) echo "required"; ?>>
+								<option value="">   --Enter district--   </option>
+								<input type='hidden' name='district_id' id='district_id_val' class='form-control'/>
+		
+							</select>
+							
+							<script>						
+							var patient = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>)); 
+							$('#district_id').attr("data-previous-value", patient['district']);
+							$('#district_id_val').attr("data-previous-value", patient['district_id']);
+
+							initDistrictSelectize();
+							
+							</script>
+						
 						</div>
+					</div>
+				
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="Inputtype1">Type1</label>
@@ -51,6 +122,9 @@
 								</select>
 							</div>	
 						</div>
+				</div>
+
+				<div class="row">	
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="Inputtype2" >Type2</label>
@@ -61,6 +135,7 @@
 								</select>
 							</div>	
 						</div>
+
 					   <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="Inputtype3" >Type3</label>
@@ -71,6 +146,7 @@
 								</select>
 							</div>	
 						</div>
+					
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="Inputtype4">Type4</label>
@@ -84,6 +160,9 @@
 								</select>
 							</div>	
 						</div>
+				</div>
+
+				<div class="row">
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="Inputtype5">Type5</label>
@@ -105,15 +184,94 @@
 								</select>
 							</div>	
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
+												
+
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
-								<label for="Inputdescription">Description</label>
-								<textarea class="form-control" name="description" rows="3"></textarea>
+								<label class="control-label">Helpline </label>
+								<select class="form-control" name="helpline"  required >
+									<option value="Select">Select</option>
+									<?php foreach($helplines as $helpline){
+									echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
+									}
+									?>
+								</select>
 							</div>
 						</div>
-						<div class="col-md-12">
-							<center><button class="btn btn-default" type="submit" name="Submit" id="btn">Submit</button></center>
+				</div>
+
+				<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="form-group">
+								<label for="Inputauto_ip_number" >Auto IP Number</label><br>
+								<input type="radio" name="auto_ip_number" value="1">
+								<label for="auto_ip_number_yes">Yes</label>
+								<input type="radio" name="auto_ip_number" value="0" checked>
+								<label for="auto_ip_number_no" checked>No</label><br>
+							</div>
 						</div>
+					
+											
+						<div class="col-md-4">
+							<div class="form-group">
+								 <label class="control-label">Logo</label> 
+								 <select class="form-control" name="logo" id="logo" onchange="previewLogo()" required >
+								 <option value="">Select</option>
+								 <?php
+								//$path = 'C:\Users\kadro\OneDrive\Desktop\logos\*';
+								$path = base_url('assets/logos/*');
+								//$path = 'http://localhost'.base_url().'assets/logos/*';	
+								 foreach(glob($path) as $filename){
+								$filename = basename($filename);
+								 echo "<option value='" . $filename . "'>".$filename."</option>";
+
+								 }
+								 ?>
+								 </select>
+
+						</div>
+						</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+					 <div class="form-group">
+					 <img id="preview_logo_img"  width="100" height="100" alt="Preview of selected Logo" hidden>
+					 </div>
 					</div>
 				</div>
+					
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">Print Layout(A4)</label>
+								<select class="form-control" name="print_layout" id="print_layout" onchange="dispPreview();" required >
+									<option value="Select">Select</option>
+									<?php foreach($print_layouts as $layout){
+									echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
+									}
+									?>
+								</select>
+							</div>
+						</div>
+						
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">Print Layout(A6)</label>
+								<select class="form-control" name="print_layout_a6" id="print_layout_a6" required >
+									<option value="Select">Select</option>
+									<?php foreach($print_layouts as $layout){
+										echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
+									}
+									?>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12" >
+					<center><button type="submit" class="btn btn-primary" name="Submit" id="btn">Submit</button></center>
+				</div>					
+				</div>
+			
+	
             <?php echo form_close(); ?>	
+
+			

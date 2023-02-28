@@ -140,7 +140,7 @@ $('#to_id').change(function(){
 	?>
 			   <div class="text-center">
 				<h2> Indent Detailed</h2>
-				<?php echo form_open('consumables/indent_detailed/get_indent_detailed',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
+				<?php echo form_open('consumables/indent_reports/get_indent_detailed',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
 				<div class="container">
 					<div class="row">
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
@@ -197,7 +197,7 @@ $('#to_id').change(function(){
 							<!--Input field Item Type-->
 								<label for="inputitem_type" >Item Type</label>
 									<select name="item_type" id="item_type" class="form-control">
-									<option value="">select</option>
+									<option value="" selected>select</option>
 										<?php
 										//foreach loop for displaying all item types.
 											foreach($all_item_type as $it)
@@ -309,6 +309,7 @@ $('#to_id').change(function(){
 							<th>Quantity Indented</th>
 							<th>Quantity Approved</th>
 							<th>Quantity Issued</th>
+							<th>Item note</th>
 							<th>Indent Status</th>
 
 
@@ -335,6 +336,7 @@ $('#to_id').change(function(){
 						<td><?php echo $indent->quantity_indented;?></td>
 						<td><?php echo $indent->quantity_approved;?></td>
 						<td><?php echo $indent->quantity_issued;?></td>
+						<td><?php echo $indent->note;?></td>
 						<td><?php echo $indent->indent_status;?></td>
 
 
@@ -342,7 +344,7 @@ $('#to_id').change(function(){
 					<?php
 	                $total_quantity+=$indent->quantity_indented;
 					$approved+=$indent->quantity_approved;
-					$issued+=$indent->indent_status;
+					$issued+=$indent->quantity_issued;
 					}
 					?>
 					<tfoot>
