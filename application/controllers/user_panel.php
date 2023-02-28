@@ -25,6 +25,8 @@ class User_panel extends CI_Controller {
 		$this->data['title']="User Panel";
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$this->data['print_layouts']=$this->staff_model->get_print_layouts();
+		$this->data['districts']=$this->staff_model->get_district();
+
                 // $this->load->library('dummy_data');
                 // $this->data['registered']=new Dummy_data();
 		$this->load->view('templates/header',$this->data);

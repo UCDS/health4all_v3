@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/main.css" <?php if(!isset($preview_only)) echo 'media="print"';?> >
+<link rel="stylesheet"   href="<?php echo base_url();?>assets/css/main.css"  <?php if(!isset($preview_only)) echo "media='print'"; ?> >
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>  
 
