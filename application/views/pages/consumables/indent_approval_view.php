@@ -90,21 +90,29 @@ $(function(){
 	</script>
 	<script>
 $(function(){
-$('#to_id  option[value="'+$('#from_id').val()+'"]').hide();
+if($('#from_id').val() !== ''){
+	$('#to_id  option[value="'+$('#from_id').val()+'"]').hide();
+}
 $('#from_id').change(function(){
 	$("#to_id option").show();
     var optionval = this.value;
-    $('#to_id  option[value="'+optionval+'"]').hide();
-    
+	if(optionval !== ''){
+    	$('#to_id  option[value="'+optionval+'"]').hide();
+	}
+
 });
 });
 $(function(){
-$('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
+	if($('#to_id').val() !== ''){
+		$('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
+	}
 $('#to_id').change(function(){
 	$("#from_id option").show();
     var optionval = this.value;
-    $('#from_id  option[value="'+optionval+'"]').hide();
-    
+	if(optionval !== ''){
+		$('#from_id  option[value="'+optionval+'"]').hide();
+	}
+
 });
 });
 </script>
@@ -115,56 +123,51 @@ $('#to_id').change(function(){
 	 <?php  foreach ($approve_detail as $all_approve){ ?>
 			<h3><?php echo $all_approve->hospital;?> </h3>
 				<?php break; } ?>
-					<p><h3>Indent Order </h3></p<!-- Heading -->
+					<p><h3>Indent ID  <?php echo $all_approve->indent_id;?></h3></p<!-- Heading -->
 </center>	 	
-      <hr>
+	<hr style="border: 2px solid black;">
 	  <center>	 
-		<label style="float:left"><b>Indent Id : </b> <?php echo " ".$all_approve->indent_id;?></br></label><!-- Indent id label-->
-	    <label style="float:right"> <b>From : </b>  <?php echo " ".$all_approve->from_party;?></label><br><!-- From party label -->
-		<label style="float:left"><b>Date Time : </b><?php echo " ".date("d-M-Y g:i A", strtotime($all_approve->approve_date_time));?></label><!-- Date time label-->
-		<label style="float:right"><b>To : </b> <?php echo " ".$all_approve->to_party;?></label><br><!-- To party label-->
+	  
+				<label style="float:left"><b>From : </b><?php echo " ".$all_approve->from_party;?></label><!-- From label-->
+				<label style="float:right"><b>To : </b><?php echo " ".$all_approve->to_party;?></label><br><br><!--  To label -->
+				<label style="float:left"><b>Indented By : </b><?php echo $all_approve->order_first." ".$all_approve->order_last." at ".date("d-M-Y g:i A", strtotime($all_approve->indent_date));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Approval By : </b><?php echo $all_approve->approve_first." ".$all_approve->approve_last." at ".date("d-M-Y g:i A", strtotime($all_approve->approve_date_time));?></label><br><br><!--Date Time label -->
+				<label style="float:left"><b>Issue By : </b>NA</label><br><br><!--Date Time label -->
       </center>   
 	  <br/><br/><br/>
-		<table style=" border:1px solid black;width:100%;border-collapse: collapse;">
+		<table style=" border:2px solid black;width:100%;border-collapse: collapse;">
 			<thead style="height:50px">
-				<th style="text-align:center;border:1px solid black;" >#</th>
-				<th style="text-align:center;border:1px solid black;" >Items</th>
-				<th style="text-align:center;border:1px solid black;" >Quantity Indented</th>
-				<th style="text-align:center;border:1px solid black;" >Quantity Approved</th>
+				<th style="text-align:center;border:2px solid black;" >#</th>
+				<th style="text-align:center;border:2px solid black;" >Items</th>
+				<th style="text-align:center;border:2px solid black;" >Quantity Indented</th>
+				<th style="text-align:center;border:2px solid black;" >Quantity Approved</th>
+				<th style="text-align:center;border:2px solid black;" >Note</th>
 			</thead>
 			<tbody>
 				<?php
 					 $i=1;
 					 foreach ($approve_detail as $all_approve){ ?>
 					<tr>
-						<td style=" border:1px solid black; padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
-						<td style="border:1px solid black; padding: 15px;  height: 50px;"  align="left"><?php echo $all_approve->item_name."-".$all_approve->item_form."-".$all_approve->item_type.$all_approve->dosage.$all_approve->dosage_unit;?></center></td>
-					    <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_indented ;?></center></td>
+						<td style=" border:2px solid black; padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
+						<td style="border:2px solid black; padding: 15px;  height: 50px;"  align="left"><?php echo $all_approve->item_name."-".$all_approve->item_form."-".$all_approve->item_type.$all_approve->dosage.$all_approve->dosage_unit;?></center></td>
+					    <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_indented ;?></center></td>
 						<?php if($get_approve==1){ 
 						if($all_approve->indent_status=='Approved'){?>
-                        <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_approved ;?></center></td>
+                        <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_approved ;?></center></td>
 						<?php } else { ?>
-                        <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
+                        <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
 						<?php } } else{ ?>
-					    <td style="border:1px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
+					    <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
 						<?php } ?>
+						<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->note ;?></center></td>
 			        </tr>
 			    <?php } ?>
 			</tbody>
 		</table>
 		<br/><br/>
+		<p><b>Note: </b><br> <?php echo $all_approve->indent_note?></p>
 		<b>
-		<?php echo "Indented"." "."by :" ;?></b><!-- Display Indenter name -->
-			<?php echo $all_approve->order_first." ".$all_approve->order_last;?></br></br>
-		<?php if($get_approve==1) { ?>
-		<b>
-		<?php echo "Approved"." "."by :" ;?></b> <!-- Display Approver name-->
-		<?php } else { ?>
-		<b>
-		<?php echo "Rejected"." "."by :" ;?></b><!-- Display Rejecter name-->
-		<?php } ?>
-			<?php echo $all_approve->approve_first." ".$all_approve->approve_last;?></br></br>
-			<b>
+		
 		<?php echo "Approver Signature :" ;?></b></br></br><!-- Display Approver signature-->
     </div>
 			<?php echo form_open('consumables/indent_approve/indent_approval',array('class'=>'form-group','role'=>'form'));?> <!-- Indent Approval print form open-->
@@ -176,31 +179,38 @@ $('#to_id').change(function(){
 							<div class="panel panel-success">
 								<div class="panel-heading">
 									<center>
-										<p class="panel-title"><h3>Indent Order </h3></p><!-- Heading-->
+										<p class="panel-title"><h3>Indent</h3></p><!-- Heading-->
 									</center>
 								</div> 							  
 								<div class="panel-body">
 									<div class="panel-content">
 											<div  class="span9">
 												<div class="span3">
-													<div class="col-md-6"><!-- Indent id -->
+													<div class="col-md-4"><!-- Indent id -->
 														<b>Indent Id :</b><?php  echo " ".$all_approve->indent_id;?>
 													</div><!-- End of indent_id -->
-													<div class="col-md-6"><!-- from party-->
+												</div>
+												<div class="span3">
+													<div class="col-md-4"><!-- from party-->
 													    <b>From Party : </b><?php echo " ".$all_approve->from_party;?>
 													</div><!-- End of from party-->
+													<div class="col-md-4"><!-- To party-->
+														<b>To Party : </b><?php echo " ".$all_approve->to_party;?>
+													</div><!-- End of to party-->
 												</div>
 											</div>
-											<div class="span3">
-												<div class="col-md-6"><!-- Date time-->
-													<b>Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->approve_date_time));?>
-												</div><!-- End of date time-->
-											</div>
-											<div class="span3">
-												<div class="col-md-6"><!-- To party-->
-													<b>To Party : </b><?php echo " ".$all_approve->to_party;?>
-												</div><!-- End of to party-->
-											</div>
+												<div class="span3">
+														<div class="col-md-6"><!-- Date time-->
+															<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->indent_date));?>
+														</div><!-- End of date time-->
+												</div>
+												<div class="span3">
+													<div class="col-md-6"><!-- Date time-->
+														<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->approve_date_time));?>
+													</div><!-- End of date time-->
+												</div>
+												
+											
 									</div>
 								</div>
 								<div class="container">
@@ -213,6 +223,7 @@ $('#to_id').change(function(){
 														<th class="col-md-2"style="text-align:center">Items</th>
 														<th class="col-md-2"style="text-align:center">Quantity Indented</th>
 														<th class="col-md-2"style="text-align:center">Quantity Approved</th>
+														<th class="col-md-2"style="text-align:center">Notes</th>
 													</thead>
 													<tbody>
 													<?php
@@ -230,11 +241,19 @@ $('#to_id').change(function(){
 															<?php } } else { ?>
 															<td align="right"><?php echo "0";?></td>
 															<?php } ?>
+															<td  align="right"><?php echo $all_approve->note;?></td>
 														</tr>
 													<?php } ?>
 													</tbody>
 												</table>
 											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-9">
+											<p><b>Note: </b><br> <?php 
+												echo $all_approve->indent_note
+											?></p>
 										</div>
 									</div>
 								</div>
@@ -401,7 +420,7 @@ $('#to_id').change(function(){
 												<th><center>Indent Date Time</center></th>
 												<th><center>From</center></th>
 												<th><center>To</center></th>
-												<th><center>Status</center></th>
+												<th><center></center></th>
 											</tr>
 										</thead>
 										<tbody>

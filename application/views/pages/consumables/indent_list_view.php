@@ -130,54 +130,51 @@ $('#to_id').change(function(){
 	  $("#item_name").chained("#item_type");
 	});
 </script>
+<div class="col-md-8 col-md-offset-1">
 	<?php
+	if($from_date==0 && $to_date==0){
 	$from_date=0;$to_date=0;
-	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
-	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+	if($this->input->post('$from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('$from_date'))); else $from_date = date("Y-m-d");
+	if($this->input->post('$to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('$to_date'))); else $to_date = date("Y-m-d");
+	}
         $from_time=0;$to_time=0;
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
-	if($this->input->post('from_id')){
-		$from_party = $this->input->post('from_id');
-	}
-	else{
-		$from_party = "0";
-	}
-	if($this->input->post('to_id')){
-		$to_party = $this->input->post('to_id');
-	}
-	else{
-		$to_party = "0";
-	}
+	if($from_party == 0) $from_party = $this->input->post('from_party');
+	if($to_party == 0) $to_party = $this->input->post('to_party');
+	if($item_type == 0) $item_type = $this->input->post('item_type');
+	if($item_name == 0) $item_name = $this->input->post('item_name');
+	if($indent_status == '0') $indent_status = $this->input->post('indent_status');
 	?>
 			   <div class="text-center">
-				<h2> Indent Summary</h2>
-				<?php echo form_open('consumables/indent_reports/get_indent_summary',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
+				<h2> Indent List</h2>
+				<?php echo form_open('consumables/indent_reports/indents_list',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
 				<div class="container">
 					<div class="row">
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
-							<!--input field from date-->
-									From Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+							<!--Input field From date-->
+								From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
-							<!--input field to date-->
-								To Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+							<!--Input field To date-->
+								To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
-							<!--input field from party-->
 								<label for="from_id">From Party</label>
+								<!--Input field From Party-->
 									<select name="from_id" id="from_id" class="form-control">
 									<option value="">Select</option>
 										<?php
+										//foreach loop for displaying all from parties.
 											foreach($parties as $fro)
 											{
 												echo "<option value='".$fro->supply_chain_party_id."'";
-												if($this->input->post('from_id') && $this->input->post('from_id') == $fro->supply_chain_party_id) echo " selected ";
+												if($from_party == $fro->supply_chain_party_id) echo " selected ";
 												echo ">".$fro->supply_chain_party_name."</option>";
 
 											}
@@ -187,71 +184,83 @@ $('#to_id').change(function(){
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
-							<!--input field to party-->
+							<!--Input field To party-->
 									<label for="inputto_id">To Party</label>
 									<select name="to_id" id="to_id" class="form-control">
 										<option value="">Select</option>
 										<?php
 											foreach($parties as $t)
 											{
+												//foreach loop for displaying all To parties.
 												echo "<option value='".$t->supply_chain_party_id."'";
-												if($this->input->post('to_id') && $this->input->post('to_id') == $t->supply_chain_party_id) echo " selected ";
+												if($to_party == $t->supply_chain_party_id) echo " selected ";
 												echo ">".$t->supply_chain_party_name."</option>";
 											}
 										?>
 									</select>
 							</div>
 					</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							<!--input field item type-->
-								<label for="inputitem_type" >Item Type</label>
-									<select name="item_type" id="item_type" class="form-control">
-									<option value="" selected>Select</option>
-										<?php
-											foreach($all_item_type as $it)
-												{
-													echo "<option value='".$it->item_type_id."'";
-												if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
-												echo ">".$it->item_type."</option>";
-												}
-										?>
-									</select>
-							</div>
-						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							<!--input field item-->
-								<label for="inputitem" >Item</label>
-									<select name="item" id="item" class="form-control">
+						
+						
+								<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-3 col-md-offset-2">
+								<div class="form-group">
+								<!--Input field Indent Status-->
+									<label for="inputindent_status" >Indent Status </label>
+									<select class="form-control" name="indent_status">
 									<option value="">Select</option>
-										<?php
-											foreach($all_item as $i)
-												{
-													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
-													echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
-													if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
-													echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
-												}
-										?>
-									</select>
-							</div>
-						</div>
+								                    	<option value="Indented"
+														<?php
+															if($indent_status == "Indented")
+															 echo " selected ";
+													    ?>>Indented
+														</option>
+                                                         <option value="Approved"
+														 <?php
+															if($indent_status== "Approved")
+															 echo " selected ";
+													    ?>>Approved
+														</option>
+														<option value="Issued"
+														<?php
+															if($indent_status == "Issued")
+															 echo " selected ";
+													    ?>>Issued
+														</option>
 
+      						                    </select>
+									<!--<select name="indent_status" id="indent_status" class="form-control">
+												<option value="">Select</option>
+												<option value="Indented">Indented</option>
+												<option value="Approved">Approved</option>
+												<option value="Issued">Issued</option>
+
+									</select>-->
+								</div>
+							</div>
+							<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-3 col-md-offset-2">
+								<div class="form-group">
+									<!--Input field Indent Status-->
+									<label for="indent_id" >Indent Id</label>
+									<input class="form-control" name="indent_id" placeholder="Indent ID">
+								</div>
+							</div>
+							<div class="container">
+								<div class="row">
+									<div class="col-md-12">
+									<!--button for searching-->
+									<center><button class="btn btn-success" type="submit" name="search" value="search" id="btn">Search</button></center>
+										<?php echo form_close(); ?>	<!--closing of form-->
+									</div>
+								</div>
+							</div>
+							
+
+					</div>
 				</div>
-		</div>
-			<div class="container">
-			   <div class="row">
-			   <div class="col-md-offset-1">
-				   <button class="btn btn-primary" type="submit" name="search" value="search" id="btn">Search</button>
-				   	<?php echo form_close(); ?>
-			   </div>
-			   </div>
-		   </div>
-		   <!--calling isset method-->
-		   <?php if(isset($mode)&& ($mode)=="search"){ ?>
-		  <?php echo form_open('consumables/indent_reports/get_indent_summary',array('role'=>'form'))   ?>
-			<div class="container">
+				<!--set method for hidden the table-->
+		   <?php if(isset($search_indent_detailed)){ ?>
+		  <?php echo form_open('consumables/indent_detailed/get_indent_detailed',array('role'=>'form'))   ?>
+					<div class="container">
 				<div class="row">
 					<div class="col-md-3 col-md-offset-2">
 					<button type="button" class="btn btn-primary btn-md print  ">
@@ -268,66 +277,104 @@ $('#to_id').change(function(){
 		<!--filters for Add Service Issues view form --->
 		<!--when filter is clicked this form will load --->
 		 <div class="container">
-		 <div class="col-md-offset-2">
 					<table class="table table-bordered table-striped" id="table-sort">
 						<thead>
-							<th> #</th>
-							<th>Item Type</th>
-							<th>Item Name</th>
-							<th>Quantity Indented</th>
-							<th>Quantity Approved</th>
-							<th>Quantity Issued</th>
-							<th>Item type id</th>
+							<th> S.no </th>
+							<th>Indent Id</th>
+							<!-- <th>Hospital Id</th> -->
+							<th>Indent datetime</th>
+							<th>Approval datetime</th>
+							<th>Issue datetime</th>
+							<th>From</th>
+							<th>To</th>
+							<th>Ordered by</th>
+							<th>Approved by</th>
+							<th>Issued by</th>
+							<th>Indent Status</th>
+							<th>Note</th>
+							<th></th>
+							<!-- <th>Insertion datetime</th>
+							<th>Updation datetime</th> -->
+
+
 						</thead>
 						<tbody>
 							<?php
 							$total_quantity=0;
 							$approved=0;
 							$issued=0;
+
 				$i=1;
-				foreach($search_indent_summary as $indent){?>
+
+				foreach($search_indent_detailed as $indent){?>
+					<?php
+						$f_indent_datetime = date("Y-m-d H:i:s",strtotime($indent->indent_datetime));
+						$f_approval_datetime = date("Y-m-d H:i:s",strtotime($indent->approval_datetime));
+						$f_issue_datetime = date("Y-m-d H:i:s",strtotime($indent->issue_datetime));
+						$f_insert_datetime = date("Y-m-d H:i:s",strtotime($indent->insert_datetime));
+						$f_update_datetime = date("Y-m-d H:i:s",strtotime($indent->update_datetime));
+
+					?>
 
 					<tr>
-					<td><?php echo $i++; $sub_url="consumables/indent_reports/get_indent_detailed/";
-					$item_type_id = '0';
-					if ($indent->item_type_id) {
-						$item_type_id = $indent->item_type_id;
-					}?></td>
+					<td><?php echo $i++; ?></td>
 
+						<td><?php echo $indent->indent_id;?></td>
+						
+<!-- 
+						
+						<td><?php //echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname." (".$f_indent_datetime.")";	?></td>
+						<td><?php //echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname." (".$f_approval_datetime.")";	?></td>
+						<td><?php //echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname." (".$f_issue_datetime.")";?></td>
+						<td><?php //echo $indent->indent_status;?></td>
+						<td><?php //echo $indent->inserted_by_id." - ".$indent->inserted_by_fname." ".$indent->inserted_by_lname." (".$f_insert_datetime.")";?></td>
+						<td><?php //echo $indent->updated_by_id." - ".$indent->updated_by_fname." ".$indent->updated_by_lname." (".$f_update_datetime.")";?></td> -->
 
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_type;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_name;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Indented/$item_type_id/$indent->item_id";?>"><?php echo $indent->total_quantity;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Approved/$item_type_id/$indent->item_id";?>"><?php echo $indent->approved;	?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id";?>"><?php echo $indent->issued;?></td>
-						<td><a href="<?php echo base_url() . $sub_url . "$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id"; ?>"><?php if ($item_type_id == '0')
-							  echo "NA"; 
-							  else echo $item_type_id;?></td>
+						<td><?php echo  $f_indent_datetime; ?></td>
+						<td><?php if ($indent->indent_status == "Approved" || $indent->indent_status == "Issued")
+							echo $f_approval_datetime;
+						else
+							echo "NA"; ?></td>
+						<td><?php if ($indent->indent_status == "Issued")
+							echo $f_issue_datetime;
+						else
+							echo "NA"; ?></td>
+						<td><?php echo $indent->from_party_id." - $indent->from_party_name";?></td>
+						<td><?php echo $indent->to_party_id." - $indent->to_party_name.";?></td>
+						<td><?php echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
+						<td><?php echo ($indent->indent_status == "Approved" || $indent->indent_status == "Issued") ? $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname: "NA";	?></td>
+						<td><?php echo ($indent->indent_status == "Issued") ? $indent->issued_by_id . " - " . $indent->issued_by_fname . " " . $indent->issued_by_lname : "NA";  ?></td>
+						<td><?php echo $indent->indent_status;?></td>
+						<td><?php echo $indent->note;?></td>
+						<td><a href='<?php echo base_url()."consumables/indent_reports/indents_list_detailed/".$indent->indent_id?>' class="btn btn-success">View detailed</a></td>
 					</tr>
 					<?php
-	                $total_quantity+=$indent->total_quantity;
-					$approved+=$indent->approved;
-					$issued+=$indent->issued;
+	                // $total_quantity+=$indent->quantity_indented;
+					// $approved+=$indent->quantity_approved;
+					// $issued+=$indent->indent_status;
 					}
 					?>
-					<tfoot>
+					<!-- <tfoot>
 					<th>Total </th>
-					<th> </th>
-					<th> </th>
+					<th colspan="6"> </th>
 
 
-					<th class="text-left" ><?php echo $total_quantity;?></th>
-					<th class="text-left" ><?php echo $approved;?></th>
-					<th class="text-left" ><?php echo $issued;?></th>
+					<th class="text-left" ><?php // echo $total_quantity;?></th>
+					<th class="text-left" ><?php // echo $approved;?></th>
+					<th class="text-left" ><?php // echo $issued;?></th>
 
-					</tfoot>
+					</tfoot> -->
+
 					<?php echo form_close(); ?>
-				<!--ending of isset method-->
+
 				<?php
 				}
 				?>
 				</tbody>
 			</table>
+
 			</div>
-			</div>
+
+
 	</div>
+</div>
