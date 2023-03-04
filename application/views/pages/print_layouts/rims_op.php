@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/main.css" <?php if(!isset($preview_only)) echo 'media="print"';?> >
+<link rel="stylesheet"  href="<?php echo base_url();?>assets/css/main.css" <?php if(!isset($preview_only)) echo "media='print'"; ?> >
 
 		<table style="width:98%;padding:5px">
 				<tr>

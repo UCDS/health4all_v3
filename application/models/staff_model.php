@@ -345,13 +345,15 @@ class Staff_model extends CI_Model{
 		$form_type=$this->input->post('form_type');
 		$columns=$this->input->post('columns');
 		$print_layout=$this->input->post('print_layout');
-		$count=count($fields->field_name); //count of the number of fields
+		$print_layout_a6=$this->input->post('print_layout_a6');
+    	$count=count($fields->field_name); //count of the number of fields
 		//building an array to insert into form table.
 		$form_data=array(
 			'form_name'=>$form_name,
 			'form_type'=>$form_type,
 			'num_columns'=>$columns,
 			'print_layout_id'=>$print_layout,
+			'a6_print_layout_id'=>$print_layout_a6,
 			'hospital_id'=>$hospital['hospital_id']
 		);
 		$this->db->trans_start(); //Transaction starts
@@ -425,6 +427,15 @@ class Staff_model extends CI_Model{
 		$query=$this->db->get();
 		return $query->row();
 	}
+	
+	//get_form_a6() selects the form from the database with the $form_id passed and returns the result
+	function get_form_a6($form_id){
+		$this->db->select("form_id,form_name,num_columns,form_type,print_layout_page")->from("form")->
+		join('print_layout','form.a6_print_layout_id=print_layout.print_layout_id')->where("form_id",$form_id);
+		$query=$this->db->get();
+		return $query->row();
+	}
+
 	//get_form_fields() selects the form fields from the database and returns the result
 	function get_form_fields($form_id){
 		$this->db->select("field_name,mandatory,default_value")->from("form_layout")->where("form_id",$form_id)->order_by("id","asc");

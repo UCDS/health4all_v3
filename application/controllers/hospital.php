@@ -41,7 +41,7 @@ class Hospital extends CI_Controller {
 		$this->load->helper('form');										//loading the 'form' helper .
 		$this->load->library('form_validation'); 							//loading library 
 		$data['title']="Add Hospital";										//storing value into an array with index title.
-		$this->load->view('templates/header', $this->data);				//loading header view.
+		$this->load->view('templates/header', $this->data);				    //loading header view.
 		$this->load->view('templates/leftnav');								//loading leftnav.
 		$this->form_validation->set_rules('hospital','hospital','required');//setting rule for required field.
 		if($this->form_validation->run()===FALSE) 							//if validation is false
@@ -55,6 +55,10 @@ class Hospital extends CI_Controller {
 		$this->data['msg']="Hospital added Succesfully";					//if above condition is true then it displays hospital added succesfully message.
 		}
 		}
+		$this->data['print_layouts']=$this->staff_model->get_print_layouts();
+		$this->data['districts']=$this->staff_model->get_district();
+		$this->load->model('hospital_model');	 							//instantiating hospital_model.
+		$this->data['helplines']=$this->hospital_model->get_helpline();
 		$this->load->view('pages/hospital_view',$this->data);							//displaying hospitla_view page.
 		$this->load->view('templates/footer');								//displaying footer page.
     }   																	//add_hospital

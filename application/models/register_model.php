@@ -1636,5 +1636,18 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 
 		}
 	}
+	
+	// To get print Layouts dynamically for update_patients page --- added by Shruthi S M on 18_02_2023
+	function get_print_layout($patient_id){
+	$this->db->where('patient.patient_id',$patient_id);
+	$this->db->select("hospital.print_layout_id,
+		hospital.a6_print_layout_id")
+			->from("hospital")
+			->join('patient_visit','patient_visit.hospital_id = hospital.hospital_id','left')
+			->join('patient','patient.patient_id = patient_visit.patient_id','left');
+			// ->where('patient_id',$patient_id);
+		$query=$this->db->get();
+		return $query->result();
+	}
 }
 ?>

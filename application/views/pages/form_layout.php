@@ -28,6 +28,7 @@
 			form_name=$('input:text[name=form_name]').val();
 			form_type=$('select[name=form_type]').val();
 			print_layout=$('select[name=print_layout]').val();
+			print_layout_a6=$('select[name=print_layout_a6]').val();
 
 			fields={};
 			fields['field_name']=[];
@@ -45,7 +46,7 @@
 			$.ajax({
 				type:"POST",
 				async:true,
-				data : {form_name:form_name,columns:columns,form_type:form_type,print_layout:print_layout,fields:JSON.stringify(fields)},
+				data : {form_name:form_name,columns:columns,form_type:form_type,print_layout:print_layout,print_layout_a6:print_layout_a6,fields:JSON.stringify(fields)},
 				url : "<?php echo base_url()."user_panel/create_form"; ?>",
 				success : function(returnData){
 					if(returnData==1){
@@ -140,8 +141,20 @@
 					</div>
 					<div class="col-md-4">
 						<div class="form-group">
-						<label class="control-label">Print Layout</label>
-						<select class="form-control" name="print_layout"  onchange="dispPreview();" required >
+						<label class="control-label">Print Layout(A4) with preview</label>
+						<select class="form-control" name="print_layout" id="print_layout" onchange="dispPreview();" required >
+							<option value="Select">Select</option>
+							<?php foreach($print_layouts as $layout){
+								echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
+							}
+							?>
+						</select>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+						<label class="control-label">Print Layout(A6)</label>
+						<select class="form-control" name="print_layout_a6" id="print_layout_a6" required >
 							<option value="Select">Select</option>
 							<?php foreach($print_layouts as $layout){
 								echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
@@ -151,7 +164,7 @@
 						</div>
 					</div>
 				</div>
-				</div>
+				
 				<div class="panel-body">
 				<div class="alert alert-info">Select fields from the right menu to start creating the form! >></div>
 				<div class="form row" id="sortable">

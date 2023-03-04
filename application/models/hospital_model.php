@@ -39,6 +39,12 @@ class Hospital_model extends CI_Model {
         
              return $result;
     }
+
+    function get_helpline(){
+        $this->db->select("helpline_id,helpline,note")->from("helpline");
+        $query=$this->db->get();
+        return $query->result();
+    }
     
     function get_hospital_types(){
         $this->db->select('*')
@@ -126,17 +132,23 @@ class Hospital_model extends CI_Model {
         $get_hospital = array();																//initializing an array with name get_hospital.
         if($this->input->post('hospital')){														//checking whether entered field is hospital or not
             $get_hospital['hospital'] = $this->input->post('hospital');							//if entered field is hospital then it stores the value into array with index hospital.
-        }   //if
+        }   
 		 if($this->input->post('place')){														//checking whether entered field is place or not
              $get_hospital['place'] = $this->input->post('place');								//if entered field is place then it stores the value into array with index place.
         } 
         if($this->input->post('hospital_short_name')){											//checking whether entered field is hospital_short_name or not
             $get_hospital['hospital_short_name'] = $this->input->post('hospital_short_name');	//if entered field is hospital_short_name then it stores the value into array with index hospital_short_name.
-        }   //if
+        }  
         
 		if($this->input->post('district')){														//checking whether entered field is district or not
-             $get_hospital['district'] = $this->input->post('district');						//if entered field is district then it stores the value into array with index district.
+             $get_hospital['district_id'] = $this->input->post('district');
+            }
+        if($this->input->post('print_layout')){														//checking whether entered field is district or not
+             $get_hospital['print_layout_id'] = $this->input->post('print_layout');
         }
+        if($this->input->post('print_layout_a6')){														//checking whether entered field is district or not
+            $get_hospital['a6_print_layout_id'] = $this->input->post('print_layout_a6');
+       }
 		if($this->input->post('state')){														//checking whether entered field is state or not
              $get_hospital['state'] = $this->input->post('state');								//if entered field is state then it stores the value into array with index state.
         }
@@ -159,14 +171,18 @@ class Hospital_model extends CI_Model {
         if($this->input->post('type6')){														//checking whether entered field is type6 or not
              $get_hospital['type6'] = $this->input->post('type6');								//if entered field is type6 then it stores the value into array with index type6.
         }
+        if($this->input->post('helpline')){
+            $get_hospital['helpline_id'] =$this->input->post('helpline');
+		}
 		 if($this->input->post('description')){													//checking whether entered field is description or not
             $get_hospital['description'] = $this->input->post('description');					//if entered field is description then it stores the value into array with index description.
         } 
-           $hospital_id='';
-           if($this->input->post('hospital_id')){
-			   $hospital_id=$this->input->post('hospital_id');
-		   }
-       
+        if($this->input->post('logo')){
+            $get_hospital['logo'] = $this->input->post('logo');
+        }       
+        if($this->input->post('auto_ip_number')){
+            $get_hospital['auto_ip_number'] =$this->input->post('auto_ip_number');
+		}
 		$this->db->trans_start();
 		$this->db->insert('hospital',$get_hospital);	
         $this->db->trans_complete();
@@ -181,13 +197,13 @@ class Hospital_model extends CI_Model {
         $get_hospital = array();																//initializing an array with name get_hospital.
         if($this->input->post('hospital')){														//checking whether entered field is hospital or not
             $get_hospital['hospital'] = $this->input->post('hospital');							//if entered field is hospital then it stores the value into array with index hospital.
-        }   //if
+        }   
 		 if($this->input->post('place')){														//checking whether entered field is place or not
              $get_hospital['place'] = $this->input->post('place');								//if entered field is place then it stores the value into array with index place.
         } 
         if($this->input->post('hospital_short_name')){											//checking whether entered field is hospital_short_name or not
             $get_hospital['hospital_short_name'] = $this->input->post('hospital_short_name');	//if entered field is hospital_short_name then it stores the value into array with index hospital_short_name.
-        }   //if
+        }  
         
 		if($this->input->post('district')){														//checking whether entered field is district or not
              $get_hospital['district'] = $this->input->post('district');						//if entered field is district then it stores the value into array with index district.

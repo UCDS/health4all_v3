@@ -118,6 +118,7 @@ class Register extends CI_Controller {
 				show_404();
 			}
 			$form=$this->staff_model->get_form($form_id); //Get the form details from database.
+			$form_a6=$this->staff_model->get_form_a6($form_id); 
 			$this->data['columns']=$form->num_columns;
 			$this->data['form_name']=$form->form_name;
 			$this->data['form_type']=$form->form_type;
@@ -125,6 +126,7 @@ class Register extends CI_Controller {
 			$this->data['update']=0;
 			$this->data['add_sms_access']=$add_sms_access;
 			$print_layout_page=$form->print_layout_page;
+			$print_layout_a6=$form_a6->print_layout_page;
 			$this->load->view('templates/header',$this->data);
 			$this->load->library('form_validation');
 			//Set validation rules for the forms
@@ -195,6 +197,7 @@ class Register extends CI_Controller {
 					}					
 					//Set the print layout page based on the form selected.
 					$this->data['print_layout']="pages/print_layouts/$print_layout_page";
+					$this->data['print_layout_a6']="pages/print_layouts/$print_layout_a6";
 				}
 				//load the custom_form page with the data loaded.
 				$this->load->view('pages/custom_form',$this->data);
@@ -680,6 +683,7 @@ class Register extends CI_Controller {
 			$this->data['clinical_notes'] = $this->gen_rep_model->simple_join('clinical_notes', false);
 			$this->data['all_tests'] = $this->gen_rep_model->simple_join('tests_ordered', false);
 			$this->data['prescriptions'] = $this->gen_rep_model->simple_join('prescriptions', false);
+			
 			// $this->data['previous_prescriptions'] = $this->register_model->get_previous_prescriptions($visit_id);
 		}		
 		//  $this->data['hospitals'] = $this->hospital_model->get_hospitals();
@@ -719,7 +723,7 @@ class Register extends CI_Controller {
 		$this->form_validation->set_rules('patient_number', 'IP/OP Number',
 		'trim|xss_clean');
 		if ($this->form_validation->run() === FALSE)
-		{			
+		{						
 			$this->load->view('pages/update_patients',$this->data);
 		}
 		else{		
@@ -835,13 +839,30 @@ class Register extends CI_Controller {
 					$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 					$this->data['transport'] = $this->staff_model->get_transport_log();
 					$this->data['prescription']=$this->register_model->get_prescription($visit_id);
+									
+					// start -- 18_02_2023 --- Shruthi S M//
+					$pri_patient_id	= $this->data['patients'][0]->patient_id;		   
+					$this->data['update_print_layout'] = $this->register_model->get_print_layout($pri_patient_id);
+					$print_layout_id = $this->data['update_print_layout'][0]->print_layout_id;
+				    $a6_print_layout_id = $this->data['update_print_layout'][0]->a6_print_layout_id;
+					
+						$print_layout = $this->staff_model->get_print_layout($print_layout_id);
+						$a6_print_layout = $this->staff_model->get_print_layout($a6_print_layout_id);					
+						$print_layout_page = $print_layout->print_layout_page;
+						$print_layout_a6 = $a6_print_layout->print_layout_page;
+
 					if(count($previous_visit)>0)
 						$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
 					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
 					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
 					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
+
 				}
+				 //Set the print layout page based on the form selected.
+				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
+				 $this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
+        //--- end  18_02_2023 --- //
 				$this->load->view('pages/update_patients',$this->data);
 			}
 		}
