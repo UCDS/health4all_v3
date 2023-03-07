@@ -25,7 +25,8 @@ class Hospital extends CI_Controller {
             $this->load->model('gen_rep_model');
 		}
     }   																	
-	function add_hospital(){													
+	function add_hospital(){	
+														
 		if(!$this->logged_in){  						
             show_404();
 		}
@@ -38,12 +39,29 @@ class Hospital extends CI_Controller {
 		}
 		if(!$access)
 			show_404();
+
 		$this->load->helper('form');										//loading the 'form' helper .
 		$this->load->library('form_validation'); 							//loading library 
-		$data['title']="Add Hospital";										//storing value into an array with index title.
+		$this->data['title']="Add Hospital";										//storing value into an array with index title.
+		
+		$isUpdate = false;
+		if($this->input->get('hospital_id')){
+			$isUpdate = true;
+			$this->data['title']="Edit Hospital";	
+			$this->data['filter_values']=$this->hospital_model->get_hospital($this->input->get('hospital_id'));
+			if(!$this->data['filter_values']){
+				$this->data['filter_values'] = [];
+				$this->data['msg']="Hospital id is invalid";
+			}
+		}
+
 		$this->load->view('templates/header', $this->data);				    //loading header view.
 		$this->load->view('templates/leftnav');								//loading leftnav.
 		$this->form_validation->set_rules('hospital','hospital','required');//setting rule for required field.
+		
+		
+
+		
 		if($this->form_validation->run()===FALSE) 							//if validation is false
 		{
 			
@@ -51,8 +69,8 @@ class Hospital extends CI_Controller {
 		else																//if validation true then executes below block of code
 		{
 		$this->load->model('hospital_model');								//instantiating hospital_model.
-        if($this->hospital_model->add_hospital()){							//calling add_method 
-		$this->data['msg']="Hospital added Succesfully";					//if above condition is true then it displays hospital added succesfully message.
+        if($this->hospital_model->upsert_hospital()){							//calling add_method 
+		$this->data['msg']="Hospital added/updated Succesfully";					//if above condition is true then it displays hospital added succesfully message.
 		}
 		}
 		$this->data['print_layouts']=$this->staff_model->get_print_layouts();
@@ -176,7 +194,7 @@ class Hospital extends CI_Controller {
 							if($this->input->post($filter_name)){
 								$filter_value = $this->input->post($filter_name);
 							}
-							$filter_values[] = ['name' => $filter_name, 'value' => $filter_value];
+							$filter_values[$filter_name] = $filter_value;
 						}
 						$this->data['filter_values'] = $filter_values;
 

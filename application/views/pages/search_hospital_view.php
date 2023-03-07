@@ -41,8 +41,8 @@ table, th, td {
 		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
 		var dropdowns = ['district'];
 		console.log(filter_values);
-		filter_values.forEach((filter_value) => {
-			const { name, value } = filter_value;
+		Object.keys(filter_values).forEach((name) => {
+			const value = filter_values[name];
 			if(dropdowns.includes(name)){
 				selectizes[name][0].selectize.setValue(value);
 			} else {
@@ -210,7 +210,7 @@ table, th, td {
    <td><?php echo $hospital->type4; ?></td>
    <td><?php echo $hospital->type5; ?></td>
    <td><?php echo $hospital->type6; ?></td>
-   <td><a class="btn btn-outline-success" href="<?php echo base_url() ?>"> Edit</a></td>
+   <td><a class="btn btn-outline-success" href="<?php echo base_url() ?>hospital/add_hospital?hospital_id=<?php echo $hospital->hospital_id; ?>"> Edit</a></td>
                     
   </tr>
   <?php }?>

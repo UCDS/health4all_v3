@@ -128,7 +128,7 @@ class Hospital_model extends CI_Model {
         return $hospitals_status;
     }
     
-    function add_hospital(){																	//method with name add_hospital
+    function upsert_hospital(){																	//method with name add_hospital
         $get_hospital = array();																//initializing an array with name get_hospital.
         if($this->input->post('hospital')){														//checking whether entered field is hospital or not
             $get_hospital['hospital'] = $this->input->post('hospital');							//if entered field is hospital then it stores the value into array with index hospital.
@@ -182,9 +182,18 @@ class Hospital_model extends CI_Model {
         }       
         if($this->input->post('auto_ip_number')){
             $get_hospital['auto_ip_number'] =$this->input->post('auto_ip_number');
-		}
-		$this->db->trans_start();
-		$this->db->insert('hospital',$get_hospital);	
+		}   
+
+        $this->db->trans_start();
+        if($this->input->post('hospital_id')){
+            $this->db->where('hospital_id', $this->input->post('hospital_id'));
+            $this->db->update('hospital', $get_hospital);
+		} else {
+            $this->db->insert('hospital',$get_hospital);	
+        }
+
+		
+		
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
 		return false;
@@ -253,7 +262,6 @@ class Hospital_model extends CI_Model {
     }
 
     function search_hospitals(){                                                         //Function that returns all the details of the hospitals.
-        
         $filters = array();
         $filter_names_aliases = ['district' => 'district.district_id'];
         $filter_names=['hospital','hospital_short_name','district','type1','type2','type3','type4','type5','type6'];
@@ -268,17 +276,31 @@ class Hospital_model extends CI_Model {
             }
         }
         
-        
-            $this->db->select("hospital.hospital_id,hospital,hospital_short_name,district.district,type1,type2,type3,type4,type5,type6",false)
-            ->from('hospital')
-            ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
-            ->join('district','hospital.district_id=district.district_id','left')
-            ->where($filters)
-            ->order_by('hospital_short_name');
-            $query = $this->db->get();
-            $result = $query->result();
-            return $result;
- }
+        $this->db->select("hospital.hospital_id,hospital,hospital_short_name,district.district,type1,type2,type3,type4,type5,type6",false)
+        ->from('hospital')
+        ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+        ->join('district','hospital.district_id=district.district_id','left')
+        ->where($filters)
+        ->order_by('hospital_short_name');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    
+    
+    function get_hospital($hospital_id){  //Function that returns all the details of the hospitals.
+        $this->db->select("hospital.hospital_id,hospital,hospital_short_name,description, hospital.helpline_id,auto_ip_number, print_layout_id, a6_print_layout_id, place,district.district, district.district_id,type1,type2,type3,type4,type5,type6",false)
+        ->from('hospital')
+        ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+        ->join('district','hospital.district_id=district.district_id','left')
+        ->where('hospital.hospital_id', $hospital_id);
+        $query = $this->db->get();
+        $result = $query->result();
+     
+        if($result) return $result[0];       
+        return false; 
+    }
 	
 	function add_department(){
         $department_info = array();
