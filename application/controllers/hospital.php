@@ -169,6 +169,17 @@ class Hospital extends CI_Controller {
 
 						}
 						
+						$filter_names=['hospital','hospital_short_name','district','type1','type2','type3','type4','type5','type6'];
+						$filter_values = [];
+						foreach($filter_names as $filter_name){
+							$filter_value = "";
+							if($this->input->post($filter_name)){
+								$filter_value = $this->input->post($filter_name);
+							}
+							$filter_values[] = ['name' => $filter_name, 'value' => $filter_value];
+						}
+						$this->data['filter_values'] = $filter_values;
+
 						$this->load->view('pages/search_hospital_view',$this->data);
 						$this->load->view('templates/footer');
 				} else{

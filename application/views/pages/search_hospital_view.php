@@ -10,37 +10,47 @@ table, th, td {
 </style>
 
 <script>
+	var selectizes = {};
 	function initDistrictSelectize(){
         var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
-		var selectize = $('#district_id').selectize({
-	    valueField: 'district_id',
-	    labelField: 'custom_data',
-	    searchField: ['district','district_alias','state'],
-	    options: districts,
-	    create: false,
-	    render: {
-	        option: function(item, escape) {
-	        	return '<div>' +
-	                '<span class="title">' +
-	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
-	                '</span>' +
-	            '</div>';
-	        }
-	    },
-	    load: function(query, callback) {
-	        if (!query.length) return callback();
-		},
+		selectizes['district'] = $('#district_id').selectize({
+			valueField: 'district_id',
+			labelField: 'custom_data',
+			searchField: ['district','district_alias','state'],
+			options: districts,
+			create: false,
+			render: {
+				option: function(item, escape) {
+					return '<div>' +
+						'<span class="title">' +
+							'<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+						'</span>' +
+					'</div>';
+				}
+			},
+			load: function(query, callback) {
+				if (!query.length) return callback();
+			},
 
-	});
-	if($('#district_id').attr("data-previous-value")){
-		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
-	}
+		});
 	}	
-</script>
 
-<?php 
-		$hospital=$this->input->post('hospital');
-?>
+	$(document).ready(function(){
+		initDistrictSelectize();
+
+		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
+		var dropdowns = ['district'];
+		console.log(filter_values);
+		filter_values.forEach((filter_value) => {
+			const { name, value } = filter_value;
+			if(dropdowns.includes(name)){
+				selectizes[name][0].selectize.setValue(value);
+			} else {
+				$('[name="'+name+'"]').val(value);
+			}
+		});
+	});
+</script>
 
 <div class="col-md-12">
 	<div class="panel panel-default">
@@ -53,14 +63,14 @@ table, th, td {
                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
                             <label class="control-label">Hospital Name</label>
-                            <input type="text" id="hospital" name="hospital" size="5" class="form-control" value="<?php echo $hospital;?>" />   
+                            <input type="text" id="hospital" name="hospital" size="5" class="form-control" />   
                         </div>
                         </div>
 
                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
                             <label class="control-label">Hospital Short Name</label>
-						    <input type="text" id="search_hospital_short_name" name="search_hospital_short_name" size="5" class="form-control" />
+						    <input type="text" id="hospital_short_name" name="hospital_short_name" size="5" class="form-control" />
                         </div>
                         </div>
 				
@@ -73,16 +83,6 @@ table, th, td {
 								<input type='hidden' name='district_id' id='district_id_val' class='form-control'/>
 		
 							</select>
-							
-							<script>						
-							var patient = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>)); 
-							$('#district_id').attr("data-previous-value", patient['district']);
-							$('#district_id_val').attr("data-previous-value", patient['district_id']);
-
-							initDistrictSelectize();
-							
-							</script>
-						
 						</div>
 					</div>
 				</div>
