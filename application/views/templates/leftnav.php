@@ -7,7 +7,7 @@
 </style>
 
 <?php
-	function check_if_group_active(str $group)
+	function check_if_group_active($group)
 	{
 		if($group == "masters"){
 			return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
@@ -15,7 +15,7 @@
 			return (preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()));
 		}
 	}
-	function activate_item(str $item_regexp)
+	function activate_item($item_regexp)
 	{
 		if (preg_match($item_regexp, current_url())){
 			return "list-group-item active";
@@ -678,6 +678,10 @@
 			<li <?php if (preg_match("^add_hospital/hospital_view^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital/add_hospital/hospital_view"> Add Hospital</a>
+			</li>
+			 <li <?php if (preg_match("^search_hospital/search_hospital_view^", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view"> Search & Edit Hospital</a>
 			</li>
 			<li <?php if (preg_match("^add_department/department_view^", current_url()))
 				echo 'class="active"'; ?>>
