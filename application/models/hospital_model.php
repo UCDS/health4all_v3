@@ -251,6 +251,28 @@ class Hospital_model extends CI_Model {
            return true;
         }       
     }
+
+    function search_hospitals(){                                                         //Function that returns all the details of the hospitals.
+        
+        $filters = array();
+        $filter_names=['hospital','hospital_short_name','district','type1','type2','type3','type4','type5','type6'];
+        foreach($filter_names as $filter_name){
+            if($this->input->post($filter_name)){
+                $filters[$filter_name] = $this->input->post($filter_name);
+            }
+        }
+        
+        
+            $this->db->select("hospital.hospital_id,hospital,hospital_short_name,district.district,type1,type2,type3,type4,type5,type6",false)
+            ->from('hospital')
+            ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+            ->join('district','hospital.district_id=district.district_id','left')
+            ->where($filters)
+            ->order_by('hospital_short_name');
+            $query = $this->db->get();
+            $result = $query->result();
+            return $result;
+ }
 	
 	function add_department(){
         $department_info = array();

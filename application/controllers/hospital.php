@@ -138,4 +138,45 @@ class Hospital extends CI_Controller {
 		$this->load->view('pages/add_remove_drug', $this->data);
 		$this->load->view('templates/leftnav');
 	}
+
+	public function search_hospital()
+	{
+			if($this->session->userdata('logged_in')){
+				$this->data['userdata']=$this->session->userdata('logged_in');
+				$access=0;
+				foreach($this->data['functions'] as $function){
+					 if($function->user_function=="OP Detail"){
+					 $access=1;
+					 }
+				}
+				if($access==1){
+						$this->data['title']="Search Hospital";
+						$this->data['districts']=$this->staff_model->get_district();
+						$this->load->view('templates/header',$this->data);
+						$this->load->helper('form');
+						$this->load->library('form_validation');
+						// $this->form_validation->set_rules('hospital', 'Hospital', 'trim|required|xss_clean');
+						// print_r ($_POST);die;
+						 if($this->input->post('search_hospital')){
+							//if ($this->form_validation->run() === TRUE) {
+								$this->data['results']=$this->hospital_model->search_hospitals();
+								if(count($this->data['results'])==0){
+									$this->data['msg'] = "No Records found";
+								//}
+							// }else{
+							// 	$this->data['msg'] = "Hospital Name is Required";
+							}
+
+						}
+						
+						$this->load->view('pages/search_hospital_view',$this->data);
+						$this->load->view('templates/footer');
+				} else{
+				show_404();
+				}
+			} else{
+			show_404();
+			}
+ }
+
 }
