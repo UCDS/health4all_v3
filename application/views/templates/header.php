@@ -31,10 +31,14 @@
 </head>
 <body>
 
-		<?php foreach($defaultsConfigs as $default){
-			if ($default->default_id == "uc_url")
-			    $uc_url = $default->value;
-        }
+		<?php 
+		$uc_url = "";
+		if(isset($defaultsConfigs)){
+			foreach($defaultsConfigs as $default){
+				if ($default->default_id == "uc_url")
+					$uc_url = $default->value;
+			}
+		}
         ?>     
 
 <div id="wrap">
