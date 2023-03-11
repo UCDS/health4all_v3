@@ -25,6 +25,8 @@ class User_panel extends CI_Controller {
 		$this->data['title']="User Panel";
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$this->data['print_layouts']=$this->staff_model->get_print_layouts();
+		$this->data['districts']=$this->staff_model->get_district();
+
                 // $this->load->library('dummy_data');
                 // $this->data['registered']=new Dummy_data();
 		$this->load->view('templates/header',$this->data);
@@ -34,6 +36,15 @@ class User_panel extends CI_Controller {
 		else{
 			show_404();
 		}
+	}
+
+	function form_preview(){
+		$response = $this->input->post();
+		$print_layout_id = $response['print_layout_id'];	
+		 // Load layout data from print_layout table
+		$print_layout = $this->staff_model->get_print_layout($print_layout_id);		
+		$this->data['preview_only'] = true;
+		echo $this->load->view('pages/print_layouts/'.$print_layout->print_layout_page,$this->data);			
 	}
 
 	function create_user(){
