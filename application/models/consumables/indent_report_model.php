@@ -76,6 +76,164 @@ class Indent_report_model extends CI_Model
 	} //ending of get indent summary method.
 
 
+	function hash_util($record)
+	{
+		return $record->supply_chain_party_id.".".$record->item_id;
+	}
+
+	function get_inward_outward_summary($records)
+	{
+		$mp = array();
+
+		foreach($records as $record){
+			$key = $this->hash_util($record);
+			
+			if($record->inward_outward === "inward"){
+				if(isset($mp[$key])){
+					$mp[$key]['inward'] = $record;
+				}else{
+					$mp[$key] = array('inward' => $record, 'outward' => null);		
+				}
+			}else{
+				if(isset($mp[$key])){
+					$mp[$key]['outward'] = $record;
+				}else{
+					$mp[$key] = array('inward' => null, 'outward' => $record);
+				}
+			}
+
+			
+		}	
+
+		return array_values($mp);
+	}
+	function get_inventory_summary()
+	{
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+
+		if ($this->input->post('from_date') && $this->input->post('to_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+
+		} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+			$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+			$to_date = $from_date;
+
+		} else {
+			$from_date = date("Y-m-d");
+			$to_date = $from_date;
+		}
+		// if ($this->input->post('from_id')) {
+		// 	$from_party = $this->input->post('from_id');
+		// 	$this->db->where('from_party.supply_chain_party_id', $from_party);
+		// }
+		// if ($this->input->post('to_id')) {
+		// 	$to_party = $this->input->post('to_id');
+		// 	$this->db->where('to_party.supply_chain_party_id', $to_party);
+		// }
+
+		if($this->input->post('scp_id')){
+			$party_id = $this->input->post('scp_id');
+			$this->db->where('inventory.supply_chain_party_id', $party_id);
+
+		}
+		if ($this->input->post('item_type')) {
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+
+		}
+		if ($this->input->post('item')) {
+			$this->db->where('item.item_id', $this->input->post('item'));
+
+		}
+
+		// if($this->input->post('inward_outward')){
+		// 	$this->db->where('inventory.inward_outward', $this->input->post('inward_outward'));
+		// }
+
+
+		$this->db->select("item.item_name, item.item_id, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, SUM(inventory.quantity) total_quantity")
+		->from('inventory')
+		->join('item', 'item.item_id = inventory.item_id', 'left') //remove left later
+		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id', 'left') // remove left later for only relevant details
+		->join('indent', 'indent.indent_id = inventory.indent_id', 'left') // remove left later for only relevant details
+		->where("DATE(inventory.date_time) BETWEEN ".$this->db->escape($from_date)." AND ".$this->db->escape($to_date))
+		->where('indent.hospital_id', $hospital['hospital_id'])
+		->group_by('inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward');
+
+
+
+		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		log_message("info", $query_string);
+		$records = $query->result();
+		$final_result = $this->get_inward_outward_summary($records);
+		// $final_result = array();
+
+		
+
+	
+		return $final_result;
+
+	}
+
+	function get_inventory_item_detailed($from_date = 0, $to_date = 0, $from_party = 0, $to_party = 0, $item_type = -1, $item_name = -1)
+	{
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+
+		if ($this->input->post('from_date') && $this->input->post('to_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+
+		} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+			$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+			$to_date = $from_date;
+
+		} else {
+			$from_date = date("Y-m-d");
+			$to_date = $from_date;
+		}
+		if ($this->input->post('from_id')) {
+			$from_party = $this->input->post('from_id');
+			$this->db->where('from_party.supply_chain_party_id', $from_party);
+		}
+		if ($this->input->post('to_id')) {
+			$to_party = $this->input->post('to_id');
+			$this->db->where('to_party.supply_chain_party_id', $to_party);
+		}
+		if ($this->input->post('item_type')) {
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+
+		}
+		if ($this->input->post('item')) {
+			$this->db->where('item.item_id', $this->input->post('item'));
+
+		}
+
+		if($this->input->post('inward_outward')){
+			$this->db->where('inventory.inward_outward', $this->input->post('inward_outwar'));
+		}
+
+
+		$this->db->select("generic_item.item_type_id, item_type.item_type, item_name, indent.hospital_id, inventory.quantity, inventory.manufacture_date
+		, inventory.expiry_date, inventory.batch, inventory.cost, supply_chain_party.supply_chain_party, inventory.patient_id, inventory.note, inventory.gtin_code")
+		->from('inventory')
+		->join('supply_chain_party', 'supply_chain_party.supply_chain_party_id = inventory.supply_chain_party_id')
+		->join('item', 'item.item_id = inventory.item_id')
+		->join('indent', 'indent.indent_id = inventory.indent_id')
+		->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id', 'left')
+		->join('item_type', 'generic_item.item_type_id = item_type.item_type_id', 'left')
+		->where("DATE(inventory.date_time) BETWEEN ".$this->db->escape($from_date)." AND ".$this->db->escape($to_date))
+		->where('indent.hospital_id', $hospital['hospital_id'])
+		;
+		
+
+
+		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		log_message("info", $query_string);
+
+		return $query->result();
+	}
 
 
 	//calling method get indent detailed by passing parameters.
