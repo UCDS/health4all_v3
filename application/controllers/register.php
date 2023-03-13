@@ -811,7 +811,9 @@ class Register extends CI_Controller {
 					$this->load->model('diagnostics_model');
 					$this->data['vitals'] = $this->gen_rep_model->simple_join('patient_vitals', false, array('patient.patient_id'=>$this->data['patients'][0]->patient_id));
 					$visit_id = $this->data['patients'][0]->visit_id;
-					$previous_visit = $this->register_model->get_previous_visit($visit_id, $patient_id);
+					if ($patient_id!=0 && $visit_id){
+						$previous_visit = $this->register_model->get_previous_visit($visit_id, $patient_id);
+					}
 					$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 					$this->data['prescription']=$this->register_model->get_prescription($visit_id);
 					$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
@@ -828,7 +830,9 @@ class Register extends CI_Controller {
 				if(count($this->data['patients'])==1){
 					$this->load->model('diagnostics_model');
 					$visit_id = $this->data['patients'][0]->visit_id;
-					$previous_visit = $this->register_model->get_previous_visit($visit_id, $patient_id);
+					if ($patient_id!=0 && $visit_id){
+						$previous_visit = $this->register_model->get_previous_visit($visit_id, $patient_id);
+					}	
 					$data_array = array('patient_id' => $this->data['patients'][0]->patient_id);				
 					$this->data['vitals'] = $this->gen_rep_model->simple_join('patient_vitals', false, array('patient.patient_id'=>$this->data['patients'][0]->patient_id));	
 					$this->data['patient_visits'] = $this->gen_rep_model->simple_join('patient_visits_all', $data_array);
