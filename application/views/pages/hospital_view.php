@@ -50,17 +50,18 @@
 		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
 		var dropdowns = ['district'];
 		var radios = ['auto_ip_number'];
-		filter_values['district'] = filter_values['district_id'];
-		filter_values['helpline'] = filter_values['helpline_id'];
-		filter_values['print_layout'] = filter_values['print_layout_id'];
-		filter_values['print_layout_a6'] = filter_values['a6_print_layout_id'];
+		// filter_values['district'] = filter_values['district_id'];
+		// filter_values['helpline'] = filter_values['helpline_id'];
+		// filter_values['print_layout'] = filter_values['print_layout_id'];
+		// filter_values['print_layout_a6'] = filter_values['a6_print_layout_id'];
 		console.log(filter_values);
 		Object.keys(filter_values).forEach((name) => {
 			const value = filter_values[name];
 			if(dropdowns.includes(name)){
 				selectizes[name][0].selectize.setValue(value);
 			}  else if(radios.includes(name)){
-				$('[name="'+name+'"][value="'+value+'"]').attr('checked', true);
+				$('input[name="'+name+'"][value="'+value+'"]').prop('checked', true);
+				//$("input[name="'+name+'"][value="'+value+'"]").prop('checked',true);
 			} else {
 				$('[name="'+name+'"]').val(value);
 			}
@@ -119,9 +120,9 @@
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">		
 						<div class="form-group">
 							<label class="Inputdistrict">  District    </label>
-							<select id="district_id"  name="district" style=" display: inline-grid;" placeholder="Enter district" <?php if($field->mandatory) echo "required"; ?>>
-								<option value="">   --Enter district--   </option>
-								<input type='hidden' name='district_id' id='district_id_val' class='form-control'/>
+							<select id="district_id"  name="district_id" style=" display: inline-grid;" placeholder="Enter district" <?php if($field->mandatory) echo "required"; ?>>
+								<option value="Select">   --Enter district--   </option>
+								<input type='hidden' name='district_id_val' id='district_id_val' class='form-control'/>
 							</select>						
 						</div>
 					</div>
@@ -204,7 +205,7 @@
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Helpline </label>
-								<select class="form-control" name="helpline"  required >
+								<select class="form-control" name="helpline_id" >
 									<option value="Select">Select</option>
 									<?php foreach($helplines as $helpline){
 									echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
@@ -230,7 +231,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								 <label class="control-label">Logo</label> 
-								 <select class="form-control" name="logo" id="logo" onchange="previewLogo()" required >
+								 <select class="form-control" name="logo" id="logo" onchange="previewLogo()" >
 								 <option value="">Select</option>
 								 <?php
 								// $path = base_url().'assets/logos/*';
@@ -257,7 +258,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Print Layout(A4)</label>
-								<select class="form-control" name="print_layout" id="print_layout" onchange="dispPreview();" required >
+								<select class="form-control" name="print_layout_id" id="print_layout" onchange="dispPreview();">
 									<option value="Select">Select</option>
 									<?php foreach($print_layouts as $layout){
 									echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
@@ -270,7 +271,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Print Layout(A6)</label>
-								<select class="form-control" name="print_layout_a6" id="print_layout_a6" required >
+								<select class="form-control" name="a6_print_layout_id" id="print_layout_a6">
 									<option value="Select">Select</option>
 									<?php foreach($print_layouts as $layout){
 										echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";

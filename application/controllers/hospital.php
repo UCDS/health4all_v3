@@ -42,7 +42,7 @@ class Hospital extends CI_Controller {
 
 		$this->load->helper('form');										//loading the 'form' helper .
 		$this->load->library('form_validation'); 							//loading library 
-		$this->data['title']="Add Hospital";										//storing value into an array with index title.
+		$this->data['title']="Add Hospital";								//storing value into an array with index title.
 		
 		$isUpdate = false;
 		if($this->input->get('hospital_id')){
@@ -52,9 +52,9 @@ class Hospital extends CI_Controller {
 			if(!$this->data['filter_values']){
 				$this->data['filter_values'] = [];
 				$this->data['msg']="Hospital id is invalid";
-			}
+			
 		}
-
+		}
 		$this->load->view('templates/header', $this->data);				    //loading header view.
 		$this->load->view('templates/leftnav');								//loading leftnav.
 		$this->form_validation->set_rules('hospital','hospital','required');//setting rule for required field.

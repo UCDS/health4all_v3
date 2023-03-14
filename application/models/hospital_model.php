@@ -128,137 +128,37 @@ class Hospital_model extends CI_Model {
         return $hospitals_status;
     }
     
-    function upsert_hospital(){																	//method with name add_hospital
-        $get_hospital = array();																//initializing an array with name get_hospital.
-        if($this->input->post('hospital')){														//checking whether entered field is hospital or not
-            $get_hospital['hospital'] = $this->input->post('hospital');							//if entered field is hospital then it stores the value into array with index hospital.
-        }   
-		 if($this->input->post('place')){														//checking whether entered field is place or not
-             $get_hospital['place'] = $this->input->post('place');								//if entered field is place then it stores the value into array with index place.
-        } 
-        if($this->input->post('hospital_short_name')){											//checking whether entered field is hospital_short_name or not
-            $get_hospital['hospital_short_name'] = $this->input->post('hospital_short_name');	//if entered field is hospital_short_name then it stores the value into array with index hospital_short_name.
-        }  
-        
-		if($this->input->post('district')){														//checking whether entered field is district or not
-             $get_hospital['district_id'] = $this->input->post('district');
+    function upsert_hospital(){													
+        $fields = [
+            "hospital", "place", "hospital_short_name", "district_id", "print_layout_id", 
+            "a6_print_layout_id", "type1", "type2", "type3", "type4", "type5", "type6",
+            "helpline_id", "description", "logo", "auto_ip_number"
+        ];
+        $numberFields = ["auto_ip_number"];
+        $data = array();	
+        foreach ($fields as $field) {
+            $data[$field] = "";
+            if(in_array($numberFields, $field)){
+                $data[$field] = 0;
             }
-        if($this->input->post('print_layout')){														//checking whether entered field is district or not
-             $get_hospital['print_layout_id'] = $this->input->post('print_layout');
-        }
-        if($this->input->post('print_layout_a6')){														//checking whether entered field is district or not
-            $get_hospital['a6_print_layout_id'] = $this->input->post('print_layout_a6');
-       }
-		if($this->input->post('state')){														//checking whether entered field is state or not
-             $get_hospital['state'] = $this->input->post('state');								//if entered field is state then it stores the value into array with index state.
-        }
-		
-        if($this->input->post('type1')){														//checking whether entered field is type1 or not
-             $get_hospital['type1'] = $this->input->post('type1');								//if entered field is type1 then it stores the value into array with index type1.
-        }
-        if($this->input->post('type2')){														//checking whether entered field is type2 or not
-             $get_hospital['type2'] = $this->input->post('type2');								//if entered field is type2 then it stores the value into array with index type2.
-        }
-        if($this->input->post('type3')){														//checking whether entered field is type3 or not
-             $get_hospital['type3'] = $this->input->post('type3');								//if entered field is type3 then it stores the value into array with index type3.
-        }
-        if($this->input->post('type4')){														//checking whether entered field is type4 or not
-             $get_hospital['type4'] = $this->input->post('type4');								//if entered field is type4 then it stores the value into array with index type4.
-        }
-        if($this->input->post('type5')){														//checking whether entered field is type5 or not
-             $get_hospital['type5'] = $this->input->post('type5');								//if entered field is type5 then it stores the value into array with index type5.
-        }
-        if($this->input->post('type6')){														//checking whether entered field is type6 or not
-             $get_hospital['type6'] = $this->input->post('type6');								//if entered field is type6 then it stores the value into array with index type6.
-        }
-        if($this->input->post('helpline')){
-            $get_hospital['helpline_id'] =$this->input->post('helpline');
-		}
-		 if($this->input->post('description')){													//checking whether entered field is description or not
-            $get_hospital['description'] = $this->input->post('description');					//if entered field is description then it stores the value into array with index description.
-        } 
-        if($this->input->post('logo')){
-            $get_hospital['logo'] = $this->input->post('logo');
-        }       
-        if($this->input->post('auto_ip_number')){
-            $get_hospital['auto_ip_number'] =$this->input->post('auto_ip_number');
-		}   
+            if($this->input->post($field)){
+                $data[$field] = $this->input->post($field);
+            }
+        }	 
 
         $this->db->trans_start();
         if($this->input->post('hospital_id')){
+            $user_data=$this->session->userdata('logged_in');
+            $staff_id = $user_data['staff_id'];
+            $this->db->set('updated_by_id',$staff_id);
             $this->db->where('hospital_id', $this->input->post('hospital_id'));
-            $this->db->update('hospital', $get_hospital);
+            $this->db->update('hospital', $data);
 		} else {
-            $this->db->insert('hospital',$get_hospital);	
+            $this->db->insert('hospital',$data);	
         }
-
-		
 		
         $this->db->trans_complete();
-        if($this->db->trans_status()==FALSE){
-		return false;
-		}
-        else{
-           return true;
-        }       
-    }
-	 function udpate_hospital(){																	//method with name add_hospital
-        $get_hospital = array();																//initializing an array with name get_hospital.
-        if($this->input->post('hospital')){														//checking whether entered field is hospital or not
-            $get_hospital['hospital'] = $this->input->post('hospital');							//if entered field is hospital then it stores the value into array with index hospital.
-        }   
-		 if($this->input->post('place')){														//checking whether entered field is place or not
-             $get_hospital['place'] = $this->input->post('place');								//if entered field is place then it stores the value into array with index place.
-        } 
-        if($this->input->post('hospital_short_name')){											//checking whether entered field is hospital_short_name or not
-            $get_hospital['hospital_short_name'] = $this->input->post('hospital_short_name');	//if entered field is hospital_short_name then it stores the value into array with index hospital_short_name.
-        }  
-        
-		if($this->input->post('district')){														//checking whether entered field is district or not
-             $get_hospital['district'] = $this->input->post('district');						//if entered field is district then it stores the value into array with index district.
-        }
-		if($this->input->post('state')){														//checking whether entered field is state or not
-             $get_hospital['state'] = $this->input->post('state');								//if entered field is state then it stores the value into array with index state.
-        }
-		
-        if($this->input->post('type1')){														//checking whether entered field is type1 or not
-             $get_hospital['type1'] = $this->input->post('type1');								//if entered field is type1 then it stores the value into array with index type1.
-        }
-        if($this->input->post('type2')){														//checking whether entered field is type2 or not
-             $get_hospital['type2'] = $this->input->post('type2');								//if entered field is type2 then it stores the value into array with index type2.
-        }
-        if($this->input->post('type3')){														//checking whether entered field is type3 or not
-             $get_hospital['type3'] = $this->input->post('type3');								//if entered field is type3 then it stores the value into array with index type3.
-        }
-        if($this->input->post('type4')){														//checking whether entered field is type4 or not
-             $get_hospital['type4'] = $this->input->post('type4');								//if entered field is type4 then it stores the value into array with index type4.
-        }
-        if($this->input->post('type5')){														//checking whether entered field is type5 or not
-             $get_hospital['type5'] = $this->input->post('type5');								//if entered field is type5 then it stores the value into array with index type5.
-        }
-        if($this->input->post('type6')){														//checking whether entered field is type6 or not
-             $get_hospital['type6'] = $this->input->post('type6');								//if entered field is type6 then it stores the value into array with index type6.
-        }
-		 if($this->input->post('description')){													//checking whether entered field is description or not
-            $get_hospital['description'] = $this->input->post('description');					//if entered field is description then it stores the value into array with index description.
-        } 
-           $hospital_id='';
-           if($this->input->post('hospital_id')){
-			   $hospital_id=$this->input->post('hospital_id');
-		   }
-       
-		$this->db->trans_start();
-		 $this->db->where('hospital_id', $hospital_);
-        $this->db->update('hospital_short_name', $hospital_short_name);   											//inserting get_hospital array values into hospital table 
-      //  echo $this->db->last_query()."Test";
-		echo "updated succesfully";
-        $this->db->trans_complete();
-        if($this->db->trans_status()==FALSE){
-		return false;
-		}
-        else{
-           return true;
-        }       
+        return $this->db->trans_status() === TRUE;
     }
 
     function search_hospitals(){                                                         //Function that returns all the details of the hospitals.
