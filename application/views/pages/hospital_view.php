@@ -50,7 +50,7 @@
 		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
 		var dropdowns = ['district'];
 		var radios = ['auto_ip_number'];
-		// filter_values['district'] = filter_values['district_id'];
+		 filter_values['district'] = filter_values['district_id'];
 		// filter_values['helpline'] = filter_values['helpline_id'];
 		// filter_values['print_layout'] = filter_values['print_layout_id'];
 		// filter_values['print_layout_a6'] = filter_values['a6_print_layout_id'];
