@@ -681,7 +681,7 @@
 			</li>
 			 <li <?php if (preg_match("^search_hospital/search_hospital_view^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view"> Search & Edit Hospital</a>
+				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view">Edit Hospital</a>
 			</li>
 			<li <?php if (preg_match("^add_department/department_view^", current_url()))
 				echo 'class="active"'; ?>>

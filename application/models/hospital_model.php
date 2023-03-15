@@ -127,6 +127,7 @@ class Hospital_model extends CI_Model {
         }
         return $hospitals_status;
     }
+   
     
     function upsert_hospital(){													
         $fields = [
@@ -161,7 +162,27 @@ class Hospital_model extends CI_Model {
         return $this->db->trans_status() === TRUE;
     }
 
-    function search_hospitals(){                                                         //Function that returns all the details of the hospitals.
+    function search_hospitals($default_rowsperpage){  
+        
+        
+        //Function that returns all the details of the hospitals.
+
+
+
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
         $filters = array();
         $filter_names_aliases = ['district' => 'district.district_id'];
         $filter_names=['hospital','hospital_short_name','district','type1','type2','type3','type4','type5','type6'];
@@ -175,17 +196,44 @@ class Hospital_model extends CI_Model {
                 $filters[$filter_name_query] = $this->input->post($filter_name);
             }
         }
-        
+        //$this->db->select("count(*) as count",false);
         $this->db->select("hospital.hospital_id,hospital,hospital_short_name,district.district,type1,type2,type3,type4,type5,type6",false)
         ->from('hospital')
         ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
         ->join('district','hospital.district_id=district.district_id','left')
         ->where($filters)
         ->order_by('hospital_short_name');
+        $this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
         $result = $query->result();
         return $result;
     }
+
+    function get_count_hospital(){   
+        $filters = array();
+        $filter_names_aliases = ['district' => 'district.district_id'];
+        $filter_names=['hospital','hospital_short_name','district','type1','type2','type3','type4','type5','type6'];
+
+        foreach($filter_names as $filter_name){
+            if($this->input->post($filter_name)){
+                $filter_name_query = $filter_name;
+                if(isset($filter_names_aliases[$filter_name])){
+                    $filter_name_query =  $filter_names_aliases[$filter_name];
+                }
+                $filters[$filter_name_query] = $this->input->post($filter_name);
+            }
+        }
+        $this->db->select("count(*) as count",false)
+        ->from('hospital')
+        ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
+        ->join('district','hospital.district_id=district.district_id','left')
+        ->where($filters)
+        ->order_by('hospital_short_name');
+        $query = $this->db->get();
+        $result = $query->result();        
+        return $result;
+    }
+
 
     
     
