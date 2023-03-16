@@ -1,21 +1,28 @@
-<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script><script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
+
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
-
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
+
+<link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
+
+
 <style>
-table, th, td {
-  border:1px solid black;
-  margin: 30px;
-  padding: 20px;
-}
+  /* .table thead {position: relative;} */
+
+    /* .table thead{
+		
+    } */
 </style>
+
 
 <style type="text/css">
 .page_dropdown{
@@ -77,8 +84,61 @@ input[type=number] {
 }
 </style>
 
+<script type="text/javascript">
+$(function(){
+		var options = {
+			widthFixed : true,
+			showProcessing: true,
+			headerTemplate : '{content} {icon}', // Add icon for jui theme; new in v2.7!
 
+			widgets: [ 'default', 'zebra', 'print', 'stickyHeaders','filter'],
 
+			widgetOptions: {
+
+		  print_title      : 'table',          // this option > caption > table id > "table"
+		  print_dataAttrib : 'data-name', // header attrib containing modified header name
+		  print_rows       : 'f',         // (a)ll, (v)isible or (f)iltered
+		  print_columns    : 's',         // (a)ll, (v)isible or (s)elected (columnSelector widget)
+		  print_extraCSS   : '.table{border:1px solid #ccc;} tr,td{background:white}',          // add any extra css definitions for the popup window here
+		  print_styleSheet : '', // add the url of your print stylesheet
+		  // callback executed when processing completes - default setting is null
+		  print_callback   : function(config, $table, printStyle){
+			// do something to the $table (jQuery object of table wrapped in a div)
+			// or add to the printStyle string, then...
+			// print the table using the following code
+			$.tablesorter.printTable.printOutput( config, $table.html(), printStyle );
+			},
+			// extra class name added to the sticky header row
+			  stickyHeaders : '',
+			  // number or jquery selector targeting the position:fixed element
+			  stickyHeaders_offset : 0,
+			  // added to table ID, if it exists
+			  stickyHeaders_cloneId : '-sticky',
+			  // trigger "resize" event on headers
+			  stickyHeaders_addResizeEvent : true,
+			  // if false and a caption exist, it won't be included in the sticky header
+			  stickyHeaders_includeCaption : false,
+			  // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
+			  stickyHeaders_zIndex : 2,
+			  // jQuery selector or object to attach sticky header to
+			  stickyHeaders_attachTo : null,
+			  // scroll table top into view after filtering
+			  stickyHeaders_filteredToTop: true,
+
+			  // adding zebra striping, using content and default styles - the ui css removes the background from default
+			  // even and odd class names included for this demo to allow switching themes
+			  zebra   : ["ui-widget-content even", "ui-state-default odd"],
+			  // use uitheme widget to apply defauly jquery ui (jui) class names
+			  // see the uitheme demo for more details on how to change the class names
+			  uitheme : 'jui'
+			}
+		  };
+			$("#table-sort").tablesorter(options);
+		  $('.print').click(function(){
+			$('#table-sort').trigger('printTable');
+		  });
+  }); 
+ </script>
 <script>
 	var selectizes = {};
 	function initDistrictSelectize(){
@@ -105,9 +165,58 @@ input[type=number] {
 		});
 	}	
 
+	function initHospitalSelectize(){
+        var hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($hospitals); ?>));
+		selectizes['hospital'] = $('#hospital').selectize({
+			valueField: 'hospital',
+			labelField: 'hospital',
+			searchField: ['hospital'],
+			options: hospitals,
+			create: false,
+			render: {
+				option: function(item, escape) {
+					return '<div>' +
+						'<span class="title">' +
+							'<span class="prescription_drug_selectize_span">'+escape(item.hospital)+'</span>' +
+						'</span>' +
+					'</div>';
+				}
+			},
+			load: function(query, callback) {
+				if (!query.length) return callback();
+			},
+
+		});
+	}	
+
+	function initHospitalShortNameSelectize(){
+        var hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($hospitals); ?>));
+		selectizes['hospital'] = $('#hospital_short_name').selectize({
+			valueField: 'hospital_short_name',
+			labelField: 'hospital_short_name',
+			searchField: ['hospital_short_name'],
+			options: hospitals,
+			create: false,
+			render: {
+				option: function(item, escape) {
+					return '<div>' +
+						'<span class="title">' +
+							'<span class="prescription_drug_selectize_span">'+escape(item.hospital_short_name)+'</span>' +
+						'</span>' +
+					'</div>';
+				}
+			},
+			load: function(query, callback) {
+				if (!query.length) return callback();
+			},
+
+		});
+	}	
+
 	$(document).ready(function(){
 		initDistrictSelectize();
-
+        initHospitalSelectize();
+		initHospitalShortNameSelectize();
 		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
 		var dropdowns = ['district'];
 		console.log(filter_values);
@@ -149,16 +258,22 @@ function onchange_page_dropdown(dropdownobj){
 		<div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
-                            <label class="control-label">Hospital Name</label>
-                            <input type="text" id="hospital" name="hospital" size="5" class="form-control" />   
-                        </div>
+                            <label class="Inputhospital">Hospital Name</label>
+                            <select id="hospital" name="hospital" style=" display: inline-grid;" placeholder="Enter Hospital Name" size/>   
+								<option value="">   --Enter Hospital Name--   </option>
+								<input type='hidden' name='inputhospital' id='inputhospital' class='form-control'/>
+							</select>
+						</div>
                         </div>
 
                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
-                            <label class="control-label">Hospital Short Name</label>
-						    <input type="text" id="hospital_short_name" name="hospital_short_name" size="5" class="form-control" />
-                        </div>
+						<label class="Inputhospital_short_name">Hospital Short Name</label>
+                            <select id="hospital_short_name" name="hospital_short_name" style=" display: inline-grid;" placeholder="Enter Hospital short Name" size/>   
+								<option value="">   --Enter Hospital Short Name--   </option>
+								<input type='hidden' name='hospital_id_short' id='inputhospital_short_name' class='form-control'/>
+							</select>
+						</div>
                         </div>
 				
 
@@ -168,7 +283,6 @@ function onchange_page_dropdown(dropdownobj){
 							<select id="district_id"  name="district" style=" display: inline-grid;" placeholder="Enter district" <?php if($field->mandatory) echo "required"; ?>>
 								<option value="">   --Enter district--   </option>
 								<input type='hidden' name='district_id' id='district_id_val' class='form-control'/>
-		
 							</select>
 						</div>
 					</div>
@@ -253,7 +367,7 @@ function onchange_page_dropdown(dropdownobj){
 						</div>
 				</div>
         </div>
-		Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" size="10" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+		Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" style="width:50px; margin-bottom:5px;" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 
 		<div class="panel-footer">
 			<div class="text-center">
@@ -402,9 +516,10 @@ echo "</select></li>";
 
 </div>
 
-<table class="table table-bordered table-striped" id="table-sort">
+<table class="table table-bordered table-striped " id="table-sort">
 
-  	<tr >
+<thead>
+
 	  <th>SNo</th>
 		<th >Hospital Name</th>
 		<th>Hospital Short Name</th>
@@ -416,7 +531,8 @@ echo "</select></li>";
 		<th>Type5</th>
 		<th>Type6</th>
 		<th>Action</th>
-    </tr>
+
+</thead>
 	<tbody>
 	<?php
 	//print_r($results);
@@ -434,7 +550,7 @@ echo "</select></li>";
    <td><?php echo $hospital->type4; ?></td>
    <td><?php echo $hospital->type5; ?></td>
    <td><?php echo $hospital->type6; ?></td>
-   <td><a class="btn btn-outline-success" href="<?php echo base_url() ?>hospital/add_hospital?hospital_id=<?php echo $hospital->hospital_id; ?>"> Edit</a></td>
+   <td><a class="btn btn-outline-success" href="<?php echo base_url() ?>hospital/add_hospital?hospital_id=<?php echo $hospital->hospital_id; ?>" style="color:#428bca;"> Edit</a></td>
                     
   </tr>
   <?php $sno++;}?>

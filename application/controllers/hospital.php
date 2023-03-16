@@ -171,6 +171,8 @@ class Hospital extends CI_Controller {
 						
 						$this->data['title']="Search Hospital";
 						$this->data['districts']=$this->staff_model->get_district();
+						$this->data['hospitals']=$this->staff_model->get_hospital();
+
 						$this->load->view('templates/header',$this->data);
 						$this->load->helper('form');
 						$this->load->library('form_validation');
