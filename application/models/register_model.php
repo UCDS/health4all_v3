@@ -1139,6 +1139,25 @@ class Register_model extends CI_Model{
 		}
 
 	}
+	function get_patient_followup(){		   		
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('healthforall_id')){
+			$this->db->where('patient.patient_id',$this->input->post('healthforall_id'));
+		}
+         else{
+		if($this->input->post('phone_num')){
+			$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
+			$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
+		}
+	    }
+		$this->db->select("*")->from('patient')
+		->join('patient_followup','patient.patient_id=patient_followup.patient_id','left')
+		->join('patient_visit','patient.patient_id=patient_visit.patient_id','left');
+		 $this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+        $query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
 	
 	function search(){
 		$hospital=$this->session->userdata('hospital');

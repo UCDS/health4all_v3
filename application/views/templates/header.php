@@ -113,6 +113,16 @@
 									break;
 									}
 								} ?>
+								
+											<?php 
+							foreach($functions as $f){
+								if($f->user_function=="patient_follow_up") { ?>
+	<li> <a  href="<?php echo base_url()."register/patient_follow_up";?>">Patient Follow Up</a></li>
+<?php		
+break;
+} 
+							} 
+?>
 							</ul>
 						  </li>
 					<?php
@@ -120,6 +130,7 @@
 						}
 					}
 				?>
+	
 			<?php foreach($functions as $f){
 					if($f->user_function=="Diagnostics" ||$f->user_function=="Diagnostics - Order All" || $f->user_function=="Bloodbank" || $f->user_function == "Sanitation Evaluation"){ ?>
 					<li class="dropdown  <?php if(preg_match("^".base_url()."services^",current_url())){ echo "active";}?>">

@@ -1016,7 +1016,53 @@ class Register extends CI_Controller {
             die();
         }
 	}
+	public function patient_follow_up()
+	{
+	if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="patient_follow_up"){
+				$access=1;
+			}
+		}
+		if($access==1){
+			$this->data['title']="Patients Followup";
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');	
+		
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$c_patient = $this->input->post('healthforall_id');
+
+			$this->data['patient']=$this->register_model->select_patient_from_id($c_patient);
+
+			$this->data['followups']=$this->register_model->get_patient_followup();
+
+			$this->load->view('pages/patient_followup',$this->data);
+		}	else{
+			if($this->input->post('search_followup')){
+			//$this->data['followups']=$this->register_model->get_patient_followup();
+			$this->load->view('pages/patient_followup',$this->data);
+  
+		}
 	
+		
+		$this->load->view('pages/custom_form',$this->data);
+	}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+	
+}
 	function delete_document($document_link)
 	{
 		unlink('assets/patient_documents/'.$document_link);
