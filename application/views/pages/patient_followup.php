@@ -24,7 +24,8 @@
 		if (search_patient_id.length <=0 && search_phone.length <=0 ){
 			bootbox.alert("Please enter a field to search");
 			event.preventDefault();
-		}
+		}  
+	
 		}
 	
 	</script>
@@ -60,13 +61,61 @@
 			<div class="text-center">
 			<input class="btn btn-sm btn-primary" name="search_followup" type="submit" value="Submit" />
 			</div>
-			</form>		
-		</div>
+	</div>
+	</div>
+	</div>
+	<?php
+	$patient = $patients[0];
+?>
+		<?php if(isset($patients) && count($patients)==1){ ?>
+		
+	<?php print_r($patient_followup); ?>
+	
+	<h2 align="center">Patient Follow-up</h2><br>
+<div class="panel-heading">
+	<h4>Patient Details</h4>
+	</div>
+			<div class="panel-body">
+			<?php echo form_open('register/patient_follow_up',array('class'=>'form-custom','role'=>'form', 'id'=>'patient_follow_up')); ?>
+	
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				<div class="form-group">
+							<b>Patient ID:  </b><input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: #ADFF2F; font-weight: bold;" readonly/>
+                            </div>		
+							</div>
 
-		</div>
-		</div>
-		</div>
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				            <div class="form-group">
+							<b>Name:  </b>	<input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
+                            </div>
+		                    </div>
 
+							
+							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				            <div class="form-group">
+							<b>Status Date:  </b><input type="text" name="status_date" class="form-control" placeholder="" value="<?php echo $patient_followup->status_date; ?>" style="background: skyblue; font-weight: bold;" />
+                            </div>
+							</div>
 
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				            <div class="form-group">
+							<b>Life Staus:  </b>	<input type="text" name="status_life" class="form-control" placeholder="" value="<?php echo $patient_followup->life_status; ?>"  style="background: #ADFF2F; font-weight: bold;" />
+                            </div>
+			                </div>
+		
 
-  
+	</div>
+		
+		
+	  </form>		
+	<?php }
+	else if(isset($patients) && count($patients)==0){
+		echo "<b>". $msg ."</b>" ;
+	}
+	?>
+	
+	</div>
+    
+	 
+
+		

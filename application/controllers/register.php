@@ -725,6 +725,7 @@ class Register extends CI_Controller {
 		if ($this->form_validation->run() === FALSE)
 		{						
 			$this->load->view('pages/update_patients',$this->data);
+
 		}
 		else{		
 			// Patient documents
@@ -1036,14 +1037,24 @@ class Register extends CI_Controller {
 		if ($this->form_validation->run() === FALSE)
 		{	
 			$c_patient = $this->input->post('healthforall_id');
+			$this->data['patient_followup']=$this->register_model->select_patient_followup_id($c_patient);
+			$patient_id = $this->data['patients']['0']->patient_id;
+			$this->data['patients']=$this->register_model->get_patient_followup();
+			$this->data['previous_visits']=$this->register_model->get_visits($patient_id);
 
-			$this->data['patient']=$this->register_model->select_patient_from_id($c_patient);
-
-			$this->data['followups']=$this->register_model->get_patient_followup();
-
+			//if(!$this->data['followups']){
+				$this->data['msg'] = "No patient record found. Register Patient and add for Followup";
+			//}
 			$this->load->view('pages/patient_followup',$this->data);
 		}	else{
+
+			
+			if(count($this->data['patients']) == 0){
+				$this->data['msg'] = "No Patient found";
+			}
 			if($this->input->post('search_followup')){
+			//$this->data['patients']=$this->register_model->get_patient_followup();
+
 			//$this->data['followups']=$this->register_model->get_patient_followup();
 			$this->load->view('pages/patient_followup',$this->data);
   

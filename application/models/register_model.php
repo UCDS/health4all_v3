@@ -1139,6 +1139,18 @@ class Register_model extends CI_Model{
 		}
 
 	}
+	function select_patient_followup_id($c){
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('healthforall_id')){
+			$this->db->where('patient_followup.patient_id',$this->input->post('healthforall_id'));
+		}
+		$this->db->select("patient_followup.*")->from("patient_followup");
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$resource=$this->db->get();
+		return $resource->row();
+	}
+
+
 	function get_patient_followup(){		   		
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('healthforall_id')){
@@ -1151,7 +1163,7 @@ class Register_model extends CI_Model{
 		}
 	    }
 		$this->db->select("*")->from('patient')
-		->join('patient_followup','patient.patient_id=patient_followup.patient_id','left')
+//		->join('patient_followup','patient.patient_id=patient_followup.patient_id','left')
 		->join('patient_visit','patient.patient_id=patient_visit.patient_id','left');
 		 $this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
         $query = $this->db->get();
