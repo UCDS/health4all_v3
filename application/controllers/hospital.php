@@ -170,14 +170,14 @@ class Hospital extends CI_Controller {
 				if($access==1){
 						
 						$this->data['title']="Search Hospital";
-						$this->data['districts']=$this->staff_model->get_district();
-						$this->data['hospitals']=$this->staff_model->get_hospital();
-
-						$this->load->view('templates/header',$this->data);
 						$this->load->helper('form');
 						$this->load->library('form_validation');
-						// $this->form_validation->set_rules('hospital', 'Hospital', 'trim|required|xss_clean');
-						// print_r ($_POST);die;
+						$this->load->view('templates/header',$this->data);
+						$this->load->view('templates/leftnav');								
+
+						$this->data['districts']=$this->staff_model->get_district();
+						$this->data['hospitals']=$this->staff_model->get_hospital();
+						
 						$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 						foreach($this->data['defaultsConfigs'] as $default){		 
 							if($default->default_id=='pagination'){
@@ -187,7 +187,7 @@ class Hospital extends CI_Controller {
 			   
 								}
 						   }
-						//if($this->input->post('search_hospital')){							
+							//if($this->input->post('search_hospital')){							
 							//if ($this->form_validation->run() === TRUE) {
 								$this->data['results_count']=$this->hospital_model->get_count_hospital();								
 								$this->data['results']=$this->hospital_model->search_hospitals($this->data['rowsperpage']);
