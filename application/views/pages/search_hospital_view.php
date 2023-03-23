@@ -191,7 +191,7 @@ $(function(){
 
 	function initHospitalShortNameSelectize(){
         var hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($hospitals); ?>));
-		selectizes['hospital'] = $('#hospital_short_name').selectize({
+		selectizes['hospital_short_name'] = $('#hospital_short_name').selectize({
 			valueField: 'hospital_short_name',
 			labelField: 'hospital_short_name',
 			searchField: ['hospital_short_name'],
@@ -218,7 +218,7 @@ $(function(){
         initHospitalSelectize();
 		initHospitalShortNameSelectize();
 		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
-		var dropdowns = ['district'];
+		var dropdowns = ['district','hospital','hospital_short_name'];
 		console.log(filter_values);
 		Object.keys(filter_values).forEach((name) => {
 			const value = filter_values[name];
