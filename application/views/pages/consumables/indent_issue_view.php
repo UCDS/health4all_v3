@@ -256,10 +256,10 @@ $(function(){
 				if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
             ?>
 			<div class="container">
-				<div class="col-md-8 col-md-offset-2">
-					<div class="<?php if(isset($msg)){ echo "alert alert-info";} ?>"><center> <strong><?php if(isset($msg)){ echo $msg;} ?></strong> </center></div>
+				<!-- <div class="col-md-8 col-md-offset-2">
+					<div class="<?php //if(isset($msg)){ echo "alert alert-info";} ?>"><center> <strong><?php //if(isset($msg)){ echo $msg;} ?></strong> </center></div>
 
-				</div>
+				</div> -->
 			    <div class="row">
 						<div class="col-md-8 col-md-offset-6">
 							<h3>Indent Issue </h3><!-- Heading-->

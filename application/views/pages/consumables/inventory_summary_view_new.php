@@ -149,7 +149,7 @@ $('#to_id').change(function(){
 	?>
 	<div class="text-center">
 		<h2>Inventory Summary</h2>
-		<?php echo form_open('consumables/indent_reports/get_inventory_summary_bf',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
+		<?php echo form_open('consumables/indent_reports/get_inventory_summary',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
 		<div class="container">
 			<div class="row">
 						<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
@@ -158,8 +158,10 @@ $('#to_id').change(function(){
 									From Date<input class="form-control" type="text" value="<?php //echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 							</div>
 						</div> -->
+					
 					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
 						<div class="form-group">
+						
 						<!--input field to date-->
 							Inventory Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 						</div>
@@ -167,8 +169,8 @@ $('#to_id').change(function(){
 					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 						<div class="form-group">
 						<!--input field from party-->
-							<label for="scp_id">Supply Chain Party</label>
-								<select name="scp_id" id="scp_id" class="form-control">
+							<label for="scp_id">Supply Chain Party<font color="red">*</font></label>
+								<select name="scp_id" id="scp_id" class="form-control" required>
 								<option value="">Select</option>
 									<?php
 										foreach($parties as $scp)
@@ -183,24 +185,25 @@ $('#to_id').change(function(){
 						</div>
 					</div>
 										
-					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
+					<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
 						<div class="form-group">
-						<!--input field item type-->
 							<label for="inputitem_type" >Item Type</label>
 								<select name="item_type" id="item_type" class="form-control">
 								<option value="" selected>Select</option>
 									<?php
+									/*
 										foreach($all_item_type as $it)
 											{
 												echo "<option value='".$it->item_type_id."'";
 											if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
 											echo ">".$it->item_type."</option>";
 											}
+											*/
 									?>
 								</select>
 						</div>
-					</div>
-					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+					</div> -->
+					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
 						<div class="form-group">
 						<!--input field item-->
 							<label for="inputitem" >Item</label>
@@ -245,7 +248,7 @@ $('#to_id').change(function(){
 		   </div>
 		   <!--calling isset method-->
 		   <?php if(isset($mode)&& ($mode)=="search"){ ?>
-		  <?php echo form_open('consumables/indent_reports/get_inventory_summary_bf',array('role'=>'form'))   ?>
+		  <?php echo form_open('consumables/indent_reports/get_inventory_summary',array('role'=>'form'))   ?>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-3 col-md-offset-3">
@@ -270,7 +273,7 @@ $('#to_id').change(function(){
 					<table class="table table-bordered table-striped" id="table-sort">
 						<thead>
 							<!-- <th> #</th> -->
-							<th>Item Type</th>
+							<!-- <th>Item Type</th> -->
 							<th>Item Name</th>
 							<!-- <th>Supply Chain Party</th> -->
 							<th>Current balance</th>
@@ -296,30 +299,22 @@ $('#to_id').change(function(){
 					<?php 
 						// echo $i++; 
 						$sub_url="consumables/indent_reports/get_item_summary";
-						$o_quantity = 0;
-						$i_quantity = 0;
-						if(isset($inventory_item['outward']))
-							$o_quantity = $inventory_item['outward']->total_quantity;
+						$quantity = $inventory_item['closing_balance'];
 						
-						if(isset($inventory_item['inward']))
-							$i_quantity = $inventory_item['inward']->total_quantity;
-							
-						$item_type_id = '0';
-						if ($inventory_item['inward']->item_id) {
-							$item_id = $inventory_item['inward']->item_id;
-
-						}
-
-						$scp_id = $inventory_item['inward']->supply_chain_party_id;
-						log_message("info", "SAIRAM LKDJJLDJ".json_encode($inventory_item));
+						
+						// $item_type_id = '0';
+						$item_id = $inventory_item['item_id'];
+						$item_name = $inventory_item['item_name'];
+						$scp_id = $inventory_item['supply_chain_party_id'];
+						log_message("info", "SAIRAM LKDJJLDJ ".$inventory_item);
 					?>
 
 
 						
-						<td><?php echo $inventory_item['inward'] ? $inventory_item['inward']->item_type: $inventory_item['outward']->item_type;?></td>
-						<td><b><?php echo $inventory_item['inward'] ? $inventory_item['inward']->item_name: $inventory_item['outward']->item_name;?></b></td>
+						<!-- <td><?php //echo $inventory_item['inward'] ? $inventory_item['inward']->item_type: $inventory_item['outward']->item_type;?></td> -->
+						<td><b><?php echo $item_name;?></b></td>
 						
-						<td><?php echo ($i_quantity - $o_quantity);?></td>
+						<td><?php echo $quantity;?></td>
 						<td><a href="<?php echo base_url().$sub_url."/$item_id/$scp_id"; ?>"><button class="btn btn-primary" type="button">View Detailed</button></a></td>
 						
 					</tr>

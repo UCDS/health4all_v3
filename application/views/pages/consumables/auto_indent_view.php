@@ -80,16 +80,16 @@
 	}
 	/* https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp	 */
 	/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
+/* input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
+/* input[type=number] {
   -moz-appearance: textfield;
-}
+}  */
 </style>
 <script type="text/javascript">
 	var rowcount = 0;
@@ -167,7 +167,7 @@ input[type=number] {
 								</div>\
 							<td>\
 								<div class="col">\
-									<input type="text"  class="form-control narrow" placeholder="Batch ID" name="batch_${item_id}[]"  />\
+									<input type="text"  class="form-control narrow" placeholder="Batch ID" name="batch_${item_id}[]"  maxlength="10" pattern="[0-9a-zA-Z]*" />\
 								</div>\
 							</td>\
 							<td>\
@@ -183,7 +183,7 @@ input[type=number] {
 							
 							<td>\
 								<div class="col">\
-									<input type="type" pattern="[\+][0-9]+[\.[0-9]+]" name="cost_${item_id}[]" class="form-control narrow" placeholder="Cost" />\
+									<input type="text"  name="cost_${item_id}[]" class="form-control narrow" placeholder="Cost" value="0.0"/>\
 								</div>\ 
 							</td>\
 							<td>\
@@ -193,13 +193,13 @@ input[type=number] {
 							</td>\
 							<td>\
 								<div class="col">\
-									<textarea name="note_${item_id}[]" class="form-control" placeholder="Note"></textarea>
+									<textarea name="note_${item_id}[]" class="form-control" placeholder="Note" maxlength="2000" ></textarea>
 								</div>\
 							</td>\
 							
 							<td>\
 								<div class="col">\
-									<input type="text" name="gtin_${item_id}[]"  class="form-control" placeholder="Barcode no." />
+									<input type="text" name="gtin_${item_id}[]"  class="form-control" placeholder="Barcode no." minlength="8" maxlength="14" pattern="[0-9]*" />
 								</div>\
 							</td>\
 				  
@@ -361,7 +361,7 @@ input[type=number] {
 					<td></td>
 					<td></td>
 					<td></td>
-					<td>Current Cost: <span id="cost_total">0</span></td>
+					<td></td>
 
 					<td></td>
 					<td><textarea
@@ -484,15 +484,46 @@ input[type=number] {
 
 		$('#auto_indent_form').submit(e => {
 			console.log("Trying to submit");
-			quantity_elements = $(`[name = 'quantity_indented[]']`);
+			let quantity_elements = $(`[name = 'quantity_indented[]']`);
+			console.log(current_items);
+			console.log();
 			for (let i = 0; i < current_items.length; i++) {
+				
 				if (current_items[i].quantity_added_inventory != quantity_elements[i].value) {
 					display_message("Quantities of different items must match the number that have been issued.")
 					e.preventDefault();
 					return;
 				}
 
+				let cost_elements = $(`[name = 'cost_${current_items[i].item_id}[]']`);
+				let qty_elements = $(`[name = 'quantity_${current_items[i].item_id}[]']`);
+				console.log(cost_elements);
+				console.log(`[name = 'quantity_${current_items[i].item_id}[]']`, qty_elements);
+				// alert();
+				// e.preventDefault();
+				// return;
+				for(let j = 0; j < qty_elements.length; j++){
+					console.log(qty_elements[j].value);
+					if(qty_elements[j].value == 0){
+						display_message("Quantity cannot be 0");
+						e.preventDefault();
+						return;
+					}
+				}
+				for(let j = 0; j < cost_elements.length; j++){
+					console.log(cost_elements[j].value, isNaN(Number(cost_elements[j].value)));
+					// alert("");
+					if(cost_elements[j].value.length == 0){
+						cost_elements[j].value = '0.0';
+					}
+					if(isNaN(Number(cost_elements[j].value)) || Number(cost_elements[j].value) < 0.0){
+						display_message("Cost has to be a number");
+						e.preventDefault();
+						return;
+					}
+				}
 			}
+			
 		})
 	});
 
@@ -563,9 +594,7 @@ input[type=number] {
 
 									}
 									?>
-									<?php foreach ($issue_details as $all_int) {
-										echo "$all_int->indent_item_id : {qty: $all_int->quantity_approved, changed: false, current_num: 0}, ";
-									} ?>
+									
 								</select>
 							</div>
 						</div> <!--end of From party-->
@@ -645,8 +674,8 @@ input[type=number] {
 											<td></td>
 											<td></td>
 											<td></td>
-											<td>Current Cost: <span id="cost_total">0</span></td>
-
+											<!-- <td>Current Cost: <span id="cost_total">0</span></td> -->
+											<td></td>
 											<td></td>
 											<td><textarea name="item_note[]" placeholder="Note" value=""></textarea>
 											</td>

@@ -1,6 +1,6 @@
 <center>
 <?php
- echo validation_errors();
+ echo validation_errors('<div class="alert alert-danger">', '</div>');
  if (isset($msg)){ ?>
 	<div class="alert alert-info">
 		<?php echo $msg;?>

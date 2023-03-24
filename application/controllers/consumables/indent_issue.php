@@ -85,7 +85,7 @@ class Indent_issue extends CI_Controller{                                       
                     continue;
                     
                 $mfg_timestamp = strtotime($mfg_dates[$i]);
-                $exp_timestamp = strtotime($exp_dates[$i]);
+                $exp_timestamp = strtotime($exp_dates[$i].'+23 hour 59 minute 59 second');
                 $call_timestamp = strtotime(date("Y-m-d H:i:s"));
                 log_message("info", "SAIRAM from VALID INV DATES $mfg_timestamp $exp_timestamp $call_timestamp");
                 if($mfg_timestamp != null && $mfg_timestamp > $call_timestamp){
@@ -106,6 +106,16 @@ class Indent_issue extends CI_Controller{                                       
 
         }
         return true;
+    }
+    function valid_cost($cost)
+    {
+        
+        if(is_numeric($cost) && $cost >= 0.0){
+            return true;
+        }else{
+            log_message("Sairam validation failed for cost $cost ". is_numeric($cost));
+            return false;
+        }
     }
 
  function indent_issued(){                                                                        //definition of a method :indent_approval
@@ -143,23 +153,14 @@ class Indent_issue extends CI_Controller{                                       
 	    $this->data['all_item_type']=$this->indent_issue_model->get_supply_chain_party("item_type");  //get item types from get_supply_chain_party method of indent_issue model and store it into data array of index:all_item_types
         $this->data['all_item']=$this->indent_issue_model->get_supply_chain_party("item");            //get items from get_supply_chain_party method of indent_issue model and store it into data array of index:all_items
         $this->data['parties']=$this->indent_issue_model->get_supply_chain_party("party");            //get parties from get_chain_party method of indent_approval model and store it into data array of index:parties
+        
         $this->form_validation->set_rules('from_date', 'FROM Date',                               //set form validation rule on from_date
                     'trim|xss_clean');
 
 
         $this->form_validation->set_rules("selected_indent_id", "SELECTED INDENT ID", "required|callback_indent_id_check");
         if($this->form_validation->run() == False){                                               //checking whether validation is true or false
-            // log_message("info", "SAIRAM: VALIDATION FAILED: ". $this->input->post('submit'));
-            // if($this->input->post('submit') != 'submit_search_issue' && $this->input->post('auto_indent') == 1){                                                    //it executes when user click on search button
-            //     // log_message("info", "SAIRAM: AUTO INDENT REQUESTED");
-            //     $this->data['mode']="auto_indent";                                                         //save search in data array of index:mode
-            //     $this->load->model('consumables/indent_model');
-            //     $this->load->view('pages/consumables/auto_indent_view',$this->data);                             //load indent_issue view page and pass data array to it
-            // }else{
-            //     $this->data['mode']="search";                                                         //if then save search as mode into data array of index:mode
-            //     $this->data['all_indents']= $this->indent_issue_model->get_approved_indents();        //Store data from get_approved_indents method of indent_issue_model and save it into data array of index:all_indents
-            //     $this->load->view('pages/consumables/indent_issue_view',$this->data);                             //load the indent_issue_view page and pass data array to it
-            // }
+            
             $this->data['mode']="search";                                                         //if then save search as mode into data array of index:mode
             $this->data['all_indents']= $this->indent_issue_model->get_approved_indents();        //Store data from get_approved_indents method of indent_issue_model and save it into data array of index:all_indents
             $this->load->view('pages/consumables/indent_issue_view',$this->data);
@@ -195,9 +196,7 @@ class Indent_issue extends CI_Controller{                                       
                 return;
 
             }
-            // log_message("info", "SAIRAM: Approval date ".$issue_details[0]->approve_date_time);
-            // $approve_date = date("d-M-Y", strtotime($issue_details[0]->approve_date_time));
-            // $approve_time = date("h:i:s", strtotime($issue_details[0]->approve_date_time));
+            
 
             // VALIDATIONS
             /* OVERALL
@@ -225,7 +224,7 @@ class Indent_issue extends CI_Controller{                                       
                 -- <= current_date_time*
             */
             $this->form_validation->set_rules("from_party_id", "FROM PARTY ID", "required|callback_valid_from_party_id");
-            $this->form_validation->set_rules("to_party_id", "TO PARTY ID", "required|callback_valid_to_party_id");
+            $this->form_validation->set_rules("to_party_id", "TO PARTY ID", "required|callback_valid_to_party_id|differs[to_party_id]");
 
             $this->form_validation->set_rules("indent", "INDENT ID", "required|matches[selected_indent_id]");
             $this->form_validation->set_rules("issue_date", "ISSUE DATE", "required");
@@ -270,10 +269,10 @@ class Indent_issue extends CI_Controller{                                       
             */
             foreach($this->issue_details as $issued){
                 $this->form_validation->set_rules("quantity_$issued->indent_item_id[]", "QTY inventory $issued->indent_item_id", 'required|is_natural_no_zero');
-                // $this->form_validation->set_rules("batch_$issued->indent_item_id[]", "BATCH inventory $issued->indent_item_id", 'required');
-                // $this->form_validation->set_rules("mfg_date_$issued->indent_item_id[]", "MFG DATE inventory $issued->indent_item_id", 'required');
-                // $this->form_validation->set_rules("exp_date_$issued->indent_item_id[]", "EXP DATE inventory $issued->indent_item_id", 'required');
-                $this->form_validation->set_rules("cost_$issued->indent_item_id[]", "COST inventory $issued->indent_item_id", 'is_natural');
+                
+                // $this->form_validation->set_rules("cost_$issued->indent_item_id[]", "COST inventory $issued->indent_item_id", 'is_natural');
+                $this->form_validation->set_rules("cost_$issued->indent_item_id[]", "COST inventory $issued->indent_item_id", 'required|callback_valid_cost');
+
                 
                 
             }

@@ -40,7 +40,10 @@ class Item_form extends CI_Controller {
                array(
                      'field'   => 'item_form',
                      'label'   => 'item form',
-                     'rules'   => 'required|trim|xss_clean'
+                     'rules'   => 'required|trim|xss_clean|is_unique[item_form.item_form]', 
+					 'errors' => array(
+						'is_unique[item_form.item_form]' => 'Item form of this name exists'
+					 )
                   ) 	
 		     
 			);

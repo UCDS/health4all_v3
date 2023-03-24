@@ -239,7 +239,7 @@ $('#to_id').change(function(){
 												<center><a href="<?= base_url()."consumables/indent_reports/indents_list_detailed/".$single_approve->indent_id;?>"><button type="button" class="btn btn-primary " autofocus>View in detail</button></a></center>
 											<center><button class="btn btn-primary" type="button" name="print" id="print" onclick="printDiv('print-div-2')">Print</button></center>
 											<?php } else { ?>
-											<center><button class="btn btn-primary" type="button"  >Rejected</button></center>		
+											<center></center>		
 											<?php } ?>									
 										</div>
 									</div>

@@ -21,6 +21,7 @@ class Indent extends CI_Controller {
             if ($this->data['parties'][$i]->supply_chain_party_id == $party_id)
                 return true;
        }
+       log_message("error", "Sairam validation failed in authorized_party");
         return false;
     }
     function valid_item($item_id)
@@ -29,6 +30,7 @@ class Indent extends CI_Controller {
             if ($this->data['all_item'][$i]->item_id == $item_id)
                 return true;
        }
+       log_message("error", "Sairam validation failed in valid_item");
         return false;
     }
     function ne_from($party_id)
@@ -47,12 +49,13 @@ class Indent extends CI_Controller {
             $item_quantity = $quantity_indented[$i];
             $sum = 0;
             $inventory_quantities = $this->input->post("quantity_$item_id");
-            for($j = 0; $j < count($quantity_indented); $j++){
-                $sum += $inventory_quantities[$j];
+            for($j = 0; $j < count($inventory_quantities); $j++){
+                $sum = $sum + (int)$inventory_quantities[$j];
+                // log_message("info", "Sairam: $inventory_quantities[$j] $sum");
             }
 
             if($sum !== (int)$item_quantity){
-                log_message("info", "SAIRAM: inventory quantities validation failed $sum quantity_$i ".$this->input->post("quantity_$item_id")." ".json_encode($this->input->post(NULL)));
+                log_message("info", "SAIRAM: inventory quantities validation failed $sum quantity_$i ".json_encode($this->input->post("quantity_$item_id"))." ".json_encode($this->input->post(NULL)));
                 return false;
             }
             
@@ -74,7 +77,7 @@ class Indent extends CI_Controller {
                     continue;
                     
                 $mfg_timestamp = strtotime($mfg_dates[$i]);
-                $exp_timestamp = strtotime($exp_dates[$i]);
+                $exp_timestamp = strtotime($exp_dates[$i].'+23 hour 59 minute 59 second');
                 $call_timestamp = strtotime(date("Y-m-d H:i:s"));
                 log_message("info", "SAIRAM from VALID INV DATES $mfg_timestamp $exp_timestamp $call_timestamp");
                 if($mfg_timestamp != null && $mfg_timestamp > $call_timestamp){
@@ -98,7 +101,13 @@ class Indent extends CI_Controller {
     }
     function valid_cost($cost)
     {
-        return $cost >= 0.0;
+        
+        if(is_numeric($cost) && $cost >= 0.0){
+            return true;
+        }else{
+            log_message("Sairam validation failed for cost $cost ". is_numeric($cost));
+            return false;
+        }
     }
 	function add_indent(){		                                  
 		 $this->data['userdata']=$this->session->userdata('logged_in');
@@ -178,6 +187,7 @@ class Indent extends CI_Controller {
                 $this->data['details'] = $this->data['register'];
                 $this->data['msg']= "Indent added successfully.";     //if department added successfully then display the message department is added successfully.           
 			    $this->load->view('pages/consumables/indent_details_view',$this->data);  
+                $this->load->view('pages/consumables/indent_view');
                 $this->load->view('pages/consumables/print_indent_detailed_view', $this->data);
 			}	
 		}	
@@ -251,24 +261,7 @@ class Indent extends CI_Controller {
        $this->form_validation->set_rules($validations);		//load the fields for validation.
        $this->form_validation->set_message('message','Please input missing details.');        //if any input is missing then display message 'please input missing details.'
         $this->data['mode']="search";  
-    //    if ($this->form_validation->run() === FALSE)		//checking for validation is successful or not
-    //    {
-    //        log_message("info", "VAL FAILED ".json_encode($this->input->post(NULL, TRUE)));
-    //    }
-    //    else{
-    //        $this->load->model('consumables/indent_model');           //if validation is successful then load the hopital_model.		
-    //        if($this->input->post('Submit')){
-    //            $output = $this->indent_model->add_indent();
-    //            $this->load->model('consumables/indent_issue_model');
-    //            $this->data['register']=$this->indent_issue_model->get_single_indent_details($output[0]->indent_id);
-    //            log_message("info", "SAIRAM ".json_encode($output));
-    //            log_message("info", "SAIRAM ".$output[0]->indent_id. " ". json_encode($this->data['register']));
-    //            $this->data['details'] = $this->data['register'];
-    //            $this->data['msg']= "Indent added successfully.";     //if department added successfully then display the message department is added successfully.           
-    //            $this->load->view('pages/consumables/indent_details_view',$this->data);  
-    //            $this->load->view('pages/consumables/print_indent_detailed_view', $this->data);
-    //        }	
-    //    }	
+    
        
 
        
@@ -297,11 +290,9 @@ class Indent extends CI_Controller {
                -- >= approve_date_time*
                -- <= current_date_time*
            */
-           // $this->form_validation->set_rules("from_id", "FROM PARTY ID", "required|callback_valid_from_party_id");
-           // $this->form_validation->set_rules("to_id", "TO PARTY ID", "required|callback_valid_to_party_id");
+           
 
-           // $this->form_validation->set_rules("indent_date", "INDENT DATE", "required");
-           // $this->form_validation->set_rules("indent_time", "INDENT TIME", "required");
+
 
            /* INDENT ITEM:
                - quantity
@@ -316,11 +307,11 @@ class Indent extends CI_Controller {
            */
            
            $this->form_validation->set_rules("quantity_indented[]", "QTY auto indented ", 'required|is_natural_no_zero');
-           // $this->form_validation->set_rules("item[]", "ITEM ID", "required|callback_valid_item_id");
+           
 
 
            
-           // $this->form_validation->set_rules("indent_item[]", "INDENT ITEM ID", "required|callback_valid_indent_item_id");
+           
 
            /* INVENTORY ITEM:
                - quantity
@@ -344,25 +335,31 @@ class Indent extends CI_Controller {
            foreach($this->input->post('item') as $indented_item){
                log_message("INFO", "SAIRAM cost_{$indented_item}[]");
                $this->form_validation->set_rules("quantity_{$indented_item}[]", "QTY inventory $indented_item", 'required|is_natural_no_zero');
-               $this->form_validation->set_rules("cost_{$indented_item}[]", "COST inventory $indented_item", 'required|decimal|callback_valid_cost');
+               $this->form_validation->set_rules("cost_{$indented_item}[]", "COST inventory $indented_item", 'required|callback_valid_cost');
                
                // $this->form_validation->set_rules("cost_{$indented_item}[]", "COST inventory $indented_item", 'is_natural');
            }
            if(!$this->valid_inventory_quantities() || !$this->valid_inventory_dates() || $this->form_validation->run() == False){
+                log_message("info", "SAIRAM VALIDATION FAILED");
                $this->data['mode']="auto_indent";
                $this->load->view('pages/consumables/auto_indent_view',$this->data);
            }else{
+                
                $this->load->model('consumables/indent_model');
                if($this->input->post('Submit')){
                     $output = $this->indent_model->add_indent();
                     $this->load->model('consumables/indent_issue_model');
-                    $this->data['register']=$this->indent_issue_model->get_single_indent_details($output[0]->indent_id);
+                    $this->data['issue_details']=$this->indent_issue_model->get_single_indent_details($output[0]->indent_id);
                     log_message("info", "SAIRAM ".json_encode($output));
-                    log_message("info", "SAIRAM ".$output[0]->indent_id. " ". json_encode($this->data['register']));
-                    $this->data['details'] = $this->data['register'];
+                    log_message("info", "SAIRAM ".$output[0]->indent_id. " ". json_encode($this->data['issue_details']));
+                    $this->data['details'] = $this->data['issue_details'];
                     $this->data['msg']= "Indent added successfully.";     //if department added successfully then display the message department is added successfully.           
-                    $this->load->view('pages/consumables/indent_details_view',$this->data);  
+                    $this->data['mode']="update";
+                    // $this->load->view('pages/consumables/indent_details_view',$this->data);  
                     $this->load->view('pages/consumables/print_indent_detailed_view', $this->data);
+                }else{
+                    $this->data['mode']="auto";
+
                 }	
 
                $this->load->model('consumables/indent_issue_model');
@@ -370,7 +367,6 @@ class Indent extends CI_Controller {
                $this->data['all_item']=$this->indent_issue_model->get_supply_chain_party("item");            //get items from get_supply_chain_party method of indent_issue model and store it into data array of index:all_items
                $this->data['parties']=$this->indent_issue_model->get_supply_chain_party("party"); 
                $this->data['all_indents']= $this->indent_issue_model->get_approved_indents();  
-               $this->data['mode']="auto";
                $this->load->view('pages/consumables/indent_issue_view',$this->data);
            }
            

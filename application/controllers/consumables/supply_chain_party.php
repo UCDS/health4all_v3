@@ -50,7 +50,10 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
             
                 'field'=>'supply_chain_party_name',			//array with hospital_id field name,label and rules.
                 'label'=>'Supply chain party',
-                'rules'=>'required'
+                'rules'=>'required|is_unique[supply_chain_party.supply_chain_party_name]', 
+                'errors' => array(
+                    'is_unique[supply_chain_party.supply_chain_party_name]' => 'Supply chain party with same name already exists'
+                )
                 )
             
         );

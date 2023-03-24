@@ -84,7 +84,7 @@
             ?>
             <?php 
 					$total_costs = array();
-					foreach($issue_details as $all_issue){
+					foreach($details as $all_issue){
 						if(isset($total_costs[$all_issue->indent_item_id])){
 							$total_costs[$all_issue->indent_item_id] += $all_issue->cost;
 						}else{
@@ -176,7 +176,7 @@
                                 <?= $all_issue->cost; ?>
                             </td>
 
-                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id; ?></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id == 0 ? "": $all_issue->patient_id; ?></td>
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->note; ?></td>
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->gtin_code; ?></td>
 
@@ -211,7 +211,7 @@
                                 <?= $all_issue->cost; ?>
                             </td>
 
-                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id; ?></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id == 0 ? "": $all_issue->patient_id; ?></td>
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->note; ?></td>
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->gtin_code; ?></td>
 
@@ -271,6 +271,14 @@
     </p>
 
     <b>
-        <?php echo "Issuer Signature :"; ?>
+
+        <?php 
+        if($details[0]->indent_status == "Issued")
+            echo "Issuer Signature :"; 
+        else if($details[0]->indent_status == "Approved")
+            echo "Approver Signature :";
+        else
+            echo "Indented by Signature:";
+            ?>
     </b></br></br>
 </div>

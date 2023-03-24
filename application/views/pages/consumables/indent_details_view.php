@@ -165,6 +165,6 @@
 	</div>
 </div>
 
-<? php // } ?>
+<?php // } ?>
 
 <?php echo form_close(); ?>

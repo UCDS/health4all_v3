@@ -9,7 +9,7 @@
 <script type="text/javascript">
 	var rowcount = 0;
 	$(function () {
-		$("#issue_date").Zebra_DatePicker({ direction: false });
+		$("#issue_date").Zebra_DatePicker({ direction: ['<?= date("d-M-Y", strtotime($indent_issued[0]->approve_date_time));?>', '<?= date('d-M-Y'); ?>'] });
 		// $(".date_picker").Zebra_DatePicker({direction:false});
 		$("#issue_time").ptTimeSelect();
 		// $("#addbutton").click(function(){
@@ -121,7 +121,7 @@
 				</div>\
 			  <td>\
 				<div class="col">\
-					<input type="text"  class="form-control narrow" placeholder="Batch ID" name="batch_${item_name}[]"  />\
+					<input type="text"  class="form-control narrow" placeholder="Batch ID" name="batch_${item_name}[]" maxlength="10" minlength="1"  pattern="[0-9a-zA-Z]*" />\
 				</div>\
 			  </td>\
 			  <td>\
@@ -137,7 +137,7 @@
 			 
 			  <td>\
 				  <div class="col">\
-					<input type="text" name="cost_${item_name}[]" class="form-control narrow" placeholder="Cost" />\
+					<input type="text" name="cost_${item_name}[]" class="form-control narrow" placeholder="Cost" value="0.0"/>\
 				</div>\ 
 			  </td>\
 			  <td>\
@@ -147,13 +147,13 @@
 			  </td>\
 			  <td>\
 				 <div class="col">\
-					<textarea name="note_${item_name}[]" class="form-control" placeholder="Note"></textarea>
+					<textarea name="note_${item_name}[]" class="form-control" placeholder="Note" maxlength="2000"></textarea>
 				</div>\
 			  </td>\
 			  
 			  <td>\
 				 <div class="col">\
-					<input type="text" name="gtin_${item_name}[]"  class="form-control" placeholder="Barcode no." />
+					<input type="text" name="gtin_${item_name}[]"  class="form-control" placeholder="Barcode no." minlength="8" maxlength="14" pattern="[0-9]*" />
 				</div>\
 			  </td>\
 			  
@@ -208,6 +208,7 @@
 				} else {
 					$('#error-alerts').hide();
 				}
+				
 			});
 
 		}
@@ -229,13 +230,33 @@
 			console.log("Trying to submit");
 
 			for (const item_name in current_items) {
-				let proposed_sum = sum_quantities($(`[name='quantity_${item_name}[]']`), 'value');
+				let qty_elements = $(`[name='quantity_${item_name}[]']`);
+				let proposed_sum = sum_quantities(qty_elements, 'value');
 				let current_quantity_issued = $(`[name=quantity_issued_${item_name}]`)[0].value;
 				console.log(current_quantity_issued, proposed_sum);
 				if(proposed_sum !== Number(current_quantity_issued)){
 					display_message("Quantities of different items must match the number that have been issued.")
 					e.preventDefault();
 					return;
+				}
+				let costs = $(`[name='cost_${item_name}[]']`);
+				for(let j = 0; j < qty_elements.length; j++){
+					console.log(qty_elements[j].value);
+					if(qty_elements[j].value == 0){
+						display_message("Quantity cannot be 0");
+						e.preventDefault();
+						return;
+					}
+				}
+				for(let i = 0; i < costs.length; i++){
+					if(costs[i].value.length == 0){
+						costs[i].value = '0.0';
+					}
+					if(isNaN(Number(costs[i].value)) || Number(costs[i].value) < 0.0){
+						display_message("Cost has to be a number which is not negative");
+						e.preventDefault();
+						return;
+					}
 				}
 			}
 			// e.preventDefault();
@@ -367,7 +388,7 @@
 					<div class="row">
 						<div class="col-md-6">
 
-							<b>Issue Date:</b>
+							<b>Issue Date:<font color="red">*</font></b>
 							<input type="text" value="<?php echo date("d-M-Y"); ?>" name="issue_date" id="issue_date" />
 						</div>
 						<div class="col-md-6">
@@ -430,7 +451,8 @@
 										<td></td>
 										<td></td>
 										<td></td>
-										<td>Current Cost: <span id=<?php echo "total_cost_$all_int->indent_item_id"; ?>>0</span></td>
+										<!-- <td>Current Cost: <span id=<?php //echo "total_cost_$all_int->indent_item_id"; ?>>0</span></td> -->
+										<td></td>
 
 										<td></td>
 										<td><textarea
@@ -481,7 +503,7 @@
 							<Button type="submit" name="issue" value="submit" id="btn"
 								class="btn btn-success">Issue</Button>
 							<input type="hidden" name="selected_indent_id" value="<?php echo $all_int->indent_id; ?>" />
-							<!-- <input type="hidden" name="completed_issue" value="<?= $completed_issue; ?>"> -->
+							
 						</center>
 					</p>
 				</div>
