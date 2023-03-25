@@ -20,13 +20,14 @@ class Inventory_summary_model extends CI_Model
     function query_latest_records($latest_run_date, $scp_id=null, $as_on_date=null)
     {
         if($scp_id){
-
+            $hospital=$this->session->userdata('hospital');
             $this->db->select('scp.supply_chain_party_name, item.item_name, inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, SUM(inventory.quantity) total_quantity')
             ->from('inventory')
             ->join('item', 'item.item_id = inventory.item_id')
             ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
             ->where("inventory.date_time > '$latest_run_date'")
             ->where('scp.supply_chain_party_id', $scp_id)
+            ->where('scp.hospital_id', $hospital['hospital_id'])
             ->group_by('inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward');
             if($as_on_date){
                 $this->db->where("inventory.date_time <= '$as_on_date'");
@@ -44,8 +45,9 @@ class Inventory_summary_model extends CI_Model
 
 
         $query = $this->db->get();
-        // echo $query_string = $this->db->last_query();
+        // echo $query_string = $this->db->last_query().'</br>';
         $records = $query->result();
+        // echo $records;
         return $records;
     }
     function get_latest_records($latest_run_date='', $scp_id = null, $as_on_date=null)
@@ -121,6 +123,7 @@ class Inventory_summary_model extends CI_Model
                 $o_qty = $record['outward']->total_quantity;
             }
             $closing_balance = ($i_qty - $o_qty);
+            // echo "<h1>$i_qty $o_qty $closing_balance</h1>";
             if($scp_identifier){
                 $result[] = array(
                     'supply_chain_party_id' => $scp_id, 
@@ -147,9 +150,10 @@ class Inventory_summary_model extends CI_Model
     function max_date($latest_summary)
     {
         $latest_run_timestamp = 0;
+        // echo "<h1> count ".json_encode($latest_summary)."</h1>";
         foreach($latest_summary as $record){
-            if(strtotime($record->latest_transaction_date) > $latest_run_timestamp){
-                $latest_run_timestamp = strtotime($record->latest_transaction_date);
+            if(strtotime($record->transaction_date) > $latest_run_timestamp){
+                $latest_run_timestamp = strtotime($record->transaction_date);
             }
         }
 
@@ -208,9 +212,10 @@ class Inventory_summary_model extends CI_Model
     {
         $this->db->trans_start();
         // $report_run_date = date('Y-m-d H:i:s');
-        $this->db->select('inventory_summary.item_id, supply_chain_party_id, closing_balance, MAX(transaction_date) latest_transaction_date')
+        $this->db->select('inventory_summary.item_id, supply_chain_party_id, closing_balance, transaction_date')
         ->from('inventory_summary')
-        ->group_by('item_id, supply_chain_party_id');
+        ->where('inventory_summary.transaction_date IN (SELECT MAX(transaction_date) FROM inventory_summary)');
+        // ->group_by('item_id, supply_chain_party_id');
 
         $query = $this->db->get();
         $latest_summary = $query->result();
@@ -227,12 +232,14 @@ class Inventory_summary_model extends CI_Model
     {
         $this->db->trans_start();
         // $report_run_date = date('Y-m-d H:i:s');
-        $this->db->select('inventory_summary.item_id, item.item_name, inventory_summary.supply_chain_party_id, scp.supply_chain_party_name, closing_balance, MAX(transaction_date) latest_transaction_date')
+        $hospital=$this->session->userdata('hospital');
+        $this->db->select('inventory_summary.item_id, item.item_name, inventory_summary.supply_chain_party_id, scp.supply_chain_party_name, closing_balance, transaction_date')
         ->from('inventory_summary')
         ->join('item', 'inventory_summary.item_id = item.item_id')
         ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory_summary.supply_chain_party_id')
         ->where('scp.supply_chain_party_id', (int)$scp_id)
-        ->group_by('inventory_summary.item_id, inventory_summary.supply_chain_party_id');
+        ->where('scp.hospital_id', $hospital['hospital_id'])
+        ->where('inventory_summary.transaction_date IN (SELECT MAX(transaction_date) FROM inventory_summary)');
 
         if($as_on_date){
             $this->db->where("inventory_summary.transaction_date <= '$as_on_date'");
@@ -242,8 +249,10 @@ class Inventory_summary_model extends CI_Model
             $this->db->where('inventory_summary.item_id', $this->input->post('item'));
         }
         $query = $this->db->get();
+        // echo $query_string = $this->db->last_query().'</br>';
         $latest_summary = $query->result();
-        // echo json_encode($latest_summary);
+        // echo '<br/>'.json_encode($latest_summary).'<br/>';
+
         $final_balance_records = $this->get_and_update_balance($latest_summary, $scp_id, $as_on_date);
         $this->db->trans_complete();
         // if(count($final_balance_records) == 0)
