@@ -1021,6 +1021,7 @@ class Register extends CI_Controller {
 	{
 	if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
+		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
 
 		$access=0;
 		foreach($this->data['functions'] as $function){
@@ -1029,6 +1030,8 @@ class Register extends CI_Controller {
 			}
 		}
 		if($access==1){
+			$transaction = $this->transaction_condition();
+
 			$this->data['title']="Patients Followup";
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
@@ -1038,6 +1041,7 @@ class Register extends CI_Controller {
 		{	
 			$c_patient = $this->input->post('healthforall_id');
 			$this->data['patient_followup']=$this->register_model->select_patient_followup_id($c_patient);
+			$this->data['hospital_id'] = $this->data['hospital']['hospital_id'];
 			$patient_id = $this->data['patients']['0']->patient_id;
 			$this->data['patients']=$this->register_model->get_patient_followup();
 			$this->data['previous_visits']=$this->register_model->get_visits($patient_id);

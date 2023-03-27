@@ -1161,11 +1161,13 @@ class Register_model extends CI_Model{
 			$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
 			$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
 		}
-	    }
+	}
+	    
 		$this->db->select("*")->from('patient')
-//		->join('patient_followup','patient.patient_id=patient_followup.patient_id','left')
-		->join('patient_visit','patient.patient_id=patient_visit.patient_id','left');
-		 $this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		->group_by('patient.phone',($this->input->post('phone_num')))
+	//  ->group_by('phone')
+	    ->order_by('phone','ASC');
+	// -> GROUP BY phone` ORDER BY `patient`.`phone` ASC
         $query = $this->db->get();
         $result = $query->result();
 		return $result;
