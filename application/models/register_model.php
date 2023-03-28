@@ -1150,8 +1150,46 @@ class Register_model extends CI_Model{
 		return $resource->row();
 	}
 
+	function get_priority_type()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('priority_type');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
 
-	function get_patient_followup(){		   		
+
+	function insert_update_followup($update_patients){
+			$this->db->set('status_date', $update_patients['status_date']);
+			$this->db->set('life_status', $update_patients['life_status']);	
+			$this->db->set('diagnosis', $update_patients['diagnosis']);
+			$this->db->set('last_visit_type', $update_patients['last_visit_type']);
+			$this->db->set('last_visit_date', $update_patients['last_visit_date']);		
+			$this->db->set('priority_type_id', $update_patients['priority_type']);
+			$this->db->set('volunteer_id', $update_patients['volunteer']);
+			$this->db->set('note', $update_patients['input_note']);
+			$this->db->where('patient_id', $update_patients['patient_id']);
+			$this->db->update('patient_followup');	
+         	}
+
+         function get_districts($district_id){
+			$this->db->select("*")->from('district');
+			$this->db->where('district_id', $district_id);
+			$query = $this->db->get();
+			$result = $query->row();
+			return $result;
+		    }
+
+         function get_icd_code(){
+			$this->db->select("*")->from('icd_code');
+			$query = $this->db->get();
+			$result = $query->result();
+			return $result;
+		 }
+
+	  function get_patient_followup(){		   		
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('healthforall_id')){
 			$this->db->where('patient.patient_id',$this->input->post('healthforall_id'));
@@ -1161,7 +1199,7 @@ class Register_model extends CI_Model{
 			$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
 			$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
 		}
-	}
+	   }
 	    
 		$this->db->select("*")->from('patient')
 		->group_by('patient.phone',($this->input->post('phone_num')))

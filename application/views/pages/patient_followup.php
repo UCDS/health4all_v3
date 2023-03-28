@@ -164,12 +164,11 @@ function initDistrictSelectize(){
 	function onAddFollowUpSubmit(){
 		
        var status_date = $('#status_date').val();
-	   var last_visit_date = $('#last_visit_date').val();
-	  
+	   var last_visit_date = $('#last_visit_date').val();	  
        if(status_date == '')
-	   {
+	    {
 		$('#error_status_date').html('This field is required');
-	   }
+	    }
 	   else if(status_date != '')
 	   {
 		$('#error_status_date').html('');
@@ -191,13 +190,64 @@ function initDistrictSelectize(){
 	   }
 
 	   if($('select[name=last_visit_type]').val()=="Select"){
-		$('#error_lastvs_type').html('This field is required');
-		
+		$('#error_lastvs_type').html('This field is required');		
 	   }
 		//$("#followup_patient").submit();
 		//eve.preventDefault();
 	}	
-	
+
+	function onUpdatePatientSubmit(){
+
+	   var status_date = $('#status_date').val();
+	   var last_visit_date = $('#last_visit_date').val();	  
+       if(status_date == '')
+	    {
+		$('#error_status_date').html('This field is required');
+	    }
+	   else if(status_date != '')
+	   {
+		$('#error_status_date').html('');
+	   }
+       if($('input:radio[name=life_status]:checked').length <= 0)
+	   {
+		$('#error_life_status').html('This field is required');
+	   }
+	   else{
+		$('#error_life_status').html('');
+	   }
+	   if(last_visit_date == '')
+	   {
+		$('#error_lastvisit_date').html('This field is required');
+	   }
+	   else if(last_visit_date != '')
+	   {
+		$('#error_lastvisit_date').html('');
+	   }
+
+	   if($('select[name=last_visit_type]').val()=="Select"){
+		$('#error_lastvs_type').html('This field is required');		
+	   }
+
+			patient_id = $('input:text[name=patient_id]').val();
+			status_date = $('#status_date').val();
+			life_status = $('input:radio[name=life_status]:checked').val();
+			diagnosis = $('input:text[name=diagnosis]').val();
+			last_visit_type = $('select[name=last_visit_type]').val();
+			last_visit_date = $('#last_visit_date').val();
+			priority_type = $('select[name=priority_type]').val();
+            volunteer = $('select[name=volunteer]').val();
+			input_note =  $('input:text[name=input_note]').val();
+
+			$.ajax({
+			type: 'POST',
+			url: '<?php echo base_url('register/patient_follow_up');?>',
+			data: { patient_id:patient_id,status_date:status_date,life_status:life_status,
+				diagnosis:diagnosis,last_visit_type:last_visit_type,last_visit_date:last_visit_date,
+				priority_type:priority_type,volunteer:volunteer,input_note:input_note},
+			success: function(data){	
+			}						
+			});
+		}
 	</script>
 				<script>
 					$(function(){
@@ -278,34 +328,38 @@ $patient = $patients[0];
 			<?php echo form_open('register/patient_follow_up',array('class'=>'form-custom','role'=>'form', 'id'=>'patient_follow_up')); ?>
 			<input type="hidden" class="sr-only" value="<?php echo $transaction_id;?>" name="transaction_id" />
 			<div class="row">
-			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="col-md-3">
 							<div class="form-group">
-							Patient ID:  <input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: white; font-weight: bold;" readonly/>
+							Patient ID:  <input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: #ADFF2F; " readonly/>
                             </div>		
 							</div>
 
-							<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-				            <div class="form-group">
-							Name: 	<input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: white; font-weight: bold;" />
+							<div class="col-md-3">
+						    <div class="form-group">
+							Name: 	<input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F;" />
                             </div>
 		                    </div>
 
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="col-md-3">
 						<div class="form-group">
 						
-						<label class="control-label">Age<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?>/</label>
-						<td><label> Gender </label></td>
-						<table>
-									<tr>
-										<td><input type="text" name="age_years" class="form-control" style="background: white;" size="1"  value="<?php echo $patient->age_years; ?>"   readonly/><td>Y</td></td>
-										<td><input type="text" name="age_months" class="form-control" style="background: white;" size="1"   value=""  readonly/><td>M</td></td>
-										<td><input type="text" name="age_days" class="form-control" style="background: white;"size="1"   value=""  readonly/><td>D</td></td> 
-										
-										<td></label>/</label></td>
-										<td>
-										
-										
-										<?php if(!empty($patient->gender)) { ?> 
+							<label class="control-label">Age<?php if($field->mandatory) { ?><span class="mandatory" >*</span><?php } ?></label>
+							<table>
+										<tr>
+											<td><input type="text" name="age_years" class="form-control" style="background: #ADFF2F;" size="1"  value="<?php echo $patient->age_years; ?>"   readonly/><td>Y</td></td>
+											<td><input type="text" name="age_months" class="form-control" style="background: #ADFF2F;" size="1"   value="<?php echo $patient->age_months; ?>"  readonly/><td>M</td></td>
+											<td><input type="text" name="age_days" class="form-control" style="background: #ADFF2F;"size="1"   value="<?php echo $patient->age_days; ?>"  readonly/><td>D</td></td> 
+										</tr>
+							</table>
+						</div>
+						</div>	
+						
+						<div class="col-md-3">
+						<label>Gender: 	</label>		
+						    <div class="form-group">
+								<div class="col-md-4 col-xs-4" style="background: #ADFF2F; font-weight: bold;" >
+
+								<?php if(!empty($patient->gender)) { ?> 
 												
 												<label> 
 												<?php 
@@ -323,44 +377,49 @@ $patient = $patients[0];
 												<label class="control-label"><input type="radio" class="gender" value="F" name="gender" />Female</label>
 												<label class="control-label"><input type="radio" class="gender" value="O" name="gender" />Others</label>
 												<?php } ?>
-										
-									</td>
-										</tr>
-							</table>
-						</div>
-						</div>				
-			</div>
+								</div>
+						    </div>
+		        		 </div>
 
-		<div class="row">
-		<div class="col-md-4 col-xs-6">			
-		<label class="control-label">Relative Name </label>
-		<input type="text" name="relative_name" class="form-control" placeholder="" value=""  style="background: white; font-weight: bold;" readonly/>
-		</div>	
+			
+			</div>		
 
-				<div class="col-md-4 col-xs-6">
+			<div class="row">
+			<div class="col-md-3">						
+							<label class="control-label">Relative Name </label>
+							<?php if (!empty($patient->father_name)) { ?>
+								<input type="text" name="relative_name" class="form-control" placeholder="" value="<?php echo $patient->father_name; ?>"  style="background: #ADFF2F; " readonly/>
+							<?php } elseif (!empty($patient->mother_name)) { ?>
+								<input type="text" name="mother_name" class="form-control" placeholder="" value="<?php echo $patient->mother_name; ?>"  style="background: #ADFF2F; " readonly/>
+							<?php } else { ?>
+								<input type="text" name="spouse_name" class="form-control" placeholder="" value="<?php echo $patient->spouse_name; ?>"  style="background: #ADFF2F; " readonly/>
+							<?php } ?>
+					</div>	
+
+					<div class="col-md-3">
 					
 						<label class="control-label">Address</span></label>
-						<input type="text" name="address" class="form-control" value="" style="background: white; font-weight: bold;" readonly/>
+						<textarea name="address" class="form-control"  style="background: #ADFF2F; " readonly/><?php echo $patient->address; ?></textarea>
 					
 				</div>	
 
-				<div class="col-md-4 col-xs-6">
+				<div class="col-md-3">
 					<label class="control-label">District</label>
-					<input type="text" name="district_patient" class="form-control" placeholder="" value=""  style="background: white; font-weight: bold;" readonly/>		
+					<input type="text" name="district_patient" class="form-control" placeholder="" value="<?php echo $districts->district; ?>"  style="background: #ADFF2F;" readonly/>		
 				</div>
 			</div>
 
 			<div class="row">			
-				<div class="col-md-4 col-xs-6">
+			<div class="col-md-3">
 					<label class="control-label">Phone</label>
-					<input type="text" name="phone" class="form-control" value="" style="background: white; font-weight: bold;" readonly/>
+					<input type="text" name="phone" class="form-control" value="<?php echo $patient->phone; ?>" style="background: #ADFF2F; " readonly/>
 				</div>	
 				
-				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				<div class="col-md-3">
 								<div class="form-group">
 									<label for="inputstatus_date ">Registered On Date  </label>
-									<input class="form-control" style = "background-color: white; font-weight: bold;" type="text" value="" name="register_date" id="register_date" size="15"  readonly />
-								</div>
+							 <input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
+						</div>
 				</div>
 			</div>	
 	
@@ -404,7 +463,7 @@ $patient = $patients[0];
                                 <select class="form-control" name="icd_code" >
 									<option value="Select">Select</option>
 									<?php foreach($codes as $icd_code){
-									//echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
+							echo "<option value='$icd_code->icd_code'> $icd_code->icd_10  $icd_code->code_title</option>";
 									}
 									?>
 								</select>
@@ -454,10 +513,10 @@ $patient = $patients[0];
 								<label class="control-label">Priority Type </label>
 								<select class="form-control" name="priority_type" >
 									<option value="Select">Select</option>
-									<!-- <?php foreach($types as $type){
-									//echo "<option value='$type->helpline_id'>$helpline->helpline - $helpline->note</option>";
+									 <?php foreach($priority_types as $type){
+									echo "<option value='$type->priority_type_id'>$type->priority_type</option>";
 									}
-									?> -->
+									?> 
 								</select>
 							</div>
 						</div>
@@ -465,26 +524,16 @@ $patient = $patients[0];
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Primary Route</label>
-								<select class="form-control" name="primary_route" id="primary_route">
-									<option value="Select">Select</option>
-									<!-- <?php foreach($primary_routes as $routes){
-									//echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
-									}
-									?> -->
-								</select>
+								<input class="form-control"  type="text"  name="primary_route" id="primary_route" placeholder="Enter Latitude,Longitude"/>
+
 							</div>
 						</div>
 
 						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Secondary Route</label>
-								<select class="form-control" name="secondary_route" id="secondary_route">
-									<option value="Select">Select</option>
-									<!-- <?php foreach($secondary_routes as $routes){
-									//echo "<option value='$route->print_layout_id'>$layout->print_layout_name</option>";
-									}
-									?> -->
-								</select>
+								<input class="form-control"  type="text"  name="secondary_route" id="secondary_route" placeholder="Enter Latitude,Longitude"/>
+
 							</div>
 						</div>
 			</div>
@@ -495,9 +544,9 @@ $patient = $patients[0];
 								<label class="control-label">Volunteer </label>
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
-									 <!-- <?php foreach($helplines as $helpline){
+									 <!-- <?php //foreach($helplines as $helpline){
 									// echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
-									}
+									//}
 									?>  -->
 								</select>
 							</div>
@@ -507,15 +556,15 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 								<label for="Inputdiagnosis">Note</label>
-								<input class="form-control" name="diagnosis" id="inputdiagnosis" placeholder="Enter Diagnosis" type="TEXT" align="middle">
+								<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="text" align="middle">
 						</div> 
 					</div>	
 			</div>	&emsp;&emsp;
-			
+
 			<div class="panel-footer">
 			<div class="text-center">
 				<?php if(isset($patient_followup)  && ($patient_followup->hospital_id == $hospital_id) ) { ?>
-				<center><button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit(event)">Update</button></center>&emsp;
+				<center><button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit()">Update</button></center>&emsp;
 				 <?php } ?>
 				<?php if(isset($patient->patient_id) && (!$patient_followup->patient_id)){ ?>
 
