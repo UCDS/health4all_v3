@@ -1064,7 +1064,9 @@ class Register extends CI_Controller {
 			$update_patients['volunteer'] = $response['volunteer']; 
 			$update_patients['input_note'] = $response['input_note'];
 			
-			$this->data['update_patient']=$this->register_model->insert_update_followup($update_patients);
+			$this->data['update_patient'] = $this->register_model->insert_update_followup($update_patients);
+			
+			
 			//if(!$this->data['followups']){
 				$this->data['msg'] = "No patient record found. Register Patient and add for Followup";
 			//}

@@ -247,6 +247,53 @@ class Reports extends CI_Controller {
 		
 	}
 	
+
+	public function followup_detail()
+	{
+		if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="patient_follow_up"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->data['title']="Followup Details";
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+		//$this->data['report_count']=$this->reports_model->get_op_detail_3_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
+		//$this->data['report']=$this->reports_model->get_op_detail_3($this->data['rowsperpage']);		
+		
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/followup_details',$this->data);
+		}
+		else{
+			$this->load->view('pages/followup_details',$this->data);
+		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+	
 	public function op_detail_3($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
 		if($this->session->userdata('logged_in')){

@@ -244,13 +244,25 @@ function initDistrictSelectize(){
 			data: { patient_id:patient_id,status_date:status_date,life_status:life_status,
 				diagnosis:diagnosis,last_visit_type:last_visit_type,last_visit_date:last_visit_date,
 				priority_type:priority_type,volunteer:volunteer,input_note:input_note},
-			success: function(data){	
+			success: function(msg){	
+				if(msg)
+				{
+				//alert(msg.update_patient);
+				}
 			}						
 			});
 		}
 	</script>
 				<script>
 					$(function(){
+
+						if (typeof $("#icd_code")[0] !== 'undefined') {
+			selectize = $("#icd_code")[0].selectize;
+			selectize.on('change',function(){
+				var test = selectize.getOption(selectize.getValue());
+				console.log(test);
+			});
+		}
 					<?php if($patient_followup->status_date == 0){ ?>
 					$('.status_date').datetimepicker({
 						format : "D-MMM-YYYY h:ssA",
@@ -268,6 +280,8 @@ function initDistrictSelectize(){
 
 		
 					});
+
+					
 					
 					</script>
 <?php
@@ -456,12 +470,11 @@ $patient = $patients[0];
 
 							</div>
 				</div>
-
-				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
+			
+				<div class="col-xs-12 col-sm-12 col-md-8  col-lg-4">
 							<div class="form-group">
 								<label for="Inputicd_code">ICD Code</label>
-                                <select class="form-control" name="icd_code" >
-									<option value="Select">Select</option>
+                                <select class="form-control" name="icd_code" id="icd_code" class="repositories" placeholder="Search ICD codes">
 									<?php foreach($codes as $icd_code){
 							echo "<option value='$icd_code->icd_code'> $icd_code->icd_10  $icd_code->code_title</option>";
 									}

@@ -1171,7 +1171,9 @@ class Register_model extends CI_Model{
 			$this->db->set('volunteer_id', $update_patients['volunteer']);
 			$this->db->set('note', $update_patients['input_note']);
 			$this->db->where('patient_id', $update_patients['patient_id']);
-			$this->db->update('patient_followup');	
+			if($this->db->update('patient_followup'))	
+			return true;
+			else return false;
          	}
 
          function get_districts($district_id){
