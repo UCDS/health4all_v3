@@ -1,14 +1,10 @@
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
-<!-- < <script type="text/javascript" src="<?php echo base_url();?>assets/js/viewer.min.js"></script> -->
-<!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/Chart.min.js"></script>
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
-<!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/viewer.min.css"> -->
-<!-- <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/patient_field_validations.css"> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
@@ -22,6 +18,7 @@
 	font-size:25px;
 	font-weight:bold;
 }
+
 .error {
     color: red;
     margin-left: 5px;
@@ -30,6 +27,7 @@
   label.error {
     display: inline;
   }
+
 	.row{
 		margin-bottom: 1.5em;
 	}
@@ -108,32 +106,7 @@
 	
 </style>
 <script>
-function initDistrictSelectize(){
-        var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
-	var selectize = $('#district_id').selectize({
-	    valueField: 'district_id',
-	    labelField: 'custom_data',
-	    searchField: ['district','district_alias','state'],
-	    options: districts,
-	    create: false,
-	    render: {
-	        option: function(item, escape) {
-	        	return '<div>' +
-	                '<span class="title">' +
-	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
-	                '</span>' +
-	            '</div>';
-	        }
-	    },
-	    load: function(query, callback) {
-	        if (!query.length) return callback();
-		},
 
-	});
-	if($('#district_id').attr("data-previous-value")){
-		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
-	}
-}
 		function validateInput(event){
 		var search_patient_id = document.forms[event.target.id]["healthforall_id"].value;
 		var search_phone = document.forms[event.target.id]["phone_num"].value;
@@ -144,56 +117,10 @@ function initDistrictSelectize(){
 		}  
 	
 		}
-		function statusDateUpdate()
-		{    
-		   $('#error_status_date').html('');
-		}
-
-		function lifeStatusUpdate()
-		{    
-			$('#error_life_status').html('');
-		}
-		function lastVisitDateUpdate()
-		{
-			$('#error_lastvisit_date').html('');
-		}
-		function lastVisitType()
-		{
-			$('#error_lastvs_type').html('');
-		}
+		
 	function onAddFollowUpSubmit(){
 		
-       var status_date = $('#status_date').val();
-	   var last_visit_date = $('#last_visit_date').val();	  
-       if(status_date == '')
-	    {
-		$('#error_status_date').html('This field is required');
-	    }
-	   else if(status_date != '')
-	   {
-		$('#error_status_date').html('');
-	   }
-       if($('input:radio[name=life_status]:checked').length <= 0)
-	   {
-		$('#error_life_status').html('This field is required');
-	   }
-	   else{
-		$('#error_life_status').html('');
-	   }
-	   if(last_visit_date == '')
-	   {
-		$('#error_lastvisit_date').html('This field is required');
-	   }
-	   else if(last_visit_date != '')
-	   {
-		$('#error_lastvisit_date').html('');
-	   }
-
-	   if($('select[name=last_visit_type]').val()=="Select"){
-		$('#error_lastvs_type').html('This field is required');		
-	   }
-		//$("#followup_patient").submit();
-		//eve.preventDefault();
+      alert('Add Followup');
 	}	
 
 	function onUpdatePatientSubmit(){
@@ -256,13 +183,7 @@ function initDistrictSelectize(){
 				<script>
 					$(function(){
 
-						if (typeof $("#icd_code")[0] !== 'undefined') {
-			selectize = $("#icd_code")[0].selectize;
-			selectize.on('change',function(){
-				var test = selectize.getOption(selectize.getValue());
-				console.log(test);
-			});
-		}
+			
 					<?php if($patient_followup->status_date == 0){ ?>
 					$('.status_date').datetimepicker({
 						format : "D-MMM-YYYY h:ssA",
@@ -281,18 +202,58 @@ function initDistrictSelectize(){
 		
 					});
 
-					
-					
+	$('form[id="followup_add_details"]').validate({
+	
+   });
+				
+   $(document).ready(function(){
+
+	
+	$('#icd_code').selectize({
+    valueField: 'icd_code',
+    labelField: 'code_title',
+    searchField: 'code_title',
+    create: false,
+    render: {
+        option: function(item, escape) {
+
+            return '<div>' +
+                '<span class="title">' +
+                    '<span class="icd_code">' + escape(item.code_title) + '</span>' +
+                '</span>' +
+            '</div>';
+        }
+    },
+    load: function(query, callback) {
+        if (!query.length) return callback();
+		$.ajax({
+            url: '<?php echo base_url();?>register/search_icd_codes',
+            type: 'POST',
+			dataType : 'JSON',
+			data : {query:query},
+            error: function(res) {
+                callback();
+            },
+            success: function(res) {
+                callback(res.icd_codes.slice(0, 10));
+            }
+       		 });
+				}
+				});
+
+		     });
+
 					</script>
 <?php
 
 $patient = $patients[0];
   
 ?>
+	<?php echo validation_errors(); ?>
 <div class="col-md-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-		<div class="row alt">
+		<div class="row">
 			<h4>Patient Followup</h4>
 			<span style="color:red;">(Search by Patient Id or Phone Number one of them is Mandatory *)	</span>
 		</div>
@@ -436,25 +397,26 @@ $patient = $patients[0];
 						</div>
 				</div>
 			</div>	
-	
-		
-		
+							</form>
+			</div>
+	</div>
+	<div class="col-md-12">
+	<div class="panel panel-default">
 		<div class="panel-heading">
-		<div class="row alt">
+		<div class="row">
 				<h4 style="color:blue">Patient Follow Up Details</h4>
 		</div>
 		</div>
 	
 		
-			<!-- <?php echo form_open('register/patient_follow_up',array('class'=>'form-custom','role'=>'form', 'id'=>'patient_follow_up')); ?> -->
+		<?php echo form_open('register/patient_follow_up',array('class'=>'form-custom','role'=>'form', 'id'=>'followup_add_details','onSubmit'=>'onAddFollowUpSubmit()')); ?>
 			<input type="hidden" class="sr-only" value="<?php echo $transaction_id;?>" name="transaction_id" />
 			<div class="row">
 				
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				        <div class="form-group">
 						<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
-					<input class="form-control"  type="date"  name="status_date" id="status_date" onchange="statusDateUpdate();" />
-					<span style="color:red;" id="error_status_date"></span>
+					<input class="form-control"  type="date"  name="status_date" id="status_date"  required/>
 
 						</div>
 				</div>
@@ -462,24 +424,22 @@ $patient = $patients[0];
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
-								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" onchange=lifeStatusUpdate(); >
+								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" required >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
-								<input type="radio" name="life_status" id="life_status_notlive" value="0" onchange=lifeStatusUpdate(); >
+								<input type="radio" name="life_status" id="life_status_notlive" value="0" required >
 								<label for="status_dead">Not Alive</label><br>
 								<span style="color:red;" id="error_life_status"></span>
 
 							</div>
 				</div>
 			
-				<div class="col-xs-12 col-sm-12 col-md-8  col-lg-4">
+				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
-								<label for="Inputicd_code">ICD Code</label>
-                                <select class="form-control" name="icd_code" id="icd_code" class="repositories" placeholder="Search ICD codes">
-									<?php foreach($codes as $icd_code){
-							echo "<option value='$icd_code->icd_code'> $icd_code->icd_10  $icd_code->code_title</option>";
-									}
-									?>
-								</select>
+							<label class="Inputdistrict">  ICD Code    </label>
+							<select id="icd_code" class="repositories"  name="icd_code" style=" display: inline-grid;" placeholder="Search ICD codes" >
+								<option value="">   --Search ICD codes--   </option>
+								<input type='hidden' name='icd_code' id='icd_code_val' class='form-control'/>
+							</select>	
                             </div>
 				</div>
 
@@ -496,9 +456,9 @@ $patient = $patients[0];
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
-								<select class="form-control" name="last_visit_type"  onchange="lastVisitType();">
-									<option value="Select">Select</option>
-									<option value=''>All</option>
+								<select class="form-control" name="last_visit_type"  required>
+									<option value="">Select</option>
+									<option value='All'>All</option>
 								    <option value='IP'>IP</option>
 								    <option value='OP'>OP</option>  
 									<!-- <?php foreach($helplines as $helpline){
@@ -513,7 +473,7 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus_date ">Last Visit Date <span class="mandatory">*</span> </label>
-								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" onchange="lastVisitDateUpdate();" />
+								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" required />
 								<span style="color:red;" id="error_lastvisit_date"></span>
 
 							</div>
@@ -580,8 +540,9 @@ $patient = $patients[0];
 				<center><button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit()">Update</button></center>&emsp;
 				 <?php } ?>
 				<?php if(isset($patient->patient_id) && (!$patient_followup->patient_id)){ ?>
+					<input class="btn btn-sm btn-primary" name="search_add" type="submit" value="Add For Followup" />
 
-					<center><button type="button" class="btn btn-md btn-primary" value="Update" name="addfollowup_patient" onclick="onAddFollowUpSubmit()">Add For Followup</button></center>&emsp;
+					<!-- <center><button type="button" class="btn btn-md btn-primary" value="Update" name="addfollowup_patient" onclick="onAddFollowUpSubmit()">Add For Followup</button></center>&emsp; -->
 				<?php } ?>
 				</div>								
 		</div>
