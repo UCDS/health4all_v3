@@ -251,145 +251,7 @@ display: inline-grid;
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
-<?php if($this->input->post('visit_id')) { ?>
-<?php if($updated) { ?>
-<div class="alert alert-success" role="alert">Updated Patient Record!</div>
-<?php } else {?>
-<div class="alert alert-danger" role="alert">Something went wrong</div>
-<?php } ?>
-<?php } ?>
 
-<?php if(isset($report) && count($report)>0)
-{ ?>
-<div style='padding: 0px 2px;'>
-
-<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
-
-</div>
-<?php 
-	if ($this->input->post('rows_per_page')){
-		$total_records_per_page = $this->input->post('rows_per_page');
-	}else{
-		$total_records_per_page = $rowsperpage;
-	}
-	if ($this->input->post('page_no')) { 
-		$page_no = $this->input->post('page_no');
-	}
-	else{
-		$page_no = 1;
-	}
-	$total_records = $report_count[0]->count ;
-	$total_no_of_pages = ceil($total_records / $total_records_per_page);
-	if ($total_no_of_pages == 0)
-		$total_no_of_pages = 1;
-	$second_last = $total_no_of_pages - 1; 
-	$offset = ($page_no-1) * $total_records_per_page;
-	$previous_page = $page_no - 1;
-	$next_page = $page_no + 1;
-	$adjacents = "2";	
-?>
-
-<ul class="pagination" style="margin:0">
-<?php if($page_no > 1){
-echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
-} ?>
-    
-<li <?php if($page_no <= 1){ echo "class='disabled'"; } ?>>
-<a <?php if($page_no > 1){
-echo "href=# onclick=doPost($previous_page)";
-
-} ?>>Previous</a>
-</li>
-<?php
-  if ($total_no_of_pages <= 10){  	 
-	for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
-	if ($counter == $page_no) {
-	echo "<li class='active'><a>$counter</a></li>";	
-	        }else{
-        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
-                }
-        }
-}
-else if ($total_no_of_pages > 10){
-	if($page_no <= 4) {			
- 		for ($counter = 1; $counter < 8; $counter++){		 
-		if ($counter == $page_no) {
-	   		echo "<li class='active'><a>$counter</a></li>";	
-		}else{
-           		echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
-                }
-}
-
-echo "<li><a>...</a></li>";
-echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
-echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
-}
-elseif($page_no > 4 && $page_no < $total_no_of_pages - 4) {		 
-echo "<li><a href=# onclick=doPost(1)>1</a></li>";
-echo "<li><a href=# onclick=doPost(2)>2</a></li>";
-echo "<li><a>...</a></li>";
-for (
-     $counter = $page_no - $adjacents;
-     $counter <= $page_no + $adjacents;
-     $counter++
-     ) {		
-     if ($counter == $page_no) {
-	echo "<li class='active'><a>$counter</a></li>";	
-	}else{
-        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
-          }                  
-       }
-echo "<li><a>...</a></li>";
-echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
-echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
-}
-else {
-echo "<li><a href=# onclick=doPost(1)>1</a></li>";
-echo "<li><a href=# onclick=doPost(2)>2</a></li>";
-echo "<li><a>...</a></li>";
-for (
-     $counter = $total_no_of_pages - 6;
-     $counter <= $total_no_of_pages;
-     $counter++
-     ) {
-     if ($counter == $page_no) {
-	echo "<li class='active'><a>$counter</a></li>";	
-	}else{
-        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
-	}                   
-     }
-}
-}  
-?>
-<li <?php if($page_no >= $total_no_of_pages){
-echo "class='disabled'";
-} ?>>
-<a <?php if($page_no < $total_no_of_pages) {
-echo "href=# onclick=doPost($next_page)";
-} ?>>Next</a>
-</li>
-
-<?php if($page_no < $total_no_of_pages){
-echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
-} ?>
-<?php if($total_no_of_pages > 0){
-echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
-for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
-                  echo "<option value=$counter ";
-                  if ($page_no == $counter){
-                   echo "selected";
-                  }         
-                  echo ">$counter</option>";
-	}
-echo "</select></li>";
-} ?>
-</ul>
-
-
-<div style='padding: 0px 2px;'>
-<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
-
-</div>
 	
 
 
@@ -404,7 +266,7 @@ echo "</select></li>";
 		<th>Phone</th>
 		<th>Department</th>
 		<th>Visit Type</th>
-    		<th>Registered By</th>
+    	<th>Registered By</th>
 		<th>Doctor Consulted</th>
 		<th>Appointment With</th>
 		<th>Appointment Time</th>
@@ -412,16 +274,7 @@ echo "</select></li>";
 		<th>Decision</th>		
 	</thead>
 	<tbody>
-	<?php 
-	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($report as $s){
-		$age="";
-		if(!!$s->age_years) $age.=$s->age_years."Y ";
-		if(!!$s->age_months) $age.=$s->age_months."M ";
-		if(!!$s->age_days) $age.=$s->age_days."D ";
-		if($s->age_days==0 && $s->age_months==0 && $s->age_years==0) $age.="0D";
-	?>
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $s->patient_id;?></td>
@@ -445,10 +298,9 @@ echo "</select></li>";
 		
 		
 	</tr>
-	<?php $sno++;}	?>
 	</tbody>
 	</table>
-<div style='padding: 0px 2px;'>
+<!-- <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
@@ -552,10 +404,10 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
-	<?php } else { ?>
+	<?php //} else { ?>
 	
 	No Data to display.
-<?php }  ?>
-</div>	
+<?php //}  ?> -->
+</div>	 
 
   
