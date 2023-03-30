@@ -1017,6 +1017,11 @@ class Register extends CI_Controller {
             die();
         }
 	}
+
+	public function followup_detail(){
+
+		
+	}
 	public function patient_follow_up()
 	{
 	if($this->session->userdata('logged_in')){
@@ -1044,11 +1049,10 @@ class Register extends CI_Controller {
 			$this->data['hospital_id'] = $this->data['hospital']['hospital_id'];
 			$patient_id = $this->data['patients']['0']->patient_id;
 			$this->data['patients']=$this->register_model->get_patient_followup();
-			$this->data['previous_visits']=$this->register_model->get_visits($patient_id);
 			$this->data['priority_types']=$this->register_model->get_priority_type();
             $district_id = $this->data['patients']['0']->district_id;
 			$this->data['districts'] = $this->register_model->get_districts($district_id);
-			$this->data['codes'] = $this->register_model->get_icd_code();
+			$this->data['codes'] = $this->register_model->search_icd_codes();
 
 			
 			$c_patient = $this->input->post('healthforall_id');
@@ -1057,6 +1061,7 @@ class Register extends CI_Controller {
 			$update_patients['patient_id'] = $response['patient_id']; 
 			$update_patients['status_date'] = $response['status_date'];
 			$update_patients['life_status'] = $response['life_status']; 
+			$update_patients['icd_code'] = $response['icd_code']; 
 			$update_patients['diagnosis'] = $response['diagnosis'];
 			$update_patients['last_visit_type'] = $response['last_visit_type']; 
 			$update_patients['last_visit_date'] = $response['last_visit_date'];
@@ -1065,7 +1070,8 @@ class Register extends CI_Controller {
 			$update_patients['input_note'] = $response['input_note'];
 			
 			$this->data['update_patient'] = $this->register_model->insert_update_followup($update_patients);
-			
+			//$this->data['add_followup'] = $this->register_model->insert_add_followup($update_patients);
+
 			
 			//if(!$this->data['followups']){
 				$this->data['msg'] = "No patient record found. Register Patient and add for Followup";

@@ -1164,6 +1164,7 @@ class Register_model extends CI_Model{
 	function insert_update_followup($update_patients){
 			$this->db->set('status_date', $update_patients['status_date']);
 			$this->db->set('life_status', $update_patients['life_status']);	
+			$this->db->set('icd_code', $update_patients['icd_code']);
 			$this->db->set('diagnosis', $update_patients['diagnosis']);
 			$this->db->set('last_visit_type', $update_patients['last_visit_type']);
 			$this->db->set('last_visit_date', $update_patients['last_visit_date']);		
@@ -1171,9 +1172,8 @@ class Register_model extends CI_Model{
 			$this->db->set('volunteer_id', $update_patients['volunteer']);
 			$this->db->set('note', $update_patients['input_note']);
 			$this->db->where('patient_id', $update_patients['patient_id']);
-			if($this->db->update('patient_followup'))	
-			return true;
-			else return false;
+			$this->db->update('patient_followup');
+			
          	}
 
          function get_districts($district_id){
@@ -1183,13 +1183,7 @@ class Register_model extends CI_Model{
 			$result = $query->row();
 			return $result;
 		    }
-
-         function get_icd_code(){
-			$this->db->select("*")->from('icd_code');
-			$query = $this->db->get();
-			$result = $query->result();
-			return $result;
-		 }
+			
 
 	  function get_patient_followup(){		   		
 		$hospital=$this->session->userdata('hospital');
