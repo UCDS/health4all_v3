@@ -1160,6 +1160,65 @@ class Register_model extends CI_Model{
 		return $result;
 	}
 
+	function addfor_followup(){
+        $followup_info = array();
+		
+		$hospital=$this->session->userdata('hospital');
+		$hospital_id=$hospital['hospital_id'];
+		if($this->input->post('patient_id')){
+            $followup_info['patient_id'] = $this->input->post('patient_id');
+        }
+		if($hospital_id){
+            $followup_info['hospital_id'] = $hospital_id;
+        }
+        if($this->input->post('status_date')){
+            $followup_info['status_date'] = $this->input->post('status_date');
+        }
+        if($this->input->post('life_status')){
+            $followup_info['life_status'] = $this->input->post('life_status');
+        }
+        if($this->input->post('icd_code')){
+            $followup_info['icd_code'] = $this->input->post('icd_code');
+        }
+         if($this->input->post('diagnosis')){
+            $followup_info['diagnosis'] = $this->input->post('diagnosis');
+        }
+         if($this->input->post('last_visit_type')){
+            $followup_info['last_visit_type'] = $this->input->post('last_visit_type');
+        }
+        if($this->input->post('last_visit_date')){
+			$followup_info['last_visit_date'] = $this->input->post('last_visit_date');			    
+        }
+         if($this->input->post('priority_type')){
+            $followup_info['priority_type_id'] = $this->input->post('priority_type');
+        }
+         if($this->input->post('primary_route')){
+            $followup_info['route_primary_id'] = $this->input->post('primary_route');
+        }
+         if($this->input->post('secondary_route')){
+            $followup_info['route_secondary_id'] = $this->input->post('secondary_route');
+        }
+         if($this->input->post('volunteer')){
+            $followup_info['volunteer_id'] = $this->input->post('volunteer');
+        }
+         if($this->input->post('input_note')){
+            $followup_info['note'] = $this->input->post('input_note');
+        }
+        
+         
+      //  $this->db->trans_start();
+        $this->db->insert('patient_followup', $followup_info);
+		$insert_id = $this->db->insert_id();
+		return $insert_id;
+		// $this->db->trans_complete();
+        // if($this->db->trans_status()==FALSE){
+        //         return false;
+        // }
+        // else{
+		// 	return $insert_id;
+        // }
+    }
+
 
 	function insert_update_followup($update_patients){
 			$this->db->set('status_date', $update_patients['status_date']);

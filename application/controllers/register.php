@@ -1036,66 +1036,81 @@ class Register extends CI_Controller {
 		}
 		if($access==1){
 			$transaction = $this->transaction_condition();
-
-			$this->data['title']="Patients Followup";
+        $this->data['title']="Patients Followup";
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
-		$this->load->library('form_validation');	
+		$this->load->library('form_validation');
+		
+		
 		
 		if ($this->form_validation->run() === FALSE)
 		{	
+			
 			$c_patient = $this->input->post('healthforall_id');
 			$this->data['patient_followup']=$this->register_model->select_patient_followup_id($c_patient);
 			$this->data['hospital_id'] = $this->data['hospital']['hospital_id'];
-			$patient_id = $this->data['patients']['0']->patient_id;
+			
 			$this->data['patients']=$this->register_model->get_patient_followup();
+			$patient_id = $this->data['patients']['0']->patient_id;
 			$this->data['priority_types']=$this->register_model->get_priority_type();
             $district_id = $this->data['patients']['0']->district_id;
 			$this->data['districts'] = $this->register_model->get_districts($district_id);
 			$this->data['codes'] = $this->register_model->search_icd_codes();
 
 			
-			$c_patient = $this->input->post('healthforall_id');
-			$response = $this->input->post();
-			$update_patients = array();
-			$update_patients['patient_id'] = $response['patient_id']; 
-			$update_patients['status_date'] = $response['status_date'];
-			$update_patients['life_status'] = $response['life_status']; 
-			$update_patients['icd_code'] = $response['icd_code']; 
-			$update_patients['diagnosis'] = $response['diagnosis'];
-			$update_patients['last_visit_type'] = $response['last_visit_type']; 
-			$update_patients['last_visit_date'] = $response['last_visit_date'];
-			$update_patients['priority_type'] = $response['priority_type']; 
-			$update_patients['volunteer'] = $response['volunteer']; 
-			$update_patients['input_note'] = $response['input_note'];
+			 $status_date = $this->input->post('status_date');
+			 
+			 if($this->input->post('search_add')){
 			
-			$this->data['update_patient'] = $this->register_model->insert_update_followup($update_patients);
+			
+				$insert_id = $this->register_model->addfor_followup();
+				if($insert_id)
+				$this->data['msg'] = 'Followup Added Successfully';
+			else
+				$this->data['msg'] = 'Something went wrong try again';
+			//	$this->load->view('pages/patient_followup',$this->data);
+		}
+			 
+			  if($this->input->post('search_update_btn'))
+			 {
+	
+				$this->register_model->updatefor_followup();
+			 }
+			// $response = $this->input->post();
+			// $update_patients = array();
+			// $update_patients['patient_id'] = $response['patient_id']; 
+			// $update_patients['status_date'] = $response['status_date'];
+			// $update_patients['life_status'] = $response['life_status']; 
+			// $update_patients['icd_code'] = $response['icd_code']; 
+			// $update_patients['diagnosis'] = $response['diagnosis'];
+			// $update_patients['last_visit_type'] = $response['last_visit_type']; 
+			// $update_patients['last_visit_date'] = $response['last_visit_date'];
+			// $update_patients['priority_type'] = $response['priority_type']; 
+			// $update_patients['volunteer'] = $response['volunteer']; 
+			// $update_patients['input_note'] = $response['input_note'];
+			
+			// $this->data['update_patient'] = $this->register_model->insert_update_followup($update_patients);
 			//$this->data['add_followup'] = $this->register_model->insert_add_followup($update_patients);
 
 			
 			//if(!$this->data['followups']){
-				$this->data['msg'] = "No patient record found. Register Patient and add for Followup";
+			//$this->data['msg'] = "No patient record found. Register Patient and add for Followup";
 			//}
 			$this->load->view('pages/patient_followup',$this->data);
-		}	
-		
-		else{
-
-			
-			if(count($this->data['patients']) == 0){
-				$this->data['msg'] = "No Patient found";
-			}
 			if($this->input->post('search_followup')){
-			//$this->data['patients']=$this->register_model->get_patient_followup();
+				$this->load->view('pages/detail_followup',$this->data);
 
-			//$this->data['followups']=$this->register_model->get_patient_followup();
-			$this->load->view('pages/patient_followup',$this->data);
-  
-		}
+			}
+
+		}	
+	
 	
 		
-		$this->load->view('pages/patient_followup',$this->data);
-	}
+
+	
+	
+		//$this->load->view('pages/patient_followup',$this->data);
+	
 		$this->load->view('templates/footer');
 		}
 		else{
