@@ -1060,7 +1060,6 @@ class Register extends CI_Controller {
 			$this->data['codes'] = $this->register_model->search_icd_codes();
 
 			
-			 $status_date = $this->input->post('status_date');
 			 
 			 if($this->input->post('search_add')){
 			
@@ -1076,7 +1075,11 @@ class Register extends CI_Controller {
 			  if($this->input->post('search_update_btn'))
 			 {
 	
-				$this->register_model->updatefor_followup();
+				$update = $this->register_model->updatefor_followup();
+				if($update == true)
+					$this->data['msg'] = 'Updated Successfully';
+					else
+					$this->data['msg'] = 'Something went wrong try again';
 			 }
 			// $response = $this->input->post();
 			// $update_patients = array();

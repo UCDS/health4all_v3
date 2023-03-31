@@ -307,7 +307,7 @@ $patient = $patients[0];
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				        <div class="form-group">
 						<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
-					<input class="form-control"  type="date"  name="status_date" id="status_date"  required/>
+					<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
 
 						</div>
 				</div>
@@ -344,7 +344,7 @@ $patient = $patients[0];
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 								<label for="Inputdiagnosis">Diagnosis</label>
-								<input class="form-control" name="diagnosis" id="inputdiagnosis" placeholder="Enter Diagnosis" type="TEXT" align="middle">
+								<input class="form-control" name="diagnosis" id="inputdiagnosis" placeholder="Enter Diagnosis" type="TEXT" value="<?php if($patient_followup) echo $patient_followup->diagnosis;  ?>" align="middle">
 						</div> 
 					</div>								
 						
@@ -352,7 +352,8 @@ $patient = $patients[0];
 							<div class="form-group">
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
 								<select class="form-control" name="last_visit_type"  required>
-									<option value="">Select</option>
+									<option value="<?php if($patient_followup) echo $patient_followup->last_visit_type;  ?>"><?php if($patient_followup) echo $patient_followup->last_visit_type;  ?></option>
+									<option value=''>Select</option>
 									<option value='All'>All</option>
 								    <option value='IP'>IP</option>
 								    <option value='OP'>OP</option>  
@@ -364,7 +365,7 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus_date ">Last Visit Date <span class="mandatory">*</span> </label>
-								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" required />
+								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" value=<?php if($patient_followup) echo $patient_followup->last_visit_date;  ?>  required />
 
 							</div>
 						</div>
@@ -376,7 +377,7 @@ $patient = $patients[0];
 								<label class="control-label">Priority Type </label>
 								<select class="form-control" name="priority_type" >
 									<option value="Select">Select</option>
-									 <?php foreach($priority_types as $type){
+									 <?php foreach($priority_types as $type){										
 									echo "<option value='$type->priority_type_id'>$type->priority_type</option>";
 									}
 									?> 
@@ -429,7 +430,7 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 								<label for="Inputdiagnosis">Note</label>
-								<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="text" align="middle">
+								<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="text" value="<?php if($patient_followup) echo $patient_followup->note;  ?>" align="middle">
 						</div> 
 					</div>	
 			</div>	

@@ -1250,18 +1250,26 @@ class Register_model extends CI_Model{
     }
 
 
-	function insert_update_followup($update_patients){
-			$this->db->set('status_date', $update_patients['status_date']);
-			$this->db->set('life_status', $update_patients['life_status']);	
-			$this->db->set('icd_code', $update_patients['icd_code']);
-			$this->db->set('diagnosis', $update_patients['diagnosis']);
-			$this->db->set('last_visit_type', $update_patients['last_visit_type']);
-			$this->db->set('last_visit_date', $update_patients['last_visit_date']);		
-			$this->db->set('priority_type_id', $update_patients['priority_type']);
-			$this->db->set('volunteer_id', $update_patients['volunteer']);
-			$this->db->set('note', $update_patients['input_note']);
-			$this->db->where('patient_id', $update_patients['patient_id']);
-			$this->db->update('patient_followup');
+	function updatefor_followup(){
+			$this->db->set('status_date', $this->input->post('status_date'));
+			$this->db->set('life_status', $this->input->post('life_status'));	
+			$this->db->set('icd_code', $this->input->post('icd_code'));
+			$this->db->set('diagnosis', $this->input->post('diagnosis'));
+			$this->db->set('last_visit_type', $this->input->post('last_visit_type'));
+			$this->db->set('last_visit_date', $this->input->post('last_visit_date'));	
+			$this->db->set('priority_type_id', $this->input->post('priority_type'));
+			$this->db->set('route_primary_id', $this->input->post('route_primary'));
+			$this->db->set('route_secondary_id', $this->input->post('route_secondary'));
+			$this->db->set('volunteer_id', $this->input->post('volunteer'));
+			$this->db->set('note', $this->input->post('input_note'));
+			$this->db->where('patient_id', $this->input->post('patient_id'));
+			if($this->db->update('patient_followup'))
+			
+				return true;
+			
+			else
+				return false;
+			
 			
          	}
 
