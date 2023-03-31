@@ -267,7 +267,7 @@ $('#to_id').change(function(){
 		<!--when filter is clicked this form will load --->
 		 <div class="container">
 			<?php if(count($search_inventory_summary) > 0) { ?>
-			<h3>Showing balance as on <i><?= $to_date; ?></i> for SCP: <span style="color: green;"><?= $search_inventory_summary[0]['inward']->supply_chain_party_name; ?></span></h3>
+			<h3>Showing balance as on <i><?= $to_date; ?></i> for SCP: <span style="color: green;"><?= $search_inventory_summary[0]->supply_chain_party_name; ?></span></h3>
 			<?php } ?>
 		 <div class="col-md-offset-2">
 					<table class="table table-bordered table-striped" id="table-sort">
