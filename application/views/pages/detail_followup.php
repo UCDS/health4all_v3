@@ -186,7 +186,7 @@ $patient = $patients[0];
 	
 	<div class="col-md-12">
 	<div class="panel panel-default">
-			<h4 align="center">Patient Follow-up</h4><br>
+			<!-- <h4 align="center">Patient Follow-up</h4><br> -->
 			<div class="panel-heading">
 				<h4 style="color:blue">Patient Details</h4>
 			</div>
@@ -197,13 +197,15 @@ $patient = $patients[0];
 			<div class="row">
 							<div class="col-md-3">
 							<div class="form-group">
-							Patient ID:  <input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: #ADFF2F; " readonly/>
+							<label class="control-label">Patient ID:</label>
+							  <input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: #ADFF2F; " readonly/>
                             </div>		
 							</div>
 
 							<div class="col-md-3">
 						    <div class="form-group">
-							Name: 	<input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F;" />
+							<label class="control-label">Name: 	</label>
+							<br><input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F;" />
                             </div>
 		                    </div>
 
@@ -222,9 +224,10 @@ $patient = $patients[0];
 						</div>	
 						
 						<div class="col-md-3">
-						<label>Gender: 	</label>		
-						    <div class="form-group">
-								<div class="col-md-4 col-xs-4" style="background: #ADFF2F; font-weight: bold;" >
+						<div class="form-group">
+						<label class="control-label">Gender: </label>
+						<br>
+								<div class="col-md-12 col-xs-12" style="background: #ADFF2F; font-weight: bold;" >
 
 								<?php if(!empty($patient->gender)) { ?> 
 												
@@ -252,7 +255,7 @@ $patient = $patients[0];
 			</div>		
 
 			<div class="row">
-			<div class="col-md-3">						
+					<div class="col-md-3">						
 							<label class="control-label">Relative Name </label>
 							<?php if (!empty($patient->father_name)) { ?>
 								<input type="text" name="relative_name" class="form-control" placeholder="" value="<?php echo $patient->father_name; ?>"  style="background: #ADFF2F; " readonly/>
@@ -265,10 +268,10 @@ $patient = $patients[0];
 
 					<div class="col-md-3">
 					
-						<label class="control-label">Address</span></label>
+						<label class="control-label">Address</span></label><br>
 						<textarea name="address" class="form-control"  style="background: #ADFF2F; " readonly/><?php echo $patient->address; ?></textarea>
 					
-				</div>	
+					</div>	
 
 				<div class="col-md-3">
 					<label class="control-label">District</label>
@@ -277,38 +280,41 @@ $patient = $patients[0];
 			</div>
 
 			<div class="row">			
-			<div class="col-md-3">
-					<label class="control-label">Phone</label>
+				<div class="col-md-3">
+				<div class="form-group">
+					<label class="control-label">Phone</label><br>
 					<input type="text" name="phone" class="form-control" value="<?php echo $patient->phone; ?>" style="background: #ADFF2F; " readonly/>
 				</div>	
+				</div>	
+
 				
 				<div class="col-md-3">
-								<div class="form-group">
-									<label for="inputstatus_date ">Registered On Date  </label>
-							 <input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
+						<div class="form-group">
+							<label for="inputstatus_date ">Registered On Date  </label>
+							<input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
 						</div>
 				</div>
 			</div>	
+		</div>
 							
-			</div>
 	</div>
+	</div>
+
+	
 	<div class="col-md-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-		<div class="row">
 				<h4 style="color:blue">Patient Follow Up Details</h4>
 		</div>
-		</div>
 	
-		
+		<div class="panel-body">
 			<input type="hidden" class="sr-only" value="<?php echo $transaction_id;?>" name="transaction_id" />
 			<div class="row">
 				
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				        <div class="form-group">
-						<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
-					<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
-
+							<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
+							<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
 						</div>
 				</div>
 
@@ -324,7 +330,7 @@ $patient = $patients[0];
 				</div>
 			
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
-							<div class="form-group">
+				<div class="form-group">
 							<label class="Inputdistrict">  ICD Code    </label>
 							<?php if(!empty($patient->icd_10)){?>
 					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
@@ -334,8 +340,8 @@ $patient = $patients[0];
 						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
 					<?php } ?>
 					</select>
-				<?php } ?>	
-                            </div>
+					<?php } ?>	
+                </div>
 				</div>
 
 			</div>
@@ -432,9 +438,9 @@ $patient = $patients[0];
 								<label for="Inputdiagnosis">Note</label>
 								<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="text" value="<?php if($patient_followup) echo $patient_followup->note;  ?>" align="middle">
 						</div> 
-					</div>	
+						</div>	
 			</div>	
-            
+		</div>    
             &emsp;&emsp;
 
 			<div class="panel-footer">
@@ -447,11 +453,10 @@ $patient = $patients[0];
 					<input class="btn btn-sm btn-primary" name="search_add" type="submit" value="Add For Followup" />
 
 				<?php } ?>
-				</div>								
-		</div>
-        </form>
-		</div>
-		</div>
+			</div>								
+			</div>
+			</form>
+		
 				
 		<?php }
 		

@@ -167,14 +167,17 @@ display: inline-grid;
 	
 	?>
 <div class="row">
-		<h4>Out Patient Detail 3</h4>	
+<div class="panel panel-default" >
+		<div class="panel-heading">
+		<h4>Search follow-Up Details</h4>	
+	</div>
 		<?php echo form_open("reports/op_detail_3",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
 			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 
 			 		<div class="row">		
 					 <div class="col-md-4">
 							<div class="form-group">
-								<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
+								<label for="inputstatus" style="margin-left: 10px; margin-top: 10px;">Life Status <span class="mandatory" >*</span></label><br>
 								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" onchange=lifeStatusUpdate(); >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
 								<input type="radio" name="life_status" id="life_status_notlive" value="0" onchange=lifeStatusUpdate(); >
@@ -186,7 +189,7 @@ display: inline-grid;
 
 						<div class="col-md-4">
 							<div class="form-group">
-								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
+								<label class="control-label" style="margin-top: 10px;">Last Visit Type <span class="mandatory">*</span> </label>
 								<select class="form-control" name="last_visit_type"  onchange="lastVisitType();">
 									<option value="Select">Select</option>
 									<option value=''>All</option>
@@ -203,7 +206,7 @@ display: inline-grid;
 
 						<div class="col-md-4">
 							<div class="form-group">
-								<label class="control-label">Priority Type </label>
+								<label class="control-label" style="margin-top: 10px;">Priority Type </label>
 								<select class="form-control" name="priority_type" >
 									<option value="Select">Select</option>
 									 <?php foreach($priority_types as $type){
@@ -218,7 +221,7 @@ display: inline-grid;
 					<div class="row">		
 					<div class="col-md-4">
 							<div class="form-group">
-								<label class="control-label">Volunteer </label>
+								<label class="control-label" style="margin-left: 10px; margin-top: 10px;">Volunteer </label>
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
 									 <!-- <?php //foreach($helplines as $helpline){
@@ -251,7 +254,7 @@ display: inline-grid;
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
 	<br />
-
+	 </div>
 	
 
 
