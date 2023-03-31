@@ -1018,10 +1018,7 @@ class Register extends CI_Controller {
         }
 	}
 
-	public function followup_detail(){
-
-		
-	}
+	
 	public function patient_follow_up()
 	{
 	if($this->session->userdata('logged_in')){
@@ -1053,6 +1050,11 @@ class Register extends CI_Controller {
 			$this->data['patients']=$this->register_model->get_patient_followup();
 			$patient_id = $this->data['patients']['0']->patient_id;
 			$this->data['priority_types']=$this->register_model->get_priority_type();
+			$this->data['route_primary']=$this->register_model->get_primary_route();
+			$this->data['route_secondary']=$this->register_model->get_secondary_route();
+			$this->data['volunteer']=$this->register_model->get_volunteer();
+
+			
             $district_id = $this->data['patients']['0']->district_id;
 			$this->data['districts'] = $this->register_model->get_districts($district_id);
 			$this->data['codes'] = $this->register_model->search_icd_codes();
@@ -1098,7 +1100,7 @@ class Register extends CI_Controller {
 			//}
 			$this->load->view('pages/patient_followup',$this->data);
 			if($this->input->post('search_followup')){
-				$this->data['patients']=$this->register_model->get_patient_followup();
+				//priority_types$this->data['patients']=$this->register_model->get_patient_followup();
 
 				$this->load->view('pages/detail_followup',$this->data);
 

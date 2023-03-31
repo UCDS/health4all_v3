@@ -1160,6 +1160,36 @@ class Register_model extends CI_Model{
 		return $result;
 	}
 
+	
+	function get_primary_route()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('route_primary');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+ 
+	function get_secondary_route(){
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('route_secondary');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+
+	function get_volunteer(){
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('staff')
+		->join('user_hospital_link','staff.hospital_id=user_hospital_link.hospital_id','left')
+		->join('user','user_hospital_link.user_id=user.user_id','left');
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+
 	function addfor_followup(){
         $followup_info = array();
 		
@@ -1192,11 +1222,11 @@ class Register_model extends CI_Model{
          if($this->input->post('priority_type')){
             $followup_info['priority_type_id'] = $this->input->post('priority_type');
         }
-         if($this->input->post('primary_route')){
-            $followup_info['route_primary_id'] = $this->input->post('primary_route');
+         if($this->input->post('route_primary')){
+            $followup_info['route_primary_id'] = $this->input->post('route_primary');
         }
-         if($this->input->post('secondary_route')){
-            $followup_info['route_secondary_id'] = $this->input->post('secondary_route');
+         if($this->input->post('route_secondary')){
+            $followup_info['route_secondary_id'] = $this->input->post('route_secondary');
         }
          if($this->input->post('volunteer')){
             $followup_info['volunteer_id'] = $this->input->post('volunteer');

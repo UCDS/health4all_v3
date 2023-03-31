@@ -142,6 +142,8 @@
 	
 				
 $(document).ready(function(){
+	
+
 $('#icd_code').selectize({
 valueField: 'icd_code',
 labelField: 'code_title',
@@ -381,20 +383,30 @@ $patient = $patients[0];
 								</select>
 							</div>
 						</div>
-
+						
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Primary Route</label>
-								<input class="form-control"  type="text"  name="primary_route" id="primary_route" placeholder="Enter Latitude,Longitude"/>
-
+								<select class="form-control" name="route_primary" >
+									<option value="Select">Select</option>
+									 <?php foreach($route_primary as $primary){
+									echo "<option value='$primary->route_primary_id'>$primary->route_primary</option>";
+									}
+									?> 
+								</select>
 							</div>
 						</div>
 
 						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Secondary Route</label>
-								<input class="form-control"  type="text"  name="secondary_route" id="secondary_route" placeholder="Enter Latitude,Longitude"/>
-
+								<select class="form-control" name="route_secondary" >
+									<option value="Select">Select</option>
+									 <?php foreach($route_secondary as $secondary){
+									echo "<option value='$secondary->id'>$secondary->route_secondary</option>";
+									}
+									?> 
+								</select>							
 							</div>
 						</div>
 			</div>
@@ -405,10 +417,10 @@ $patient = $patients[0];
 								<label class="control-label">Volunteer </label>
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
-									 <!-- <?php //foreach($helplines as $helpline){
-									// echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
-									//}
-									?>  -->
+									 <?php foreach($volunteer as $volunt){
+									 echo "<option value='$volunt->staff_id'>$volunt->first_name</option>";
+									    }
+									?> 
 								</select>
 							</div>
 						</div>										
