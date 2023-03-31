@@ -7,8 +7,6 @@
 <link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <!-- <script type="text/javascript" src="<?php //echo base_url();?>assets/js/patient_followp_validations.js"></script> -->
 
 <style>
@@ -38,69 +36,7 @@
 	.alt:nth-child(odd){
 		background:#eee;
 	}
-		.selectize-control.repositories .selectize-dropdown > div {
-			border-bottom: 1px solid rgba(0,0,0,0.05);
-		}
-		.selectize-control.repositories .selectize-dropdown .by {
-			font-size: 11px;
-			opacity: 0.8;
-		}
-		.selectize-control.repositories .selectize-dropdown .by::before {
-			content: 'by ';
-		}
-		.selectize-control.repositories .selectize-dropdown .name {
-			font-weight: bold;
-			margin-right: 5px;
-		}
-		.selectize-control.repositories .selectize-dropdown .title {
-			display: block;
-		}
-		.selectize-control.repositories .selectize-dropdown .description {
-			font-size: 12px;
-			display: block;
-			color: #a0a0a0;
-			white-space: nowrap;
-			width: 100%;
-			text-overflow: ellipsis;
-			overflow: hidden;
-		}
-		.selectize-control.repositories .selectize-dropdown .meta {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			font-size: 10px;
-		}
-		.selectize-control.repositories .selectize-dropdown .meta li {
-			margin: 0;
-			padding: 0;
-			display: inline;
-			margin-right: 10px;
-		}
-		.selectize-control.repositories .selectize-dropdown .meta li span {
-			font-weight: bold;
-		}
-		.selectize-control.repositories::before {
-			-moz-transition: opacity 0.2s;
-			-webkit-transition: opacity 0.2s;
-			transition: opacity 0.2s;
-			content: ' ';
-			z-index: 2;
-			position: absolute;
-			display: block;
-			top: 12px;
-			right: 34px;
-			width: 16px;
-			height: 16px;
-			background: url(<?php echo base_url();?>assets/images/spinner.gif);
-			background-size: 16px 16px;
-			opacity: 0;
-		}
-		.selectize-control.repositories.loading::before {
-			opacity: 0.4;
-		}
-		.selectize_district{
-			display: inline-grid;
-		}
+		
 		
 		
 	
@@ -206,43 +142,10 @@
 	
    });
 				
-   $(document).ready(function(){
+  
 
 	
-	$('#icd_code').selectize({
-    valueField: 'icd_code',
-    labelField: 'icd_code',
-    searchField: 'code_title',
-    create: false,
-    render: {
-        option: function(item, escape) {
-
-            return '<div>' +
-                '<span class="title">' +
-                    '<span class="icd_code">' + escape(item.code_title) + '</span>' +
-                '</span>' +
-            '</div>';
-        }
-    },
-    load: function(query, callback) {
-        if (!query.length) return callback();
-		$.ajax({
-            url: '<?php echo base_url();?>register/search_icd_codes',
-            type: 'POST',
-			dataType : 'JSON',
-			data : {query:query},
-            error: function(res) {
-                callback();
-            },
-            success: function(res) {
-                callback(res.icd_codes.slice(0, 10));
-            }
-       		 });
-				}
-				});
-
-		     });
-
+	
 					</script>
 <?php
 
@@ -295,6 +198,6 @@ $patient = $patients[0];
 			echo "<b>". "No patient record found. Register Patient and add for Followup" ."</b>" ;
 		}
 		else {
-			echo "<b>". $msg ."<b>";
+			echo "<b>". $msg ."</b>";
 
 		} ?>

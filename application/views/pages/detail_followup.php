@@ -118,8 +118,11 @@
 		}
 	</script>
 				<script>
+					$('form[id="followup_add_details"]').validate({
+	
+});
 					$(function(){
-			
+						
 					<?php if($patient_followup->status_date == 0){ ?>
 					$('.status_date').datetimepicker({
 						format : "D-MMM-YYYY h:ssA",
@@ -136,59 +139,48 @@
 		
 					});
 
-	$('form[id="followup_add_details"]').validate({
 	
-   });
 				
-   $(document).ready(function(){
+$(document).ready(function(){
+$('#icd_code').selectize({
+valueField: 'icd_code',
+labelField: 'code_title',
+searchField: 'code_title',
+create: false,
+render: {
+	option: function(item, escape) {
 
-	
-	$('#icd_code').selectize({
-    valueField: 'icd_code',
-    labelField: 'code_title',
-    searchField: 'code_title',
-    create: false,
-    render: {
-        option: function(item, escape) {
+		return '<div>' +
+			'<span class="title">' +
+				'<span class="icd_code">' + escape(item.code_title) + '</span>' +
+			'</span>' +
+		'</div>';
+	}
+},
+load: function(query, callback) {
+	if (!query.length) return callback();
+	$.ajax({
+		url: '<?php echo base_url();?>register/search_icd_codes',
+		type: 'POST',
+		dataType : 'JSON',
+		data : {query:query},
+		error: function(res) {
+			callback();
+		},
+		success: function(res) {
+			callback(res.icd_codes.slice(0, 10));
+		}
+			});
+			}
+			});
 
-            return '<div>' +
-                '<span class="title">' +
-                    '<span class="icd_code" >' + escape(item.code_title) + '</span>' +
-                '</span>' +
-            '</div>';
-        }
-    },
-    load: function(query, callback) {
-        if (!query.length) return callback();
-		$.ajax({
-            url: '<?php echo base_url();?>register/search_icd_codes',
-            type: 'POST',
-			dataType : 'JSON',
-			data : {query:query},
-            error: function(res) {
-                callback();
-            },
-            success: function(res) {
-                callback(res.icd_codes.slice(0, 10));
-               }
-				});
-				}
-            });
-		     });
-
-					</script>
+		 });
+      </script>
 <?php
-
 $patient = $patients[0];
-  
 ?>
-	<?php echo validation_errors(); ?>
 
-	
-
-	
-		<?php if(isset($patients) && count($patients)>=1){ ?>
-			
+<?php if(isset($patients) && count($patients)>=1){ ?>
 	
 	<div class="col-md-12">
 	<div class="panel panel-default">
@@ -325,7 +317,6 @@ $patient = $patients[0];
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
 								<input type="radio" name="life_status" id="life_status_notlive" value="0" required >
 								<label for="status_dead">Not Alive</label><br>
-								<span style="color:red;" id="error_life_status"></span>
 
 							</div>
 				</div>
@@ -333,9 +324,15 @@ $patient = $patients[0];
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 							<label class="Inputdistrict">  ICD Code    </label>
-							<select id="icd_code" class="repositories"  name="icd_code" style=" display: inline-grid;" placeholder="Search ICD codes" >
-								<input type='hidden' name='icd_code' id='icd_code_val' class='form-control'/>
-							</select>	
+							<?php if(!empty($patient->icd_10)){?>
+					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
+				 <?php } else {?>
+					<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
+					<?php if(!!$patient->icd_10){ ?>
+						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
+					<?php } ?>
+					</select>
+				<?php } ?>	
                             </div>
 				</div>
 
@@ -359,7 +356,6 @@ $patient = $patients[0];
 								    <option value='OP'>OP</option>  
 								
 								</select>
-								<span style="color:red;" id="error_lastvs_type"></span>
 							</div>
 						</div>
 
@@ -367,7 +363,6 @@ $patient = $patients[0];
 							<div class="form-group">
 								<label for="inputstatus_date ">Last Visit Date <span class="mandatory">*</span> </label>
 								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" required />
-								<span style="color:red;" id="error_lastvisit_date"></span>
 
 							</div>
 						</div>
@@ -432,14 +427,12 @@ $patient = $patients[0];
 			<div class="panel-footer">
 			<div class="text-center">
 				<?php if(isset($patient_followup)  && ($patient_followup->hospital_id == $hospital_id) ) { ?>
-				<!-- <center><button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit()">Update</button></center>&emsp; -->
 				<input class="btn btn-sm btn-primary" name="search_update_btn" type="submit" value="Update" />
 
 				<?php } ?>
 				<?php if(isset($patient->patient_id) && (!$patient_followup->patient_id)){ ?>
 					<input class="btn btn-sm btn-primary" name="search_add" type="submit" value="Add For Followup" />
 
-					<!-- <center><button type="button" class="btn btn-md btn-primary" value="Update" name="addfollowup_patient" onclick="onAddFollowUpSubmit()">Add For Followup</button></center>&emsp; -->
 				<?php } ?>
 				</div>								
 		</div>

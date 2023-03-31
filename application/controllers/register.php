@@ -1098,6 +1098,8 @@ class Register extends CI_Controller {
 			//}
 			$this->load->view('pages/patient_followup',$this->data);
 			if($this->input->post('search_followup')){
+				$this->data['patients']=$this->register_model->get_patient_followup();
+
 				$this->load->view('pages/detail_followup',$this->data);
 
 			}
