@@ -20,13 +20,15 @@ class Inventory_summary_model extends CI_Model
     function query_latest_records($latest_run_date, $scp_id=null, $as_on_date=null)
     {
         if($scp_id){
-            // echo "$as_on_date<br/>";            
+            // echo "$as_on_date<br/>"; 
+            $hospital=$this->session->userdata('hospital');           
             $this->db->select('scp.supply_chain_party_name, item.item_name, inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, SUM(inventory.quantity) total_quantity')
             ->from('inventory')
             ->join('item', 'item.item_id = inventory.item_id')
             ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
             ->where("inventory.date_time > '$latest_run_date'")
             ->where('scp.supply_chain_party_id', $scp_id)
+            ->where('scp.hospital_id', $hospital['hospital_id'])
             ->group_by('inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward');
             if($as_on_date){
                 $this->db->where("inventory.date_time <= '$as_on_date'");
