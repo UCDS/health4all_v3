@@ -11,7 +11,7 @@
 <script type="text/javascript">
 		var rowcount=0;
 		$(function(){
-		$("#approval_date").Zebra_DatePicker({direction:false});
+		$("#approval_date").Zebra_DatePicker({direction:['<?= date("d-M-Y", strtotime($indent_approval[0]->indent_date)); ?>' , '<?= date('d-M-Y'); ?>']});
 		$("#approval_time").ptTimeSelect();
 		$("#addbutton").click(function(){
 			var sno="<td>"+ " " +"</td></br>";
@@ -167,7 +167,8 @@ $(window).load(function() {
 		<div class="row">
 			<div class="col-md-12">
 				<div class="panel panel-success">
-					<div class="panel-heading" ><center>    
+					<div class="panel-heading" ><center> 
+					
 					<h3> Indent </h3><!-- Heading -->
 					<?php foreach($indent_approval as $all_int) { ?>
 					<p class="panel-title">Indent ID : <?php echo $all_int->indent_id;?>     &nbsp;&nbsp;&nbsp;     Indent Date :  <?php echo date("d-M-Y g:i A", strtotime($all_int->indent_date)); ?> </p>

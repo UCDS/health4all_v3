@@ -74,6 +74,7 @@ class Indent_approval_model extends CI_Model {                                  
 		if($this->input->post('selected_indent_id')){
 			$this->db->where('indent.indent_id',$this->input->post('selected_indent_id'));
 		}
+		// $this->db->where()
 		$query=$this->db->get();
 		return $query->result();   
 	}//display_approve_details
@@ -96,7 +97,8 @@ class Indent_approval_model extends CI_Model {                                  
 	}//get_data
     
 	function approve_indent(){                                                                               //function definition with name:approve_indent
-		$user_data=$this->session->userdata('logged_in');                                                    //get user data and store it in a var:user_data
+		$user_data=$this->session->userdata('logged_in'); 
+		$hospital=$this->session->userdata('hospital');                                                   //get user data and store it in a var:user_data
 		$this->db->select('staff_id')->from('user')                                                          //select  staff_id of the particular user who logged in
 		->where('user.user_id',$user_data['user_id']);
 		$query=$this->db->get();
@@ -142,7 +144,7 @@ class Indent_approval_model extends CI_Model {                                  
 			if($this->input->post('approval_date') && $this->input->post('approval_time')){
 				$input_datetime = date("Y-m-d H:i:s", strtotime($this->input->post('approval_date')." ".$this->input->post('approval_time')));
 				// log_message("info", "SAIRAM ip: $input_datetime, a: $call_date");
-				if($input_datetime > $call_date){
+				if(strtotime($input_datetime) > strtotime($call_date)){
 					$approval_datetime = $call_date;
 				}else{
 					$approval_datetime = $input_datetime;
@@ -153,12 +155,20 @@ class Indent_approval_model extends CI_Model {                                  
 								); 
 			$updated_user_ids = array ();
 			$this->db->trans_start();
+
 			$this->db->update_batch('indent_item',$data,'indent_item_id');                                     //all these are update queries to store values in arrays into database
 		    $this->db->where('indent_id', $this->input->post('indent'));
+			// $this->db->where('hospital_id', $hospital['hospital_id']);
+
             $this->db->update('indent', $data_d); 
 			$this->db->where('indent_id', $this->input->post('indent'));
+			// $this->db->where('hospital_id', $hospital['hospital_id']);
+
            $this->db->update('indent', $updated_timestamps);
 		   $this->db->where('indent_id', $this->input->post('indent'));
+		//    $this->db->where('hospital_id', $hospital['hospital_id']);
+
+
            $this->db->update('indent', $array_d);
 		    $this->db->trans_complete();                                               
             if($approve==0){                                                                                   //if there is no item in order whose status is approved then return 0 else return 1

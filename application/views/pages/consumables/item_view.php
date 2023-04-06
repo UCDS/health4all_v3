@@ -24,13 +24,14 @@ $(function(){
 	<h3>Add Item Details</h3>
 </center></br>
 <center>
-	<?php echo validation_errors(); ?>
+	<?php echo validation_errors('<div class="alert alert-danger">', '</div>'); ?>
 </center>
 	<?php 
 	echo form_open('consumables/item/add_item',array('class'=>'form-group','role'=>'form','id'=>'add_item')); ?></center>
 	
 	<div class="col-xs-4 col-md-offset-3">
 		<div class="container">
+			
 			<div class="row">
 				<div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">		<!--Item name-->
 					<div class="form-group">

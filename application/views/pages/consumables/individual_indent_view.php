@@ -52,161 +52,43 @@
 		window.location.assign('<?php echo base_url()."consumables/indent_reports/indents_list"?>');
 	}
 </script>
-<!-- <script type="text/javascript">
-$(function(){
-		var options = {
-			widthFixed : true,
-			showProcessing: true,
-			headerTemplate : '{content} {icon}', // Add icon for jui theme; new in v2.7!
+<style type="text/css">
+	#details_container {
+		max-width: 900px;
+		overflow-y: auto;
+		max-height: 700px;
 
-			widgets: [ 'default', 'zebra', 'print', 'stickyHeaders','filter'],
+		overflow-x: scroll;
+	}
 
-			widgetOptions: {
+	#details_table {
+		width: 1000px;
+		min-width: 950px;
 
-		  print_title      : 'table',          // this option > caption > table id > "table"
-		  print_dataAttrib : 'data-name', // header attrib containing modified header name
-		  print_rows       : 'f',         // (a)ll, (v)isible or (f)iltered
-		  print_columns    : 's',         // (a)ll, (v)isible or (s)elected (columnSelector widget)
-		  print_extraCSS   : '.table{border:1px solid #ccc;} tr,td{background:white}',          // add any extra css definitions for the popup window here
-		  print_styleSheet : '', // add the url of your print stylesheet
-		  // callback executed when processing completes - default setting is null
-		  print_callback   : function(config, $table, printStyle){
-			// do something to the $table (jQuery object of table wrapped in a div)
-			// or add to the printStyle string, then...
-			// print the table using the following code
-			$.tablesorter.printTable.printOutput( config, $table.html(), printStyle );
-			},
-			// extra class name added to the sticky header row
-			  stickyHeaders : '',
-			  // number or jquery selector targeting the position:fixed element
-			  stickyHeaders_offset : 0,
-			  // added to table ID, if it exists
-			  stickyHeaders_cloneId : '-sticky',
-			  // trigger "resize" event on headers
-			  stickyHeaders_addResizeEvent : true,
-			  // if false and a caption exist, it won't be included in the sticky header
-			  stickyHeaders_includeCaption : false,
-			  // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
-			  stickyHeaders_zIndex : 2,
-			  // jQuery selector or object to attach sticky header to
-			  stickyHeaders_attachTo : null,
-			  // scroll table top into view after filtering
-			  stickyHeaders_filteredToTop: true,
+		/* overflow-y: auto; */
+	}
+	.issue_invoice {
+		max-width: 900px;
+		overflow-y: auto;
+		max-height: 700px;
 
-			  // adding zebra striping, using content and default styles - the ui css removes the background from default
-			  // even and odd class names included for this demo to allow switching themes
-			  zebra   : ["ui-widget-content even", "ui-state-default odd"],
-			  // use uitheme widget to apply defauly jquery ui (jui) class names
-			  // see the uitheme demo for more details on how to change the class names
-			  uitheme : 'jui'
-			}
-		};
-		$("#table-sort").tablesorter(options);
-		$('.print').click(function(){
-			$('#table-sort').trigger('printTable');
-		});
-	});
-</script> -->
-<!-- <script>
-	$(function () {
-		$('[data-toggle="popover"]').popover({trigger:'hover',html:true});
-		$("#item").chained("#item_type");
-	});
-</script> -->
+		overflow-x: scroll;
+	}
 
-<?php if (count($issue_details) > 0) { ?>
+	#issue_invoice_table {
+		width: 1000px;
+		min-width: 950px;
+
+		/* overflow-y: auto; */
+	}
+</style>
+
+<?php if (count($issue_details) > 0) { 
+	$single_issue = $issue_details[0];
+	?>
 
 <iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
-<div id="print-div" class="sr-only" style="width:100%;height:100%;">
-	<center>
-		<?php foreach ($issue_details as $all_issue) { ?>
-			<h3>
-				<?php echo $all_issue->hospital; ?>
-			</h3>
-			<?php break;
-		} ?>
-		<p>
-		<h3>Indent ID <?php echo $all_issue->indent_id; ?></h3>
-		</p><!-- Heading -->
-		
-	</center>
-	<hr style="border: 2px solid black">
-	<center>
-		
-		<label style="float:left"><b>From : </b>
-			<?php echo " " . $all_issue->from_party; ?>
-		</label><!-- From label-->
-		<label style="float:right"><b>To : </b>
-			<?php echo " " . $all_issue->to_party; ?>
-		</label><br><br><!--  To label -->
-		<label style="float:left"><b>Indented by : </b>
-			<?php echo $all_issue->order_first . " " . $all_issue->order_last." at " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
-		</label><br><br><!--Date Time label -->
-		<label style="float:left"><b>Approval by : </b>
-			<?php 
-				if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
-					echo $all_issue->approve_first . " " . $all_issue->approve_last." at " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));}
-				else { 
-					echo " NA";
-				} ?>
-		</label><br><br><!--Date Time label -->
-		<label style="float:left"><b>Issued by : </b>
-		<?php 
-				if ($all_issue->indent_status == "Issued") {
-					echo $all_issue->issue_first . " " . $all_issue->issue_last." at " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
-				else { 
-					echo " NA";
-				} ?>
-		</label><br><br><!--Date Time label -->
-		
-	</center>
-	<br /><br /><br />
-	<table style=" border:2px solid black;width:100%;border-collapse: collapse;">
-		<thead style="height:50px">
-			<th style="text-align:center;border:2px solid black;">#</th>
-			<th style="text-align:center;border:2px solid black;">Items</th>
-			<th style="text-align:center;border:2px solid black;">Quantity indented</th>
-			<th style="text-align:center;border:2px solid black;">Quantity Approved</th>
-			<th style="text-align:center;border:2px solid black;">Quantity Issued</th>
-			<th style="text-align:center;border:2px solid black;">Note</th>	
-		</thead>
-		<tbody>
-			<?php
-			$i = 1;
-			foreach ($issue_details as $all_issue) { ?>
-				<tr>
-					<td style="border:2px solid black;  padding: 15px;  height: 50px;">
-						<center>
-							<?php echo $i++; ?>
-						</center>
-					</td>
-					<td style="border:2px solid black;   padding: 15px;  height: 50px;" align="left">
-						<?php echo $all_issue->item_name . "-" . $all_issue->item_form . "-" . $all_issue->item_type . $all_issue->dosage . $all_issue->dosage_unit; ?>
-					</td>
-					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
-						<?php echo $all_issue->quantity_indented ?>
-					</td>
-					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
-						<?php echo $all_issue->quantity_approved ?>
-					</td>
-					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
-						<?php echo $all_issue->quantity_issued ?>
-					</td>
-					<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right">
-						<?php echo $all_issue->note ?>
-					</td>
 
-				</tr>
-			<?php } ?>
-		</tbody>
-	</table>
-	<br/><br/>
-		<p><b>Note: </b><br> <?php echo $all_issue->indent_note?></p>
-	
-	<b>
-		<?php echo "Issuer Signature :"; ?>
-	</b></br></br>
-</div>
 <?php echo form_open('consumables/indent_issue/indent_issued', array('class' => 'form-group', 'role' => 'form')); ?>
 <!-- Issue Print Form opened-->
 
@@ -226,50 +108,50 @@ $(function(){
 			<div class="row" style="padding: 5px 0px;">
 				<div class="col-md-4"><!--Indent id label-->
 					<b>Indent Id : </b>
-					<?php echo " " . $all_issue->indent_id; ?>
+					<?php echo " " . $single_issue->indent_id; ?>
 				</div><!-- End of indent_id label-->
 
 			</div>
 			<div class="row" style="padding:5px 0px;">
 				<div class="col-md-4"><!-- From_party label-->
 					<b>From Party : </b>
-					<?php echo " " . $all_issue->from_party; ?>
+					<?php echo " " . $single_issue->from_party; ?>
 				</div><!-- End of from_party label -->
 
 				<div class="col-md-4" style="padding:5px 0px;"><!-- To party label -->
 					<b>To Party : </b>
-					<?php echo " " . $all_issue->to_party; ?>
+					<?php echo " " . $single_issue->to_party; ?>
 				</div><!-- End of to party label-->
 			</div>
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 				<?php
 				$status_color = "text-success";
-				if ($all_issue->indent_status == "Indented") {
+				if ($single_issue->indent_status == "Indented") {
 					$status_color = "text-warning";
-				} else if ($all_issue->indent_status == "Approved") {
+				} else if ($single_issue->indent_status == "Approved") {
 					$status_color = "text-primary";
-				} else if ($all_issue->indent_status == "Rejected") {
+				} else if ($single_issue->indent_status == "Rejected") {
 					$status_color = "text-danger";
 				}
 				?>
 					<b>Approval status : </b>
-					<b class="<?php echo $status_color; ?>"><?php echo " ". $all_issue->indent_status; ?></b>
+					<b class="<?php echo $status_color; ?>"><?php echo " ". $single_issue->indent_status; ?></b>
 				</div><!-- End of date time label-->
 			</div>
 
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Indent Date Time : </b>
-					<?php echo " " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
+					<?php echo " " . date("d-M-Y g:i A", strtotime($single_issue->indent_date)); ?>
 				</div><!-- End of date time label-->
 			</div>
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Approval Date Time : </b>
 					<?php 
-						if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
-							echo " " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));}
+						if ($single_issue->indent_status == "Approved" || $single_issue->indent_status == "Issued") {
+							echo " " . date("d-M-Y g:i A", strtotime($single_issue->approve_date_time));}
 						else { 
 							echo " NA";
 						} ?>
@@ -279,8 +161,8 @@ $(function(){
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Issue Date Time : </b>
 					<?php 
-						if ($all_issue->indent_status == "Issued") {
-							echo " " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));}
+						if ($single_issue->indent_status == "Issued") {
+							echo " " . date("d-M-Y g:i A", strtotime($single_issue->issue_date_time));}
 						else { 
 							echo " NA";
 						} ?>
@@ -296,9 +178,10 @@ $(function(){
 
 		<div class="container">
 		<div class="row">
+			<?php if($single_issue->indent_status != "Issued") {?>
 			<div class="col-md-8" style="margin-left:33px">
-				<div class="form-group">
-					<table class="table table-bordered table-striped">
+				<div class="form-group" id="details_container">
+					<table id="details_table" class="table table-bordered table-striped">
 						<thead>
 							<th class="col-md-1" style="text-align:center">#</th>
 							<th class="col-md-3" style="text-align:center">Items</th>
@@ -330,7 +213,7 @@ $(function(){
 										<?php echo $all_issue->quantity_issued ?>
 									</td>
 									<td align="right">
-										<?php echo $all_issue->note ?>
+										<?php echo $all_issue->item_note ?>
 									</td>
 								</tr>
 							<?php } ?>
@@ -338,12 +221,142 @@ $(function(){
 					</table>
 				</div>
 			</div>
+			<?php } else { ?>
+
+				<?php 
+					$total_costs = array();
+					foreach($issue_details as $all_issue){
+						if(isset($total_costs[$all_issue->indent_item_id])){
+							$total_costs[$all_issue->indent_item_id] += $all_issue->cost;
+						}else{
+							$total_costs[$all_issue->indent_item_id] = $all_issue->cost;
+						}
+					}
+					
+					?>
+				<div class="issue_invoice">
+						<table id="issue_invoice_table" class="table" style="border: 2px solid #ccc;">
+							<thead>
+								
+								<th>Item Name</th>
+								<th>Indented</th>
+								<th>Approved</th>
+								<th>Issued</th>
+								
+								<th>Batch</th>
+								<th>Mfg. Date</th>
+								<th>Expiry Date</th>
+
+								<th>Cost(Rs.)</th>
+								<th>Patient ID</th>
+
+								<th>Note</th>
+								<th>GTIN Code</th>
+							</thead>
+
+							<tbody id="table-body">
+								<!-- name="indent_item_$indent_item->id" -->
+								<?php
+								$prev = null;
+								$i = 1;
+								foreach ($issue_details as $all_int) {
+								if($prev !== $all_int->indent_item_id){ ?>
+									<tr name="<?php echo "indent_item_" . $all_int->indent_item_id; ?>"
+										class="warning indent_item">
+										
+										<td class="item_name">
+											<b><?php echo $all_int->item_name . "-" . $all_int->item_type . "-" . $all_int->item_form . "-" . $all_int->dosage . $all_int->dosage_unit;?></b>
+										</td>
+										<td><b><?= $all_int->quantity_indented; ?></b></td>
+										<td><b><?= $all_int->quantity_approved; ?></b></td>
+										<td><b><?= $all_int->quantity_issued; ?></td>
+										<!-- <td></td> -->
+										<td></td>
+										<td></td>
+										<td></td>
+										<td><b><span id=<?php echo "total_cost_$all_int->indent_item_id"; ?>><?= $total_costs[$all_int->indent_item_id]; ?></span></b></td>
+
+										<td></td>
+										<td><?= $all_int->item_note; ?></td>
+										<td></td>
+										
+
+										<!-- name="add_$indent_item->id" -->
+
+									</tr>
+									<tr name="<?php echo "indent_item_" . $all_int->indent_item_id; ?>"
+										class="warning indent_item">
+										
+										<td class="item_name">
+											<i><?php echo $all_int->item_name . "-" . $all_int->item_type . "-" . $all_int->item_form . "-" . $all_int->dosage . $all_int->dosage_unit;?></i>
+										</td>
+										<td></td>
+										<td></td>
+										<td><?= $all_int->quantity; ?></td>
+										<td><?= $all_int->batch; ?></td>
+										<td><?= strtotime($all_int->manufacture_date) ? date("d-M-Y", strtotime($all_int->manufacture_date)): "NA"; ?></td>
+										<td><?= strtotime($all_int->expiry_date) ? date("d-M-Y", strtotime($all_int->expiry_date)): "NA"; ?></td>
+										<td><?= $all_int->cost;?></td>
+
+										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
+										<td><?= $all_int->note; ?></td>
+										<td><?= $all_int->gtin_code;?></td>
+										
+
+										<!-- name="add_$indent_item->id" -->
+
+									</tr>
+									
+									<?php } else { ?>
+										<tr name="<?php echo "indent_item_" . $all_int->indent_item_id; ?>"
+										class="warning indent_item">
+										
+										<td class="item_name">
+											<i><?php echo $all_int->item_name . "-" . $all_int->item_type . "-" . $all_int->item_form . "-" . $all_int->dosage . $all_int->dosage_unit;?></i>
+										</td>
+										<td></td>
+										<td></td>
+										<td><?= $all_int->quantity; ?></td>
+										<td><?= $all_int->batch; ?></td>
+										<td><?=  strtotime($all_int->manufacture_date)? date("d-M-Y", strtotime($all_int->manufacture_date)): "NA"; ?></td>
+										<td><?=  strtotime($all_int->expiry_date)? date("d-M-Y", strtotime($all_int->expiry_date)): "NA"; ?></td>
+										<td><?= $all_int->cost;?></td>
+
+										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
+										<td><?= $all_int->note; ?></td>
+										<td><?= $all_int->gtin_code;?></td>
+										
+
+										<!-- name="add_$indent_item->id" -->
+
+									</tr>
+
+
+
+									<?php } 
+										$prev = $all_int->indent_item_id;
+
+									
+									?>
+
+									<?php
+									$i++;
+								} ?>
+
+
+							</tbody>
+
+						</table>
+					</div>
+
+
+				<?php } ?>
 		</div>
 		</div>
 		<div class="container">
 			<div>
 				<b>Note:</b>
-				<p><?php echo $all_issue->indent_note; ?></p>
+				<p><?php echo $single_issue->indent_note; ?></p>
 			</div>
 			<div class="span9">
 				<div class="span3">
@@ -351,7 +364,7 @@ $(function(){
 						<b>
 							<?php echo "Indented" . " " . "by :"; ?>
 						</b>
-						<?php echo $all_issue->order_first . " " . $all_issue->order_last; ?></br></br>
+						<?php echo $single_issue->order_first . " " . $single_issue->order_last; ?></br></br>
 					</div><!-- End of indenter name-->
 				</div>
 				<div class="span3">
@@ -359,7 +372,7 @@ $(function(){
 						<b>
 							<?php echo "Approved" . " " . "by :"; ?>
 						</b>
-						<?php echo $all_issue->approve_first . " " . $all_issue->approve_last; ?></br></br>
+						<?php echo $single_issue->approve_first . " " . $single_issue->approve_last; ?></br></br>
 					</div><!-- End of approver name-->
 				</div>
 				<div class="span3">
@@ -367,7 +380,7 @@ $(function(){
 						<b>
 							<?php echo "Issued" . " " . "by :"; ?>
 						</b>
-						<?php echo $all_issue->issue_first . " " . $all_issue->issue_last; ?></br></br>
+						<?php echo $single_issue->issue_first . " " . $single_issue->issue_last; ?></br></br>
 					</div><!-- End of issuer name-->
 				</div>
 				<div class="span3">
@@ -391,7 +404,7 @@ $(function(){
 					
 
 					<button class="btn btn-primary" type="button" name="back_to_list" id="back_to_list"
-							onclick="printDiv('print-div')">Print</button>
+							onclick="printDiv('print-div-2')">Print</button>
 				
 			</div>
 		</div>
