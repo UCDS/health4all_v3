@@ -4376,5 +4376,55 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			return array($dashboard[0]->organization,$resource);
 		}
 	}
+
+
+	function search_followups($default_rowsperpage){       
+        //Function that returns all the details of the Followup table.
+
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+        $filters = array();
+		$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
+
+        foreach($filter_names as $filter_name){
+            if($this->input->post($filter_name)){
+                $filter_name_query = $filter_name;
+                if(isset($filter_names_aliases[$filter_name])){
+                    $filter_name_query =  $filter_names_aliases[$filter_name];
+                }
+                $filters[$filter_name_query] = $this->input->post($filter_name);
+            }
+        }
+        //$this->db->select("count(*) as count",false);
+        $this->db->select("patient_followup.*, patient_followup.priority_type_id as priority,patient.*",false)
+        ->from('patient_followup')
+        ->join('patient','patient_followup.patient_id=patient.patient_id','left');
+     //   ->where($filters);
+        $this->db->limit($rows_per_page,$start);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+	function get_priority_type_input($priority_id)
+	{
+		$this->db->select("priority_type")->from('priority_type');
+		$this->db->where('priority_type_id',$priority_id);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
 }
 ?>

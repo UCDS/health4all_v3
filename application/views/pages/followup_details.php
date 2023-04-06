@@ -11,6 +11,8 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+
 <script type="text/javascript">
 $(document).ready(function(){$("#from_date").datepicker({
 		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
@@ -72,16 +74,14 @@ $(document).ready(function(){$("#from_date").datepicker({
 </script>
 <script type="text/javascript">
 $(document).ready(function(){
-// find the input fields and apply the time select to them.
-$('#from_time').ptTimeSelect();
-$('#to_time').ptTimeSelect();
+	initpriorityType();
 });
 </script>
 <script type="text/javascript">
 function doPost(page_no){
 	var page_no_hidden = document.getElementById("page_no");
   	page_no_hidden.value=page_no;
-        $('#appointment').submit();
+        $('#followp_list').submit();
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
@@ -157,12 +157,7 @@ display: inline-grid;
 </style>
 
 	<?php 
-	$from_date=0;$to_date=0;
-	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
-	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
-	$from_time=0;$to_time=0;
-	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("H:i",strtotime("00:00"));
-	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("H:i",strtotime("23:59"));
+	
 	$page_no = 1;	
 	
 	?>
@@ -171,13 +166,13 @@ display: inline-grid;
 		<div class="panel-heading">
 		<h4>Search follow-Up Details</h4>	
 	</div>
-		<?php echo form_open("reports/op_detail_3",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
+		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
 			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 
 			 		<div class="row">		
 					 <div class="col-md-4">
 							<div class="form-group">
-								<label for="inputstatus" style="margin-left: 10px; margin-top: 10px;">Life Status <span class="mandatory" >*</span></label><br>
+								<label for="inputstatus" style="margin-left: 10px; margin-top: 10px;">Life Status </label><br>
 								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" onchange=lifeStatusUpdate(); >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
 								<input type="radio" name="life_status" id="life_status_notlive" value="0" onchange=lifeStatusUpdate(); >
@@ -189,16 +184,13 @@ display: inline-grid;
 
 						<div class="col-md-4">
 							<div class="form-group">
-								<label class="control-label" style="margin-top: 10px;">Last Visit Type <span class="mandatory">*</span> </label>
+								<label class="control-label" style="margin-top: 10px;">Last Visit Type  </label>
 								<select class="form-control" name="last_visit_type"  onchange="lastVisitType();">
 									<option value="Select">Select</option>
 									<option value=''>All</option>
 								    <option value='IP'>IP</option>
 								    <option value='OP'>OP</option>  
-									<!-- <?php foreach($helplines as $helpline){
-									//echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
-									}
-									?> -->
+							
 								</select>
 								<span style="color:red;" id="error_lastvs_type"></span>
 							</div>
@@ -224,10 +216,10 @@ display: inline-grid;
 								<label class="control-label" style="margin-left: 10px; margin-top: 10px;">Volunteer </label>
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
-									 <!-- <?php //foreach($helplines as $helpline){
-									// echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
-									//}
-									?>  -->
+									 <?php foreach($volunteer as $volunt){
+									 echo "<option value='$volunt->staff_id'>$volunt->first_name</option>";
+									    }
+									?> 
 								</select>
 							</div>
 						</div>			
@@ -235,16 +227,26 @@ display: inline-grid;
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Primary Route</label>
-								<input class="form-control"  type="text"  name="primary_route" id="primary_route" placeholder="Enter Latitude,Longitude"/>
-
+								<select class="form-control" name="route_primary" >
+									<option value="Select">Select</option>
+									 <?php foreach($route_primary as $primary){
+									echo "<option value='$primary->route_primary_id'>$primary->route_primary</option>";
+									}
+									?> 
+								</select>
 							</div>
 						</div>
 
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Secondary Route</label>
-								<input class="form-control"  type="text"  name="secondary_route" id="secondary_route" placeholder="Enter Latitude,Longitude"/>
-
+								<select class="form-control" name="route_secondary" >
+									<option value="Select">Select</option>
+									 <?php foreach($route_secondary as $secondary){
+									echo "<option value='$secondary->id'>$secondary->route_secondary</option>";
+									}
+									?> 
+								</select>	
 							</div>
 						</div>
 					</div>
@@ -255,59 +257,41 @@ display: inline-grid;
 		</form>
 	<br />
 	 </div>
-	
+	<?php if(isset($results) && count($results)>0){ ?>
+		<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
 
+		
+<?php 
+	if ($this->input->post('rows_per_page')){
+		$total_records_per_page = $this->input->post('rows_per_page');
+	}else{
+		$total_records_per_page = $rowsperpage;
+	}
+	if ($this->input->post('page_no')) { 
+		$page_no = $this->input->post('page_no');
+	}
+	else{
+		$page_no = 1;
+	}
+	$total_records = $results_count[0]->count;
+	//$total_records = 63;
 
-	<table class="table table-bordered table-striped" id="table-sort">
-	<thead>
-		<th>SNo</th>
-		<th>Patient ID</th>
-		<th>OP No.</th>
-		<th>Registered Time</th>
-		<th>PatientInfo</th>
-		<th>Address</th>
-		<th>Phone</th>
-		<th>Department</th>
-		<th>Visit Type</th>
-    	<th>Registered By</th>
-		<th>Doctor Consulted</th>
-		<th>Appointment With</th>
-		<th>Appointment Time</th>
-		<th>Final diagnosis</th>
-		<th>Decision</th>		
-	</thead>
-	<tbody>
-	
-	<tr>
-		<td><?php echo $sno;?></td>
-		<td><?php echo $s->patient_id;?></td>
-		<td><?php echo $s->hosp_file_no;?></td>
-		<td><?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
-		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
-		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
-		if (!!$s->district) echo "<br/>, ".$s->district." District";
-		if (!!$s->state) echo ", ".$s->state;   ?></td>
-		<td><?php echo $s->phone;?></td>
-		<td><?php echo $s->department;?></td>
-		<td><?php echo $s->visit_name;?></td>
-    		<td><?php echo $s->volunteer;?></td>
-		<td><?php echo $s->doctor;?></td>
-		<td><?php echo $s->appointment_with;?></td>
-		<td><?php if(isset($s->appointment_date_time) && $s->appointment_date_time!="") 
-				{echo date("j M Y", strtotime("$s->appointment_date_time")).", ".date("h:i A.", strtotime("$s->appointment_date_time"));} 
-				else {echo $s->appointment_date_time="";}?></td>
-		<td><?php echo $s->final_diagnosis;?></td>
-		<td><?php echo $s->decision;?></td>
-		
-		
-	</tr>
-	</tbody>
-	</table>
-<!-- <div style='padding: 0px 2px;'>
+	//$total_records = count($results);
+	$total_no_of_pages = ceil($total_records / $total_records_per_page);
+	if ($total_no_of_pages == 0)
+		$total_no_of_pages = 1;
+	$second_last = $total_no_of_pages - 1; 
+	$offset = ($page_no-1) * $total_records_per_page;
+	$previous_page = $page_no - 1;
+	$next_page = $page_no + 1;
+	$adjacents = "2";	
+?>
+<div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
+<td><?php echo $followup->hosp_file_no;?></td>
 
 <ul class="pagination" style="margin-top: 0px;
     margin-right: 0px;
@@ -407,10 +391,168 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
-	<?php //} else { ?>
+	<table class="table table-bordered table-striped" id="table-sort">
+	<thead>
+	<th>SNo</th>
+		<th>Patient ID</th>
+		<th>Registered Date</th>
+		<th>Patient Name/Age/Gender</th>
+		<th>Relative Name</th>
+		<th>Phone</th>
+		<th>Address</th>
+		<th>Status Date</th>
+		<th> ICD Code</th>
+    	<th>Diagnosis</th>
+		<th> Last Visit Type</th>
+		<th> Priority</th>
+		<th> Primary Route</th>
+		<th>SecondaryRoute</th>
+		<th>Volunteer</th>			
+	</thead>
+	<tbody>
+	<?php
+	//print_r($results);
+	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
+		foreach($results as $followup){
+	 ?>
+	<tr>
+		<td><?php echo $sno;?></td>
+		<td><?php echo $followup->patient_id;?></td>
+		<td><?php echo date('d/m/Y',strtotime($followup->insert_datetime));?></td>
+		<td><?php echo $followup->first_name."".$followup->last_name ."/ ".$followup->age_years ."/" .$followup->gender;?></td>
+		<?php if (!empty($followup->father_name)) { ?>
+			<td><?php echo $followup->father_name; ?></td>			
+					<?php } elseif (!empty($followup->mother_name)) { ?>
+						<td><?php echo $followup->mother_name; ?>	</td>
+							<?php } else { ?>
+						<td><?php echo $followup->spouse_name; ?>	</td>
+							<?php } ?>
+		<td><?php echo $followup->phone;?></td>
+		<td><?php echo $followup->address;?></td>
+		<td><?php echo date('d/m/Y',strtotime($followup->status_date));?></td>
+		<td><?php echo $followup->icd_code;?></td>
+		<td><?php echo $followup->diagnosis;?></td>
+		<td><?php echo $followup->last_visit_type;?></td>
+		<td><?php echo $followup->priority_type_id;?></td>
+		<td><?php echo $followup->hosp_file_no;?></td>
+		<td><?php echo $followup->hosp_file_no;?></td>
+		<td><?php echo $followup->hosp_file_no;?></td>
+
+		<?php $sno++;} ?>
+		
+	</tr>
+	</tbody>
+	</table>
+
+	<div style='padding: 0px 2px;'>
+
+<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
+
+</div>
+<td><?php echo $followup->hosp_file_no;?></td>
+
+<ul class="pagination" style="margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 20px;
+    margin-left: 0px;">
+<?php if($page_no > 1){
+echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
+} ?>
+    
+<li <?php if($page_no <= 1){ echo "class='disabled'"; } ?>>
+<a <?php if($page_no > 1){
+echo "href=# onclick=doPost($previous_page)";
+
+} ?>>Previous</a>
+</li>
+<?php
+  if ($total_no_of_pages <= 10){  	 
+	for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
+	if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	        }else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+                }
+        }
+}
+else if ($total_no_of_pages > 10){
+	if($page_no <= 4) {			
+ 		for ($counter = 1; $counter < 8; $counter++){		 
+		if ($counter == $page_no) {
+	   		echo "<li class='active'><a>$counter</a></li>";	
+		}else{
+           		echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+                }
+}
+
+echo "<li><a>...</a></li>";
+echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+}
+elseif($page_no > 4 && $page_no < $total_no_of_pages - 4) {		 
+echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+echo "<li><a>...</a></li>";
+for (
+     $counter = $page_no - $adjacents;
+     $counter <= $page_no + $adjacents;
+     $counter++
+     ) {		
+     if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	}else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+          }                  
+       }
+echo "<li><a>...</a></li>";
+echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+}
+else {
+echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+echo "<li><a>...</a></li>";
+for (
+     $counter = $total_no_of_pages - 6;
+     $counter <= $total_no_of_pages;
+     $counter++
+     ) {
+     if ($counter == $page_no) {
+	echo "<li class='active'><a>$counter</a></li>";	
+	}else{
+        echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+	}                   
+     }
+}
+}  
+?>
+<li <?php if($page_no >= $total_no_of_pages){
+echo "class='disabled'";
+} ?>>
+<a <?php if($page_no < $total_no_of_pages) {
+echo "href=# onclick=doPost($next_page)";
+} ?>>Next</a>
+</li>
+
+<?php if($page_no < $total_no_of_pages){
+echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
+} ?>
+<?php if($total_no_of_pages > 0){
+echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
+for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
+                  echo "<option value=$counter ";
+                  if ($page_no == $counter){
+                   echo "selected";
+                  }         
+                  echo ">$counter</option>";
+	}
+echo "</select></li>";
+} ?>
+</ul>
+	<?php } else{ ?>
 	
 	No Data to display.
-<?php //}  ?> -->
+<?php }  ?> 
 </div>	 
 
   

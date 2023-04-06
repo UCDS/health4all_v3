@@ -119,8 +119,9 @@
 	</script>
 				<script>
 					$('form[id="followup_add_details"]').validate({
-	
-});
+	                      
+						
+                       });
 					$(function(){
 						
 					<?php if($patient_followup->status_date == 0){ ?>
@@ -183,7 +184,9 @@ $patient = $patients[0];
 ?>
 
 <?php if(isset($patients) && count($patients)>=1){ ?>
-	
+	<?php 
+							foreach($functions as $f){
+								if($f->user_function=="patient_follow_up") { }}?>	
 	<div class="col-md-12">
 	<div class="panel panel-default">
 			<!-- <h4 align="center">Patient Follow-up</h4><br> -->
@@ -357,13 +360,11 @@ $patient = $patients[0];
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
-								<select class="form-control" name="last_visit_type"  required>
+								<select class="form-control" name="last_visit_type"   required>
 									<option value="<?php if($patient_followup) echo $patient_followup->last_visit_type;  ?>"><?php if($patient_followup) echo $patient_followup->last_visit_type;  ?></option>
-									<option value=''>Select</option>
 									<option value='All'>All</option>
 								    <option value='IP'>IP</option>
-								    <option value='OP'>OP</option>  
-								
+								    <option value='OP'>OP</option>  								
 								</select>
 							</div>
 						</div>
