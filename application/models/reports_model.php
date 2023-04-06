@@ -4396,6 +4396,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		$start = ($page_no -1 )  * $rows_per_page;
 
         $filters = array();
+		$filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id'];
 		$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
 
         foreach($filter_names as $filter_name){
@@ -4410,8 +4411,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         //$this->db->select("count(*) as count",false);
         $this->db->select("patient_followup.*, patient_followup.priority_type_id as priority,patient.*",false)
         ->from('patient_followup')
-        ->join('patient','patient_followup.patient_id=patient.patient_id','left');
-     //   ->where($filters);
+        ->join('patient','patient_followup.patient_id=patient.patient_id','left')
+		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
+        ->where($filters);
         $this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
         $result = $query->result();

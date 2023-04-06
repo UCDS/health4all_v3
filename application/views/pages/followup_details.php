@@ -170,7 +170,7 @@ display: inline-grid;
 			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 
 			 		<div class="row">		
-					 <div class="col-md-4">
+					 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus" style="margin-left: 10px; margin-top: 10px;">Life Status </label><br>
 								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" onchange=lifeStatusUpdate(); >
@@ -182,7 +182,7 @@ display: inline-grid;
 							</div>
 						</div>
 
-						<div class="col-md-4">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label" style="margin-top: 10px;">Last Visit Type  </label>
 								<select class="form-control" name="last_visit_type"  onchange="lastVisitType();">
@@ -211,7 +211,7 @@ display: inline-grid;
 					</div>
 
 					<div class="row">		
-					<div class="col-md-4">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label" style="margin-left: 10px; margin-top: 10px;">Volunteer </label>
 								<select class="form-control" name="volunteer" >
@@ -224,7 +224,7 @@ display: inline-grid;
 							</div>
 						</div>			
 
-						<div class="col-md-4">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Primary Route</label>
 								<select class="form-control" name="route_primary" >
@@ -237,7 +237,7 @@ display: inline-grid;
 							</div>
 						</div>
 
-						<div class="col-md-4">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Secondary Route</label>
 								<select class="form-control" name="route_secondary" >
@@ -257,6 +257,7 @@ display: inline-grid;
 			<center><input class="btn btn-sm btn-primary" type="submit" value="Submit" /></center>
 		</form>
 	<br />
+	 </div>
 	 </div>
 	<?php if(isset($results) && count($results)>0){ ?>
 		<!-- <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5> -->
@@ -555,5 +556,6 @@ echo "</select></li>";
 	No Data to display.
 <?php }  ?> 
 </div>	 
+ 
 
   
