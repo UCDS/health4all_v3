@@ -57,13 +57,13 @@ ALTER TABLE `supply_chain_party` CHANGE `supply_chain_party_id` `supply_chain_pa
 
 ALTER TABLE `indent` ADD `note` TEXT NOT NULL COMMENT 'a note for the entire indent' AFTER `indent_status`; 
 -- additions as of feb 14, 2023
-CREATE TABLE `health4all`.`inventory` ( `inventory_id` INT NOT NULL AUTO_INCREMENT , `inward_outward` VARCHAR(50) NOT NULL , `item_id` INT NOT NULL , `quantity` INT NOT NULL , `date_time` DATETIME NOT NULL , `inward_outward_type` VARCHAR(50) NOT NULL , `manufacture_date` DATETIME NOT NULL , `expiry_date` DATETIME NOT NULL , `batch` INT NOT NULL , `cost` INT NOT NULL , `patient_id` INT NOT NULL , `indent_id` INT NOT NULL , `gtin_code` VARCHAR(20) NOT NULL , PRIMARY KEY (`inventory_id`)) ENGINE = InnoDB; 
+CREATE TABLE `inventory` ( `inventory_id` INT NOT NULL AUTO_INCREMENT , `inward_outward` VARCHAR(50) NOT NULL , `item_id` INT NOT NULL , `quantity` INT NOT NULL , `date_time` DATETIME NOT NULL , `inward_outward_type` VARCHAR(50) NOT NULL , `manufacture_date` DATETIME NOT NULL , `expiry_date` DATETIME NOT NULL , `batch` INT NOT NULL , `cost` INT NOT NULL , `patient_id` INT NOT NULL , `indent_id` INT NOT NULL , `gtin_code` VARCHAR(20) NOT NULL , PRIMARY KEY (`inventory_id`)) ENGINE = InnoDB; 
 
 ALTER TABLE `inventory` ADD `supply_chain_party_id` INT NOT NULL AFTER `inventory_id`; 
 
 
 ALTER TABLE `inventory` ADD `note` TEXT NOT NULL AFTER `indent_id`; 
 ALTER TABLE `inventory` CHANGE `batch` `batch` VARCHAR(10) NOT NULL; 
-CREATE TABLE `health4all`.`inventory_summary` ( `supply_chain_party_id` INT NOT NULL , `item_id` INT NOT NULL , `transaction_date` DATETIME NOT NULL , `closing_balance` INT NOT NULL ) ENGINE = InnoDB; 
+CREATE TABLE `inventory_summary` ( `supply_chain_party_id` INT NOT NULL , `item_id` INT NOT NULL , `transaction_date` DATETIME NOT NULL , `closing_balance` INT NOT NULL ) ENGINE = InnoDB; 
 
 
