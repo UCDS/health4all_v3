@@ -433,7 +433,7 @@ echo "</select></li>";
 		<td><?php echo $followup->icd_code;?></td>
 		<td><?php echo $followup->diagnosis;?></td>
 		<td><?php echo $followup->last_visit_type;?></td>
-		<td><?php echo $followup->priority_type_id;?></td>
+		<td><?php print_r($priority);?></td>
 		<td><?php echo $followup->hosp_file_no;?></td>
 		<td><?php echo $followup->hosp_file_no;?></td>
 		<td><?php echo $followup->hosp_file_no;?></td>

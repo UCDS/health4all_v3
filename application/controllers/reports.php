@@ -292,13 +292,7 @@ class Reports extends CI_Controller {
 		//$this->data['report_count']=$this->reports_model->get_op_detail_3_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
 		$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
 		
-		$res = json_encode(json_decode($this->data['results']));
-		
-			foreach($res as $data){
-				echo $data->priority;
-
-			}
-		
+	
 
 		$this->data['priority'] = $this->reports_model->get_priority_type_input($priority_id);
 		if ($this->form_validation->run() === FALSE)
