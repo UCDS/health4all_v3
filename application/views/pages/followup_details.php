@@ -252,13 +252,14 @@ display: inline-grid;
 					</div>
 					<br>
 			
-			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+					<label class="control-label" style="margin-left: 10px; margin-top: 10px;"> Rows per page : </label>
+						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			<center><input class="btn btn-sm btn-primary" type="submit" value="Submit" /></center>
 		</form>
 	<br />
 	 </div>
 	<?php if(isset($results) && count($results)>0){ ?>
-		<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
+		<!-- <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5> -->
 
 		
 <?php 
