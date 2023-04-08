@@ -258,8 +258,8 @@ $('#to_id').change(function(){
             ?>
 			<div class="container">
 			    <div class="row">
-						<div class="col-md-8 col-md-offset-6">
-							<h3>Indent Approval </h3><!-- Heading-->
+						<div class="col-md-8 col-md-offset-5">
+							<h3>Indent Approval</h3><!-- Heading-->
 						</div>
 				</div>
 			</div></br>
@@ -354,8 +354,8 @@ $('#to_id').change(function(){
 					</br>
 					<div class="container">
 						<div class="row">
-							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit" class="btn btn-primary">submit</button>
+							<div class="col-md-8 col-md-offset-3">		
+								<button type="submit"  name="submit" value="submit" class="btn btn-primary">Submit</button>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
 							</div> 
 						</div> 

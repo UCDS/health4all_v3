@@ -260,10 +260,8 @@ $(function(){
 					<div class="<?php //if(isset($msg)){ echo "alert alert-info";} ?>"><center> <strong><?php //if(isset($msg)){ echo $msg;} ?></strong> </center></div>
 
 				</div> -->
-			    <div class="row">
-						<div class="col-md-8 col-md-offset-6">
-							<h3>Indent Issue </h3><!-- Heading-->
-						</div>
+			    <div class="row col-md-offset-1">
+					<h3 class="col-md-8 col-md-offset-5">Issue</h3><!-- Heading-->					
 				</div>
 			</div></br>
 			<?php echo form_open('consumables/indent_issue/indent_issued',array('class'=>'form-custom','role'=>'form'))?><!-- Indent Issue form open-->
@@ -357,9 +355,9 @@ $(function(){
 					</br>
 					<div class="container">
 						<div class="row">
-							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">submit</button>
-								<a href="<?= base_url()."consumables/indent/auto_indent"; ?>"><button type="button"  name="auto_indent" class="btn btn-primary">Auto-Indent</button></a>
+							<div class="col-md-8 col-md-offset-3">		
+								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">Submit</button>
+								<a href="<?= base_url()."consumables/indent/auto_indent"; ?>"><button type="button"  name="auto_indent" class="btn btn-warning">Auto-Indent</button></a>
 								<input type="hidden" name="auto_indent" value="1"/>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
 							</div> 
@@ -395,7 +393,7 @@ $(function(){
 												<td> <?php echo date("d-M-Y g:i A", strtotime($indent->indent_date)); ?></td>
 												<td> <?php echo $indent->from_party; ?></td>
 												<td> <?php echo $indent->to_party; ?></td>
-												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="select" >
+												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="Select" >
 												</center>	<?php echo form_close();?></td><!-- End of indent approval form-->
 											</tr>
 											<?php } ?>
