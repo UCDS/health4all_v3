@@ -260,7 +260,7 @@
 							<div class="panel-heading">
 								<h4 class="panel-title">
 									<a id="masters" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" >
-										Masters <span style="margin-left: 60%;" class="glyphicon <?php if (check_if_group_active("masters"))
+										Masters <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("masters"))
 											echo 'glyphicon-chevron-up';
 										else
 											echo 'glyphicon-chevron-down';?>"></span>
@@ -322,7 +322,7 @@
 							<div class="panel-heading">
 								<h4 class="panel-title">
 									<a id="reports" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-										Reports <span style="margin-left: 60%;" class="glyphicon <?php if (check_if_group_active("reports"))
+										Reports <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("reports"))
 											echo 'glyphicon-chevron-up';
 										else
 											echo 'glyphicon-chevron-down';?>">

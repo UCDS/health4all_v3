@@ -260,10 +260,8 @@ $(function(){
 					<div class="<?php //if(isset($msg)){ echo "alert alert-info";} ?>"><center> <strong><?php //if(isset($msg)){ echo $msg;} ?></strong> </center></div>
 
 				</div> -->
-			    <div class="row">
-						<div class="col-md-8 col-md-offset-6">
-							<h3>Indent Issue </h3><!-- Heading-->
-						</div>
+			    <div class="row col-md-offset-1">
+					<h3 class="col-md-8 col-md-offset-5">Issue</h3><!-- Heading-->					
 				</div>
 			</div></br>
 			<?php echo form_open('consumables/indent_issue/indent_issued',array('class'=>'form-custom','role'=>'form'))?><!-- Indent Issue form open-->
@@ -271,20 +269,20 @@ $(function(){
 				<div class="container">
 					<div class="row">
 						<form class="form-horizontal">
-							<div class="form-group">
-								<div class="col-md-3"><!-- From label-->
-									<label for="exampleInputdate">From</label>
-										<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="12" />
+							<div class="col-md-2">							
+								<div class="form-group"><!-- From label-->
+									<label for="from_date">From</label>
+										<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="10" />
 								</div><!-- End of from label-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-3"><!-- to label-->
-									<label for="exampleInputdate">To</label>
-										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="12"/>
+							<div class="col-md-2">							
+								<div class="form-group"><!-- to label-->
+									<label for="to_date">To</label>
+										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="10"/>
 								</div><!-- End of to label-->
-							</div>	
-							<div class="form-group">	
-								<div class="col-md-4"><!-- From party-->
+							</div>
+							<div class="col-md-2">								
+								<div class="form-group"><!-- From party-->
 									<label for="from_id">From Party</label>
 										<select name="from_id" id="from_id" class="form-control">
 											<option value="">Select</option>
@@ -299,9 +297,9 @@ $(function(){
 										</select>
 								</div><!-- End of from party-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-4"><!-- To party-->
-									<label for="inputto_id">To Party</label>
+							<div class="col-md-2">							
+								<div class="form-group"><!-- To party-->
+									<label for="to_id">To Party</label>
 										<select name="to_id" id="to_id" class="form-control" >
 											<option value="">Select</option>
 												<?php
@@ -320,11 +318,11 @@ $(function(){
 				</div></br>
 					<div class="container">
 						<div class="row">
-							<div class="form-group">
-								<div class="col-md-4"><!-- Item type-->
-									<label for="inputitem_type" >Item Type</label>
-										<select name="item_type" id="item_type" class="form-control">
-											<option value="">select</option>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- Item type-->
+									<label for="item_type" >Item Type</label>
+										<select name="item_type" id="item_type" class="form-control" style="width:280px">
+											<option value="">Select</option>
 												<?php 
 													foreach($all_item_type as $it)
 													{
@@ -336,11 +334,11 @@ $(function(){
 										</select>
 								</div><!-- End of item type-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-4"><!-- Item-->
-									<label for="inputitem" >Item</label>
-										<select name="item" id="item" class="form-control" class="col-md-4">
-										<option value="">select</option>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- Item-->
+									<label for="item" >Item</label>
+										<select name="item" id="item" class="form-control" style="width:305px">
+										<option value="">Select</option>
 											<?php 
 												foreach($all_item as $i)
 												{
@@ -357,9 +355,9 @@ $(function(){
 					</br>
 					<div class="container">
 						<div class="row">
-							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">submit</button>
-								<a href="<?= base_url()."consumables/indent/auto_indent"; ?>"><button type="button"  name="auto_indent" class="btn btn-primary">Auto-Indent</button></a>
+							<div class="col-md-8 col-md-offset-3">		
+								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">Submit</button>
+								<a href="<?= base_url()."consumables/indent/auto_indent"; ?>"><button type="button"  name="auto_indent" class="btn btn-warning">Auto-Indent</button></a>
 								<input type="hidden" name="auto_indent" value="1"/>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
 							</div> 
@@ -395,7 +393,7 @@ $(function(){
 												<td> <?php echo date("d-M-Y g:i A", strtotime($indent->indent_date)); ?></td>
 												<td> <?php echo $indent->from_party; ?></td>
 												<td> <?php echo $indent->to_party; ?></td>
-												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="select" >
+												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="Select" >
 												</center>	<?php echo form_close();?></td><!-- End of indent approval form-->
 											</tr>
 											<?php } ?>

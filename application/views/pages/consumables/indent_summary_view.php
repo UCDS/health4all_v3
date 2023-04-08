@@ -151,20 +151,22 @@ $('#to_id').change(function(){
 	}
 	?>
 			   <div class="text-center">
-				<h2> Indent Summary</h2>
+				<h2>Indent Summary</h2>
 				<?php echo form_open('consumables/indent_reports/get_indent_summary',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
 				<div class="container">
 					<div class="row">
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
 							<!--input field from date-->
-									From Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+							<label for="from_date">From Date </label>
+							<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--input field to date-->
-								To Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+							<label for="to_date">To Date</label>
+							<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
