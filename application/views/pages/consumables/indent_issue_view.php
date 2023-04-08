@@ -281,7 +281,7 @@ $(function(){
 										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="10"/>
 								</div><!-- End of to label-->
 							</div>
-							<div class="col-md-2">								
+							<div class="col-md-2" style="width:20%">								
 								<div class="form-group"><!-- From party-->
 									<label for="from_id">From Party</label>
 										<select name="from_id" id="from_id" class="form-control">
@@ -297,7 +297,7 @@ $(function(){
 										</select>
 								</div><!-- End of from party-->
 							</div>
-							<div class="col-md-2">							
+							<div class="col-md-2" style="width:20%">							
 								<div class="form-group"><!-- To party-->
 									<label for="to_id">To Party</label>
 										<select name="to_id" id="to_id" class="form-control" >
