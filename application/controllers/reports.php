@@ -279,6 +279,8 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
+			$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
+
 			$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
 						$filter_values = [];
 						foreach($filter_names as $filter_name){
@@ -290,17 +292,9 @@ class Reports extends CI_Controller {
 						}
 						$this->data['filter_values'] = $filter_values;
 		//$this->data['report_count']=$this->reports_model->get_op_detail_3_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
-		$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
 		
-	
-
-		if ($this->form_validation->run() === FALSE)
-		{	
-			$this->load->view('pages/followup_details',$this->data);
-		}
-		else{
-			$this->load->view('pages/followup_details',$this->data);
-		}
+	   $this->load->view('pages/followup_details',$this->data);
+		
 		$this->load->view('templates/footer');
 		}
 		else{

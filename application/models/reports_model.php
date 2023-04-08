@@ -4418,7 +4418,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
         ->where($filters);
-        $this->db->limit($rows_per_page,$start);
+        //$this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
         $result = $query->result();
         return $result;

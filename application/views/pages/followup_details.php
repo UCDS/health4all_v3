@@ -75,6 +75,17 @@ $(document).ready(function(){$("#from_date").datepicker({
 <script type="text/javascript">
 $(document).ready(function(){
 	initpriorityType();
+	var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
+		var dropdowns = ['last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
+		console.log(filter_values);
+		Object.keys(filter_values).forEach((name) => {
+			const value = filter_values[name];
+			if(dropdowns.includes(name)){
+				selectizes[name][0].selectize.setValue(value);
+			} else {
+				$('[name="'+name+'"]').val(value);
+			}
+		});
 });
 </script>
 <script type="text/javascript">
@@ -173,9 +184,9 @@ display: inline-grid;
 					 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus" style="margin-left: 10px; margin-top: 10px;">Life Status </label><br>
-								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" onchange=lifeStatusUpdate(); >
+								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1"  >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
-								<input type="radio" name="life_status" id="life_status_notlive" value="0" onchange=lifeStatusUpdate(); >
+								<input type="radio" name="life_status" id="life_status_notlive" value="0"  >
 								<label for="status_dead">Not Alive</label><br>
 								<span style="color:red;" id="error_life_status"></span>
 
@@ -185,7 +196,7 @@ display: inline-grid;
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label" style="margin-top: 10px;">Last Visit Type  </label>
-								<select class="form-control" name="last_visit_type"  onchange="lastVisitType();">
+								<select class="form-control" name="last_visit_type"  >
 									<option value="Select">Select</option>
 									<option value=''>All</option>
 								    <option value='IP'>IP</option>
@@ -255,10 +266,12 @@ display: inline-grid;
 					<label class="control-label" style="margin-left: 10px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			<center><input class="btn btn-sm btn-primary" type="submit" value="Submit" /></center>
-		</form>
+		
 	<br />
 	 </div>
 	 </div>
+	 </form>
+
 	<?php if(isset($results) && count($results)>0){ ?>
 		<!-- <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5> -->
 
