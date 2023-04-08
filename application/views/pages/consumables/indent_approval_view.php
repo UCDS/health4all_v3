@@ -258,8 +258,8 @@ $('#to_id').change(function(){
             ?>
 			<div class="container">
 			    <div class="row">
-						<div class="col-md-8 col-md-offset-6">
-							<h3>Indent Approval </h3><!-- Heading-->
+						<div class="col-md-8 col-md-offset-5">
+							<h3>Indent Approval</h3><!-- Heading-->
 						</div>
 				</div>
 			</div></br>
@@ -268,20 +268,20 @@ $('#to_id').change(function(){
 				<div class="container">
 					<div class="row">
 						<form class="form-horizontal">
-							<div class="form-group">
-								<div class="col-md-3"><!-- From label-->
-									<label for="exampleInputdate">From</label>
-										<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="12" />
+							<div class="col-md-2">
+								<div class="form-group"><!-- From label-->
+									<label for="from_date">From</label>
+										<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="10" />
 								</div><!-- End of from label-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-3"><!-- to label-->
-									<label for="exampleInputdate">To</label>
-										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="12"/>
+							<div class="col-md-2">
+								<div class="form-group"><!-- to label-->
+									<label for="to_date">To</label>
+										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="10"/>
 								</div><!-- End of to label-->
-							</div>	
-							<div class="form-group">	
-								<div class="col-md-4"><!-- From party-->
+							</div>
+							<div class="col-md-2">
+								<div class="form-group"><!-- From party-->
 									<label for="from_id">From Party</label>
 										<select name="from_id" id="from_id" class="form-control">
 											<option value="">Select</option>
@@ -296,8 +296,8 @@ $('#to_id').change(function(){
 										</select>
 								</div><!-- End of from party-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-4"><!-- To party-->
+							<div class="col-md-2">							
+								<div class="form-group"><!-- To party-->
 									<label for="inputto_id">To Party</label>
 										<select name="to_id" id="to_id" class="form-control" >
 											<option value="">Select</option>
@@ -317,11 +317,11 @@ $('#to_id').change(function(){
 				</div></br>
 					<div class="container">
 						<div class="row">
-							<div class="form-group">
-								<div class="col-md-4"><!-- Item type-->
-									<label for="inputitem_type" >Item Type</label>
-										<select name="item_type" id="item_type" class="form-control">
-											<option value="">select</option>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- Item type-->
+									<label for="item_type" >Item Type</label>
+										<select name="item_type" id="item_type" class="form-control" style="width:280px">
+											<option value="">Select</option>
 												<?php 
 													foreach($all_item_type as $it)
 													{
@@ -333,11 +333,11 @@ $('#to_id').change(function(){
 										</select>
 								</div><!-- End of item type-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-4"><!-- Item-->
-									<label for="inputitem" >Item</label>
-										<select name="item" id="item" class="form-control" class="col-md-4">
-										<option value="">select</option>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- Item-->
+									<label for="item" >Item</label>
+										<select name="item" id="item" class="form-control" style="width:305px">
+										<option value="">Select</option>
 											<?php 
 												foreach($all_item as $i)
 												{
@@ -354,8 +354,8 @@ $('#to_id').change(function(){
 					</br>
 					<div class="container">
 						<div class="row">
-							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit" class="btn btn-primary">submit</button>
+							<div class="col-md-8 col-md-offset-3">		
+								<button type="submit"  name="submit" value="submit" class="btn btn-primary">Submit</button>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
 							</div> 
 						</div> 
