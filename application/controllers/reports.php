@@ -294,7 +294,6 @@ class Reports extends CI_Controller {
 		
 	
 
-		$this->data['priority'] = $this->reports_model->get_priority_type_input($priority_id);
 		if ($this->form_validation->run() === FALSE)
 		{	
 			$this->load->view('pages/followup_details',$this->data);

@@ -4396,7 +4396,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		$start = ($page_no -1 )  * $rows_per_page;
 
         $filters = array();
-		$filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id'];
+		$filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id','volunteer' => 'patient_followup.volunteer_id',
+		'primary_route' => 'patient_followup.route_primary_id','secondary_route' => 'patient_followup.route_secondary_id'];
 		$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
 
         foreach($filter_names as $filter_name){
@@ -4409,10 +4410,13 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
             }
         }
         //$this->db->select("count(*) as count",false);
-        $this->db->select("patient_followup.*, patient_followup.priority_type_id as priority,patient.*",false)
+        $this->db->select("patient_followup.*, priority_type.*,patient.*,staff.first_name as fname,staff.last_name as lname,route_primary.*,route_secondary.*",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
+		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
+		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
+		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
         ->where($filters);
         $this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
