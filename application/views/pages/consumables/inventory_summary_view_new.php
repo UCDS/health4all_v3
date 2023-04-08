@@ -163,7 +163,8 @@ $('#to_id').change(function(){
 						<div class="form-group">
 						
 						<!--input field to date-->
-							Inventory Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+						<label for="to_date">Inventory Date </label>
+						<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 						</div>
 					</div>
 					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
