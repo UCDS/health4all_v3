@@ -120,11 +120,11 @@ class Indent_report_model extends CI_Model
 		$from_date = date("Y-m-d H:i:s", strtotime(0));
 		// echo $from_date;
 		if ($this->input->post('to_date')) {
-			$to_date = date("Y-m-d H:i:s", strtotime($this->input->post('to_date').' +23 hour 59 min'));
+			$to_date = date("Y-m-d H:i:s", strtotime($this->input->post('to_date').' +23 hour 59 min 59 sec'));
 
 		} else {
 			
-			$to_date =  date("Y-m-d H:i:s", strtotime(date('Y-m-d').' +23 hour 59 min'));
+			$to_date =  date("Y-m-d H:i:s", strtotime(date('Y-m-d').' +23 hour 59 min 59 sec'));
 		}
 		// if ($this->input->post('from_id')) {
 		// 	$from_party = $this->input->post('from_id');
@@ -475,7 +475,8 @@ class Indent_report_model extends CI_Model
 				->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
 				->join('generic_item', 'generic_item.generic_item_id=item.generic_item_id', 'left')
 				->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
-				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left');
+				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
+				->order_by('item.item_name', 'ASC');
 		else if ($type == "status")
 			$this->db->select("indent_status")->from("indent_item");
 		else if ($type == "party")
