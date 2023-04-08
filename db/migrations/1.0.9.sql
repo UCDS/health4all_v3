@@ -65,5 +65,7 @@ ALTER TABLE `inventory` ADD `supply_chain_party_id` INT NOT NULL AFTER `inventor
 ALTER TABLE `inventory` ADD `note` TEXT NOT NULL AFTER `indent_id`; 
 ALTER TABLE `inventory` CHANGE `batch` `batch` VARCHAR(10) NOT NULL; 
 CREATE TABLE `inventory_summary` ( `supply_chain_party_id` INT NOT NULL , `item_id` INT NOT NULL , `transaction_date` DATETIME NOT NULL , `closing_balance` INT NOT NULL ) ENGINE = InnoDB; 
+ALTER TABLE `inventory` CHANGE `cost` `cost` FLOAT(11) NOT NULL; 
+
 
 
