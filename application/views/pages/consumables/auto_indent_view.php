@@ -33,10 +33,10 @@
 		min-height: 20px;
 		margin: auto;
 	}
-
+/* 
 	td#change {
 		padding: 0%;
-	}
+	} */
 
 	.issue_invoice {
 		/* max-width: 915; */
@@ -260,7 +260,7 @@ input::-webkit-inner-spin-button {
 
 		$(add_inventory_item_buttons[idx]).click((e) => {
 			// e.target.style = "background-color: red";
-
+			console.log(current_items);
 			if (last_item_id === '' || last_item_id === null) {
 				console.log("No item selected");
 				display_message("No item selected");
@@ -297,6 +297,8 @@ input::-webkit-inner-spin-button {
 					$('#error-alerts').hide();
 
 				}
+				current_items[idx].quantity_added_inventory = Number(proposed_sum);
+				console.log(current_items);
 			});
 
 
@@ -455,6 +457,9 @@ input::-webkit-inner-spin-button {
 						$('#error-alerts').hide();
 
 					}
+					current_items[idx].quantity_added_inventory = Number(proposed_sum);
+					console.log(current_items);
+
 				});
 
 				// Quantity integrity
@@ -550,6 +555,12 @@ input::-webkit-inner-spin-button {
 	});
 </script>
 
+<style>
+	/* #add_item {
+		width: 50%;
+	} */
+</style>
+
 <div class="col-md-11 col-md-offset-2">
 	<?php echo form_open('consumables/indent/auto_indent', array('class' => 'form-custom', 'role' => 'form', 'id' => 'auto_indent_form')) ?><!-- Issued details from open -->
 	<input type="hidden" name="auto_indent" value="1" />
@@ -620,9 +631,17 @@ input::-webkit-inner-spin-button {
 					<br>
 					<br>
 
-
 					<div class="row">
-
+						<div class="col-md-2">
+							<button type="button" name="add_item" id="add_item"
+												class="btn btn-primary">Add Item +</button>
+						</div>
+					</div>
+					<br>
+					<div class="row">
+						
+						
+						
 						<div>
 							<div id="error-alerts" style="max-width: 25%; margin: auto;">
 								<div class="alert alert-danger">
@@ -679,10 +698,10 @@ input::-webkit-inner-spin-button {
 											<td></td>
 											<td><textarea name="item_note[]" placeholder="Note" value=""></textarea>
 											</td>
-											<td><button type="button" name="add_item" id="add_item"
-													class="btn btn-primary">Add +</button></td>
+											<!-- <td><button type="button" name="add_item" id="add_item"
+													class="btn btn-primary">Add +</button></td> -->
 
-
+											<td></td>
 
 											<!-- name="add_$indent_item->id" -->
 

@@ -198,7 +198,8 @@ class Indent_model extends CI_Model
 				->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
 				->join('generic_item', 'generic_item.generic_item_id=item.generic_item_id', 'left')
 				->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
-				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left');
+				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
+				->order_by('item.item_name', 'ASC');
 		$query = $this->db->get();
 		return $query->result();
 	}
