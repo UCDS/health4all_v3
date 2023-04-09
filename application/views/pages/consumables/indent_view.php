@@ -92,7 +92,7 @@ $('#to_id').change(function(){
 						</div>					<!-- end of Indent Time-->
 						<div class="col-md-3">	<!-- From party-->
 							<div class="form-group">
-								<label for="from_id">From Party<font color='red'>*</font></label>
+								<label for="from_id">Indent From Party<font color='red'>*</font></label>
 								<select name="from_id" id="from_id" class="form-control" required>
 								<option value="">Select</option>
 								<?php
@@ -107,7 +107,7 @@ $('#to_id').change(function(){
 						</div>					<!--end of From party-->
 						<div class="col-md-3">	<!-- To party-->
 							<div class="form-group">
-								<label for="inputto_id">To Party<font color='red'>*</font></label>
+								<label for="inputto_id">Indent To Party<font color='red'>*</font></label>
 								<select name="to_id" id="to_id" class="form-control" required>
 								<option value="">Select</option>
 								<?php
