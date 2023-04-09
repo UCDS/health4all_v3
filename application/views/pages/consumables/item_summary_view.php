@@ -162,8 +162,8 @@ $('#to_id').change(function(){
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
 							<!--input field from party-->
-								<label for="scp_id">Supply Chain Party</label>
-									<select name="scp_id" id="scp_id" class="form-control">
+								<label for="scp_id">Supply Chain Party<font style="color:red">*</font></label>
+									<select name="scp_id" id="scp_id" class="form-control" required>
 									<option value="">Select</option>
 										<?php
 											foreach($parties as $scp)
@@ -199,8 +199,8 @@ $('#to_id').change(function(){
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--input field item-->
-								<label for="inputitem" >Item</label>
-									<select name="item" id="item" class="form-control">
+								<label for="inputitem" >Item<font style="color:red">*</font></label>
+									<select name="item" id="item" class="form-control" required>
 									<option value="">Select</option>
 										<?php
 											foreach($all_item as $i)
@@ -306,7 +306,7 @@ $('#to_id').change(function(){
 					<tr>
 						
 					<?php
-					echo $inventory_item; 
+					// echo json_encode($inventory_item); 
 					//echo $i++; 
 					// $sub_url="consumables/indent_reports/get_item_inventory";
 					if(!isset($inventory_item))

@@ -82,7 +82,7 @@ class Indent_approval_model extends CI_Model {                                  
 	 function get_supply_chain_party($type=""){    
 		$hospital=$this->session->userdata('hospital');                                                                         //function definition with name :get_data
 	    if($type=="item_type")                                                                               //all these are if conditions to select particular data from database
-		$this->db->select("*")->from("item_type")->order_by('item_type');
+		$this->db->select("*")->from("item_type")->order_by('item_type', 'ASC');
 		else if($type=="item")
 		  $this->db->select('item.item_name,item.item_id,item_form.item_form_id,item_form.item_form,item_type.item_type_id,item_type.item_type,dosage.dosage,dosage.dosage_unit')
 		->from("item")
@@ -92,7 +92,8 @@ class Indent_approval_model extends CI_Model {                                  
 		->join('dosage','dosage.dosage_id=item.dosage_id','left')
 		->order_by('item.item_name', 'ASC');
 		else if($type=="party")
-		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name');
+		$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")
+		->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name', 'ASC');
 		$resource=$this->db->get();
 		return $resource->result();
 	}//get_data

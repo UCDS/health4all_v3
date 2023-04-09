@@ -191,7 +191,9 @@ class Indent_model extends CI_Model
 	{
 		$hospital = $this->session->userdata('hospital');
 		if ($type == "party")
-			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")->where("supply_chain_party.hospital_id ", $hospital['hospital_id']);
+			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")
+			->where("supply_chain_party.hospital_id ", $hospital['hospital_id'])
+			->order_by('supply_chain_party_name', 'ASC');
 		else if ($type == "item")
 			$this->db->select('item.item_name,item.item_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
 				->from("item")

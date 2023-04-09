@@ -35,9 +35,11 @@ class Item_model extends CI_Model {
 	//This function is used to get data from Generic_item,Item_form tables.
 function get_data($type=""){
 		if($type=="generic_name")
-		$this->db->select("generic_item_id,generic_name,drug_type_id,item_type_id")->from("generic_item");
+		$this->db->select("generic_item_id,generic_name,drug_type_id,item_type_id")
+		->from("generic_item")->order_by('generic_name', 'ASC');
 		else if($type=="item_form")
-		$this->db->select("item_form_id,item_form")->from("item_form");
+		$this->db->select("item_form_id,item_form")->from("item_form")
+		->order_by('item_form', 'ASC');
 		$query=$this->db->get();
 		return $query->result();
 		
