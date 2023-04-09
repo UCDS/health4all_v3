@@ -280,9 +280,9 @@ $('#to_id').change(function(){
 										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="10"/>
 								</div><!-- End of to label-->
 							</div>
-							<div class="col-md-2" style="width:25%">
+							<div class="col-md-3" style="width: 27%;">
 								<div class="form-group"><!-- From party-->
-									<label for="from_id">From Party</label>
+									<label for="from_id">Indent From Party</label>
 										<select name="from_id" id="from_id" class="form-control">
 											<option value="">Select</option>
 											<?php
@@ -296,9 +296,9 @@ $('#to_id').change(function(){
 										</select>
 								</div><!-- End of from party-->
 							</div>
-							<div class="col-md-2" style="width:25%">							
+							<div class="col-md-4">							
 								<div class="form-group"><!-- To party-->
-									<label for="inputto_id">To Party</label>
+									<label for="inputto_id">Indent To Party</label>
 										<select name="to_id" id="to_id" class="form-control" >
 											<option value="">Select</option>
 												<?php
@@ -371,8 +371,8 @@ $('#to_id').change(function(){
 												<th><center>#</center> </th>
 												<th><center>Indent Id</center></th>
 												<th><center>Indent Date Time</center></th>
-												<th><center>From</center></th>
-												<th><center>To</center></th>
+												<th><center>Indent From Party</center></th>
+												<th><center>Indent To Party</center></th>
 												<th><center></center></th>
 											</tr>
 										</thead>
@@ -390,7 +390,7 @@ $('#to_id').change(function(){
 												<td> <?php echo date("d-M-Y g:i A", strtotime($indent->indent_date)); ?></td>
 												<td> <?php echo $indent->from_party; ?></td>
 												<td> <?php echo $indent->to_party; ?></td>
-												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="select" >
+												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="Select" >
 												</center>	<?php echo form_close();?></td><!-- End of indent approval form-->
 											</tr>
 											<?php } ?>

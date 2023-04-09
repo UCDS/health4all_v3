@@ -167,7 +167,7 @@ $('#to_id').change(function(){
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
-								<label for="from_id">From Party</label>
+								<label for="from_id">Indent From Party</label>
 								<!--Input field From Party-->
 									<select name="from_id" id="from_id" class="form-control">
 									<option value="">Select</option>
@@ -189,7 +189,7 @@ $('#to_id').change(function(){
 							<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
 								<div class="form-group">
 								<!--Input field To party-->
-										<label for="inputto_id">To Party</label>
+										<label for="inputto_id">Indent To Party</label>
 										<select name="to_id" id="to_id" class="form-control">
 											<option value="">Select</option>
 											<?php
@@ -289,8 +289,8 @@ $('#to_id').change(function(){
 							<th>Indent datetime</th>
 							<th>Approval datetime</th>
 							<th>Issue datetime</th>
-							<th>From</th>
-							<th>To</th>
+							<th>Indent From Party</th>
+							<th>Indent To Party</th>
 							<th>Ordered by</th>
 							<th>Approved by</th>
 							<th>Issued by</th>
@@ -343,11 +343,11 @@ $('#to_id').change(function(){
 							echo $f_issue_datetime;
 						else
 							echo "NA"; ?></td>
-						<td><?php echo $indent->from_party_id." - $indent->from_party_name";?></td>
-						<td><?php echo $indent->to_party_id." - $indent->to_party_name.";?></td>
-						<td><?php echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
-						<td><?php echo ($indent->indent_status == "Approved" || $indent->indent_status == "Issued") ? $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname: "NA";	?></td>
-						<td><?php echo ($indent->indent_status == "Issued") ? $indent->issued_by_id . " - " . $indent->issued_by_fname . " " . $indent->issued_by_lname : "NA";  ?></td>
+						<td><?php echo $indent->from_party_name;?></td>
+						<td><?php echo $indent->to_party_name;?></td>
+						<td><?php echo $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
+						<td><?php echo ($indent->indent_status == "Approved" || $indent->indent_status == "Issued") ? $indent->approved_by_fname." ".$indent->approved_by_lname: "NA";	?></td>
+						<td><?php echo ($indent->indent_status == "Issued") ? $indent->issued_by_fname . " " . $indent->issued_by_lname : "NA";  ?></td>
 						<td><?php echo $indent->indent_status;?></td>
 						<td><?php echo $indent->note;?></td>
 						<td><a href='<?php echo base_url()."consumables/indent_reports/indents_list_detailed/".$indent->indent_id?>' class="btn btn-success">View detailed</a></td>

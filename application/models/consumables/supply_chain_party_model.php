@@ -35,11 +35,11 @@ class Supply_chain_party_model extends CI_Model {
     }
     function get_area($type=""){
 		if($type=="area")
-		$this->db->select("*")->from("area");
+		$this->db->select("*")->from("area")->order_by('area_name', 'ASC');
 		else if($type=="vendor")
-		$this->db->select("*")->from("vendor");
+		$this->db->select("*")->from("vendor")->order_by('vendor_name', 'ASC');
 		else if($type=="department")
-		$this->db->select("*")->from("department");
+		$this->db->select("*")->from("department")->order_by('department', 'ASC');
 		$query=$this->db->get();
 		return $query->result();
 	}

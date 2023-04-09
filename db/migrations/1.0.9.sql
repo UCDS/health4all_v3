@@ -68,4 +68,12 @@ CREATE TABLE `inventory_summary` ( `supply_chain_party_id` INT NOT NULL , `item_
 ALTER TABLE `inventory` CHANGE `cost` `cost` FLOAT(11) NOT NULL; 
 
 
+drop table `item_master`; 
+drop table `item_batch`;
+ALTER TABLE `item`
+  DROP `lot_batch_id`,
+  DROP `warranty_period`,
+  DROP `manufacturing_date`,
+  DROP `expire_date`;
+
 

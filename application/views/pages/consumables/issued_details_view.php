@@ -106,7 +106,7 @@
 				if(n > 0){
 					selector = inventory_items[n - 1];
 				}
-
+				let balance = Number(current_quantity[0].value) - proposed_sum;
 				$(selector).after(
 					`<tr name="inventory_item_${item_name}">\
 		  <td><center><button name="remove_${item_name}[]" class="btn btn-danger item"><span class="glyphicon glyphicon-trash"> </span></button></center></td>\
@@ -117,7 +117,7 @@
 			</td>\
 			  <td>\
 				<div class="col">\
-					<input type="number"  class="form-control qty narrow"  name="quantity_${item_name}[]" min="0" step="1" placeholder="Quantity"  /></td>\
+					<input type="number"  class="form-control qty narrow"  name="quantity_${item_name}[]" min="0" step="1" placeholder="Quantity" value="${balance}" /></td>\
 				</div>\
 			  <td>\
 				<div class="col">\
@@ -362,12 +362,12 @@
 					<div class="row">
 
 						<div class="col-md-6">
-							<b>From:</b>
+							<b>Indent From Party:</b>
 							<?php echo $all_int->from_party; ?>
 
 						</div>
 						<div class="col-md-6">
-							<b>To: </b>
+							<b>Indent To Party: </b>
 							<?php echo $all_int->to_party; ?>
 
 						</div>

@@ -114,12 +114,12 @@
 			</div>
 			<div class="row" style="padding:5px 0px;">
 				<div class="col-md-4"><!-- From_party label-->
-					<b>From Party : </b>
+					<b>Indent From Party : </b>
 					<?php echo " " . $single_issue->from_party; ?>
 				</div><!-- End of from_party label -->
 
 				<div class="col-md-4" style="padding:5px 0px;"><!-- To party label -->
-					<b>To Party : </b>
+					<b>Indent To Party : </b>
 					<?php echo " " . $single_issue->to_party; ?>
 				</div><!-- End of to party label-->
 			</div>

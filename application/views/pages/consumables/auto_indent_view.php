@@ -152,7 +152,12 @@ input::-webkit-inner-spin-button {
 
 	}
 
-	function add_inventory_item_element(selector, item_id, item_elements, index) {
+	function add_inventory_item_element(selector, item_id, item_elements, current_items, index) {
+		let quantity_indented = $(`[name = 'quantity_indented[]']`);
+		let current_sum = sum_quantities($(`[name="quantity_${item_id}[]"]`), 'value');
+		console.log("SAIRAM FROM ADDINVITELEMENT", Number(quantity_indented[index].value), current_sum);
+		let balance = Number(quantity_indented[index].value) - current_sum;
+		current_items[index].quantity_added_inventory = Number(quantity_indented[index].value);
 		$(selector).after(
 			`<tr name="inventory_item_${item_id}[]">\
 						<td><center><button name="remove_inventory_item_${item_id}[]" class="btn btn-danger item"><span class="glyphicon glyphicon-trash"> </span></button></center></td>\
@@ -163,7 +168,7 @@ input::-webkit-inner-spin-button {
 							</td>\
 							<td>\
 								<div class="col">\
-									<input type="number"  class="form-control qty narrow"  name="quantity_${item_id}[]" min="0" step="1" placeholder="Quantity"  required /></td>\
+									<input type="number"  class="form-control qty narrow"  name="quantity_${item_id}[]" min="0" step="1" placeholder="Quantity" value="${balance}" required /></td>\
 								</div>\
 							<td>\
 								<div class="col">\
@@ -231,7 +236,7 @@ input::-webkit-inner-spin-button {
 
 		
 		let idx = current_items.length - 1;
-
+		$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 		let last_item_id = item_elements[idx].value;
 		console.log(last_item_id);
 		if (last_item_id) {
@@ -243,6 +248,8 @@ input::-webkit-inner-spin-button {
 		$(item_elements[idx]).change(e => {
 			console.log(e.target);
 			$(`[name='inventory_item_${last_item_id}[]']`).remove();
+			console.log("Toooltop", $(item_elements[idx]));
+			$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 			let selected = current_items.findIndex(item => item.array_id === curr_id);
 			let itemExists = current_items.findIndex(item => item.item_id == e.target.value);
 			if(itemExists != -1 && itemExists !== selected){
@@ -282,7 +289,7 @@ input::-webkit-inner-spin-button {
 				selector = specific_inventory_items[i];
 			}
 
-			add_inventory_item_element(selector, last_item_id, item_elements, idx);
+			add_inventory_item_element(selector, last_item_id, item_elements, current_items, idx);
 
 			remove_inventory_item_buttons = $(`[name='remove_inventory_item_${last_item_id}[]']`);
 
@@ -348,7 +355,7 @@ input::-webkit-inner-spin-button {
 									class="glyphicon glyphicon-plus"></span></button></center>
 					</td>
 					<td class="item_name">
-					<select name="item[]" id="item" class="form-control" required>
+					<select name="item[]" id="item" class="form-control"  data-toggle="tooltip" data-placement="bottom" title="" required>
 						<option value="">Select</option>
 						<?php
 						foreach ($all_item as $t) {
@@ -394,6 +401,8 @@ input::-webkit-inner-spin-button {
 
 			$(item_elements[idx]).change(e => {
 				$(`[name="inventory_item_${current_item_id}[]"]`).remove();
+				console.log("Toooltop", $(item_elements[idx]));
+				$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 				let selected = current_items.findIndex(item => item.array_id === current_item_array_id);
 				let itemExists = current_items.findIndex(item => item.item_id == e.target.value);
 				if(itemExists != -1 && itemExists !== selected){
@@ -445,7 +454,7 @@ input::-webkit-inner-spin-button {
 					console.log(i);
 					selector = specific_inventory_items[i];
 				}
-				add_inventory_item_element(selector, current_item_id, item_elements, idx);
+				add_inventory_item_element(selector, current_item_id, item_elements, current_items, idx);
 				remove_inventory_item_buttons = $(`[name="remove_inventory_item_${current_item_id}[]"]`);
 
 
@@ -572,7 +581,7 @@ input::-webkit-inner-spin-button {
 
 
 					<center>
-						<h1>Add/Approve/Issue Indent </h1>
+						<h1>Indent Add/Approve/Issue</h1>
 					</center>
 				</div>
 				<div class="panel-body">
@@ -596,7 +605,7 @@ input::-webkit-inner-spin-button {
 						</div> <!-- end of Indent Time-->
 						<div class="col-md-3"> <!-- From party-->
 							<div class="form-group">
-								<label for="from_id">From Party<font color='red'>*</font></label>
+								<label for="from_id">Indent From Party<font color='red'>*</font></label>
 								<select name="from_id" id="from_id" class="form-control wide" required>
 									<option value="">Select</option>
 									<?php
@@ -611,7 +620,7 @@ input::-webkit-inner-spin-button {
 						</div> <!--end of From party-->
 						<div class="col-md-3"> <!-- To party-->
 							<div class="form-group">
-								<label for="inputto_id">To Party<font color='red'>*</font></label>
+								<label for="inputto_id">Indent To Party<font color='red'>*</font></label>
 								<select name="to_id" id="to_id" class="form-control wide" required>
 									<option value="">Select</option>
 									<?php
@@ -679,7 +688,7 @@ input::-webkit-inner-spin-button {
 															class="glyphicon glyphicon-plus"></span></button></center>
 											</td>
 											<td class="item_name">
-												<select name="item[]" id="item" class="form-control" required>
+												<select name="item[]" id="item" class="form-control" data-toggle="tooltip" data-placement="bottom" title="" required>
 													<option value="">Select</option>
 													<?php
 													foreach ($all_item as $t) {

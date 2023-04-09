@@ -143,11 +143,11 @@ $(function(){
 											<b>Indent Id : </b><?php echo " ".$single_issue->indent_id;?>
 										</div><!-- End of indent_id label-->
 										<div class="col-md-4"><!-- From_party label-->
-											<b>From Party : </b><?php echo " ".$single_issue->from_party;?>
+											<b>Indent From Party : </b><?php echo " ".$single_issue->from_party;?>
 										</div><!-- End of from_party label -->
 										<div class="span3">
 									<div class="col-md-4"><!-- To party label -->
-										<b>To Party : </b><?php echo " ".$single_issue->to_party;?>
+										<b>Indent To Party : </b><?php echo " ".$single_issue->to_party;?>
 									</div><!-- End of to party label-->
 								</div>
 									</div>
@@ -281,9 +281,9 @@ $(function(){
 										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="10"/>
 								</div><!-- End of to label-->
 							</div>
-							<div class="col-md-2" style="width:25%">								
+							<div class="col-md-3" style="width: 27%;">								
 								<div class="form-group"><!-- From party-->
-									<label for="from_id">From Party</label>
+									<label for="from_id">Indent From Party</label>
 										<select name="from_id" id="from_id" class="form-control">
 											<option value="">Select</option>
 											<?php
@@ -297,9 +297,9 @@ $(function(){
 										</select>
 								</div><!-- End of from party-->
 							</div>
-							<div class="col-md-2" style="width:25%">							
+							<div class="col-md-4">							
 								<div class="form-group"><!-- To party-->
-									<label for="to_id">To Party</label>
+									<label for="to_id">Indent To Party</label>
 										<select name="to_id" id="to_id" class="form-control" >
 											<option value="">Select</option>
 												<?php
@@ -357,7 +357,7 @@ $(function(){
 						<div class="row">
 							<div class="col-md-8 col-md-offset-3">		
 								<button type="submit"  name="submit" value="submit_search_issue" class="btn btn-primary">Submit</button>
-								<a href="<?= base_url()."consumables/indent/auto_indent"; ?>"><button type="button"  name="auto_indent" class="btn btn-warning">Auto-Indent</button></a>
+								<a href="<?= base_url()."consumables/indent/auto_indent"; ?>"><button type="button"  name="auto_indent" class="btn btn-warning">Auto-Indent & Issue</button></a>
 								<input type="hidden" name="auto_indent" value="1"/>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
 							</div> 

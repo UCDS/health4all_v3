@@ -162,7 +162,7 @@ $(window).load(function() {
 </script>
 </head>
 <body>
-<div class="col-xs-1 col-md-offset-1">
+<div class="col-xs-1 col-md-offset-2">
     <div class="container">
 		<div class="row">
 			<div class="col-md-12">
@@ -211,13 +211,13 @@ $(window).load(function() {
             	<div class="row" >
 			 		<div class = "col-md-4">
 						<div class="form-group"><!-- From label-->
-						    <b>	From :</b>
+						    <b>Indent From Party:</b>
 								<?php echo  $all_int->from_party; ?>
 						</div><!-- End of from label-->
 					</div>
 					<div class = "col-md-4">
 						<div class="form-group"><!-- To label-->
-							<b>To :</b>
+							<b>Indent To Party:</b>
 							<?php echo $all_int->to_party; ?>
 						</div><!-- End of to label-->
 					</div>

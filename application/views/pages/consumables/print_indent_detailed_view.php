@@ -47,10 +47,10 @@
     <hr style="border: 2px solid black">
     <center>
 
-        <label style="float:left"><b>From : </b>
+        <label style="float:left"><b>Indent From Party: </b>
             <?php echo " " . $all_issue->from_party; ?>
         </label><!-- From label-->
-        <label style="float:right"><b>To : </b>
+        <label style="float:right"><b>Indent To Party: </b>
             <?php echo " " . $all_issue->to_party; ?>
         </label><br><br><!--  To label -->
         <label style="float:left"><b>Indented by : </b>

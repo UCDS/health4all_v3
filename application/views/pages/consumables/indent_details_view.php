@@ -53,7 +53,7 @@
 								</div> <!--end Indent Id-->
 								<div class="span3"> <!-- From party-->
 									<div class="col-md-6">
-										<label><b>From:</b>
+										<label><b>Indent From Party:</b>
 											<?php echo $register[0]->from_party; ?>
 										</label>
 									</div>
@@ -66,7 +66,7 @@
 							</div>
 							<div class="span3"> <!-- To party -->
 								<div class="col-md-6">
-									<label><b>To:</b>
+									<label><b>Indent To Party:</b>
 										<?php echo $register[0]->to_party; ?>
 									</label>
 								</div>

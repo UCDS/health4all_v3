@@ -63,43 +63,43 @@ class Hospital extends CI_Controller {
 		$this->load->view('templates/footer');								//displaying footer page.
     }   																	//add_hospital
 	
-	function drugs_available() {
-		if(!$this->logged_in){  						
-      show_404();
-		}
-		$access = false;
-		foreach($this->data['functions'] as $function){
-			if($function->user_function=="consumables_drugs"){
-				$access=true;
-			}
-		}
-		if(!$access)
-			show_404();
+	// function drugs_available() {
+	// 	if(!$this->logged_in){  						
+    //   show_404();
+	// 	}
+	// 	$access = false;
+	// 	foreach($this->data['functions'] as $function){
+	// 		if($function->user_function=="consumables_drugs"){
+	// 			$access=true;
+	// 		}
+	// 	}
+	// 	if(!$access)
+	// 		show_404();
 
-		$this->load->helper('form');										
-		$this->load->library('form_validation'); 							
-		$data['title']="Add Hospital";										
-		if($this->input->post('form_submit')){
-			$this->form_validation->set_rules('generic_item_id','required');
-			if($this->form_validation->run()===FALSE) 							
-			{
-				$this->data['msg'] = 'Missing fields in input';
-			}
-			else																
-			{
-				$insert_id = $this->hospital_model->add_drug();
-				if($insert_id)
-					$this->data['msg'] = 'Drug Added Successfully';
-				else
-					$this->data['msg'] = 'Something went wrong try again';
-			}
-		}		
-		$this->data['hospital_drugs'] = $this->hospital_model->get_drugs();
-		$this->data['generic_drugs'] = $this->hospital_model->get_masters_drugs();
-		$this->load->view('templates/header', $this->data);
-		$this->load->view('pages/add_remove_drug', $this->data);
-		$this->load->view('templates/leftnav');
-	}
+	// 	$this->load->helper('form');										
+	// 	$this->load->library('form_validation'); 							
+	// 	$data['title']="Add Hospital";										
+	// 	if($this->input->post('form_submit')){
+	// 		$this->form_validation->set_rules('generic_item_id','required');
+	// 		if($this->form_validation->run()===FALSE) 							
+	// 		{
+	// 			$this->data['msg'] = 'Missing fields in input';
+	// 		}
+	// 		else																
+	// 		{
+	// 			$insert_id = $this->hospital_model->add_drug();
+	// 			if($insert_id)
+	// 				$this->data['msg'] = 'Drug Added Successfully';
+	// 			else
+	// 				$this->data['msg'] = 'Something went wrong try again';
+	// 		}
+	// 	}		
+	// 	$this->data['hospital_drugs'] = $this->hospital_model->get_drugs();
+	// 	$this->data['generic_drugs'] = $this->hospital_model->get_masters_drugs();
+	// 	$this->load->view('templates/header', $this->data);
+	// 	$this->load->view('pages/add_remove_drug', $this->data);
+	// 	$this->load->view('templates/leftnav');
+	// }
 
 	function delete_drug() {
 		if(!$this->logged_in){  						
