@@ -12,93 +12,6 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
-
-<script type="text/javascript">
-$(document).ready(function(){$("#from_date").datepicker({
-		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
-		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
-		$("#to_date").datepicker("option","minDate",sdt)}})
-		var options = {
-			widthFixed : true,
-			showProcessing: true,
-			headerTemplate : '{content} {icon}', // Add icon for jui theme; new in v2.7!
-
-			widgets: [ 'default', 'zebra', 'print', 'stickyHeaders','filter'],
-
-			widgetOptions: {
-
-		  print_title      : 'table',          // this option > caption > table id > "table"
-		  print_dataAttrib : 'data-name', // header attrib containing modified header name
-		  print_rows       : 'f',         // (a)ll, (v)isible or (f)iltered
-		  print_columns    : 's',         // (a)ll, (v)isible or (s)elected (columnSelector widget)
-		  print_extraCSS   : '.table{border:1px solid #ccc;} tr,td{background:white}',          // add any extra css definitions for the popup window here
-		  print_styleSheet : '', // add the url of your print stylesheet
-		  // callback executed when processing completes - default setting is null
-		  print_callback   : function(config, $table, printStyle){
-			// do something to the $table (jQuery object of table wrapped in a div)
-			// or add to the printStyle string, then...
-			// print the table using the following code
-			$.tablesorter.printTable.printOutput( config, $table.html(), printStyle );
-			},
-			// extra class name added to the sticky header row
-			  stickyHeaders : '',
-			  // number or jquery selector targeting the position:fixed element
-			  stickyHeaders_offset : 0,
-			  // added to table ID, if it exists
-			  stickyHeaders_cloneId : '-sticky',
-			  // trigger "resize" event on headers
-			  stickyHeaders_addResizeEvent : true,
-			  // if false and a caption exist, it won't be included in the sticky header
-			  stickyHeaders_includeCaption : false,
-			  // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
-			  stickyHeaders_zIndex : 2,
-			  // jQuery selector or object to attach sticky header to
-			  stickyHeaders_attachTo : null,
-			  // scroll table top into view after filtering
-			  stickyHeaders_filteredToTop: true,
-
-			  // adding zebra striping, using content and default styles - the ui css removes the background from default
-			  // even and odd class names included for this demo to allow switching themes
-			  zebra   : ["ui-widget-content even", "ui-state-default odd"],
-			  // use uitheme widget to apply defauly jquery ui (jui) class names
-			  // see the uitheme demo for more details on how to change the class names
-			  uitheme : 'jui'
-			}
-		  };
-			$("#table-sort").tablesorter(options);
-		  $('.print').click(function(){
-			$('#table-sort').trigger('printTable');
-		  });
-});
-
-</script>
-<script type="text/javascript">
-$(document).ready(function(){
-	initpriorityType();
-	var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
-		var dropdowns = ['last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-		console.log(filter_values);
-		Object.keys(filter_values).forEach((name) => {
-			const value = filter_values[name];
-			if(dropdowns.includes(name)){
-				selectizes[name][0].selectize.setValue(value);
-			} else {
-				$('[name="'+name+'"]').val(value);
-			}
-		});
-});
-</script>
-<script type="text/javascript">
-function doPost(page_no){
-	var page_no_hidden = document.getElementById("page_no");
-  	page_no_hidden.value=page_no;
-        $('#followp_list').submit();
-   }
-function onchange_page_dropdown(dropdownobj){
-   doPost(dropdownobj.value);    
-}
-</script>
-
 <style type="text/css">
 .page_dropdown{
     position: relative;
@@ -166,6 +79,78 @@ border-bottom: 1px solid rgba(0,0,0,0.05);
 display: inline-grid;
 } 
 </style>
+<script type="text/javascript">
+$(document).ready(function(){$("#from_date").datepicker({
+		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
+		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
+		$("#to_date").datepicker("option","minDate",sdt)}})
+		var options = {
+			widthFixed : true,
+			showProcessing: true,
+			headerTemplate : '{content} {icon}', // Add icon for jui theme; new in v2.7!
+
+			widgets: [ 'default', 'zebra', 'print', 'stickyHeaders','filter'],
+
+			widgetOptions: {
+
+		  print_title      : 'table',          // this option > caption > table id > "table"
+		  print_dataAttrib : 'data-name', // header attrib containing modified header name
+		  print_rows       : 'f',         // (a)ll, (v)isible or (f)iltered
+		  print_columns    : 's',         // (a)ll, (v)isible or (s)elected (columnSelector widget)
+		  print_extraCSS   : '.table{border:1px solid #ccc;} tr,td{background:white}',          // add any extra css definitions for the popup window here
+		  print_styleSheet : '', // add the url of your print stylesheet
+		  // callback executed when processing completes - default setting is null
+		  print_callback   : function(config, $table, printStyle){
+			// do something to the $table (jQuery object of table wrapped in a div)
+			// or add to the printStyle string, then...
+			// print the table using the following code
+			$.tablesorter.printTable.printOutput( config, $table.html(), printStyle );
+			},
+			// extra class name added to the sticky header row
+			  stickyHeaders : '',
+			  // number or jquery selector targeting the position:fixed element
+			  stickyHeaders_offset : 0,
+			  // added to table ID, if it exists
+			  stickyHeaders_cloneId : '-sticky',
+			  // trigger "resize" event on headers
+			  stickyHeaders_addResizeEvent : true,
+			  // if false and a caption exist, it won't be included in the sticky header
+			  stickyHeaders_includeCaption : false,
+			  // The zIndex of the stickyHeaders, allows the user to adjust this to their needs
+			  stickyHeaders_zIndex : 2,
+			  // jQuery selector or object to attach sticky header to
+			  stickyHeaders_attachTo : null,
+			  // scroll table top into view after filtering
+			  stickyHeaders_filteredToTop: true,
+
+			  // adding zebra striping, using content and default styles - the ui css removes the background from default
+			  // even and odd class names included for this demo to allow switching themes
+			  zebra   : ["ui-widget-content even", "ui-state-default odd"],
+			  // use uitheme widget to apply defauly jquery ui (jui) class names
+			  // see the uitheme demo for more details on how to change the class names
+			  uitheme : 'jui'
+			}
+		  };
+			$("#table-sort").tablesorter(options);
+		  $('.print').click(function(){
+			$('#table-sort').trigger('printTable');
+		  });
+});
+
+</script>
+
+<script type="text/javascript">
+function doPost(page_no){
+	var page_no_hidden = document.getElementById("page_no");
+  	page_no_hidden.value=page_no;
+        $('#followp_list').submit();
+   }
+function onchange_page_dropdown(dropdownobj){
+   doPost(dropdownobj.value);    
+}
+</script>
+
+
 
 	<?php 
 	
@@ -188,7 +173,6 @@ display: inline-grid;
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
 								<input type="radio" name="life_status" id="life_status_notlive" value="0"  >
 								<label for="status_dead">Not Alive</label><br>
-								<span style="color:red;" id="error_life_status"></span>
 
 							</div>
 						</div>
@@ -203,7 +187,6 @@ display: inline-grid;
 								    <option value='OP'>OP</option>  
 							
 								</select>
-								<span style="color:red;" id="error_lastvs_type"></span>
 							</div>
 						</div>
 

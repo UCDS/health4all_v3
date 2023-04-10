@@ -279,19 +279,22 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
-			$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
+			$this->data['results_count']=$this->reports_model->get_count_followups();								
 
+			$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
+			if(count($this->data['results']) == 0){
+				$this->data['msg'] = "No Records found";
+			}
 			$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-						$filter_values = [];
-						foreach($filter_names as $filter_name){
-							$filter_value = "";
-							if($this->input->post($filter_name)){
-								$filter_value = $this->input->post($filter_name);
-							}
-							$filter_values[$filter_name] = $filter_value;
-						}
-						$this->data['filter_values'] = $filter_values;
-		//$this->data['report_count']=$this->reports_model->get_op_detail_3_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
+			$filter_values = [];
+			foreach($filter_names as $filter_name){
+				$filter_value = "";
+				if($this->input->post($filter_name)){
+					$filter_value = $this->input->post($filter_name);
+				}
+				$filter_values[$filter_name] = $filter_value;
+			}
+			$this->data['filter_values'] = $filter_values;
 		
 	   $this->load->view('pages/followup_details',$this->data);
 		
