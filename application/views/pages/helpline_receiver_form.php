@@ -161,6 +161,21 @@ textarea {
 
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
+						<label for="district_id">District<font style="color:red">*</font></label>
+						<select id="district_id" name="district_id" class="form-control" onchange="" required/>
+							<option value="">Select District</option>
+							<?php 
+								foreach($districts as $district){
+									echo "<option value='".$district->district_id."'";
+									echo ">".$district->district. "-" .$district->state. "</option>";
+								}
+								?>
+						</select>
+					</div>
+				</div>
+
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
+					<div class="form-horizontal">
 						<label for="category">Category<font style="color:red">*</font></label>
 						<input type="text" class="form-control" placeholder="Enter Category" id="category" name="category" required/>
 					</div>
@@ -182,14 +197,15 @@ textarea {
 					</div>
 				</div>
 
+				
+				<div class="clearfix"></div>
+
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label></label>
 						<div class="form-control" style="box-shadow: none; border: 0;padding-left: 0;"><label for="enable_outbound"><input type="checkbox" id="enable_outbound" name="enable_outbound" value="1" /> Enable Outbound Calls?</label></div>
 					</div>
 				</div>
-
-				<div class="clearfix"></div>
 
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
@@ -221,6 +237,7 @@ textarea {
 					</div>
 				</div>
 
+			<div class="clearfix"></div>
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label for="helpline_receiver_link">Helpline Links<img src="<?php echo base_url();?>assets/images/information-icon.png" class="info_icon" title="Hold CTRL key and Click for multiple selections" data-toggle="tooltip"/></label>

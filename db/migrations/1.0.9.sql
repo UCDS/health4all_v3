@@ -76,4 +76,5 @@ ALTER TABLE `item`
   DROP `manufacturing_date`,
   DROP `expire_date`;
 
-
+--adding district_id column in helpline_receiver table
+ALTER TABLE `helpline_receiver` ADD `district_id` INT(3) NOT NULL AFTER email;
