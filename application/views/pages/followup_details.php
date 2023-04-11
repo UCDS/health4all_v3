@@ -80,7 +80,36 @@ display: inline-grid;
 } 
 </style>
 <script type="text/javascript">
-$(document).ready(function(){$("#from_date").datepicker({
+
+var selectizes = {};
+	function initPrioritySelectize(){
+        var priority = JSON.parse(JSON.stringify(<?php echo json_encode($priority); ?>));
+		selectizes['priority_type'] = $('#priority_type_id').selectize({
+			valueField: 'priority_type_id',
+			labelField: 'custom_data',
+			searchField: ['priority_type'],
+			options: priority,
+			create: false,
+			render: {
+				option: function(item, escape) {
+					return '<div>' +
+						'<span class="title">' +
+							'<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+						'</span>' +
+					'</div>';
+				}
+			},
+			load: function(query, callback) {
+				if (!query.length) return callback();
+			},
+
+		});
+	}	
+
+
+$(document).ready(function(){
+	initPrioritySelectize();
+	$("#from_date").datepicker({
 		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
 		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
 		$("#to_date").datepicker("option","minDate",sdt)}})
@@ -137,6 +166,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 		  });
 });
 
+
 </script>
 
 <script type="text/javascript">
@@ -157,94 +187,63 @@ function onchange_page_dropdown(dropdownobj){
 	$page_no = 1;	
 	
 	?>
-<div class="row">
-<div class="panel panel-default" >
+	<div class="row">
+	<div class="panel panel-default" >
 		<div class="panel-heading">
-		<h4>Search follow-Up Details</h4>	
-	</div>
+			<h4>Search follow-Up Details</h4>	
+		</div>
 		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
-			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
+                <b>Life Status:  </b>
+				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == "IP") echo " checked ";?> > Alive</label>
+                <label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') != "IP") echo " checked "; ?> >Not Alive </label>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+      		    Search by : <select name="last_visit_type" id="last_visit_type" class="form-control"> 
+				  <option value="">Last Visit Type</option>  
+                        <option value="All" <?php echo ($this->input->post('last_visit_type') == 'All') ? 'selected' : ''; ?> >All</option> 
+                        <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
+						<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
+                        </select>
+                <select name="priority_type" id="priority_type" class="form-control">
+                <option value="">Priority Type</option>
+				<?php foreach($priority_types as $type){
+                    echo "<option value='".$type->priority_type_id."'";
+                    if($this->input->post('priority_type') && $this->input->post('priority_type') == $type->priority_type_id) echo " selected ";
+                    echo ">".$type->priority_type."</option>";
+                }
+                ?>
+                </select>
 
-			 		<div class="row">		
-					 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="form-group">
-								<label for="inputstatus" style="margin-left: 10px; margin-top: 10px;">Life Status </label><br>
-								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1"  >
-								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
-								<input type="radio" name="life_status" id="life_status_notlive" value="0"  >
-								<label for="status_dead">Not Alive</label><br>
+                <select name="volunteer" id="volunteer" class="form-control" >
+                <option value="">Volunteer</option>
+				<?php foreach($volunteer as $volunteer){
+                     echo "<option value='".$volunteer->staff_id."'";
+                     if($this->input->post('first_name') && $this->input->post('first_name') == $volunteer->staff_id) echo " selected ";
+                     echo ">".$volunteer->first_name."</option>";
+                }
+                ?>
+                </select>
 
-							</div>
-						</div>
+                <select name="route_primary" id="route_primary" class="form-control" >
+                    <option value="">Primary Route</option>
+					<?php foreach($route_primary as $primary){
+						echo "<option value='".$primary->route_primary_id."'";
+						if($this->input->post('route_primary') && $this->input->post('route_primary') == $primary->route_primary_id) echo " selected ";
+						echo ">".$primary->route_primary."</option>";
+                    }
+                 ?>
+                </select>
 
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="form-group">
-								<label class="control-label" style="margin-top: 10px;">Last Visit Type  </label>
-								<select class="form-control" name="last_visit_type"  >
-									<option value="Select">Select</option>
-									<option value=''>All</option>
-								    <option value='IP'>IP</option>
-								    <option value='OP'>OP</option>  
-							
-								</select>
-							</div>
-						</div>
+                <select name="route_secondary" id="route_secondary" class="form-control" >
+                    <option value="">Secondary Route</option>
+					<?php foreach($route_secondary as $secondary){
+						echo "<option value='".$secondary->route_secondary_id."'";
+						if($this->input->post('route_secondary') && $this->input->post('route_secondary') == $secondary->route_secondary_id) echo " selected ";
+						echo ">".$secondary->route_secondary."</option>";
+                    }
+                 ?>
+                </select>
 
-						<div class="col-md-4">
-							<div class="form-group">
-								<label class="control-label" style="margin-top: 10px;">Priority Type </label>
-								<select class="form-control" name="priority_type" >
-									<option value="Select">Select</option>
-									 <?php foreach($priority_types as $type){
-									echo "<option value='$type->priority_type_id'>$type->priority_type</option>";
-									}
-									?> 
-								</select>
-							</div>
-						</div>
-					</div>
-
-					<div class="row">		
-                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="form-group">
-								<label class="control-label" style="margin-left: 10px; margin-top: 10px;">Volunteer </label>
-								<select class="form-control" name="volunteer" >
-									<option value="Select">Select</option>
-									 <?php foreach($volunteer as $volunt){
-									 echo "<option value='$volunt->staff_id'>$volunt->first_name</option>";
-									    }
-									?> 
-								</select>
-							</div>
-						</div>			
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="form-group">
-								<label class="control-label">Primary Route</label>
-								<select class="form-control" name="route_primary" >
-									<option value="Select">Select</option>
-									 <?php foreach($route_primary as $primary){
-									echo "<option value='$primary->route_primary_id'>$primary->route_primary</option>";
-									}
-									?> 
-								</select>
-							</div>
-						</div>
-
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-							<div class="form-group">
-								<label class="control-label">Secondary Route</label>
-								<select class="form-control" name="route_secondary" >
-									<option value="Select">Select</option>
-									 <?php foreach($route_secondary as $secondary){
-									echo "<option value='$secondary->id'>$secondary->route_secondary</option>";
-									}
-									?> 
-								</select>	
-							</div>
-						</div>
-					</div>
-					<br>
+               
 			
 					<label class="control-label" style="margin-left: 10px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
@@ -544,13 +543,13 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
                   }         
                   echo ">$counter</option>";
 	}
-echo "</select></li>";
-} ?>
-</ul>
-	<?php } else{ ?>
-	
-	No Data to display.
-<?php }  ?> 
+					echo "</select></li>";
+					} ?>
+					</ul>
+						<?php } else{ ?>
+						
+						No Data to display.
+					<?php }  ?> 
 </div>	 
  
 
