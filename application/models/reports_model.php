@@ -4444,8 +4444,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('life_status') == 1){
 			$this->db->where('patient_followup.life_status',$this->input->post('life_status'));
                 }
-				else if($this->input->post('life_status_not_alive')== 0){
-					$this->db->where('patient_followup.life_status',$this->input->post('life_status_not_alive'));
+				else if($this->input->post('life_status')== 0){
+					$this->db->where('patient_followup.life_status',$this->input->post('life_status'));
 						}
 				
 				if($this->input->post('last_visit_type')){
