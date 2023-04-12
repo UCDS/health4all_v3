@@ -285,16 +285,16 @@ class Reports extends CI_Controller {
 			if(count($this->data['results']) == 0){
 				$this->data['msg'] = "No Records found";
 			}
-			$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-			$filter_values = [];
-			foreach($filter_names as $filter_name){
-				$filter_value = "";
-				if($this->input->post($filter_name)){
-					$filter_value = $this->input->post($filter_name);
-				}
-				$filter_values[$filter_name] = $filter_value;
-			}
-			$this->data['filter_values'] = $filter_values;
+			// $filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
+			// $filter_values = [];
+			// foreach($filter_names as $filter_name){
+			// 	$filter_value = "";
+			// 	if($this->input->post($filter_name)){
+			// 		$filter_value = $this->input->post($filter_name);
+			// 	}
+			// 	$filter_values[$filter_name] = $filter_value;
+			// }
+			// $this->data['filter_values'] = $filter_values;
 		
 	   $this->load->view('pages/followup_details',$this->data);
 		

@@ -4441,12 +4441,13 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         // }
         //$this->db->select("count(*) as count",false);
 		//Selection of Life Status
-		if($this->input->post('life_status')){
+		if($this->input->post('life_status') == 1){
 			$this->db->where('patient_followup.life_status',$this->input->post('life_status'));
                 }
-				else{
-					$this->db->select('"0" as life_status',false);
-				}
+				else if($this->input->post('life_status_not_alive')== 0){
+					$this->db->where('patient_followup.life_status',$this->input->post('life_status_not_alive'));
+						}
+				
 				if($this->input->post('last_visit_type')){
 				$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
 				}
@@ -4456,16 +4457,16 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 					if($this->input->post('volunteer')){
 						$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
 						}
-						if($this->input->post('primary_route')){
-							$this->db->where('patient_followup.route_primary_id',$this->input->post('primary_route'));
+						if($this->input->post('route_primary')){
+							$this->db->where('patient_followup.route_primary_id',$this->input->post('route_primary'));
 							}		
 							
-							if($this->input->post('secondary_route')){
-								$this->db->where('patient_followup.route_secondary_id',$this->input->post('secondary_route'));
+							if($this->input->post('route_secondary')){
+								$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 								}
         $this->db->select("patient_followup.*, priority_type.*,patient.*,staff.first_name as fname,staff.last_name as lname,route_primary.*,route_secondary.*",false)
         ->from('patient_followup')
-        ->join('patient','patient_followup.patient_id=patient.patient_id','left')
+        ->join('patient','patient_followup.patient_id=patient.patient_id','both')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')

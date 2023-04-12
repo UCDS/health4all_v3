@@ -194,8 +194,8 @@ function onchange_page_dropdown(dropdownobj){
 		</div>
 		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
                 <b>Life Status:  </b>
-				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == "1") echo " checked ";?> > Alive</label>
-                <label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') == "0") echo " checked "; ?> >Not Alive </label>
+				<label><input type ="radio" name="life_status" class ="form-control" value="1"  > Alive</label>
+                <label><input type="radio" name="life_status_not_alive" class ="form-control" value="0"   >Not Alive </label>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
       		    Search by : <select name="last_visit_type" id="last_visit_type" class="form-control"> 
 				  <option value="">Last Visit Type</option>  
