@@ -119,8 +119,17 @@
 	</script>
 				<script>
 					$('form[id="followup_add_details"]').validate({
-	                      
-						
+						rules: {
+							status_date: {
+                          required: true
+                         },   
+						 last_visit_date :
+						 {
+							required: true
+						 },
+						 submitHandler: function (form) {
+            form.submit();
+        }
                        });
 					$(function(){
 						
@@ -317,7 +326,7 @@ $patient = $patients[0];
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				        <div class="form-group">
 							<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
-							<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
+							<input class="form-control"  type="date"  name="status_date" id="status_date" value="<?php if($patient_followup) echo $patient_followup->status_date;  ?> " required/>
 						</div>
 				</div>
 
@@ -372,7 +381,7 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus_date ">Last Visit Date <span class="mandatory">*</span> </label>
-								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" value=<?php if($patient_followup) echo $patient_followup->last_visit_date;  ?>  required />
+								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" value="<?php if($patient_followup) echo $patient_followup->last_visit_date;  ?>"  required />
 
 							</div>
 						</div>
