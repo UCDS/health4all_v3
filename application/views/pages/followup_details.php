@@ -193,10 +193,12 @@ function onchange_page_dropdown(dropdownobj){
 			<h4>Search follow-Up Details</h4>	
 		</div>
 		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
-                <b>Life Status:  </b>
-				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == 1)  echo "checked" ; ?> > Alive</label>
-                <label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') == 0)  echo "checked" ; ?>  >Not Alive </label>
+
+                <label style=" margin-left: 50px"><b>Life Status:  </b></label>
+				<label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') == 0)  echo "checked" ; ?>  >Not Alive </label>
+				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == 1)  echo "checked" ; ?> > Alive</label><br>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+
       		    Search by : <select name="last_visit_type" id="last_visit_type" class="form-control"> 
 				  <option value="">Last Visit Type</option>  
                         <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
@@ -243,10 +245,10 @@ function onchange_page_dropdown(dropdownobj){
                 </select>
 
                
-			
-					<label class="control-label" style="margin-left: 10px; margin-top: 10px;"> Rows per page : </label>
+					<br>
+					<label class="control-label" style="margin-left: 50px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			<center><input class="btn btn-sm btn-primary" type="submit" value="Submit" /></center>
+			<center><input class="btn btn-sm btn-primary" type="submit" value="Submit" style="margin-top: 20px"/></center>
 		
 	<br />
 	 </div>
