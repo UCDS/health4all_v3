@@ -81,38 +81,38 @@ display: inline-grid;
 </style>
 <script type="text/javascript">
 
-var selectizes = {};
-	function initPrioritySelectize(){
-        var priority = JSON.parse(JSON.stringify(<?php echo json_encode($priority); ?>));
-		selectizes['priority_type'] = $('#priority_type_id').selectize({
-			valueField: 'priority_type_id',
-			labelField: 'custom_data',
-			searchField: ['priority_type'],
-			options: priority,
-			create: false,
-			render: {
-				option: function(item, escape) {
-					return '<div>' +
-						'<span class="title">' +
-							'<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
-						'</span>' +
-					'</div>';
-				}
-			},
-			load: function(query, callback) {
-				if (!query.length) return callback();
-			},
+// var selectizes = {};
+// 	function initPrioritySelectize(){
+//         var priority = JSON.parse(JSON.stringify(<?php echo json_encode($priority); ?>));
+// 		selectizes['priority_type'] = $('#priority_type_id').selectize({
+// 			valueField: 'priority_type_id',
+// 			labelField: 'custom_data',
+// 			searchField: ['priority_type'],
+// 			options: priority,
+// 			create: false,
+// 			render: {
+// 				option: function(item, escape) {
+// 					return '<div>' +
+// 						'<span class="title">' +
+// 							'<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+// 						'</span>' +
+// 					'</div>';
+// 				}
+// 			},
+// 			load: function(query, callback) {
+// 				if (!query.length) return callback();
+// 			},
 
-		});
-	}	
+// 		});
+// 	}	
 
 
 $(document).ready(function(){
-	initPrioritySelectize();
-	$("#from_date").datepicker({
-		dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
-		{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
-		$("#to_date").datepicker("option","minDate",sdt)}})
+	// //initPrioritySelectize();
+	// $("#from_date").datepicker({
+	// 	dateFormat:"dd-M-yy",changeYear:1,changeMonth:1,onSelect:function(sdt)
+	// 	{$("#to_date").datepicker({dateFormat:"dd-M-yy",changeYear:1,changeMonth:1})
+	// 	$("#to_date").datepicker("option","minDate",sdt)}})
 		var options = {
 			widthFixed : true,
 			showProcessing: true,
@@ -194,12 +194,11 @@ function onchange_page_dropdown(dropdownobj){
 		</div>
 		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
                 <b>Life Status:  </b>
-				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == "IP") echo " checked ";?> > Alive</label>
-                <label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') != "IP") echo " checked "; ?> >Not Alive </label>
+				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == "1") echo " checked ";?> > Alive</label>
+                <label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') == "0") echo " checked "; ?> >Not Alive </label>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
       		    Search by : <select name="last_visit_type" id="last_visit_type" class="form-control"> 
 				  <option value="">Last Visit Type</option>  
-                        <option value="All" <?php echo ($this->input->post('last_visit_type') == 'All') ? 'selected' : ''; ?> >All</option> 
                         <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
 						<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
                         </select>
@@ -236,8 +235,8 @@ function onchange_page_dropdown(dropdownobj){
                 <select name="route_secondary" id="route_secondary" class="form-control" >
                     <option value="">Secondary Route</option>
 					<?php foreach($route_secondary as $secondary){
-						echo "<option value='".$secondary->route_secondary_id."'";
-						if($this->input->post('route_secondary') && $this->input->post('route_secondary') == $secondary->route_secondary_id) echo " selected ";
+						echo "<option value='".$secondary->id."'";
+						if($this->input->post('route_secondary') && $this->input->post('route_secondary') == $secondary->id) echo " selected ";
 						echo ">".$secondary->route_secondary."</option>";
                     }
                  ?>
