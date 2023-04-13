@@ -25,6 +25,7 @@ class Inventory_summary_model extends CI_Model
             $this->db->select('scp.supply_chain_party_name, item.item_name, inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, SUM(inventory.quantity) total_quantity')
             ->from('inventory')
             ->join('item', 'item.item_id = inventory.item_id')
+            ->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
             ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
             ->where("inventory.date_time > '$latest_run_date'")
             ->where('scp.supply_chain_party_id', $scp_id)
@@ -35,6 +36,9 @@ class Inventory_summary_model extends CI_Model
             }
             if($this->input->post('item')){
                 $this->db->where('inventory.item_id', $this->input->post('item'));
+            }
+            if($this->input->post('item_type')){
+                $this->db->where('generic_item.item_type_id', $this->input->post('item_type'));
             }
         } else {
 
@@ -252,6 +256,7 @@ class Inventory_summary_model extends CI_Model
         ->join("(SELECT s.item_id, s.supply_chain_party_id, MAX(s.transaction_date) t_date FROM inventory_summary s WHERE s.transaction_date <= '$as_on_date' GROUP BY s.item_id, s.supply_chain_party_id) summalias", 
         'summalias.item_id = inventory_summary.item_id AND summalias.supply_chain_party_id = inventory_summary.supply_chain_party_id AND summalias.t_date = inventory_summary.transaction_date')
         ->join('item', 'inventory_summary.item_id = item.item_id')
+        ->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
         ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory_summary.supply_chain_party_id')
         ->where('scp.supply_chain_party_id', (int)$scp_id)
         ->where('scp.hospital_id', $hospital['hospital_id']);
@@ -262,6 +267,9 @@ class Inventory_summary_model extends CI_Model
         // }
         if($this->input->post('item')){
             $this->db->where('inventory_summary.item_id', $this->input->post('item'));
+        }
+        if($this->input->post('item_type')){
+            $this->db->where('generic_item.item_type_id', $this->input->post('item_type'));
         }
         $query = $this->db->get();
         $qstring = $this->db->last_query();
