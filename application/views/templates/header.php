@@ -450,7 +450,7 @@
 				<b class="caret"></b>
 				</a>
                 <ul class="dropdown-menu">
-                  <li><a href="<?php echo base_url()."dashboard/helpline";?>">Helpline</a></li>
+                  <!-- <li><a href="<?php echo base_url()."dashboard/helpline";?>">Helpline</a></li> -->
                   <li><a href="<?php echo base_url()."dashboard/helpline_voicemail";?>">Transport Services</a></li>
                   <li><a href="<?php echo base_url()."dashboard/state/telangana";?>">State - TS</a></li>
                   <li><a href="<?php echo base_url()."dashboard/view/tvvp";?>">TVVP</a></li>
