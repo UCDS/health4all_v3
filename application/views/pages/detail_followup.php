@@ -200,14 +200,14 @@ $patient = $patients[0];
 			<div class="row">
 							<div class="col-md-3">
 							<div class="form-group">
-							<label class="control-label">Patient ID:</label>
+							<label class="control-label">Patient ID</label>
 							  <input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: #ADFF2F; " readonly/>
                             </div>		
 							</div>
 
 							<div class="col-md-3">
 						    <div class="form-group">
-							<label class="control-label">Name: 	</label>
+							<label class="control-label">Name 	</label>
 							<br><input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F;" />
                             </div>
 		                    </div>
@@ -228,7 +228,7 @@ $patient = $patients[0];
 						
 						<div class="col-md-3">
 						<div class="form-group">
-						<label class="control-label">Gender: </label>
+						<label class="control-label">Gender </label>
 						<br>
 								<div class="col-md-12 col-xs-12" style="background: #ADFF2F; font-weight: bold;" >
 
@@ -294,7 +294,7 @@ $patient = $patients[0];
 				<div class="col-md-3">
 						<div class="form-group">
 							<label for="inputstatus_date ">Registered On Date  </label>
-							<input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
+							<input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d-M-Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
 						</div>
 				</div>
 			</div>	
