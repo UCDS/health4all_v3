@@ -33,6 +33,20 @@ ALTER TABLE `sms_template` ADD `default_sms` TINYINT(1) DEFAULT 0;
 
 ALTER TABLE hospital ADD auto_ip_number tinyint(1) DEFAULT 0;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE TABLE `patient_followup` (
   `patient_followup_id` int(11) NOT NULL,
   `patient_id` int(8) NOT NULL,
@@ -171,3 +185,10 @@ ALTER TABLE `item`
 
 --adding district_id column in helpline_receiver table
 ALTER TABLE `helpline_receiver` ADD `district_id` INT(3) NOT NULL AFTER email;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES
+
+(72, 'patient_follow_up', 'Patient Follow Up', 'Patient Follow Up Module');
+
+INSERT INTO `user_function_link` (`link_id`, `user_id`, `function_id`, `add`, `edit`, `view`, `remove`, `active`) VALUES
+(5926, 1, 72, 1, 1, 1, 0, 1);
