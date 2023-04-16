@@ -40,7 +40,10 @@ class Item extends CI_Controller {
                array(
                      'field'   => 'item_name',
                      'label'   => 'item Name',
-                     'rules'   => 'required|trim|xss_clean'
+                     'rules'   => 'required|trim|xss_clean|is_unique[item.item_name]', 
+					 'errors' => array(
+						'is_unique[item.item_name]' => 'Item with same name already exists'
+					 )
                   ) 	
 		     
 			);

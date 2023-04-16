@@ -40,7 +40,10 @@ class Item_type extends CI_Controller {
                array(
                      'field'   => 'item_type',
                      'label'   => 'item type',
-                     'rules'   => 'required|trim|xss_clean'
+                     'rules'   => 'required|trim|xss_clean|is_unique[item_type.item_type]', 
+					 'errors' => array(
+						'is_unique[item_type.item_type]' => 'Item type already exists'
+					 )
                   ) 	
 		     
 			);

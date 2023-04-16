@@ -84,13 +84,23 @@ class User_panel extends CI_Controller {
 		if($this->session->userdata('logged_in')){
 		$this->load->helper('form');
 		$this->data['title']="Edit User";
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+			 	foreach($this->data['defaultsConfigs'] as $default){		 
+			 	if($default->default_id=='pagination'){
+			 			$this->data['rowsperpage'] = $default->value;
+			 			$this->data['upper_rowsperpage']= $default->upper_range;
+			 			$this->data['lower_rowsperpage']= $default->lower_range;
+			 		}
+				}
 		$this->data['userdata']=$this->session->userdata('logged_in');
+		$this->data['report_count'] = $this->masters_model->get_data("user_count");
+		
 		$this->load->view('templates/header',$this->data);
 		$this->load->view('templates/leftnav',$this->data);
 		$this->load->library('form_validation');
 		$this->form_validation->set_rules('user', 'Username', 'trim|xss_clean');
-		if ($this->form_validation->run() === FALSE){
-			$this->data['user']=$this->masters_model->get_data("user");
+		if ( $this->input->post('submitBtn')){
+			$this->data['user']=$this->masters_model->get_user_details($this->data['rowsperpage']);
 			$this->data["staff"]=$this->staff_model->get_staff();
 			$this->load->view('pages/edit_user',$this->data);
 		}
@@ -112,7 +122,7 @@ class User_panel extends CI_Controller {
 			$this->data["staff"]=$this->staff_model->get_staff();
 			$this->data['user']=$this->masters_model->get_data("user");
    			}
-			$this->data["user"]=$this->masters_model->get_data("user");
+			//$this->data["user"]=$this->masters_model->get_data("user");
 			$this->load->view('pages/edit_user',$this->data);	
 			}
 		 $this->load->view('templates/footer');	

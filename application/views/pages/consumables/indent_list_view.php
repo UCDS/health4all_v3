@@ -130,7 +130,7 @@ $('#to_id').change(function(){
 	  $("#item_name").chained("#item_type");
 	});
 </script>
-<div class="col-md-8 col-md-offset-1">
+<div class="col-md-8 col-md-offset-2">
 	<?php
 	if($from_date==0 && $to_date==0){
 	$from_date=0;$to_date=0;
@@ -147,25 +147,27 @@ $('#to_id').change(function(){
 	if($indent_status == '0') $indent_status = $this->input->post('indent_status');
 	?>
 			   <div class="text-center">
-				<h2> Indent List</h2>
+				<div class="row"><center><h2>Indent List</h2></center></div>
 				<?php echo form_open('consumables/indent_reports/indents_list',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
 				<div class="container">
 					<div class="row">
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
+						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--Input field From date-->
-								From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+							<label for="from_date">From Date </label>
+								<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--Input field To date-->
-								To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+							<label for="to_date">To Date</label>
+								<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
-								<label for="from_id">From Party</label>
+								<label for="from_id">Indent From Party</label>
 								<!--Input field From Party-->
 									<select name="from_id" id="from_id" class="form-control">
 									<option value="">Select</option>
@@ -181,28 +183,31 @@ $('#to_id').change(function(){
 										?>
 									</select>
 							</div>
+						    	</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
-							<div class="form-group">
-							<!--Input field To party-->
-									<label for="inputto_id">To Party</label>
-									<select name="to_id" id="to_id" class="form-control">
-										<option value="">Select</option>
-										<?php
-											foreach($parties as $t)
-											{
-												//foreach loop for displaying all To parties.
-												echo "<option value='".$t->supply_chain_party_id."'";
-												if($to_party == $t->supply_chain_party_id) echo " selected ";
-												echo ">".$t->supply_chain_party_name."</option>";
-											}
-										?>
-									</select>
-							</div>
-					</div>
+						<div class="row">
+							<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
+								<div class="form-group">
+								<!--Input field To party-->
+										<label for="inputto_id">Indent To Party</label>
+										<select name="to_id" id="to_id" class="form-control">
+											<option value="">Select</option>
+											<?php
+												foreach($parties as $t)
+												{
+													//foreach loop for displaying all To parties.
+													echo "<option value='".$t->supply_chain_party_id."'";
+													if($to_party == $t->supply_chain_party_id) echo " selected ";
+													echo ">".$t->supply_chain_party_name."</option>";
+												}
+											?>
+										</select>
+								</div>
+						       </div>
+					     
 						
 						
-								<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-3 col-md-offset-2">
+								<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 								<div class="form-group">
 								<!--Input field Indent Status-->
 									<label for="inputindent_status" >Indent Status </label>
@@ -237,32 +242,32 @@ $('#to_id').change(function(){
 									</select>-->
 								</div>
 							</div>
-							<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-3 col-md-offset-2">
+							<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 								<div class="form-group">
 									<!--Input field Indent Status-->
 									<label for="indent_id" >Indent Id</label>
 									<input class="form-control" name="indent_id" placeholder="Indent ID">
 								</div>
 							</div>
-							<div class="container">
-								<div class="row">
-									<div class="col-md-12">
-									<!--button for searching-->
-									<center><button class="btn btn-success" type="submit" name="search" value="search" id="btn">Search</button></center>
-										<?php echo form_close(); ?>	<!--closing of form-->
-									</div>
-								</div>
-							</div>
+					</div>
+					<div class="row">
+						<div class="col-md-9">
+							<!--button for searching-->
+							<center><button class="btn btn-success" type="submit" name="search" value="search" id="btn">Search</button></center>
+							<?php echo form_close(); ?>	<!--closing of form-->
+						</div>
+					</div>
+					
 							
 
 					</div>
 				</div>
+			
 				<!--set method for hidden the table-->
 		   <?php if(isset($search_indent_detailed)){ ?>
 		  <?php echo form_open('consumables/indent_detailed/get_indent_detailed',array('role'=>'form'))   ?>
-					<div class="container">
+			<div class="container" style="margin-left:14px">
 				<div class="row">
-					<div class="col-md-3 col-md-offset-2">
 					<button type="button" class="btn btn-primary btn-md print  ">
 						<span class="glyphicon glyphicon-print"></span> Print
 					</button>
@@ -272,7 +277,6 @@ $('#to_id').change(function(){
                 <i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel</button></a></br>
 				</div>
 			</div>
-		</div>
 		</br>
 		<!--filters for Add Service Issues view form --->
 		<!--when filter is clicked this form will load --->
@@ -285,8 +289,8 @@ $('#to_id').change(function(){
 							<th>Indent datetime</th>
 							<th>Approval datetime</th>
 							<th>Issue datetime</th>
-							<th>From</th>
-							<th>To</th>
+							<th>Indent From Party</th>
+							<th>Indent To Party</th>
 							<th>Ordered by</th>
 							<th>Approved by</th>
 							<th>Issued by</th>
@@ -339,11 +343,11 @@ $('#to_id').change(function(){
 							echo $f_issue_datetime;
 						else
 							echo "NA"; ?></td>
-						<td><?php echo $indent->from_party_id." - $indent->from_party_name";?></td>
-						<td><?php echo $indent->to_party_id." - $indent->to_party_name.";?></td>
-						<td><?php echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
-						<td><?php echo ($indent->indent_status == "Approved" || $indent->indent_status == "Issued") ? $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname: "NA";	?></td>
-						<td><?php echo ($indent->indent_status == "Issued") ? $indent->issued_by_id . " - " . $indent->issued_by_fname . " " . $indent->issued_by_lname : "NA";  ?></td>
+						<td><?php echo $indent->from_party_name;?></td>
+						<td><?php echo $indent->to_party_name;?></td>
+						<td><?php echo $indent->ordered_by_fname." ".$indent->ordered_by_lname;	?></td>
+						<td><?php echo ($indent->indent_status == "Approved" || $indent->indent_status == "Issued") ? $indent->approved_by_fname." ".$indent->approved_by_lname: "NA";	?></td>
+						<td><?php echo ($indent->indent_status == "Issued") ? $indent->issued_by_fname . " " . $indent->issued_by_lname : "NA";  ?></td>
 						<td><?php echo $indent->indent_status;?></td>
 						<td><?php echo $indent->note;?></td>
 						<td><a href='<?php echo base_url()."consumables/indent_reports/indents_list_detailed/".$indent->indent_id?>' class="btn btn-success">View detailed</a></td>

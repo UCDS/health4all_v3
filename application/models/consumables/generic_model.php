@@ -30,9 +30,9 @@ class Generic_model extends CI_Model {
 	//This get_data method is used to take values from drug_type and item_type tables.
 	function get_data($type=""){
 		if($type=="drug_type")
-		$this->db->select("drug_type_id,drug_type,description")->from("drug_type");
+		$this->db->select("drug_type_id,drug_type,description")->from("drug_type")->order_by('drug_type', 'ASC');
 		else if($type=="item_type")
-		$this->db->select("item_type_id,item_type")->from("item_type");
+		$this->db->select("item_type_id,item_type")->from("item_type")->order_by('item_type', 'ASC');
 		$query=$this->db->get();
 		return $query->result();
 		

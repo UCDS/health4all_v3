@@ -304,8 +304,8 @@ $('#to_id').change(function(){
 							<th>Indent Date</th>
 							<th>Item Type</th>
 							<th>Item Name</th>
-							<th>From</th>
-							<th>To</th>
+							<th>Indent From Party</th>
+							<th>Indent To Party</th>
 							<th>Quantity Indented</th>
 							<th>Quantity Approved</th>
 							<th>Quantity Issued</th>
