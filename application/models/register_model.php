@@ -1311,12 +1311,10 @@ class Register_model extends CI_Model{
 		if($this->input->post('healthforall_id')){
 			$this->db->where('patient.patient_id',$this->input->post('healthforall_id'));
 		}
-         	//else{
-		//if($this->input->post('phone_num')){
-		//	$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
-		//	$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
-		//}
-	   //}
+		else{
+			return;
+		}
+         	
 	    
 		$this->db->select("patient_id,first_name,last_name,age_years,age_months
 		,age_days,
@@ -1326,11 +1324,7 @@ class Register_model extends CI_Model{
 		spouse_name,
 		address,
 		insert_datetime,
-		phone")->from('patient')
-		//->group_by('patient.phone',($this->input->post('phone_num')))
-	//  ->group_by('phone')
-	    ->order_by('phone','ASC');
-	// -> GROUP BY phone` ORDER BY `patient`.`phone` ASC
+		phone")->from('patient');
         $query = $this->db->get();
         $result = $query->result();
 		return $result;
