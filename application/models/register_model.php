@@ -1144,7 +1144,22 @@ class Register_model extends CI_Model{
 		if($this->input->post('healthforall_id')){
 			$this->db->where('patient_followup.patient_id',$this->input->post('healthforall_id'));
 		}
-		$this->db->select("patient_followup.*")->from("patient_followup");
+		$this->db->select("patient_followup_id,
+		patient_id,
+		hospital_id,
+		longitude,
+		latitude,
+		life_status,
+		status_date,
+		icd_code,
+		diagnosis,
+		last_visit_type,
+		last_visit_date,
+		priority_type_id,
+		route_primary_id,
+		route_secondary_id,
+		volunteer_id,
+		note")->from("patient_followup");
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$resource=$this->db->get();
 		return $resource->row();
@@ -1153,10 +1168,12 @@ class Register_model extends CI_Model{
 	function get_priority_type()
 	{
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select("*")->from('priority_type');
+		$this->db->select("priority_type_id,
+		hospital_id,
+		priority_type")->from('priority_type');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$query = $this->db->get();
-        $result = $query->result();
+        	$result = $query->result();
 		return $result;
 	}
 
@@ -1164,29 +1181,35 @@ class Register_model extends CI_Model{
 	function get_primary_route()
 	{
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select("*")->from('route_primary');
+		$this->db->select("route_primary_id,
+		hospital_id,
+		route_primary")->from('route_primary');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$query = $this->db->get();
-        $result = $query->result();
+        	$result = $query->result();
 		return $result;
 	}
  
 	function get_secondary_route(){
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select("*")->from('route_secondary');
+		$this->db->select("id,
+		hospital_id,
+		route_primary_id,
+		route_secondary")->from('route_secondary');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$query = $this->db->get();
-        $result = $query->result();
+        	$result = $query->result();
 		return $result;
 	}
 
 	function get_volunteer(){
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select("*")->from('staff')
-		->join('user_hospital_link','staff.hospital_id=user_hospital_link.hospital_id','left')
-		->join('user','user_hospital_link.user_id=user.user_id','left');
+		$this->db->select("staff.staff_id,first_name,last_name")->from('staff')
+		->join('user','user.staff_id=staff.staff_id')
+		->join('user_hospital_link','user.user_id=user_hospital_link.user_id');
+		$this->db->where('user_hospital_link.hospital_id',$hospital['hospital_id']);
 		$query = $this->db->get();
-        $result = $query->result();
+        	$result = $query->result();
 		return $result;
 	}
 
@@ -1274,7 +1297,8 @@ class Register_model extends CI_Model{
          	}
 
          function get_districts($district_id){
-			$this->db->select("*")->from('district');
+			$this->db->select("district_id,district,district_alias,latitude,
+			longitude,state,state_id")->from('district');
 			$this->db->where('district_id', $district_id);
 			$query = $this->db->get();
 			$result = $query->row();
@@ -1287,15 +1311,23 @@ class Register_model extends CI_Model{
 		if($this->input->post('healthforall_id')){
 			$this->db->where('patient.patient_id',$this->input->post('healthforall_id'));
 		}
-         else{
-		if($this->input->post('phone_num')){
-			$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
-			$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
-		}
-	   }
+         	//else{
+		//if($this->input->post('phone_num')){
+		//	$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
+		//	$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
+		//}
+	   //}
 	    
-		$this->db->select("*")->from('patient')
-		->group_by('patient.phone',($this->input->post('phone_num')))
+		$this->db->select("patient_id,first_name,last_name,age_years,age_months
+		,age_days,
+		gender,
+		father_name,
+		mother_name,
+		spouse_name,
+		address,
+		insert_datetime,
+		phone")->from('patient')
+		//->group_by('patient.phone',($this->input->post('phone_num')))
 	//  ->group_by('phone')
 	    ->order_by('phone','ASC');
 	// -> GROUP BY phone` ORDER BY `patient`.`phone` ASC

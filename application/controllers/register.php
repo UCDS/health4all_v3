@@ -1047,7 +1047,7 @@ class Register extends CI_Controller {
 		}
 		if($access==1){
 			$transaction = $this->transaction_condition();
-        $this->data['title']="Patients Followup";
+        	$this->data['title']="Patients Followup";
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
@@ -1069,7 +1069,7 @@ class Register extends CI_Controller {
 			$this->data['volunteer']=$this->register_model->get_volunteer();
 
 			
-            $district_id = $this->data['patients']['0']->district_id;
+           	 	$district_id = $this->data['patients']['0']->district_id;
 			$this->data['districts'] = $this->register_model->get_districts($district_id);
 			$this->data['codes'] = $this->register_model->search_icd_codes();
 
