@@ -150,4 +150,6 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 
 ALTER TABLE `hospital` ADD `print_layout_id` INT(6) NULL AFTER `auto_ip_number`, ADD `a6_print_layout_id` INT(6) NULL AFTER `print_layout_id`, ADD `update_date_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `a6_print_layout_id`, ADD `updated_by_id` INT(8) NULL AFTER `update_date_time`;
 
+ALTER TABLE `form` ADD `a6_print_layout_id` INT(6) NULL AFTER `hospital_id`;
 
+ALTER TABLE `patient` CHANGE `dob` `dob` DATE NULL DEFAULT NULL;
