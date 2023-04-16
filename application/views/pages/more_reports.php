@@ -37,6 +37,10 @@ foreach($this->data['functions'] as $function){
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
 <?php		 }
 
+if($function->user_function=="patient_follow_up"){ ?>
+	<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/followup_detail";?>">Followup List </a></button>
+<?php		 }
+
 if($function->user_function=="appointment_by_staff"){ ?>
 				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_staff";?>">Appointments by Team Member</a></button>
 <?php		 }

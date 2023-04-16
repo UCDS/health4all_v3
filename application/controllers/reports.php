@@ -7,7 +7,9 @@ class Reports extends CI_Controller {
 		$this->load->model('masters_model');
 		$this->load->model('staff_model');
 		$this->load->model('hospital_model');
+		$this->load->model('register_model');
 
+		
 		if($this->session->userdata('logged_in')){
                     $userdata=$this->session->userdata('logged_in');        
                     $user_id=$userdata['user_id'];                          
@@ -235,6 +237,67 @@ class Reports extends CI_Controller {
 		else{
 			$this->load->view('pages/op_detailed_with_idproof',$this->data);
 		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+	
+
+	public function followup_detail()
+	{
+		if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="patient_follow_up"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->data['title']="Followup Details";
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->data['priority_types']=$this->register_model->get_priority_type();
+		$this->data['route_primary']=$this->register_model->get_primary_route();
+	    $this->data['route_secondary']=$this->register_model->get_secondary_route();
+		$this->data['volunteer']=$this->register_model->get_volunteer();
+
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+			$this->data['results_count']=$this->reports_model->get_count_followups();								
+
+			$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
+			if(count($this->data['results']) == 0){
+				$this->data['msg'] = "No Records found";
+			}
+			// $filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
+			// $filter_values = [];
+			// foreach($filter_names as $filter_name){
+			// 	$filter_value = "";
+			// 	if($this->input->post($filter_name)){
+			// 		$filter_value = $this->input->post($filter_name);
+			// 	}
+			// 	$filter_values[$filter_name] = $filter_value;
+			// }
+			// $this->data['filter_values'] = $filter_values;
+		
+	   $this->load->view('pages/followup_details',$this->data);
+		
 		$this->load->view('templates/footer');
 		}
 		else{
@@ -1817,6 +1880,58 @@ class Reports extends CI_Controller {
         	show_404();
     	}
     }
-	
+	// public function search_followup()
+	// {
+	// 		if($this->session->userdata('logged_in')){
+	// 			$this->data['userdata']=$this->session->userdata('logged_in');
+	// 			$access=0;
+	// 			foreach($this->data['functions'] as $function){
+	// 				 if($function->user_function=="patient_follow_up"){
+	// 				 $access=1;
+	// 				 }
+	// 			}
+	// 			if($access==1){
+						
+	// 					$this->data['title']="Search followup";
+	// 					$this->load->helper('form');
+	// 					$this->load->library('form_validation');
+	// 					$this->load->view('templates/header',$this->data);
+
+	// 					$this->data['priority_types']=$this->register_model->get_priority_type();
+
+	// 					$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+	// 					foreach($this->data['defaultsConfigs'] as $default){		 
+	// 						if($default->default_id=='pagination'){
+	// 								$this->data['rowsperpage'] = $default->value;
+	// 								$this->data['upper_rowsperpage']= $default->upper_range;
+	// 								$this->data['lower_rowsperpage']= $default->lower_range;	 
+			   
+	// 							}
+	// 					   }
+
+	// 					//	if($this->input->post('search_hospital')){							
+	// 						//if ($this->form_validation->run() === TRUE) {
+	// 							//$this->data['results_count']=$this->reports_model->get_count_hospital();								
+	// 							$this->data['results']=$this->reports_model->search_followups($this->data['rowsperpage']);
+	// 							 if(count($this->data['results']) == 0){
+	// 							 	$this->data['msg'] = "No Records found";
+	// 							// }
+	// 						// }else{
+	// 						// 	$this->data['msg'] = "Hospital Name is Required";
+	// 					//	}
+
+	// 					//}
+						
+						
+	// 					$this->load->view('pages/followup_details',$this->data);
+
+	// 					$this->load->view('templates/footer');
+	// 			} else{
+	// 			show_404();
+	// 			}
+	// 		} else{
+	// 		show_404();
+	// 		}
+ 
 	
 }

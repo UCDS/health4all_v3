@@ -7,7 +7,7 @@
 </style>
 
 <?php
-	function check_if_group_active(str $group)
+	function check_if_group_active($group)
 	{
 		if($group == "masters"){
 			return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
@@ -15,7 +15,7 @@
 			return preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()) || preg_match("^get_inventory_summary^", current_url());
 		}
 	}
-	function activate_item(str $item_regexp)
+	function activate_item($item_regexp)
 	{
 		if (preg_match($item_regexp, current_url())){
 			return "list-group-item active";
@@ -667,7 +667,7 @@
 }
 ?>
 
-<?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url())) { ?>
+<?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^hospital/search_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url())) { ?>
 
 	<div class="col-xs-1 col-md-1 sidebar-left">
 		<strong>Settings</strong>
@@ -681,6 +681,10 @@
 			<li <?php if (preg_match("^add_hospital/hospital_view^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital/add_hospital/hospital_view"> Add Hospital</a>
+			</li>
+			 <li <?php if (preg_match("^search_hospital/search_hospital_view^", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view">Edit Hospital</a>
 			</li>
 			<li <?php if (preg_match("^add_department/department_view^", current_url()))
 				echo 'class="active"'; ?>>

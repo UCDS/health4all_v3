@@ -1139,6 +1139,170 @@ class Register_model extends CI_Model{
 		}
 
 	}
+	function select_patient_followup_id($c){
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('healthforall_id')){
+			$this->db->where('patient_followup.patient_id',$this->input->post('healthforall_id'));
+		}
+		$this->db->select("patient_followup.*")->from("patient_followup");
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$resource=$this->db->get();
+		return $resource->row();
+	}
+
+	function get_priority_type()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('priority_type');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+
+	
+	function get_primary_route()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('route_primary');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+ 
+	function get_secondary_route(){
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('route_secondary');
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+
+	function get_volunteer(){
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("*")->from('staff')
+		->join('user_hospital_link','staff.hospital_id=user_hospital_link.hospital_id','left')
+		->join('user','user_hospital_link.user_id=user.user_id','left');
+		$query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
+
+	function addfor_followup(){
+        $followup_info = array();
+		
+		$hospital=$this->session->userdata('hospital');
+		$hospital_id=$hospital['hospital_id'];
+		if($this->input->post('patient_id')){
+            $followup_info['patient_id'] = $this->input->post('patient_id');
+        }
+		if($hospital_id){
+            $followup_info['hospital_id'] = $hospital_id;
+        }
+        if($this->input->post('status_date')){
+            $followup_info['status_date'] = $this->input->post('status_date');
+        }
+        if($this->input->post('life_status')){
+            $followup_info['life_status'] = $this->input->post('life_status');
+        }
+        if($this->input->post('icd_code')){
+            $followup_info['icd_code'] = $this->input->post('icd_code');
+        }
+         if($this->input->post('diagnosis')){
+            $followup_info['diagnosis'] = $this->input->post('diagnosis');
+        }
+         if($this->input->post('last_visit_type')){
+            $followup_info['last_visit_type'] = $this->input->post('last_visit_type');
+        }
+        if($this->input->post('last_visit_date')){
+			$followup_info['last_visit_date'] = $this->input->post('last_visit_date');			    
+        }
+         if($this->input->post('priority_type')){
+            $followup_info['priority_type_id'] = $this->input->post('priority_type');
+        }
+         if($this->input->post('route_primary')){
+            $followup_info['route_primary_id'] = $this->input->post('route_primary');
+        }
+         if($this->input->post('route_secondary')){
+            $followup_info['route_secondary_id'] = $this->input->post('route_secondary');
+        }
+         if($this->input->post('volunteer')){
+            $followup_info['volunteer_id'] = $this->input->post('volunteer');
+        }
+         if($this->input->post('input_note')){
+            $followup_info['note'] = $this->input->post('input_note');
+        }
+        
+         
+      //  $this->db->trans_start();
+        $this->db->insert('patient_followup', $followup_info);
+		$insert_id = $this->db->insert_id();
+		return $insert_id;
+		// $this->db->trans_complete();
+        // if($this->db->trans_status()==FALSE){
+        //         return false;
+        // }
+        // else{
+		// 	return $insert_id;
+        // }
+    }
+
+
+	function updatefor_followup(){
+			$this->db->set('status_date', $this->input->post('status_date'));
+			$this->db->set('life_status', $this->input->post('life_status'));	
+			$this->db->set('icd_code', $this->input->post('icd_code'));
+			$this->db->set('diagnosis', $this->input->post('diagnosis'));
+			$this->db->set('last_visit_type', $this->input->post('last_visit_type'));
+			$this->db->set('last_visit_date', $this->input->post('last_visit_date'));	
+			$this->db->set('priority_type_id', $this->input->post('priority_type'));
+			$this->db->set('route_primary_id', $this->input->post('route_primary'));
+			$this->db->set('route_secondary_id', $this->input->post('route_secondary'));
+			$this->db->set('volunteer_id', $this->input->post('volunteer'));
+			$this->db->set('note', $this->input->post('input_note'));
+			$this->db->where('patient_id', $this->input->post('patient_id'));
+			if($this->db->update('patient_followup'))
+			
+				return true;
+			
+			else
+				return false;
+			
+			
+         	}
+
+         function get_districts($district_id){
+			$this->db->select("*")->from('district');
+			$this->db->where('district_id', $district_id);
+			$query = $this->db->get();
+			$result = $query->row();
+			return $result;
+		    }
+			
+
+	  function get_patient_followup(){		   		
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('healthforall_id')){
+			$this->db->where('patient.patient_id',$this->input->post('healthforall_id'));
+		}
+         else{
+		if($this->input->post('phone_num')){
+			$search_phone_withoutzero = ltrim($this->input->post('phone_num'), '0');
+			$this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
+		}
+	   }
+	    
+		$this->db->select("*")->from('patient')
+		->group_by('patient.phone',($this->input->post('phone_num')))
+	//  ->group_by('phone')
+	    ->order_by('phone','ASC');
+	// -> GROUP BY phone` ORDER BY `patient`.`phone` ASC
+        $query = $this->db->get();
+        $result = $query->result();
+		return $result;
+	}
 	
 	function search(){
 		$hospital=$this->session->userdata('hospital');

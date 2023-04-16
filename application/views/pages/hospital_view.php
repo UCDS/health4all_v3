@@ -1,12 +1,12 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <style>
-.mandatory{
-	color:red;
-	cursor:default;
-	font-size:15px;
-	font-weight:bold;
-}
+	.mandatory{
+		color:red;
+		cursor:default;
+		font-size:15px;
+		font-weight:bold;
+	}
 
 </style>
 	<center>	
@@ -16,33 +16,59 @@
 <?php } ?>
 	<?php echo validation_errors(); ?>
 	</center>
+
 <script>
+	var selectizes = {};
 	function initDistrictSelectize(){
         var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
-		var selectize = $('#district_id').selectize({
-	    valueField: 'district_id',
-	    labelField: 'custom_data',
-	    searchField: ['district','district_alias','state'],
-	    options: districts,
-	    create: false,
-	    render: {
-	        option: function(item, escape) {
-	        	return '<div>' +
-	                '<span class="title">' +
-	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
-	                '</span>' +
-	            '</div>';
-	        }
-	    },
-	    load: function(query, callback) {
-	        if (!query.length) return callback();
-		},
+		selectizes['district'] = $('#district_id').selectize({
+			valueField: 'district_id',
+			labelField: 'custom_data',
+			searchField: ['district','district_alias','state'],
+			options: districts,
+			create: false,
+			render: {
+				option: function(item, escape) {
+					return '<div>' +
+						'<span class="title">' +
+							'<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+						'</span>' +
+					'</div>';
+				}
+			},
+			load: function(query, callback) {
+				if (!query.length) return callback();
+			},
 
-	});
-	if($('#district_id').attr("data-previous-value")){
-		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
-	}
+		});
 	}	
+
+	$(document).ready(function(){
+		initDistrictSelectize();
+
+		<?php if(isset($filter_values)) { ?>
+		var filter_values = JSON.parse(JSON.stringify(<?php echo json_encode($filter_values); ?>)); 
+		var dropdowns = ['district'];
+		var radios = ['auto_ip_number'];
+		 filter_values['district'] = filter_values['district_id'];
+		// filter_values['helpline'] = filter_values['helpline_id'];
+		// filter_values['print_layout'] = filter_values['print_layout_id'];
+		// filter_values['print_layout_a6'] = filter_values['a6_print_layout_id'];
+		console.log(filter_values);
+		Object.keys(filter_values).forEach((name) => {
+			const value = filter_values[name];
+			if(dropdowns.includes(name)){
+				selectizes[name][0].selectize.setValue(value);
+			}  else if(radios.includes(name)){
+				$('input[name="'+name+'"][value="'+value+'"]').prop('checked', true);
+				//$("input[name="'+name+'"][value="'+value+'"]").prop('checked',true);
+			} else {
+				$('[name="'+name+'"]').val(value);
+			}
+		});
+		<?php } ?>
+	});
+	
 	function previewLogo(){
 		$("#preview_logo_img").show();
 		 var logo_preview = $('select[name=logo]').val();
@@ -51,9 +77,10 @@
 		
 	}
 </script>	
-			<h2 align="center">Hospital</h2><br>
+			<h2 align="center"><?php echo $title; ?></h2><br>
 			<?php echo form_open('hospital/add_hospital',array('class'=>'form-group','role'=>'form','id'=>'add_hospital')); ?>
 	<div class="col-md-8 col-md-offset-3">
+		<input type="hidden" name="hospital_id" />
 					<div class="row">
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
@@ -93,21 +120,10 @@
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">		
 						<div class="form-group">
 							<label class="Inputdistrict">  District    </label>
-							<select id="district_id"  name="district" style=" display: inline-grid;" placeholder="Enter district" <?php if($field->mandatory) echo "required"; ?>>
-								<option value="">   --Enter district--   </option>
-								<input type='hidden' name='district_id' id='district_id_val' class='form-control'/>
-		
-							</select>
-							
-							<script>						
-							var patient = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>)); 
-							$('#district_id').attr("data-previous-value", patient['district']);
-							$('#district_id_val').attr("data-previous-value", patient['district_id']);
-
-							initDistrictSelectize();
-							
-							</script>
-						
+							<select id="district_id"  name="district_id" style=" display: inline-grid;" placeholder="Enter district" <?php if($field->mandatory) echo "required"; ?>>
+								<option value="Select">   --Enter district--   </option>
+								<input type='hidden' name='district_id_val' id='district_id_val' class='form-control'/>
+							</select>						
 						</div>
 					</div>
 				
@@ -189,7 +205,7 @@
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Helpline </label>
-								<select class="form-control" name="helpline"  required >
+								<select class="form-control" name="helpline_id" >
 									<option value="Select">Select</option>
 									<?php foreach($helplines as $helpline){
 									echo "<option value='$helpline->helpline_id'>$helpline->helpline - $helpline->note</option>";
@@ -215,12 +231,11 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								 <label class="control-label">Logo</label> 
-								 <select class="form-control" name="logo" id="logo" onchange="previewLogo()" required >
+								 <select class="form-control" name="logo" id="logo" onchange="previewLogo()" >
 								 <option value="">Select</option>
 								 <?php
-								//$path = 'C:\Users\kadro\OneDrive\Desktop\logos\*';
-								$path = base_url('assets/logos/*');
-								//$path = 'http://localhost'.base_url().'assets/logos/*';	
+								// $path = base_url().'assets/logos/*';
+								$path = __DIR__.'assets/logos/*';	
 								 foreach(glob($path) as $filename){
 								$filename = basename($filename);
 								 echo "<option value='" . $filename . "'>".$filename."</option>";
@@ -243,7 +258,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Print Layout(A4)</label>
-								<select class="form-control" name="print_layout" id="print_layout" onchange="dispPreview();" required >
+								<select class="form-control" name="print_layout_id" id="print_layout" onchange="dispPreview();">
 									<option value="Select">Select</option>
 									<?php foreach($print_layouts as $layout){
 									echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
@@ -256,7 +271,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Print Layout(A6)</label>
-								<select class="form-control" name="print_layout_a6" id="print_layout_a6" required >
+								<select class="form-control" name="a6_print_layout_id" id="print_layout_a6">
 									<option value="Select">Select</option>
 									<?php foreach($print_layouts as $layout){
 										echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
