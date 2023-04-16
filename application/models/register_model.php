@@ -1185,6 +1185,7 @@ class Register_model extends CI_Model{
 		hospital_id,
 		route_primary")->from('route_primary');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$this->db->order_by('route_primary','ASC');
 		$query = $this->db->get();
         	$result = $query->result();
 		return $result;
@@ -1197,6 +1198,7 @@ class Register_model extends CI_Model{
 		route_primary_id,
 		route_secondary")->from('route_secondary');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$this->db->order_by('route_secondary','ASC');
 		$query = $this->db->get();
         	$result = $query->result();
 		return $result;
@@ -1208,6 +1210,7 @@ class Register_model extends CI_Model{
 		->join('user','user.staff_id=staff.staff_id')
 		->join('user_hospital_link','user.user_id=user_hospital_link.user_id');
 		$this->db->where('user_hospital_link.hospital_id',$hospital['hospital_id']);
+		$this->db->order_by('first_name,last_name','ASC');
 		$query = $this->db->get();
         	$result = $query->result();
 		return $result;

@@ -158,7 +158,6 @@ $patient = $patients[0];
 		<div class="panel-heading">
 		<div class="row">
 			<h4>Patient Followup</h4>
-			<span style="color:red;">(Search by Patient Id or Phone Number one of them is Mandatory *)	</span>
 		</div>
 		</div>
 		<div class="panel-body">
