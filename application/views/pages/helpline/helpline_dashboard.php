@@ -216,22 +216,6 @@
 		}]
 	});
 	
-	Highcharts.chart('volunteerChart', {
-		chart : {type:'bar'},
-		title: false,
-		xAxis: {
-			categories: [<?php $i=1;foreach($volunteer_report as $a) { echo "'".$a->short_name;if($i<count($volunteer_report)) echo "' ,"; else echo "'"; $i++; }?>],
-		},
-		yAxis: {
-			min: 0, title: { text: 'Calls', align: 'high' }, labels: { overflow: 'justify' }
-		},
-		plotOptions: {bar: { dataLabels: { enabled: true } } },
-		legend: {enabled:false},
-		credits: {enabled:false},
-		series: [{ name: 'Calls', colorByPoint: true,
-			data: [<?php $i=1;foreach($volunteer_report as $a) { echo $a->count;if($i<count($volunteer_report)) echo " ,"; $i++; }?>]
-		}]
-	});
 	
 	Highcharts.chart('op_ip', {
 		chart: pie_chart,
@@ -457,7 +441,7 @@
 			</div>
 		</div>
 
-		<div class="col-md-4">
+		<!-- <div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel panel-heading">
 					<h4><i class="fa flaticon-map-localization" aria-hidden="true"></i>&nbsp District</h4>
@@ -466,18 +450,7 @@
 					<div id="districtChart" style="width:300px;height:245px"></div>
 				</div>
 			</div>
-		</div>
-
-		<div class="col-md-4">
-			<div class="panel panel-default">
-			    <div class="panel panel-heading">
-				    <h4><i class="fa flaticon-call-center-worker-with-headset" aria-hidden="true"></i>&nbsp Receiver</h4>
-			    </div>
-			    <div class="panel-body">
-			        <div id="volunteerChart" style="width:300px;height:250px"></div>
-			    </div>
-			</div>
-		</div>
+		</div>  -->
 	</div>
 	
 </div>

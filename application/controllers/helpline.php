@@ -475,6 +475,8 @@ class Helpline extends CI_Controller {
 			 		}
 				}
 				$this->data['helpline']=$this->helpline_model->get_helpline("report");
+				$this->data['all_states']=$this->masters_model->get_data("states");
+				$this->data['districts']=$this->staff_model->get_district();
 				$this->data['userdata']=$this->session->userdata('logged_in');
 				$this->data['user_functions']=$this->staff_model->get_user_function();
 				$this->data['report_count'] = $this->helpline_model->getHelplineReceiversCount();
@@ -537,6 +539,7 @@ class Helpline extends CI_Controller {
 
 			$this->data['users']=$this->masters_model->get_users();
 			$this->data['helplines']=$this->helpline_model->get_helplines();
+			$this->data['districts']=$this->staff_model->get_district();
 			$this->data['proficiency']=$this->helpline_model->get_proficiency();
 			$this->data['receiver_languages']=$this->helpline_model->get_helpline_receiver_languages($receiver_id);
 			$this->data['languages']=$this->helpline_model->get_language($receiver_id);

@@ -149,19 +149,28 @@ $(function(){
 <?php $page_no = 1;	?>
  <h3 class="col-md-12">List of Receivers</h3>
 <?php echo form_open("helpline/helpline_receivers",array('role'=>'form','class'=>'form-custom col-md-12','id'=>'helpline_receivers')); ?> 
- <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
  <select name="helpline_id" id="helplineSelect" style="width:170px" class="form-control">
-				<option value="">Helpline</option>
-				<?php foreach($helpline as $line){ ?>
-					<option value="<?php echo $line->helpline_id;?>"
-					<?php if($this->input->post('helpline_id') == $line->helpline_id) echo " selected "; ?>
-					><?php echo $line->helpline.' - '.$line->note;?></option>
-				<?php } ?>
-			</select>
-			<input type="text" class="form-control" placeholder="Phone"  style="width:120px"  value="<?php echo $this->input->post('phone');?>" name="phone" />
-			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-    			Doctor : <select name="isdoctor" id="isdoctor" class="form-control">
-    			<option value="">Select</option>   
+                <option value="">Helpline</option>
+                <?php foreach($helpline as $line){ ?>
+                    <option value="<?php echo $line->helpline_id;?>"
+                    <?php if($this->input->post('helpline_id') == $line->helpline_id) echo " selected "; ?>
+                    ><?php echo $line->helpline.' - '.$line->note;?></option>
+                <?php } ?>
+            </select>
+            <input type="text" class="form-control" placeholder="Phone"  style="width:120px"  value="<?php echo $this->input->post('phone');?>" name="phone" />  
+            State : <select id="state" name="state" style="width:170px" class="form-control" onchange='onchange_state_dropdown(this)'>
+                <option value="">Select</option>
+                <?php foreach($all_states as $state){ ?>
+                    <option value="<?php echo $state->state_id;?>"
+                    <?php if($this->input->post('state') == $state->state_id) echo " selected "; ?>
+                    ><?php echo $state->state;?></option>
+                <?php } ?>
+            </select>
+            District : <select name="district" id="district" style="width:170px" class="form-control">
+                          <option value="">District</option>?>
+            </select>
+                Doctor : <select name="isdoctor" id="isdoctor" class="form-control">
+                        <option value="">Select</option>   
                         <option value="Yes" <?php echo ($this->input->post('isdoctor') == 'Yes') ? 'selected' : ''; ?> >Yes</option> 
                         <option value="No" <?php echo ($this->input->post('isdoctor') == 'No') ? 'selected' : ''; ?> >No</option>          
                         </select>
@@ -175,6 +184,8 @@ $(function(){
                         <option value="Yes" <?php echo ($this->input->post('activitystatus') == 'Yes') ? 'selected' : ''; ?> >Yes</option> 
                         <option value="No" <?php echo ($this->input->post('activitystatus') == 'No') ? 'selected' : ''; ?> >No</option>          
                         </select>
+		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
+                Rows per page : <input type="number" class="rows_per_page form-custom form-control" style="width:50px;"name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
  <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
 </form>
 <br />
@@ -325,6 +336,7 @@ echo "</select></li>";
             <th style="text-align:center">Name</th>
             <th style="text-align:center">Phone</th>            
             <th style="text-align:center">Email</th>
+            <th style="text-align:center">District/State</th>   
             <th style="text-align:center">Category</th>
             <th style="text-align:center">User</th>      
             <th style="text-align:center">Doctor</th>      
@@ -347,6 +359,7 @@ echo "</select></li>";
         <td><?php echo $a->full_name;  ?></td>
         <td><?php echo $a->phone;?> </td>        
         <td><?php echo $a->email; ?></td>
+        <td><?php echo $a->district ;?> </td>    
         <td><?php echo $a->category; ?></td>
         <td>
             <?php echo $a->user_id ? 'Yes': 'No';?>
@@ -481,3 +494,46 @@ echo "</select></li>";
 <?php }  ?>
 </div>
 
+ <!-- added by 204208 -->
+<script type="text/javascript">
+
+function onchange_state_dropdown(dropdownobj) {         
+    const stateID = dropdownobj.value;
+    populateDistricts(stateID);     
+}
+    
+function populateDistricts(stateID) {
+    var optionsHtml = getDistrictOptionsState(stateID);
+    $("#district").html(optionsHtml);       
+}
+
+    
+function getDistrictOptionsState(stateID) {
+    var all_districts = JSON.parse('<?php echo json_encode($districts); ?>'); 
+    var selected_districts = all_districts.filter(all_districts => all_districts.state_id == stateID);
+    let optionsHtml = buildEmptyOption("District");
+    if(selected_districts.length > 0) {
+        optionsHtml += selected_districts.map(selected_districts => {
+                return `    <option value="${selected_districts.district_id}">
+                        ${selected_districts.district}
+                    </option>`;
+       });
+            
+        }
+    return optionsHtml;
+}
+
+
+function buildEmptyOption(optionName = "Select") {
+    return `<option value="" selected>
+                    ${optionName}
+            </option>`;
+
+}
+
+    onchange_state_dropdown(document.getElementById("state"));
+    var district = "<?php echo $this->input->post('district')?>";
+    if(district != ""){
+            $("#district").val(district);
+    }
+</script>
