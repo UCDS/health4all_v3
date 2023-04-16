@@ -117,6 +117,24 @@ $('#to_id').change(function(){
 </script>
 <script>
 	$(function(){
+		// if($('#item_type').val === ''){
+		// 	return;
+		// }
+		$('#item_type').change(function(){
+			let optionval = this.value;
+			console.log("Optionval", optionval);
+			$('#item').val('')
+			if(optionval !== ''){
+				$(`#item option[class!="${optionval}"]`).hide();
+				$(`#item option[class="${optionval}"]`).show();
+			}else{
+				$('#item option').show();
+			}
+		});
+	})
+</script>
+<script>
+	$(function(){
 	$("#from_date,#to_date, #expiry_date").Zebra_DatePicker({
 		direction:false
 	});
@@ -199,13 +217,32 @@ $('#to_id').change(function(){
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--input field item-->
-								<label for="inputitem" >Item<font style="color:red">*</font></label>
+								<label for="item_type" >Item Type</label>
+									<select name="item_type" id="item_type" class="form-control">
+									<option value="">Select</option>
+										<?php
+											foreach($all_item_type as $i)
+												{
+													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
+													echo "<option value='".$i->item_type_id."'";
+													if($this->input->post('item_type') && $this->input->post('item_type') == $i->item_type_id) echo " selected ";
+													echo ">".$i->item_type."-"."</option>";
+												}
+										?>
+									</select>
+							</div>
+						</div>
+						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+							<div class="form-group">
+							<!--input field item-->
+								<label for="item" >Item<font style="color:red">*</font></label>
 									<select name="item" id="item" class="form-control" required>
 									<option value="">Select</option>
 										<?php
 											foreach($all_item as $i)
 												{
 													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
+													
 													echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
 													if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
 													echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
