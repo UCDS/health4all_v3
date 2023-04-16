@@ -229,7 +229,7 @@ $patient = $patients[0];
 						<div class="col-md-3">
 						<div class="form-group">
 						<label class="control-label">Gender: </label>
-						<br>
+					
 								<div class="col-md-12 col-xs-12" style="background: #ADFF2F; font-weight: bold;" >
 
 								<?php if(!empty($patient->gender)) { ?> 
@@ -426,7 +426,7 @@ $patient = $patients[0];
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
 									 <?php foreach($volunteer as $volunt){
-									 echo "<option value='$volunt->staff_id'>$volunt->first_name</option>";
+									 echo "<option value='$volunt->staff_id'>$volunt->first_name $volunt->last_name</option>";
 									    }
 									?> 
 								</select>
