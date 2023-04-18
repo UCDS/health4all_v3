@@ -1133,4 +1133,67 @@ class Register extends CI_Controller {
 	{
 		unlink('assets/patient_documents/'.$document_link);
 	}
+
+	private function checkLoggedInUserPermissionForModule($moduleName = ''){
+		if($this->session->userdata('logged_in')){
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$access=0;
+			foreach($this->data['functions'] as $function){
+				if($function->user_function==$moduleName){
+					$access=1;
+				}
+			}
+			if($access==1){
+				return true;
+			} else{
+				show_404();
+			}
+		} else{
+			show_404();
+		}
+		return false;
+	}
+
+	private function preparePageForAdmin($title="", $page=""){
+		$this->data['title']=$title;
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('templates/leftnav',$this->data);
+		$this->load->view($page, $this->data);
+		$this->load->view('templates/footer');
+	}
+
+	public function add_priority_type()
+	{
+		$this->checkLoggedInUserPermissionForModule("Admin");
+		$this->preparePageForAdmin("Add Priority Type", 'pages/add_priority_type');	
+		if($this->input->post('submit')){							
+			if ($this->form_validation->run() === TRUE) {
+				if($this->register_model->add_priority_type()){
+					$this->data['msg']="Priority type added successfully";
+				}
+				else{
+					$this->data['msg']="Priority type could not be added. Please try again.";
+				}
+			}else{
+				$this->data['msg'] = "Priority Type is Required";
+			}
+		}
+ 	}
+
+	 public function add_primary_route()
+	 {
+		$this->checkLoggedInUserPermissionForModule("Admin");
+		$this->preparePageForAdmin("Add Primary Route", 'pages/add_primary_route');
+	  }
+
+	public function add_secondary_route()
+	{
+		$this->checkLoggedInUserPermissionForModule("Admin");
+		$this->preparePageForAdmin("Add Secondary Route", 'pages/add_secondary_route');
+ 	}
+
+ 
+
 }

@@ -1813,5 +1813,22 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 		$query=$this->db->get();
 		return $query->result();
 	}
+
+	function add_priority_type(){
+		$hospital = $this->session->userdata('hospital');
+		$priority_type = $this->input->post('priority_type');
+		$form_data=array(
+			'priority_type'=>$priority_type,
+			'hospital_id'=>$hospital['hospital_id']
+		);
+		$this->db->trans_start(); //Transaction starts
+		$this->db->insert('priority_type',$form_data); 
+		echo "inserted successfully.";
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+            return false;
+        }
+		return true;
+	}
 }
 ?>
