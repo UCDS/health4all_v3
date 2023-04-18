@@ -4392,8 +4392,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                 $filters[$filter_name_query] = $this->input->post($filter_name);
             }
         }
-        $this->db->select("count(*) as count",false);
-        $this->db->select("patient_followup.*, priority_type.*,patient.*,staff.first_name as fname,staff.last_name as lname,route_primary.*,route_secondary.*",false)
+      
+        $this->db->select("count(*) as count",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
@@ -4464,7 +4464,26 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 							if($this->input->post('route_secondary')){
 								$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 								}
-        $this->db->select("patient_followup.*, priority_type.*,patient.*,staff.first_name as fname,staff.last_name as lname,route_primary.*,route_secondary.*",false)
+        $this->db->select("patient_followup.patient_id,
+        patient.insert_datetime,
+        patient.first_name,
+        patient.last_name,
+        patient.age_years,
+        patient.gender,
+        patient.father_name,
+        patient.mother_name,
+        patient.spouse_name,
+        patient.phone,
+        patient.address,
+        patient_followup.status_date,
+        patient_followup.icd_code,
+        patient_followup.diagnosis,
+        patient_followup.last_visit_type,
+        priority_type.priority_type,
+        route_primary.route_primary,
+        route_secondary.route_secondary,
+        staff.first_name as fname,
+        staff.last_name as lname,",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','both')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')

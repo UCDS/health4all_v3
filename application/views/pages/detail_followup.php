@@ -426,7 +426,7 @@ $patient = $patients[0];
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
 									 <?php foreach($volunteer as $volunt){
-									 echo "<option value='$volunt->staff_id'>$volunt->first_name</option>";
+									 echo "<option value='$volunt->staff_id'>$volunt->first_name $volunt->last_name</option>";
 									    }
 									?> 
 								</select>

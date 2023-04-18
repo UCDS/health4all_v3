@@ -822,7 +822,21 @@ class Register extends CI_Controller {
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
 					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
 					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
+					// start -- 18_02_2023 --- Shruthi S M//
+					$pri_patient_id	= $this->data['patients'][0]->patient_id;		   
+					$this->data['update_print_layout'] = $this->register_model->get_print_layout($pri_patient_id);
+					$print_layout_id = $this->data['update_print_layout'][0]->print_layout_id;
+				    $a6_print_layout_id = $this->data['update_print_layout'][0]->a6_print_layout_id;
+					
+						$print_layout = $this->staff_model->get_print_layout($print_layout_id);
+						$a6_print_layout = $this->staff_model->get_print_layout($a6_print_layout_id);					
+						$print_layout_page = $print_layout->print_layout_page;
+						$print_layout_a6 = $a6_print_layout->print_layout_page;
 				}
+				 //Set the print layout page based on the form selected.
+				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
+				 $this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
+       				 //--- end  18_02_2023 --- //
 				$this->load->view('pages/update_patients',$this->data);
 			}
 			else{
@@ -1033,7 +1047,7 @@ class Register extends CI_Controller {
 		}
 		if($access==1){
 			$transaction = $this->transaction_condition();
-        $this->data['title']="Patients Followup";
+        	$this->data['title']="Patients Followup";
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
@@ -1055,7 +1069,7 @@ class Register extends CI_Controller {
 			$this->data['volunteer']=$this->register_model->get_volunteer();
 
 			
-            $district_id = $this->data['patients']['0']->district_id;
+           	 	$district_id = $this->data['patients']['0']->district_id;
 			$this->data['districts'] = $this->register_model->get_districts($district_id);
 			$this->data['codes'] = $this->register_model->search_icd_codes();
 

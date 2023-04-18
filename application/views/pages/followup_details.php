@@ -434,7 +434,7 @@ echo "</select></li>";
 		<td><?php echo $followup->priority_type; ?></td>
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
-		<td><?php echo $followup->fname."".$followup->lname;?></td>
+		<td><?php echo $followup->fname." ".$followup->lname;?></td>
 
 		<?php $sno++;} ?>
 		

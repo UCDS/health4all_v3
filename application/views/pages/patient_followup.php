@@ -158,7 +158,6 @@ $patient = $patients[0];
 		<div class="panel-heading">
 		<div class="row">
 			<h4>Patient Followup</h4>
-			<span style="color:red;">(Search by Patient Id or Phone Number one of them is Mandatory *)	</span>
 		</div>
 		</div>
 		<div class="panel-body">
@@ -173,13 +172,15 @@ $patient = $patients[0];
 						</div>	
 					</div>
 				    
-	
+				<!--
+				Commenting for improvement 
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 							<label for="Inputtype2" >Phone Number</label>
 							<input type='text' name='phone_num' id='phone_num' class='form-control' />
 						</div>	
 					</div>
+				-->
 				</div>
 		</div>
 
