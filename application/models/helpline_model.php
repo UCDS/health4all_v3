@@ -1414,6 +1414,14 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
 		}
 		
+		if($this->input->post('state')){
+		 	$this->db->where('state.state_id',$this->input->post('state'));
+		}
+
+		if($this->input->post('district')){
+		 	$this->db->where('helpline_receiver.district_id',$this->input->post('district'));
+		}
+
 		if($this->input->post('isdoctor')){
 		    	if($this->input->post('isdoctor')=="Yes"){
 				$this->db->like('helpline_receiver.doctor',1);
@@ -1443,7 +1451,9 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		
 		$this->db->select("count(*) as count", false)
 		->from('helpline_receiver')
-		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left');
+		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
+		->join('district', 'helpline_receiver.district_id=district.district_id','left')
+		->join('state', 'district.state_id= state.state_id','left');
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -1475,6 +1485,13 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		if($this->input->post('helpline_id')){
 			$this->db->where('helpline_receiver.helpline_id',$this->input->post('helpline_id'));
 		}
+
+		if($this->input->post('state')){
+		 	$this->db->where('state.state_id',$this->input->post('state'));
+		 }		
+		if($this->input->post('district')){
+		 	$this->db->where('helpline_receiver.district_id',$this->input->post('district'));
+			 }
 		
 		if($this->input->post('phone')){
 			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
@@ -1511,9 +1528,11 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);
 		}
-		$this->db->select("receiver_id, full_name, phone, email, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
+		$this->db->select("receiver_id, full_name, phone, email, CONCAT(district.district, '-' , state.state) as district, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
+		->join('district', 'helpline_receiver.district_id=district.district_id','left')
+		->join('state', 'district.state_id= state.state_id','left')
 		->order_by('full_name', 'asc');
 		if ($default_rowsperpage !=0){
 			$this->db->limit($rows_per_page,$start);
@@ -1531,7 +1550,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 	}
 
 	function getHelplineReceiverById($receiver_id){
-		$this->db->select("receiver_id,phone,full_name,short_name,email,category,user_id,doctor,enable_outbound,enable_sms,app_id,helpline_id,activity_status,helpline_receiver_note")->from("helpline_receiver")->where('receiver_id', $receiver_id);
+		$this->db->select("receiver_id,phone,full_name,short_name,email,district_id,category,user_id,doctor,enable_outbound,enable_sms,app_id,helpline_id,activity_status,helpline_receiver_note")->from("helpline_receiver")->where('receiver_id', $receiver_id);
         return $this->db->get()->result();
 	}
 
@@ -1646,6 +1665,9 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
         $helpline_receiver['app_id'] = $this->input->post('app_id') ? $this->input->post('app_id') : '';
         
         $helpline_receiver['helpline_id'] = $this->input->post('helpline_id') ? $this->input->post('helpline_id') : '0';
+
+        $helpline_receiver['district_id'] = $this->input->post('district_id') ? $this->input->post('district_id') : '0';
+
 		$helpline_receiver['activity_status'] = $this->input->post('activity_status') ? $this->input->post('activity_status') : '0';
 
 	   	$this->db->trans_start();

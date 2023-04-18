@@ -39,9 +39,9 @@ $(function(){
 		</div>																<!--end of item type-->
 		
 		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">					<!-- Drug type-->
-				<label for="drug_type" class="col-md-6 col-lg-6"> Drug Type<font color='red'>*</font></label>
+				<label for="drug_type" class="col-md-6 col-lg-6"> Drug Type</label>
 			<div class="form-group">
-				<select name="drug_type" id="drug_type" class="form-control" required>
+				<select name="drug_type" id="drug_type" class="form-control">
 					<option value="">Select</option>
 					<?php foreach($drug_type as $d){
 						echo "<option value='$d->drug_type_id'>$d->drug_type</option>";

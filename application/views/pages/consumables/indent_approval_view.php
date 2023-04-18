@@ -116,60 +116,11 @@ $('#to_id').change(function(){
 });
 });
 </script>
-<?php if($mode=='update') { ?>
+<?php if($mode=='update') { 
+	$single_approve = $approve_detail[0];
+	?>
 <iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;display:none"></iframe>
-<div id="print-div" class="sr-only" style="width:100%;height:100%;"> 
-<center>
-	 <?php  foreach ($approve_detail as $all_approve){ ?>
-			<h3><?php echo $all_approve->hospital;?> </h3>
-				<?php break; } ?>
-					<p><h3>Indent ID  <?php echo $all_approve->indent_id;?></h3></p<!-- Heading -->
-</center>	 	
-	<hr style="border: 2px solid black;">
-	  <center>	 
-	  
-				<label style="float:left"><b>From : </b><?php echo " ".$all_approve->from_party;?></label><!-- From label-->
-				<label style="float:right"><b>To : </b><?php echo " ".$all_approve->to_party;?></label><br><br><!--  To label -->
-				<label style="float:left"><b>Indented By : </b><?php echo $all_approve->order_first." ".$all_approve->order_last." at ".date("d-M-Y g:i A", strtotime($all_approve->indent_date));?></label><br><br><!--Date Time label -->
-				<label style="float:left"><b>Approval By : </b><?php echo $all_approve->approve_first." ".$all_approve->approve_last." at ".date("d-M-Y g:i A", strtotime($all_approve->approve_date_time));?></label><br><br><!--Date Time label -->
-				<label style="float:left"><b>Issue By : </b>NA</label><br><br><!--Date Time label -->
-      </center>   
-	  <br/><br/><br/>
-		<table style=" border:2px solid black;width:100%;border-collapse: collapse;">
-			<thead style="height:50px">
-				<th style="text-align:center;border:2px solid black;" >#</th>
-				<th style="text-align:center;border:2px solid black;" >Items</th>
-				<th style="text-align:center;border:2px solid black;" >Quantity Indented</th>
-				<th style="text-align:center;border:2px solid black;" >Quantity Approved</th>
-				<th style="text-align:center;border:2px solid black;" >Note</th>
-			</thead>
-			<tbody>
-				<?php
-					 $i=1;
-					 foreach ($approve_detail as $all_approve){ ?>
-					<tr>
-						<td style=" border:2px solid black; padding: 15px;  height: 50px;"><center><?php echo $i++;?></center></td>
-						<td style="border:2px solid black; padding: 15px;  height: 50px;"  align="left"><?php echo $all_approve->item_name."-".$all_approve->item_form."-".$all_approve->item_type.$all_approve->dosage.$all_approve->dosage_unit;?></center></td>
-					    <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_indented ;?></center></td>
-						<?php if($get_approve==1){ 
-						if($all_approve->indent_status=='Approved'){?>
-                        <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->quantity_approved ;?></center></td>
-						<?php } else { ?>
-                        <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
-						<?php } } else{ ?>
-					    <td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo "0"?></center></td>	
-						<?php } ?>
-						<td style="border:2px solid black;  padding: 15px;  height: 50px;" align="right"><?php echo $all_approve->note ;?></center></td>
-			        </tr>
-			    <?php } ?>
-			</tbody>
-		</table>
-		<br/><br/>
-		<p><b>Note: </b><br> <?php echo $all_approve->indent_note?></p>
-		<b>
-		
-		<?php echo "Approver Signature :" ;?></b></br></br><!-- Display Approver signature-->
-    </div>
+
 			<?php echo form_open('consumables/indent_approve/indent_approval',array('class'=>'form-group','role'=>'form'));?> <!-- Indent Approval print form open-->
 		   <div class ="col-md-8 col-md-offset-3"> <div class="alert alert-info"><center> <strong><?php if(isset($msg)){ echo $msg;} ?></strong> </center></div></div>
 		    <div class="col-xs-4 col-md-offset-2" style="padding:30px" >
@@ -187,26 +138,26 @@ $('#to_id').change(function(){
 											<div  class="span9">
 												<div class="span3">
 													<div class="col-md-4"><!-- Indent id -->
-														<b>Indent Id :</b><?php  echo " ".$all_approve->indent_id;?>
+														<b>Indent Id :</b><?php  echo " ".$single_approve->indent_id;?>
 													</div><!-- End of indent_id -->
 												</div>
 												<div class="span3">
 													<div class="col-md-4"><!-- from party-->
-													    <b>From Party : </b><?php echo " ".$all_approve->from_party;?>
+													    <b>From Party : </b><?php echo " ".$single_approve->from_party;?>
 													</div><!-- End of from party-->
 													<div class="col-md-4"><!-- To party-->
-														<b>To Party : </b><?php echo " ".$all_approve->to_party;?>
+														<b>To Party : </b><?php echo " ".$single_approve->to_party;?>
 													</div><!-- End of to party-->
 												</div>
 											</div>
 												<div class="span3">
 														<div class="col-md-6"><!-- Date time-->
-															<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->indent_date));?>
+															<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_approve->indent_date));?>
 														</div><!-- End of date time-->
 												</div>
 												<div class="span3">
 													<div class="col-md-6"><!-- Date time-->
-														<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($all_approve->approve_date_time));?>
+														<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_approve->approve_date_time));?>
 													</div><!-- End of date time-->
 												</div>
 												
@@ -228,7 +179,8 @@ $('#to_id').change(function(){
 													<tbody>
 													<?php
 														$i=1;
-														foreach ($approve_detail as $all_approve){ ?>
+														foreach ($approve_detail as $all_approve){
+															log_message("info", "SAIRAM:::: ".json_encode($all_approve)); ?>
 														<tr>
 															<td><center><?php echo $i++;?></center></td>
 															<td align="left"><?php echo $all_approve->item_name."-".$all_approve->item_form."-".$all_approve->item_type."-".$all_approve->dosage.$all_approve->dosage_unit;?></td>
@@ -241,7 +193,7 @@ $('#to_id').change(function(){
 															<?php } } else { ?>
 															<td align="right"><?php echo "0";?></td>
 															<?php } ?>
-															<td  align="right"><?php echo $all_approve->note;?></td>
+															<td  align="right"><?php echo $all_approve->item_note;?></td>
 														</tr>
 													<?php } ?>
 													</tbody>
@@ -284,9 +236,10 @@ $('#to_id').change(function(){
 									<div class="col-md-12">
 										<div class="panel-footer">
 											<?php if($get_approve==1) { ?>
-											<center><button class="btn btn-primary" type="button" name="print" id="print" onclick="printDiv('print-div')">Print</button></center>
+												<center><a href="<?= base_url()."consumables/indent_reports/indents_list_detailed/".$single_approve->indent_id;?>"><button type="button" class="btn btn-primary " autofocus>View in detail</button></a></center>
+											<center><button class="btn btn-primary" type="button" name="print" id="print" onclick="printDiv('print-div-2')">Print</button></center>
 											<?php } else { ?>
-											<center><button class="btn btn-primary" type="button"  >Rejected</button></center>		
+											<center></center>		
 											<?php } ?>									
 										</div>
 									</div>
@@ -305,8 +258,8 @@ $('#to_id').change(function(){
             ?>
 			<div class="container">
 			    <div class="row">
-						<div class="col-md-8 col-md-offset-6">
-							<h3>Indent Approval </h3><!-- Heading-->
+						<div class="col-md-8 col-md-offset-5">
+							<h3>Indent Approval</h3><!-- Heading-->
 						</div>
 				</div>
 			</div></br>
@@ -315,21 +268,21 @@ $('#to_id').change(function(){
 				<div class="container">
 					<div class="row">
 						<form class="form-horizontal">
-							<div class="form-group">
-								<div class="col-md-3"><!-- From label-->
-									<label for="exampleInputdate">From</label>
-										<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="12" />
+							<div class="col-md-2">
+								<div class="form-group"><!-- From label-->
+									<label for="from_date">From</label>
+										<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="10" />
 								</div><!-- End of from label-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-3"><!-- to label-->
-									<label for="exampleInputdate">To</label>
-										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="12"/>
+							<div class="col-md-2">
+								<div class="form-group"><!-- to label-->
+									<label for="to_date">To</label>
+										<input class="form-control" type="text"  value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="10"/>
 								</div><!-- End of to label-->
-							</div>	
-							<div class="form-group">	
-								<div class="col-md-4"><!-- From party-->
-									<label for="from_id">From Party</label>
+							</div>
+							<div class="col-md-3" style="width: 27%;">
+								<div class="form-group"><!-- From party-->
+									<label for="from_id">Indent From Party</label>
 										<select name="from_id" id="from_id" class="form-control">
 											<option value="">Select</option>
 											<?php
@@ -343,9 +296,9 @@ $('#to_id').change(function(){
 										</select>
 								</div><!-- End of from party-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-4"><!-- To party-->
-									<label for="inputto_id">To Party</label>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- To party-->
+									<label for="inputto_id">Indent To Party</label>
 										<select name="to_id" id="to_id" class="form-control" >
 											<option value="">Select</option>
 												<?php
@@ -364,11 +317,11 @@ $('#to_id').change(function(){
 				</div></br>
 					<div class="container">
 						<div class="row">
-							<div class="form-group">
-								<div class="col-md-4"><!-- Item type-->
-									<label for="inputitem_type" >Item Type</label>
-										<select name="item_type" id="item_type" class="form-control">
-											<option value="">select</option>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- Item type-->
+									<label for="item_type" >Item Type</label>
+										<select name="item_type" id="item_type" class="form-control" style="width:280px">
+											<option value="">Select</option>
 												<?php 
 													foreach($all_item_type as $it)
 													{
@@ -380,11 +333,11 @@ $('#to_id').change(function(){
 										</select>
 								</div><!-- End of item type-->
 							</div>
-							<div class="form-group">
-								<div class="col-md-4"><!-- Item-->
-									<label for="inputitem" >Item</label>
-										<select name="item" id="item" class="form-control" class="col-md-4">
-										<option value="">select</option>
+							<div class="col-md-4">							
+								<div class="form-group"><!-- Item-->
+									<label for="item" >Item</label>
+										<select name="item" id="item" class="form-control" style="width:305px">
+										<option value="">Select</option>
 											<?php 
 												foreach($all_item as $i)
 												{
@@ -401,8 +354,8 @@ $('#to_id').change(function(){
 					</br>
 					<div class="container">
 						<div class="row">
-							<div class="col-md-8 col-md-offset-5">		
-								<button type="submit"  name="submit" value="submit" class="btn btn-primary">submit</button>
+							<div class="col-md-8 col-md-offset-3">		
+								<button type="submit"  name="submit" value="submit" class="btn btn-primary">Submit</button>
 								<?php  echo form_close();?>	<!-- End of Indent approval form-->	
 							</div> 
 						</div> 
@@ -418,8 +371,8 @@ $('#to_id').change(function(){
 												<th><center>#</center> </th>
 												<th><center>Indent Id</center></th>
 												<th><center>Indent Date Time</center></th>
-												<th><center>From</center></th>
-												<th><center>To</center></th>
+												<th><center>Indent From Party</center></th>
+												<th><center>Indent To Party</center></th>
 												<th><center></center></th>
 											</tr>
 										</thead>
@@ -437,7 +390,7 @@ $('#to_id').change(function(){
 												<td> <?php echo date("d-M-Y g:i A", strtotime($indent->indent_date)); ?></td>
 												<td> <?php echo $indent->from_party; ?></td>
 												<td> <?php echo $indent->to_party; ?></td>
-												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="select" >
+												<td><center><input type="submit" class="btn btn-primary"  name="select" id="btn" onclick="$('#select_<?php echo $indent->indent_id;?>').submit();"  value="Select" >
 												</center>	<?php echo form_close();?></td><!-- End of indent approval form-->
 											</tr>
 											<?php } ?>

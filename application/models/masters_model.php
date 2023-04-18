@@ -61,6 +61,40 @@ class Masters_model extends CI_Model{
 				->join('user_function_link','user.user_id=user_function_link.user_id');				
 			}
 		}
+		//added by 204208
+		else if($type=="user_count"){		
+		
+		
+		if($this->input->post('username')){
+			$this->db->where('user.username',$this->input->post('username'));
+		}
+		
+		if($this->input->post('phone')){
+			$this->db->where('staff.phone',$this->input->post('phone'));
+		}
+
+		if($this->input->post('email')){
+			$this->db->where('staff.email',$this->input->post('email'));
+		}
+		
+		
+		if($this->input->post('status')){
+		    	if($this->input->post('status')=="1"){
+				$this->db->like('user.active',1);
+			}
+			else{
+				$this->db->like('user.active',0);
+			}
+		}
+		
+		$this->db->select("count(*) as count", false)
+		->from('user')
+		->join('staff','user.staff_id=staff.staff_id')
+		->join('hospital','staff.hospital_id=hospital.hospital_id')
+		->join('department','staff.department_id=department.department_id');
+		
+	}
+	// 204208 end
 		else if($type=='staff')
 		{
 			if($this->input->post('search_staff'))
@@ -1609,6 +1643,71 @@ else if($type=="dosage"){
 			->from("defaults")
 			->where('default_id',$filter_value);
 		$query=$this->db->get();
+		return $query->result();
+	}
+
+	function get_user_details($default_rowsperpage){
+			if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+		
+		$hospital_id = $this->session->userdata('hospital')['hospital_id'];
+		if($hospital_id != '')
+				$this->db->where('staff.hospital_id', $hospital_id);
+		if($this->input->post('username')){
+			$this->db->where('user.username',$this->input->post('username'));
+		}
+		
+		if($this->input->post('phone')){
+			echo("<script>console.log('searching for phone number');</script>");
+
+			$this->db->where('staff.phone',$this->input->post('phone'));
+		}
+
+		if($this->input->post('email')){
+			$this->db->where('staff.email',$this->input->post('email'));
+		}
+		
+		if($this->input->post('status')){
+		    	if($this->input->post('status')=="Yes"){
+				$this->db->like('user.active',1);
+			}
+			else{
+				$this->db->like('user.active',0);
+			}
+		}
+
+		$this->db->select("hospital.hospital,user.user_id,username,password,user.staff_id,user.active,first_name,last_name,gender, specialisation, email, designation,phone,department")
+		->from("user")
+		->join('staff','user.staff_id=staff.staff_id')
+		->join('hospital','staff.hospital_id=hospital.hospital_id')
+		->join('department','staff.department_id=department.department_id');
+		if($this->input->post('search'))
+		{
+			$user = strtolower($this->input->post('user'));
+			$this->db->like('LOWER(username)',$user,'after');
+		}
+		if($this->input->post('select') || $this->input->post('update'))
+		{
+			if($this->input->post('select')) $user_id = $this->input->post('user_id');
+			else if($this->input->post('update')) $user_id = $this->input->post('user');
+			$this->db->select('function_id,add,edit,view,remove')->where('user.user_id',$user_id)
+			->join('user_function_link','user.user_id=user_function_link.user_id');				
+		}
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+		$query = $this->db->get();
 		return $query->result();
 	}
 }

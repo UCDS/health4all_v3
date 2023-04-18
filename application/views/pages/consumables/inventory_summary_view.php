@@ -4,10 +4,8 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <!--<script type="text/javascript" src="<//?php echo base_url();?>assets/js/zebra_datepicker.js"></script>-->
 	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript"
- src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
-<script type="text/javascript"
- src="<?php echo base_url();?>assets/js/jquery.mousewheel.js"></script>
+<script type="text/javascript"  src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.mousewheel.js"></script>
 	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
@@ -132,11 +130,11 @@ $('#to_id').change(function(){
 </script>
 	<?php
 	$from_date=0;$to_date=0;
-	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
-	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
-        $from_time=0;$to_time=0;
-	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
-	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
+	
+	if($this->input->post('to_date')) $to_date=date("d-M-Y",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+    //     $from_time=0;$to_time=0;
+	// if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+	// if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
 	if($this->input->post('from_id')){
 		$from_party = $this->input->post('from_id');
 	}
@@ -145,106 +143,102 @@ $('#to_id').change(function(){
 	}
 	if($this->input->post('to_id')){
 		$to_party = $this->input->post('to_id');
-	}
-	else{
+	} else {
 		$to_party = "0";
 	}
 	?>
-			   <div class="text-center">
-				<h2>Indent Summary</h2>
-				<?php echo form_open('consumables/indent_reports/get_indent_summary',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
-				<div class="container">
-					<div class="row">
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
+	<div class="text-center">
+		<h2>Inventory Summary</h2>
+		<?php echo form_open('consumables/indent_reports/get_inventory_summary_bf',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
+		<div class="container">
+			<div class="row">
+						<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
-							<!--input field from date-->
-							<label for="from_date">From Date </label>
-							<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+							
+									From Date<input class="form-control" type="text" value="<?php //echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 							</div>
-						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							<!--input field to date-->
-							<label for="to_date">To Date</label>
+						</div> -->
+					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
+						<div class="form-group">
+						<!--input field to date-->
+						<label for="to_date">Inventory Date </label>
 							<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-							</div>
 						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							<!--input field from party-->
-								<label for="from_id">Indent From Party</label>
-									<select name="from_id" id="from_id" class="form-control">
-									<option value="">Select</option>
-										<?php
-											foreach($parties as $fro)
-											{
-												echo "<option value='".$fro->supply_chain_party_id."'";
-												if($this->input->post('from_id') && $this->input->post('from_id') == $fro->supply_chain_party_id) echo " selected ";
-												echo ">".$fro->supply_chain_party_name."</option>";
-
-											}
-										?>
-									</select>
-							</div>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
-							<div class="form-group">
-							<!--input field to party-->
-									<label for="inputto_id">Indent To Party</label>
-									<select name="to_id" id="to_id" class="form-control">
-										<option value="">Select</option>
-										<?php
-											foreach($parties as $t)
-											{
-												echo "<option value='".$t->supply_chain_party_id."'";
-												if($this->input->post('to_id') && $this->input->post('to_id') == $t->supply_chain_party_id) echo " selected ";
-												echo ">".$t->supply_chain_party_name."</option>";
-											}
-										?>
-									</select>
-							</div>
 					</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						<div class="form-group">
+						<!--input field from party-->
+							<label for="scp_id">Supply Chain Party</label>
+								<select name="scp_id" id="scp_id" class="form-control">
+								<option value="">Select</option>
+									<?php
+										foreach($parties as $scp)
+										{
+											echo "<option value='".$scp->supply_chain_party_id."'";
+											if($this->input->post('scp_id') && $this->input->post('scp_id') == $scp->supply_chain_party_id) echo " selected ";
+											echo ">".$scp->supply_chain_party_name."</option>";
+
+										}
+									?>
+								</select>
+						</div>
+					</div>
+										
+					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
+						<div class="form-group">
+						<!--input field item type-->
+							<label for="inputitem_type" >Item Type</label>
+								<select name="item_type" id="item_type" class="form-control">
+								<option value="" selected>Select</option>
+									<?php
+										foreach($all_item_type as $it)
+											{
+												echo "<option value='".$it->item_type_id."'";
+											if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
+											echo ">".$it->item_type."</option>";
+											}
+									?>
+								</select>
+						</div>
+					</div>
+					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						<div class="form-group">
+						<!--input field item-->
+							<label for="inputitem" >Item</label>
+								<select name="item" id="item" class="form-control">
+								<option value="">Select</option>
+									<?php
+										foreach($all_item as $i)
+											{
+												//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
+												echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
+												if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
+												echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
+											}
+									?>
+								</select>
+						</div>
+					</div>
+						<!-- 
+                        <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
-							<!--input field item type-->
-								<label for="inputitem_type" >Item Type</label>
-									<select name="item_type" id="item_type" class="form-control">
-									<option value="" selected>Select</option>
-										<?php
-											foreach($all_item_type as $it)
-												{
-													echo "<option value='".$it->item_type_id."'";
-												if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
-												echo ">".$it->item_type."</option>";
-												}
-										?>
+							
+								<label for="inputitem" >Inward/Outward</label>
+									<select name="item_inward_outward" id="item_inward_outward" class="form-control">
+									<option value="inward">Select</option>	
+									<option value="inward">Inward</option>
+                                    <option value="outward">Outward</option>
+										
 									</select>
 							</div>
 						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							<!--input field item-->
-								<label for="inputitem" >Item</label>
-									<select name="item" id="item" class="form-control">
-									<option value="">Select</option>
-										<?php
-											foreach($all_item as $i)
-												{
-													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
-													echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
-													if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
-													echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
-												}
-										?>
-									</select>
-							</div>
-						</div>
+											-->
 
 				</div>
 		</div>
 			<div class="container">
 			   <div class="row">
-			   <div class="col-md-offset-1">
+			   <div class="col">
 				   <button class="btn btn-primary" type="submit" name="search" value="search" id="btn">Search</button>
 				   	<?php echo form_close(); ?>
 			   </div>
@@ -252,10 +246,10 @@ $('#to_id').change(function(){
 		   </div>
 		   <!--calling isset method-->
 		   <?php if(isset($mode)&& ($mode)=="search"){ ?>
-		  <?php echo form_open('consumables/indent_reports/get_indent_summary',array('role'=>'form'))   ?>
+		  <?php echo form_open('consumables/indent_reports/get_inventory_summary_bf',array('role'=>'form'))   ?>
 			<div class="container">
 				<div class="row">
-					<div class="col-md-3 col-md-offset-2">
+					<div class="col-md-3 col-md-offset-3">
 					<button type="button" class="btn btn-primary btn-md print  ">
 						<span class="glyphicon glyphicon-print"></span> Print
 					</button>
@@ -270,58 +264,78 @@ $('#to_id').change(function(){
 		<!--filters for Add Service Issues view form --->
 		<!--when filter is clicked this form will load --->
 		 <div class="container">
+			<?php if(count($search_inventory_summary) > 0) { ?>
+			<h3>Showing balance as on <i><?= $to_date; ?></i> for SCP: <span style="color: green;"><?= $search_inventory_summary[0]['inward']->supply_chain_party_name; ?></span></h3>
+			<?php } ?>
 		 <div class="col-md-offset-2">
 					<table class="table table-bordered table-striped" id="table-sort">
 						<thead>
-							<th> #</th>
+							<!-- <th> #</th> -->
 							<th>Item Type</th>
 							<th>Item Name</th>
-							<th>Quantity Indented</th>
-							<th>Quantity Approved</th>
-							<th>Quantity Issued</th>
-							<th>Item type id</th>
+							<!-- <th>Supply Chain Party</th> -->
+							<th>Current balance</th>
+							<!-- <th></th> -->
+							<!-- <th>Quantity Inward</th>
+							<th>Quantity Outward</th>
+							<th>Difference</th> -->
+							<!-- <th>Item id</th> -->
 						</thead>
 						<tbody>
-							<?php
-							$total_quantity=0;
-							$approved=0;
-							$issued=0;
+			<?php
+				
+							
 				$i=1;
-				foreach($search_indent_summary as $indent){?>
+				$ct = 0;
+				
+				// $outward = $search
+				log_message("info", "SAIRAM VERSION ".$CI_VERSION);
+				log_message("info", "SAIRAM WARNING ".json_encode($search_inventory_summary));
+				foreach($search_inventory_summary as $inventory_item){?>
 
 					<tr>
-					<td><?php echo $i++; $sub_url="consumables/indent_reports/get_indent_detailed/";
-					$item_type_id = '0';
-					if ($indent->item_type_id) {
-						$item_type_id = $indent->item_type_id;
-					}?></td>
+					<?php 
+						// echo $i++; 
+						$sub_url="consumables/indent_reports/get_item_summary";
+						$o_quantity = 0;
+						$i_quantity = 0;
+						if(isset($inventory_item['outward']))
+							$o_quantity = $inventory_item['outward']->total_quantity;
+						
+						if(isset($inventory_item['inward']))
+							$i_quantity = $inventory_item['inward']->total_quantity;
+							
+						$item_type_id = '0';
+						if ($inventory_item['inward']->item_id) {
+							$item_id = $inventory_item['inward']->item_id;
+
+						}
+
+						$scp_id = $inventory_item['inward']->supply_chain_party_id;
+						log_message("info", "SAIRAM LKDJJLDJ".json_encode($inventory_item));
+					?>
 
 
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_type;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_name;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Indented/$item_type_id/$indent->item_id";?>"><?php echo $indent->total_quantity;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Approved/$item_type_id/$indent->item_id";?>"><?php echo $indent->approved;	?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id";?>"><?php echo $indent->issued;?></td>
-						<td><a href="<?php echo base_url() . $sub_url . "$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id"; ?>"><?php if ($item_type_id == '0')
-							  echo "NA"; 
-							  else echo $item_type_id;?></td>
+						
+						<td><?php echo $inventory_item['inward'] ? $inventory_item['inward']->item_type: $inventory_item['outward']->item_type;?></td>
+						<td><b><?php echo $inventory_item['inward'] ? $inventory_item['inward']->item_name: $inventory_item['outward']->item_name;?></b></td>
+						
+						<td><?php echo ($i_quantity - $o_quantity);?></td>
+						<td><a href="<?php echo base_url().$sub_url."/$item_id/$scp_id"; ?>"><button class="btn btn-primary" type="button">View Detailed</button></a></td>
+						
 					</tr>
 					<?php
-	                $total_quantity+=$indent->total_quantity;
-					$approved+=$indent->approved;
-					$issued+=$indent->issued;
+					$ct++;
+	               
 					}
 					?>
 					<tfoot>
-					<th>Total </th>
-					<th> </th>
-					<th> </th>
+					<!-- <th>Total </th>
+					<th> </th> -->
+					<!-- <th> </th> -->
 
 
-					<th class="text-left" ><?php echo $total_quantity;?></th>
-					<th class="text-left" ><?php echo $approved;?></th>
-					<th class="text-left" ><?php echo $issued;?></th>
-
+					
 					</tfoot>
 					<?php echo form_close(); ?>
 				<!--ending of isset method-->

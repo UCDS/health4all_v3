@@ -12,7 +12,7 @@
 		if($group == "masters"){
 			return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
 		}else if($group == "reports"){
-			return (preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()));
+			return preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()) || preg_match("^get_inventory_summary^", current_url());
 		}
 	}
 	function activate_item($item_regexp)
@@ -260,7 +260,7 @@
 							<div class="panel-heading">
 								<h4 class="panel-title">
 									<a id="masters" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" >
-										Masters <span style="margin-left: 60%;" class="glyphicon <?php if (check_if_group_active("masters"))
+										Masters <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("masters"))
 											echo 'glyphicon-chevron-up';
 										else
 											echo 'glyphicon-chevron-down';?>"></span>
@@ -322,7 +322,7 @@
 							<div class="panel-heading">
 								<h4 class="panel-title">
 									<a id="reports" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-										Reports <span style="margin-left: 60%;" class="glyphicon <?php if (check_if_group_active("reports"))
+										Reports <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("reports"))
 											echo 'glyphicon-chevron-up';
 										else
 											echo 'glyphicon-chevron-down';?>">
@@ -338,7 +338,10 @@
 												Reports </span></a>
 										<a class="<?php echo (activate_item("^indents_list^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/indents_list">Indents
 										List </span></a>
-
+										<a class="<?php echo (activate_item("^get_inventory_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_summary">Inventory 
+										Summary </span></a>
+										<a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
+										Item Summary </span></a>
 									</ul>
 								</div>
 
