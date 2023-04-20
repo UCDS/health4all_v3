@@ -45,9 +45,9 @@
 
 		function validateInput(event){
 		var search_patient_id = document.forms[event.target.id]["healthforall_id"].value;
-		var search_phone = document.forms[event.target.id]["phone_num"].value;
+		//var search_phone = document.forms[event.target.id]["phone_num"].value;
 
-		if (search_patient_id.length <=0 && search_phone.length <=0 ){
+		if (search_patient_id.length <=0 ){
 			bootbox.alert("Please enter a field to search");
 			event.preventDefault();
 		}  
@@ -103,7 +103,7 @@
 
 	// 		$.ajax({
 	// 		type: 'POST',
-	// 		url: '<?php echo base_url('register/patient_follow_up');?>',
+	// 		url: '<?php //echo base_url('register/patient_follow_up');?>',
 	// 		data: { patient_id:patient_id,status_date:status_date,life_status:life_status,
 	// 			diagnosis:diagnosis,last_visit_type:last_visit_type,last_visit_date:last_visit_date,
 	// 			priority_type:priority_type,volunteer:volunteer,input_note:input_note},
@@ -116,37 +116,7 @@
 	// 		});
 		}
 	</script>
-				<script>
-					$(function(){
-
-			
-					<?php if($patient_followup->status_date == 0){ ?>
-					$('.status_date').datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-						//minDate : "<?php //echo date("Y/m/d ",strtotime($patient->admit_date)).date("g:i A",strtotime($patient->admit_time));?>",
-						defaultDate : false
-					});
-					<?php } ?>
-					<?php if($patient_followup->status_date == 0){ ?>
-					$('.last_visit_date').datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-						//minDate : "<?php //echo date("Y/m/d ",strtotime($patient->admit_date)).date("g:i A",strtotime($patient->admit_time));?>",
-						defaultDate : false
-					});
-					<?php } ?>
-
-		
-					});
-
-	$('form[id="followup_add_details"]').validate({
-	
-   });
 				
-  
-
-	
-	
-					</script>
 <?php
 
 $patient = $patients[0];
@@ -162,7 +132,7 @@ $patient = $patients[0];
 		</div>
 		<div class="panel-body">
 			<?php echo form_open("register/patient_follow_up",array('role'=>'form','class'=>'form-custom','id'=>'followup_patient','onSubmit'=>'validateInput(event)')); ?>
-			<input type="hidden" class="sr-only" value="<?php echo $transaction_id;?>" name="transaction_id" />
+			<!-- <input type="hidden" class="sr-only" value="<?php //echo $transaction_id;?>" name="transaction_id" /> -->
 
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
@@ -195,10 +165,13 @@ $patient = $patients[0];
 			
 	</div>
 	</div>
-	<?php if(count($patients)==0){
-			echo "<b>". "No patient record found. Register Patient and add for Followup" ."</b>" ;
-		}
-		else {
+	<?php 
+	// if(count($patients)==0){
+	// 		echo "<b>". "No patient record found. Register Patient and add for Followup" ."</b>" ;
+	// 	}
+	// 	else {
 			echo "<b>". $msg ."</b>";
 
-		} ?>
+		//} 
+		
+		?>
