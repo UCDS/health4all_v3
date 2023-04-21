@@ -416,7 +416,7 @@ echo "</select></li>";
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $followup->patient_id;?></td>
-		<td><?php echo date('d/m/Y',strtotime($followup->insert_datetime));?></td>
+		<td><?php echo date('d-M-Y',strtotime($followup->insert_datetime));?></td>
 		<td><?php echo $followup->first_name."".$followup->last_name ."/ ".$followup->age_years ."/" .$followup->gender;?></td>
 		<?php if (!empty($followup->father_name)) { ?>
 			<td><?php echo $followup->father_name; ?></td>			
@@ -427,7 +427,7 @@ echo "</select></li>";
 							<?php } ?>
 		<td><?php echo $followup->phone;?></td>
 		<td><?php echo $followup->address;?></td>
-		<td><?php echo date('d/m/Y',strtotime($followup->status_date));?></td>
+		<td><?php echo date('d-M-Y',strtotime($followup->status_date));?></td>
 		<td><?php echo $followup->icd_code;?></td>
 		<td><?php echo $followup->diagnosis;?></td>
 		<td><?php echo $followup->last_visit_type;?></td>
