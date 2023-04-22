@@ -21,7 +21,16 @@
 					<?php foreach ($fields as $field) { ?>
 						<div class="col-lg-4">
 						<label><?php echo $field['label']; ?></label>	
-						<input type="text" class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" /> 
+						<?php if($field['isText']) {?>
+							<input type="text" class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" /> 
+						<?php } else if($field['isDropdown']) {?>
+							<select class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" > 
+								<option value="">Select</option>
+								<?php foreach($field['options'] as $option){ ?>
+									<option value="<?php echo $option['value']; ?>"><?php echo $option['label']; ?></option>
+								<?php } ?>
+							</select>
+						<?php } ?>
 						</div>
 					<?php } ?>
 				</div>

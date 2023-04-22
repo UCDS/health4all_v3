@@ -1192,6 +1192,15 @@ class Register_model extends Common_Page_Model{
 		return $result;
 	}
 
+	function get_route_primary_for_dropdown(){
+		$datas = $this->get_primary_route();
+		$res = [];
+		foreach ($datas as $data) {
+			$res[] = array("value" => $data->route_primary_id, "label" => $data->route_primary);
+		}
+		return $res;
+	}
+
 	// function getCityDepartment($postData){
 	// 	$response = array();
 	 

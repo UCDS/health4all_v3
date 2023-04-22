@@ -1169,7 +1169,7 @@ class Register extends CommonPageController {
 	public function add_route_secondary($isEdit=false)
 	{
 		$this->prepareFormPageForUserFunction("route_secondary", $isEdit, [
-			array("field" => "route_primary_id", "label" => "Primary Route", "rules" => "required|trim|xss_clean"),
+			array("field" => "route_primary_id", "label" => "Primary Route", "rules" => "required|trim|xss_clean", "type" => "dropdown", "pre_load" => array("model_class" => "register", "model_function" => "get_route_primary_for_dropdown")),
 			array("field" => "route_secondary", "label" => "Secondary Route", "rules" => "required|trim|xss_clean")
 		], "register");	
  	}
