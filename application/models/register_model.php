@@ -1,4 +1,5 @@
 <?php 
+include_once (dirname(__FILE__) . "/common_page_model.php");
 class Register_model extends Common_Page_Model{
 	private $patient_visit = array(
 		'hospital_id','admit_id','visit_type','visit_name_id','patient_id','hosp_file_no',

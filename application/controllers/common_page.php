@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 // Common Controller to handled forms & list pages dynamically.
 class CommonPageController extends CI_Controller {
-	private function checkLoggedInUserPermissionForUserFunctionAndDetail($user_function = ''){
+	function checkLoggedInUserPermissionForUserFunctionAndDetail($user_function = ''){
 		if($this->session->userdata('logged_in')){
 			$this->data['userdata']=$this->session->userdata('logged_in');
 			$access=0;
@@ -15,7 +15,7 @@ class CommonPageController extends CI_Controller {
 		return false;
 	}
 
-	private function prepareFormPageForUserFunction($user_function="", $isEdit=false, $rules=[], $model_class=""){
+	function prepareFormPageForUserFunction($user_function="", $isEdit=false, $rules=[], $model_class=""){
 		/*
 			// To re-use in most of places, follow this rules...
 			1. table name say "priority_type" with primary_key as "priority_type_id"

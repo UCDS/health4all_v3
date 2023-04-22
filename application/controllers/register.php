@@ -1,4 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+include_once (dirname(__FILE__) . "/common_page.php");
+
 // OP and IP registration forms.
 class Register extends CommonPageController {
 	private function transaction_condition() {
