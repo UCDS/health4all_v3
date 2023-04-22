@@ -1,5 +1,5 @@
 <?php 
-class Register_model extends CI_Model{
+class Register_model extends Common_Page_Model{
 	private $patient_visit = array(
 		'hospital_id','admit_id','visit_type','visit_name_id','patient_id','hosp_file_no',
 		'admit_date','admit_time','department_id','unit','area','nurse','insurance_case',
@@ -1854,59 +1854,16 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 		return $query->result();
 	}
 
-	function add_priority_type(){
-		$hospital = $this->session->userdata('hospital');
-		$priority_type = $this->input->post('priority_type');
-
-		$form_data=array(
-			'priority_type'=>$priority_type,
-			'hospital_id'=>$hospital['hospital_id']
-		);
-		$this->db->trans_start(); //Transaction starts
-		$this->db->insert('priority_type', $form_data); 
-        $this->db->trans_complete();
-        if($this->db->trans_status()==FALSE){
-            return false;
-        }
-		return true;
+	function upsert_priority_type($isEdit=false){
+        return $this->upsert_form('priority_type', 'priority_type_id', ['priority_type']);
 	}
 
-	function add_primary_route(){
-		$hospital = $this->session->userdata('hospital');
-		$primary_route = $this->input->post('primary_route');
-
-		$form_data=array(
-			'route_primary'=>$primary_route,
-			'hospital_id'=>$hospital['hospital_id']
-		);
-		$this->db->trans_start(); //Transaction starts
-		$this->db->insert('route_primary', $form_data); 
-		echo "inserted successfully.";
-        $this->db->trans_complete();
-        if($this->db->trans_status()==FALSE){
-            return false;
-        }
-		return true;
+	function upsert_primary_route($isEdit=false){
+        return $this->upsert_form('route_primary', 'route_primary_id', ['route_primary']);
 	}
 
-	
-	function add_secondary_route(){
-		$hospital = $this->session->userdata('hospital');
-		$secondary_route = $this->input->post('secondary_route');
-
-		$form_data=array(
-			'route_secondary'=>$secondary_route,
-			'hospital_id'=>$hospital['hospital_id'],
-			'route_primary_id'=>$hospital['hospital_id']
-		);
-		$this->db->trans_start(); //Transaction starts
-		$this->db->insert('route_secondary', $form_data); 
-		echo "inserted successfully.";
-        $this->db->trans_complete();
-        if($this->db->trans_status()==FALSE){
-            return false;
-        }
-		return true;
+	function upsert_secondary_route($isEdit=false){
+        return $this->upsert_form('route_secondary', 'route_secondary_id', ['route_primary_id', 'route_secondary']);
 	}
 }
 ?>
