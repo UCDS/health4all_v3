@@ -113,34 +113,19 @@
 		$('#followup_add_details').submit();
 	   }	
 
-	function onUpdatePatientSubmit(){
-
-		}
 	</script>
 				<script>
 					$('form[id="followup_add_details"]').validate({
 	                      
 						
                        });
-					$(function(){
-						
-					<?php if($patient_followup->status_date == 0){ ?>
-					$('.status_date').datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-						defaultDate : false
-					});
-					<?php } ?>
-					<?php if($patient_followup->status_date == 0){ ?>
-					$('.last_visit_date').datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-						defaultDate : false
-					});
-					<?php } ?>
+					   function update_followup()
+					   {
+						// document.getElementById("status_date").value = "2014-02-09";
+					   }
 
-		
-					});
+					  
 
-	
 				
 $(document).ready(function(){
 	
@@ -200,14 +185,14 @@ $patient = $patients[0];
 			<div class="row">
 							<div class="col-md-3">
 							<div class="form-group">
-							<label class="control-label">Patient ID:</label>
+							<label class="control-label">Patient ID</label>
 							  <input type="text" name="patient_id" class="form-control" placeholder="" value="<?php echo $patient->patient_id; ?>" style="background: #ADFF2F; " readonly/>
                             </div>		
 							</div>
 
 							<div class="col-md-3">
 						    <div class="form-group">
-							<label class="control-label">Name: 	</label>
+							<label class="control-label">Name 	</label>
 							<br><input type="text" name="patient_name" class="form-control" placeholder="" value="<?php echo $patient->first_name." ".$patient->last_name; ?>" <?php if($f->edit==1 && empty($patient->first_name." ".$patient->last_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F;" />
                             </div>
 		                    </div>
@@ -228,8 +213,8 @@ $patient = $patients[0];
 						
 						<div class="col-md-3">
 						<div class="form-group">
-						<label class="control-label">Gender: </label>
-					
+						<label class="control-label">Gender </label>
+						<br>
 								<div class="col-md-12 col-xs-12" style="background: #ADFF2F; font-weight: bold;" >
 
 								<?php if(!empty($patient->gender)) { ?> 
@@ -294,7 +279,7 @@ $patient = $patients[0];
 				<div class="col-md-3">
 						<div class="form-group">
 							<label for="inputstatus_date ">Registered On Date  </label>
-							<input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
+							<input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d-M-Y',strtotime($patient->insert_datetime));?>" style="background: #ADFF2F; " readonly />
 						</div>
 				</div>
 			</div>	
@@ -317,16 +302,16 @@ $patient = $patients[0];
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				        <div class="form-group">
 							<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
-							<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
+							<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;else $from_date = date("d-M-Y"); echo $from_date;  ?>  required/>
 						</div>
 				</div>
 
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
-								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" required >
+								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" <?php if($patient_followup){ if($patient_followup->life_status=='1') echo "checked";};?> <?php if($f->edit==1 && empty($patient_followup->life_status)) echo ''; else echo ' readonly'; ?>required >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
-								<input type="radio" name="life_status" id="life_status_notlive" value="0" required >
+								<input type="radio" name="life_status" id="life_status_notlive" value="0" <?php if($patient_followup){ if($patient_followup->life_status=='0') echo "checked";};?> <?php if($f->edit==1 && empty($patient_followup->life_status)) echo ''; else echo ' readonly'; ?> required >
 								<label for="status_dead">Not Alive</label><br>
 
 							</div>
@@ -335,15 +320,13 @@ $patient = $patients[0];
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 				<div class="form-group">
 							<label class="Inputdistrict">  ICD Code    </label>
-							<?php if(!empty($patient->icd_10)){?>
-					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
-				 <?php } else {?>
-					<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
-					<?php if(!!$patient->icd_10){ ?>
-						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
-					<?php } ?>
+							<select id="icd_code" class="repositories"  placeholder="Select ICD Code.." name="icd_code" >
+							<option value="<?php echo $patient_followup->icd_code;?>"><?php echo $patient_followup->icd_code;?></option>
+
+							<?php if($this->input->post('icd_code')) { ?>
+							<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
+						<?php } ?>
 					</select>
-					<?php } ?>	
                 </div>
 				</div>
 
@@ -383,10 +366,18 @@ $patient = $patients[0];
 							<div class="form-group">
 								<label class="control-label">Priority Type </label>
 								<select class="form-control" name="priority_type" >
-									<option value="Select">Select</option>
-									 <?php foreach($priority_types as $type){										
-									echo "<option value='$type->priority_type_id'>$type->priority_type</option>";
-									}
+
+									 <?php foreach($priority_types as $type){
+
+echo "<option value='".$type->priority_type_id."' ";
+if($patient_followup->priority_type_id==$type->priority_type_id) echo " selected ";
+echo ">".$type->priority_type."</option>";
+									 }
+										
+						//  if($patient_followup->priority_type_id==$type->priority_type_id) echo " selected "; 
+
+						// 			echo "<option value='$type->priority_type_id'>$type->priority_type</option>";
+						// 			}
 									?> 
 								</select>
 							</div>
@@ -398,7 +389,13 @@ $patient = $patients[0];
 								<select class="form-control" name="route_primary" >
 									<option value="Select">Select</option>
 									 <?php foreach($route_primary as $primary){
-									echo "<option value='$primary->route_primary_id'>$primary->route_primary</option>";
+
+echo "<option value='".$primary->route_primary_id."' ";
+if($patient_followup->route_primary_id==$primary->route_primary_id) echo " selected ";
+echo ">".$primary->route_primary."</option>";
+
+
+								//	echo "<option value='$primary->route_primary_id'>$primary->route_primary</option>";
 									}
 									?> 
 								</select>
@@ -410,9 +407,20 @@ $patient = $patients[0];
 								<label class="control-label">Secondary Route</label>
 								<select class="form-control" name="route_secondary" >
 									<option value="Select">Select</option>
-									 <?php foreach($route_secondary as $secondary){
-									echo "<option value='$secondary->id'>$secondary->route_secondary</option>";
+									<?php foreach($route_primary as $primary_one){
+									 foreach($route_secondary as $secondary){
+									if($patient_followup->route_primary_id==$secondary->route_primary_id)
+									//
+									{
+
+										echo "<option value='".$secondary->id."' ";
+if($patient_followup->route_secondary_id==$secondary->id) echo " selected ";
+echo ">".$secondary->route_secondary."</option>";
 									}
+									
+									
+									}
+								}
 									?> 
 								</select>							
 							</div>
@@ -426,7 +434,11 @@ $patient = $patients[0];
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
 									 <?php foreach($volunteer as $volunt){
-									 echo "<option value='$volunt->staff_id'>$volunt->first_name $volunt->last_name</option>";
+echo "<option value='".$volunt->staff_id."' ";
+if($volunt->staff_id==$patient_followup->volunteer_id) echo " selected ";
+echo ">".$volunt->first_name.$volunt->last_name ."</option>";
+
+								//	 echo "<option value='$volunt->staff_id'>$volunt->first_name $volunt->last_name</option>";
 									    }
 									?> 
 								</select>
@@ -447,7 +459,7 @@ $patient = $patients[0];
 			<div class="panel-footer">
 			<div class="text-center">
 				<?php if(isset($patient_followup)  && ($patient_followup->hospital_id == $hospital_id) ) { ?>
-				<input class="btn btn-sm btn-primary" name="search_update_btn" type="submit" value="Update" />
+			 <input class="btn btn-sm btn-primary" type="submit" name="search_update_btn" type="submit" value="Update" />
 
 				<?php } ?>
 				<?php if(isset($patient->patient_id) && (!$patient_followup->patient_id)){ ?>

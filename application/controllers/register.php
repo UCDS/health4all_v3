@@ -1064,7 +1064,10 @@ class Register extends CommonPageController {
 			$this->data['districts'] = $this->register_model->get_districts($district_id);
 			$this->data['codes'] = $this->register_model->search_icd_codes();
 
-			
+			if(count($this->data['patients'])==0){
+				$this->data['msg'] = 'No patient record found. Register Patient and add for Followup';
+
+			}
 			 
 			 if($this->input->post('search_add')){
 			

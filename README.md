@@ -36,3 +36,21 @@ TODOs,
 References,
     - Database Migrations
         - https://codeinphp.github.io/post/database-migrations-in-codeigniter/
+
+
+Laragon local server setup..
+    1. Clone project into www folder
+    2. check if the project is accessible at https://health4all_v3.test
+    3. Import database with name "health4all"
+    4. application\config\config.php
+        $config['base_url']    = '/';
+    5. index.php
+        define('ENVIRONMENT', 'production');
+    6. .htaccess (as below...)
+        DirectoryIndex index.php
+        RewriteEngine on
+        RewriteBase /
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteCond $1 !^(index\.php|robots\.txt)
+        RewriteRule ^(.*)$ index.php?/$1 [L]
