@@ -1190,16 +1190,27 @@ class Register_model extends CI_Model{
         	$result = $query->result();
 		return $result;
 	}
+
+	// function getCityDepartment($postData){
+	// 	$response = array();
+	 
+	// 	// Select record
+	// 	$this->db->select('id,depart_name');
+	// 	$this->db->where('city', $postData['city']);
+	// 	$q = $this->db->get('department');
+	// 	$response = $q->result_array();
+	
+	// 	return $response;
+	//   }
+
  
-	function get_secondary_route(){
+	function get_secondary_route($postData){
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select("id,
-		hospital_id,
-		route_primary_id,
-		route_secondary")->from('route_secondary');
-		$this->db->where('hospital_id',$hospital['hospital_id']);
+
+		$this->db->select("route_secondary_id,hospital_id,route_secondary")->from('route_secondary');
+		$this->db->where('route_primary',$postData['route_primary']);
 		$this->db->order_by('route_secondary','ASC');
-		$query = $this->db->get();
+		$query = $this->db->get('route_secondary');
         	$result = $query->result();
 		return $result;
 	}
@@ -1841,6 +1852,61 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			// ->where('patient_id',$patient_id);
 		$query=$this->db->get();
 		return $query->result();
+	}
+
+	function add_priority_type(){
+		$hospital = $this->session->userdata('hospital');
+		$priority_type = $this->input->post('priority_type');
+
+		$form_data=array(
+			'priority_type'=>$priority_type,
+			'hospital_id'=>$hospital['hospital_id']
+		);
+		$this->db->trans_start(); //Transaction starts
+		$this->db->insert('priority_type', $form_data); 
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+            return false;
+        }
+		return true;
+	}
+
+	function add_primary_route(){
+		$hospital = $this->session->userdata('hospital');
+		$primary_route = $this->input->post('primary_route');
+
+		$form_data=array(
+			'route_primary'=>$primary_route,
+			'hospital_id'=>$hospital['hospital_id']
+		);
+		$this->db->trans_start(); //Transaction starts
+		$this->db->insert('route_primary', $form_data); 
+		echo "inserted successfully.";
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+            return false;
+        }
+		return true;
+	}
+
+	
+	function add_secondary_route(){
+		$hospital = $this->session->userdata('hospital');
+		$secondary_route = $this->input->post('secondary_route');
+
+		$form_data=array(
+			'route_secondary'=>$secondary_route,
+			'hospital_id'=>$hospital['hospital_id'],
+			'route_primary_id'=>$hospital['hospital_id']
+		);
+		$this->db->trans_start(); //Transaction starts
+		$this->db->insert('route_secondary', $form_data); 
+		echo "inserted successfully.";
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE){
+            return false;
+        }
+		return true;
 	}
 }
 ?>

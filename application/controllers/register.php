@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 // OP and IP registration forms.
-class Register extends CI_Controller {
+class Register extends CommonPageController {
 	private function transaction_condition() {
 		// Check for transaction ID if none found set one in session, always overrides
 		// If transaction ID found remove that transaction, add a new transaction
@@ -218,18 +218,7 @@ class Register extends CI_Controller {
 			redirect('home','refresh');
 		}
 		
-	}// custom_form
-	
-	function get_states() {
-		$result = json_encode($this->masters_model->get_data('state_codes'));
-		print $result;
-	}// get_states;
-	
-	function get_districts() {
-		$result = json_encode($this->staff_model->get_district_codes());
-		print $result;
-	}// get_districts
-
+	}
 	function view_patients(){
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
@@ -1147,4 +1136,97 @@ class Register extends CI_Controller {
 	{
 		unlink('assets/patient_documents/'.$document_link);
 	}
+
+
+
+	public function add_priority_type($isEdit=false)
+	{
+		$this->prepareFormPageForUserFunction("priority_type", $isEdit, [
+			array("field" => "priority_type", "Priority Type", "required|trim|xss_clean")
+		], "register_model");	
+ 	}
+
+	public function edit_priority_type(){
+		$this->add_priority_type(true);
+	}
+
+	public function add_priority_type($isEdit=false)
+	{
+		
+		$moduleName = "Priority Type";
+		$privilegeName = "Admin"; // TODO: change this to respective module/feature
+		$actionTense = $isEdit ? "edited" : "added";
+
+		$this->checkLoggedInUserPermissionForModule($privilegeName);
+
+		$this->preparePageForAdmin("Add Priority Type", 'pages/add_priority_type', function(){
+			if($this->input->post('form_submit')){	
+				$this->form_validation->set_rules('priority_type','Priority Type','required|trim|xss_clean');
+				if ($this->form_validation->run() === TRUE) {
+					if($this->register_model->add_priority_type()){
+						$this->data['msg'] = $title . " " . $actionTense . "successfully";
+					} else {
+						$this->data['msg'] = $title . " " . "could not be " . $actionTense . ". Please try again.";
+					}
+				}else{
+					// $this->data['msg'] = "Priority Type is Required";
+					// https://stackoverflow.com/questions/11031596/how-to-show-validation-errors-using-redirect-in-codeigniter
+					// validation_errors will show the error in the page above the form
+					// TODO: Should move the validate_errors() into generic page...
+				}
+			}
+		});	
+ 	}
+
+	public function edit_priority_type(){
+		$this->add_priority_type(true);
+	}
+
+	 public function add_primary_route()
+	 {
+		$this->checkLoggedInUserPermissionForModule("Admin");
+
+		$this->preparePageForAdmin("Add Primary Route", 'pages/add_primary_route', function(){
+			if($this->input->post('submit')){	
+				$this->form_validation->set_rules('primary_route','Primary Route','required|trim|xss_clean');
+				if ($this->form_validation->run() === TRUE) {
+					if($this->register_model->add_primary_route()){
+						$this->data['msg']="Primary Route added successfully";
+					} else {
+						$this->data['msg']="Primary Route could not be added. Please try again.";
+					}
+				}else{
+					// $this->data['msg'] = "Priority Type is Required";
+					// https://stackoverflow.com/questions/11031596/how-to-show-validation-errors-using-redirect-in-codeigniter
+					// validation_errors will show the error in the page above the form
+					// TODO: Should move the validate_errors() into generic page...
+				}
+			}
+		});	
+	  }
+
+	public function add_secondary_route()
+	{
+		$this->checkLoggedInUserPermissionForModule("Admin");
+		
+		$this->preparePageForAdmin("Add Secondary Route", 'pages/add_secondary_route', function(){
+			if($this->input->post('submit')){	
+				$this->form_validation->set_rules('secondary_route','Secondary Route','required|trim|xss_clean');
+				if ($this->form_validation->run() === TRUE) {
+					if($this->register_model->add_secondary_route()){
+						$this->data['msg']="Secondary Route added successfully";
+					} else {
+						$this->data['msg']="Secondary Route could not be added. Please try again.";
+					}
+				}else{
+					// $this->data['msg'] = "Priority Type is Required";
+					// https://stackoverflow.com/questions/11031596/how-to-show-validation-errors-using-redirect-in-codeigniter
+					// validation_errors will show the error in the page above the form
+					// TODO: Should move the validate_errors() into generic page...
+				}
+			}
+		});	 	}
+
+ 
+
 }
