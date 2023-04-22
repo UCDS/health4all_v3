@@ -667,7 +667,7 @@
 }
 ?>
 
-<?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^hospital/search_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url()) || preg_match("^register/add_priority_type^", current_url()) || preg_match("^register/add_primary_route^", current_url()) || preg_match("^register/add_secondary_route^", current_url())) { ?>
+<?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^hospital/search_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url()) || preg_match("^register/add_priority_type^", current_url()) || preg_match("^register/add_route_primary^", current_url()) || preg_match("^register/add_route_secondary^", current_url())) { ?>
 
 	<div class="col-xs-1 col-md-1 sidebar-left">
 		<strong>Settings</strong>
@@ -704,14 +704,14 @@
 				<a href="<?php echo base_url(); ?>register/add_priority_type">Add Priority Type</a>
 			</li>
 
-			<li <?php if (preg_match("^register/add_primary_route^", current_url()))
+			<li <?php if (preg_match("^register/add_route_primary^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>register/add_primary_route">Add Primary Route</a>
+				<a href="<?php echo base_url(); ?>register/add_route_primary">Add Primary Route</a>
 			</li>
 
-			<li <?php if (preg_match("^register/add_secondary_route^", current_url()))
+			<li <?php if (preg_match("^register/add_route_secondary^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>register/add_secondary_route">Add Secondary Route</a>
+				<a href="<?php echo base_url(); ?>register/add_route_secondary">Add Secondary Route</a>
 			</li>
 
 			<li class="nav-divider"></li>

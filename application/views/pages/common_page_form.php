@@ -20,8 +20,8 @@
 				<div class="row">
 					<?php foreach ($fields as $field) { ?>
 						<div class="col-lg-4">
-						<label><? php echo $field['label']; ?></label>	
-						<input type="text" class="form-control" name="<? php echo $field['field']; ?>" id="<? php echo $field['field']; ?>" /> 
+						<label><?php echo $field['label']; ?></label>	
+						<input type="text" class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" /> 
 						</div>
 					<?php } ?>
 				</div>

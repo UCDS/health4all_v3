@@ -1856,15 +1856,15 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 	}
 
 	function upsert_priority_type($isEdit=false){
-        return $this->upsert_form('priority_type', 'priority_type_id', ['priority_type']);
+        return $this->upsert_form($isEdit, 'priority_type', 'priority_type_id', ['priority_type']);
 	}
 
-	function upsert_primary_route($isEdit=false){
-        return $this->upsert_form('route_primary', 'route_primary_id', ['route_primary']);
+	function upsert_route_primary($isEdit=false){
+        return $this->upsert_form($isEdit, 'route_primary', 'route_primary_id', ['route_primary']);
 	}
 
-	function upsert_secondary_route($isEdit=false){
-        return $this->upsert_form('route_secondary', 'route_secondary_id', ['route_primary_id', 'route_secondary']);
+	function upsert_route_secondary($isEdit=false){
+        return $this->upsert_form($isEdit, 'route_secondary', 'route_secondary_id', ['route_primary_id', 'route_secondary']);
 	}
 }
 ?>

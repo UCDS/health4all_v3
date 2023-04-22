@@ -24,10 +24,12 @@ class CommonPageController extends CI_Controller {
 			4. Mention the table fields in the rules array.
 			5. [TODO] This logic works only for single table, we need to add logic to handled multiple tables...
 			6. [TODO] In the common model logic, session hospital id is considered by default, if this is not needed we need to handle the same
+			7. IF you get "The page you requested was not found.", make sure to verify if the user_function is added and user_funcion_link is added
 		*/
 		$user_function_detail = $this->checkLoggedInUserPermissionForUserFunctionAndDetail($user_function);
 		
-		$title = $user_function_detail->user_function_display;
+		// $title = $user_function_detail->user_function_display; // TODO: THIS NEEDS TO BE FROM DB...
+		$title = ucwords(str_replace("_", " ", $user_function));
 		$action = $isEdit ? "edit" : "add";
 		$actionTense = $action . "ed";
 		$pageTitle = ucwords("$action $title");
@@ -50,7 +52,7 @@ class CommonPageController extends CI_Controller {
 			$this->form_validation->set_rules($rules);
 
 			if ($this->form_validation->run() === TRUE) {
-				if($this->${$model_class."_model"}->$model_function()){
+				if($this->{$model_class."_model"}->$model_function($isEdit)){
 					$this->data['success'] = "$title $actionTense successfully";
 				} else {
 					$this->data['failure'] = "$title could not be $actionTense. Please try again.";

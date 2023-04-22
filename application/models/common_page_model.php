@@ -4,7 +4,7 @@ class Common_Page_Model extends CI_Model{
 		parent::__construct();
 	}
 	
-	function upsert_form($table, $pk, $fields, $saveHospitalId=true){
+	function upsert_form($isEdit, $table, $pk, $fields, $saveHospitalId=true){
         $data=array();
 
         foreach ($fields as $field) {
