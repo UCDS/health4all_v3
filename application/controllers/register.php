@@ -1023,8 +1023,60 @@ class Register extends CommonPageController {
         }
 	}
 
+	function delete_document($document_link)
+	{
+		unlink('assets/patient_documents/'.$document_link);
+	}
+
+	// Start of New Coding Style and Practices...
+
+	public function add_priority_type($pageType=1)
+	{
+		$this->prepareFormPageForUserFunction("priority_type", $pageType, [
+			array("field" => "priority_type", "label" => "Priority Type", "rules" => "required|trim|xss_clean")
+		], "register");	
+ 	}
+
+	public function edit_priority_type(){
+		$this->add_priority_type(2);
+	}
+
+	public function add_route_primary($pageType=1)
+	{
+		$this->prepareFormPageForUserFunction("route_primary", $pageType, [
+			array("field" => "route_primary", "label" => "Primary Route", "rules" => "required|trim|xss_clean")
+		], "register");	
+ 	}
+
+	public function edit_route_primary(){
+		$this->add_route_primary(2);
+	}
+
+	public function add_route_secondary($pageType=1)
+	{
+		$this->prepareFormPageForUserFunction("route_secondary", $pageType, [
+			array("field" => "route_primary_id", "label" => "Primary Route", "rules" => "required|trim|xss_clean", "type" => "dropdown", "pre_load" => array("model_class" => "register", "model_function" => "get_route_primary_for_dropdown")),
+			array("field" => "route_secondary", "label" => "Secondary Route", "rules" => "required|trim|xss_clean")
+		], "register");	
+ 	}
+
+	public function edit_route_secondary(){
+		$this->add_route_secondary(2);
+	}
+
+	public function search_patient_follow_up()
+	{
+		$this->prepareFormPageForUserFunction("patient_follow_up", 3, [
+			array("field" => "healthforall_id", "label" => "H4A Patient ID", "rules" => "required|trim|xss_clean")
+		], "register", array("displaySuccessMessage" => false));	
+
+		// add the patient details readonly form section here...
+
+		// add the patient follow-up details create/update form section here...
+		
+ 	}
 	
-	public function patient_follow_up()
+	public function patient_follow_up_1()
 	{
 	if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
@@ -1137,44 +1189,4 @@ class Register extends CommonPageController {
 		}
 	
 }
-	function delete_document($document_link)
-	{
-		unlink('assets/patient_documents/'.$document_link);
-	}
-
-
-
-	public function add_priority_type($isEdit=false)
-	{
-		$this->prepareFormPageForUserFunction("priority_type", $isEdit, [
-			array("field" => "priority_type", "label" => "Priority Type", "rules" => "required|trim|xss_clean")
-		], "register");	
- 	}
-
-	public function edit_priority_type(){
-		$this->add_priority_type(true);
-	}
-
-	public function add_route_primary($isEdit=false)
-	{
-		$this->prepareFormPageForUserFunction("route_primary", $isEdit, [
-			array("field" => "route_primary", "label" => "Primary Route", "rules" => "required|trim|xss_clean")
-		], "register");	
- 	}
-
-	public function edit_route_primary(){
-		$this->add_route_primary(true);
-	}
-
-	public function add_route_secondary($isEdit=false)
-	{
-		$this->prepareFormPageForUserFunction("route_secondary", $isEdit, [
-			array("field" => "route_primary_id", "label" => "Primary Route", "rules" => "required|trim|xss_clean", "type" => "dropdown", "pre_load" => array("model_class" => "register", "model_function" => "get_route_primary_for_dropdown")),
-			array("field" => "route_secondary", "label" => "Secondary Route", "rules" => "required|trim|xss_clean")
-		], "register");	
- 	}
-
-	public function edit_route_secondary(){
-		$this->add_route_secondary(true);
-	}
 }

@@ -15,7 +15,12 @@ class CommonPageController extends CI_Controller {
 		return false;
 	}
 
-	function prepareFormPageForUserFunction($user_function="", $isEdit=false, $rules=[], $model_class=""){
+	function getvalueFromObject($obj, $key, $default){
+		return isset($obj[$key]) ? $obj[$key] : $default;
+	}
+
+	function prepareFormPageForUserFunction($user_function="", $pageType=1, $rules=[], $model_class="", $options=array()){
+		// pageType => 1=Add, 2=Edit, 3=Search
 		/*
 			// To re-use in most of places, follow this rules...
 			1. table name say "priority_type" with primary_key as "priority_type_id"
@@ -32,10 +37,19 @@ class CommonPageController extends CI_Controller {
 		
 		// $title = $user_function_detail->user_function_display; // TODO: THIS NEEDS TO BE FROM DB...
 		$title = ucwords(str_replace("_", " ", $user_function));
+		$isAdd = $pageType === 1;
+		$isEdit = $pageType === 2;
+		$isSearch = $pageType === 3;
+
 		$action = $isEdit ? "edit" : "add";
-		$actionTense = $action . "ed";
-		$pageTitle = ucwords("$action $title");
 		$model_function = "upsert_$user_function";
+		if($isSearch){
+			$action = "search";
+			$model_function = "search_$user_function";
+		}
+		$actionTense = $action . "ed";
+
+		$pageTitle = ucwords("$action $title");
 
 		$this->data['title'] = $pageTitle;
 		$this->data['primary_key'] = $user_function;
@@ -60,6 +74,7 @@ class CommonPageController extends CI_Controller {
 				$dropdown_model_function = $pre_load_dropdown['model_function'];
 				$field['options'] = $this->{$dropdown_model_class."_model"}->$dropdown_model_function();
 			}
+			$field['value'] = $this->input->post($field['field']);
 			$this->data['fields'][$index] = $field;
 		}
 
@@ -68,10 +83,24 @@ class CommonPageController extends CI_Controller {
 			$this->form_validation->set_rules($rules);
 
 			if ($this->form_validation->run() === TRUE) {
-				if($this->{$model_class."_model"}->$model_function($isEdit)){
-					$this->data['success'] = "$title $actionTense successfully";
+				if($isSearch){
+					if($this->{$model_class."_model"}->$model_function()){
+						$this->data['success'] = $this->getvalueFromObject($options, "success", "Record found.");
+					} else {
+						$this->data['failure'] = $this->getvalueFromObject($options, "failure", "No record found.");
+					}
 				} else {
-					$this->data['failure'] = "$title could not be $actionTense. Please try again.";
+					if($this->{$model_class."_model"}->$model_function($isEdit)){
+						$this->data['success'] = $this->getvalueFromObject($options, "success", "$title $actionTense successfully");
+					} else {
+						$this->data['failure'] = $this->getvalueFromObject($options, "failure", "$title could not be $actionTense. Please try again.");
+					}
+				}
+				if(!$this->getvalueFromObject($options, "displaySuccessMessage", true)){
+					$this->data['success'] = null;
+				}
+				if(!$this->getvalueFromObject($options, "displayFailureMessage", true)){
+					$this->data['failure'] = null;
 				}
 			}else{
 				// $this->data['msg'] = "SOMEFIELDHERE is Required";

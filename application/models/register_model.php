@@ -1875,5 +1875,15 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 	function upsert_route_secondary($isEdit=false){
         return $this->upsert_form($isEdit, 'route_secondary', 'route_secondary_id', ['route_primary_id', 'route_secondary']);
 	}
+	function search_patient_follow_up(){
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("patient_followup_id, patient_id, hospital_id, longitude, latitude, life_status, status_date, icd_code, diagnosis, last_visit_type, last_visit_date, priority_type_id, route_primary_id, route_secondary_id, volunteer_id, note")->from("patient_followup");
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		if($this->input->post('healthforall_id')){
+			$this->db->where('patient_id', $this->input->post('healthforall_id'));
+		}
+		$data=$this->db->get();
+		return $data->row();
+	}
 }
 ?>

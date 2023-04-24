@@ -22,7 +22,7 @@
 						<div class="col-lg-4">
 						<label><?php echo $field['label']; ?></label>	
 						<?php if($field['isText']) {?>
-							<input type="text" class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" /> 
+							<input type="text" class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" value="<?php echo $field['value']; ?>"/> 
 						<?php } else if($field['isDropdown']) {?>
 							<select class="form-control" name="<?php echo $field['field']; ?>" id="<?php echo $field['field']; ?>" > 
 								<option value="">Select</option>
