@@ -1055,8 +1055,8 @@ class Register extends CommonPageController {
 			$this->data['patients']=$this->register_model->get_patient_followup();
 			$patient_id = $this->data['patients']['0']->patient_id;
 			$this->data['priority_types']=$this->register_model->get_priority_type();
-			$this->data['route_primary']=$this->register_model->get_route_primary();
-			$this->data['route_secondary']=$this->register_model->get_route_secondary();
+			$this->data['route_primary']=$this->register_model->get_primary_route();
+			// $this->data['route_secondary']=$this->register_model->get_secondary_route();
 			$this->data['volunteer']=$this->register_model->get_volunteer();
 
 			
