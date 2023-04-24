@@ -428,7 +428,7 @@ echo "</select></li>";
 		<td><?php echo $followup->phone;?></td>
 		<td><?php echo $followup->address;?></td>
 		<td><?php echo date('d-M-Y',strtotime($followup->status_date));?></td>
-		<td><?php echo $followup->icd_code;?></td>
+		<td><?php echo $followup->icd_code." ".$followup->code_title;?></td>
 		<td><?php echo $followup->diagnosis;?></td>
 		<td><?php echo $followup->last_visit_type;?></td>
 		<td><?php echo $followup->priority_type; ?></td>
