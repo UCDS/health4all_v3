@@ -22,11 +22,12 @@ class Inventory_summary_model extends CI_Model
         if($scp_id){
             // echo "$as_on_date<br/>"; 
             $hospital=$this->session->userdata('hospital');           
-            $this->db->select('scp.supply_chain_party_name, item.item_name, inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, SUM(inventory.quantity) total_quantity')
+            $this->db->select('scp.supply_chain_party_name, item.item_name, item_type.item_type, inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, SUM(inventory.quantity) total_quantity')
             ->from('inventory')
             ->join('item', 'item.item_id = inventory.item_id')
             ->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
             ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
+            ->join('item_type', 'item_type.item_type_id = generic_item.item_type_id')
             ->where("inventory.date_time > '$latest_run_date'")
             ->where('scp.supply_chain_party_id', $scp_id)
             ->where('scp.hospital_id', $hospital['hospital_id'])
@@ -106,6 +107,7 @@ class Inventory_summary_model extends CI_Model
             $item_id = null;
             $scp_name = null;
             $item_name = null;
+            $item_type = null;
             if($record['inward'] != null){
                 $scp_id = $record['inward']->supply_chain_party_id;              
                 $item_id = $record['inward']->item_id;
@@ -113,6 +115,7 @@ class Inventory_summary_model extends CI_Model
                 if($scp_id && $scp_identifier){
                     $scp_name = $record['inward']->supply_chain_party_name;
                     $item_name = $record['inward']->item_name;
+                    $item_type = $record['inward']->item_type;
                 }
             }else{
                 $item_id = $record['outward']->item_id;
@@ -120,6 +123,7 @@ class Inventory_summary_model extends CI_Model
                 if($scp_id && $scp_identifier){
                     $scp_name = $record['outward']->supply_chain_party_name;
                     $item_name = $record['outward']->item_name;
+                    $item_type = $record['outward']->item_type;
                 }
             }
 
@@ -133,7 +137,7 @@ class Inventory_summary_model extends CI_Model
                     'supply_chain_party_name' => $scp_name, 
                     'item_id' => $item_id, 
                     'item_name' => $item_name, 
-                    
+                    'item_type' => $item_type, 
                     'closing_balance' => $closing_balance
                 );
             }else{
@@ -197,7 +201,7 @@ class Inventory_summary_model extends CI_Model
                         'supply_chain_party_name' => $record->supply_chain_party_name, 
                         'item_id' => $record->item_id, 
                         'item_name' => $record->item_name, 
-                        
+                        'item_type' => $record->item_type, 
                         'closing_balance' => $record->closing_balance
                     );
                 }
@@ -251,12 +255,13 @@ class Inventory_summary_model extends CI_Model
         $this->db->trans_start();
         // $report_run_date = date('Y-m-d H:i:s');
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
-        $this->db->select('inventory_summary.item_id, item.item_name, inventory_summary.supply_chain_party_id, scp.supply_chain_party_name, inventory_summary.closing_balance, summalias.t_date latest_transaction_date')
+        $this->db->select('inventory_summary.item_id, item.item_name, item_type.item_type, inventory_summary.supply_chain_party_id, scp.supply_chain_party_name, inventory_summary.closing_balance, summalias.t_date latest_transaction_date')
         ->from('inventory_summary')
         ->join("(SELECT s.item_id, s.supply_chain_party_id, MAX(s.transaction_date) t_date FROM inventory_summary s WHERE s.transaction_date <= '$as_on_date' GROUP BY s.item_id, s.supply_chain_party_id) summalias", 
         'summalias.item_id = inventory_summary.item_id AND summalias.supply_chain_party_id = inventory_summary.supply_chain_party_id AND summalias.t_date = inventory_summary.transaction_date')
         ->join('item', 'inventory_summary.item_id = item.item_id')
         ->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
+        ->join('item_type', 'item_type.item_type_id = generic_item.item_type_id')
         ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory_summary.supply_chain_party_id')
         ->where('scp.supply_chain_party_id', (int)$scp_id)
         ->where('scp.hospital_id', $hospital['hospital_id']);

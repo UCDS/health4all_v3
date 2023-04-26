@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/metallic.css" >
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/theme.default.css" >
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
@@ -13,7 +15,7 @@
 		$("#addbutton").click(function(){
 			var sno="<td>"+ " " +"</td></br>";
 			
-			var item ="<td><div class='form-group'><select name='item[]' id='item' class='form-control' required><option value=''>Select</option>";
+			var item ="<td><div class='form-group'><select name='item[]' id='item' class='' required><option value=''>Select</option>";
 			<?php foreach($all_item as $t){ ?>
 				item +="<option value='<?php echo $t->item_id;?>'><?php echo $t->item_name."-".$t->item_form."-".$t->item_type."-".$t->dosage.$t->dosage_unit;?></option>";
 			<?php } ?>
@@ -24,7 +26,11 @@
 			$("#slot_table").append("<tr id='slot_row_"+rowcount+"'>"+sno+item+quantity+ note+remove+"</tr>");
 			rowcount++;
 
+			$selectize = $("[name='item[]']").selectize({
+				maxOptions: 10
+			});
 		});
+
 	});
 	
 </script>
@@ -37,6 +43,9 @@ $('#from_id').change(function(){
     $('#to_id  option[value="'+optionval+'"]').hide();
     
 });
+	$selectize = $("[name='item[]']").selectize({
+			maxOptions: 10
+		});
 });
 $(function(){
 $('#from_id  option[value="'+$('#to_id').val()+'"]').hide();
@@ -141,7 +150,7 @@ $('#to_id').change(function(){
 								</td>
 								<td>
 									<div class="form-group">	<!--Item-->
-										<select name="item[]" id="item" class="form-control" required>
+										<select name="item[]" id="item" class="" required>
 										<option value="">Select</option>
 										<?php
 										foreach($all_item as $t)

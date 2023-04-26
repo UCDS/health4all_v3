@@ -12,18 +12,27 @@ $(function(){
 </script>
 	<center>
 		<?php 
-		echo validation_errors('<div class="alert alert-danger">', '</div>');
+		if(!$this->input->post('navigate_edit')){
+			echo validation_errors('<div class="alert alert-danger">', '</div>');
+		}
 		if(isset($msg)){  ?>
 	<div class="alert alert-info"><?php echo $msg; ?></div><?php } ?>
-		<h3>Add Generic Details</h3></center><br>
+		<h3>Edit Generic Details</h3></center><br>
+		
 	<center>
-	<?php echo form_open('consumables/generic_item/add_generic',array('class'=>'form-group','role'=>'form','id'=>'add_generic')); ?></center>
-		<div class="col-md-6 col-md-offset-3">
+	<?php echo form_open('consumables/generic_item/edit',array('class'=>'form-group','role'=>'form','id'=>'edit')); ?></center>
+	<div class="col-md-6 col-md-offset-3">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+					<h4>Generic Item ID: <?= $item->generic_item_id; ?> <input type="hidden" class="sr-only" name="generic_item_id" id="generic_item_id" value="<?= $item->generic_item_id;?>"></h4>
+					<br>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">			<!--Generic name-->
 					<div class="form-group">
 						<label for="generic" class="col-md-6 col-lg-6">Generic Name<font color='red'>*</font></label>
-						<input type="text" class="form-control" placeholder=" Enter Generic Name" id="generic_name" name="generic_name" required />
+						<input type="text" class="form-control" value="<?= $item->generic_name;?>" placeholder=" Enter Generic Name" id="generic_name" name="generic_name" required />
 					</div>
 				</div>														<!--end of generic_name-->
 		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">					<!--Item type-->
@@ -32,7 +41,11 @@ $(function(){
 				<select name="item_type" id="item_type" class="form-control" required>
 				<option value="">Select</option>
 				<?php foreach($item_type as $d){
-					echo "<option value='$d->item_type_id'>$d->item_type</option>";
+					if($d->item_type_id === $item->item_type_id){
+						echo "<option value='$d->item_type_id' selected>$d->item_type</option>";
+					}else{
+						echo "<option value='$d->item_type_id'>$d->item_type</option>";
+					}
 				}?>
 				</select>
 			</div>		
@@ -44,7 +57,11 @@ $(function(){
 				<select name="drug_type" id="drug_type" class="form-control">
 					<option value="">Select</option>
 					<?php foreach($drug_type as $d){
-						echo "<option value='$d->drug_type_id'>$d->drug_type</option>";
+						if($item->drug_type_id && $d->drug_type_id === $item->drug_type_id){
+							echo "<option value='$d->drug_type_id' selected>$d->drug_type</option>";
+						}else{
+							echo "<option value='$d->drug_type_id'>$d->drug_type</option>";
+						}
 					}?>
 				</select>
 			</div>

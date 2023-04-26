@@ -190,7 +190,7 @@ $('#to_id').change(function(){
 						<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
 							<!--input field to party-->
-									<label for="inputto_id">Indent To Party</label>
+									<label for="to_id">Indent To Party</label>
 									<select name="to_id" id="to_id" class="form-control">
 										<option value="">Select</option>
 										<?php

@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/metallic.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/theme.default.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
@@ -114,6 +116,92 @@ $('#to_id').change(function(){
 
 });
 });
+
+</script>
+<script>
+	function extend(l1, l2)
+	{
+		for(let i = 0; i < l2.length; i++){
+			l1.push(l2[i]);
+		}
+	}
+	$(function(){
+		// if($('#item_type').val === ''){
+			// 	return;
+			// }
+
+		let options = <?= json_encode($all_item); ?>;
+		options = options.map(opt => {
+			let ans = `${opt.item_name}-${opt.item_form}-`;
+			if(opt.dosage){
+				ans += opt.dosage;
+			}
+			if(opt.dosage_unit){
+				ans += opt.dosage_unit;
+			}
+			return {
+				...opt, 
+				item_name: ans
+			};
+		});
+		console.log(options);
+		// let temp = [];
+		$selectize = $("#item").selectize({
+			labelField: "item_name", 
+			searchField: "item_name", 
+			valueField: "item_id", 
+			options: options, 
+			// allowEmptyOption: true, 
+			// showEmptyOptionInDropdown: true, 
+			maxOptions: 10
+		});
+		let sel = $selectize[0].selectize;
+		sel.setValue(<?= $this->input->post("item") ? $this->input->post("item"): ""; ?>);
+
+		$('#item_type').change(function(){
+			let optionval = this.value;
+			console.log("Optionval", optionval);
+			console.log("changed item_type");
+			// $('#item').val('');
+			sel.setValue('');
+			console.log("NS!!", $(`#item option[class!="${optionval}"]`));
+			for(let i = 0; i < options.length; i++){
+				if(optionval == '' || options[i].item_type_id == optionval){
+					console.log(options[i]);
+					sel.addOption(options[i]);
+					console.log(sel.options);
+				}else{
+					// temp.push(options[i]);
+					// console.log(temp, Number(options[i].item_id));
+					sel.removeOption(Number(options[i].item_id));
+
+				}
+			}
+			console.log(options);
+			// $(`#item option[class="${optionval}"]`).show();
+			
+		});
+
+		let optionval = $('#item_type').val();
+		console.log("init optionval", optionval)
+		console.log("NS!!", $(`#item option[class!="${optionval}"]`));
+		// sel.setValue('');
+		for(let i = 0; i < options.length; i++){
+			if(optionval == '' || options[i].item_type_id == optionval){
+				console.log(options[i]);
+				sel.addOption(options[i]);
+				console.log(sel.options);
+			}else{
+				// temp.push(options[i]);
+				// console.log(temp, Number(options[i].item_id));
+				sel.removeOption(Number(options[i].item_id));
+
+			}
+		}
+		console.log(options);
+
+
+	})
 </script>
 <script>
 	$(function(){
@@ -185,44 +273,9 @@ $('#to_id').change(function(){
 								</select>
 						</div>
 					</div>
-										
-					<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
-						<div class="form-group">
-							<label for="inputitem_type" >Item Type</label>
-								<select name="item_type" id="item_type" class="form-control">
-								<option value="" selected>Select</option>
-									<?php
-									/*
-										foreach($all_item_type as $it)
-											{
-												echo "<option value='".$it->item_type_id."'";
-											if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
-											echo ">".$it->item_type."</option>";
-											}
-											*/
-									?>
-								</select>
-						</div>
-					</div> -->
+			
 					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
-						<div class="form-group">
-						<!--input field item-->
-							<label for="item" >Item</label>
-								<select name="item" id="item" class="form-control">
-								<option value="">Select</option>
-									<?php
-										foreach($all_item as $i)
-											{
-												//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
-												echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
-												if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
-												echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
-											}
-									?>
-								</select>
-						</div>
-					</div>
-					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						
 						<div class="form-group">
 						<!--input field item-->
 							<label for="item_type" >Item Type</label>
@@ -240,20 +293,17 @@ $('#to_id').change(function(){
 								</select>
 						</div>
 					</div>
-						<!-- 
-                        <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							
-								<label for="inputitem" >Inward/Outward</label>
-									<select name="item_inward_outward" id="item_inward_outward" class="form-control">
-									<option value="inward">Select</option>	
-									<option value="inward">Inward</option>
-                                    <option value="outward">Outward</option>
+					<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						<div class="form-group">
+							<!--input field item-->
+								<label for="item" >Item</label>
+									<select name="item" id="item" class="">
+									<option value="">Select</option>
 										
 									</select>
 							</div>
-						</div>
-											-->
+					</div>
+						
 
 				</div>
 		</div>
@@ -292,11 +342,12 @@ $('#to_id').change(function(){
 		 <div class="col-md-offset-2">
 					<table class="table table-bordered table-striped" id="table-sort">
 						<thead>
-							<!-- <th> #</th> -->
-							<!-- <th>Item Type</th> -->
+							<th>#</th>
+							<th>Item Type</th>
 							<th>Item Name</th>
 							<!-- <th>Supply Chain Party</th> -->
 							<th>Current balance</th>
+							<!-- <th></th> -->
 							<!-- <th></th> -->
 							<!-- <th>Quantity Inward</th>
 							<th>Quantity Outward</th>
@@ -307,12 +358,13 @@ $('#to_id').change(function(){
 			<?php
 				
 							
-				$i=1;
-				$ct = 0;
+				$i = 1;
+				
 				
 				// $outward = $search
 				log_message("info", "SAIRAM VERSION ".$CI_VERSION);
 				log_message("info", "SAIRAM WARNING ".json_encode($search_inventory_summary));
+				// echo '<h1>'.json_encode($search_inventory_summary).'</h1>';
 				foreach($search_inventory_summary as $inventory_item){?>
 
 					<tr>
@@ -332,14 +384,16 @@ $('#to_id').change(function(){
 
 						
 						<!-- <td><?php //echo $inventory_item['inward'] ? $inventory_item['inward']->item_type: $inventory_item['outward']->item_type;?></td> -->
+						<td><?= $i++; ?></td>
+						<td style="width: 20%;"><?= $inventory_item['item_type']; ?></td>
 						<td><b><?php echo $item_name;?></b></td>
 						
-						<td><?php echo $quantity;?></td>
-						<td><a href="<?php echo base_url().$sub_url."/$item_id/$scp_id"; ?>"><button class="btn btn-primary" type="button">View Detailed</button></a></td>
+						<td style="width: 15%;"><center><?php echo $quantity;?></center></td>
+						<td style="width: 15%;"><a href="<?php echo base_url().$sub_url."/$item_id/$scp_id"; ?>"><button class="btn btn-primary" type="button">View Detailed</button></a></td>
 						
 					</tr>
 					<?php
-					$ct++;
+					
 	               
 					}
 					?>

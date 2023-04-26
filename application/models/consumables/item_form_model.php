@@ -20,4 +20,13 @@ class Item_form_model extends CI_Model {
            return true;
         }  
 	}			//end of add_item_form.
+
+	function get_item_forms()
+	{
+		$this->db->select('item_form_id, item_form')
+		->from('item_form')->order_by('item_form', 'ASC');
+
+		$query = $this->db->get();
+		return $query->result();
+	}
 }				//end of item_form_model.

@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/metallic.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/theme.default.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
@@ -120,17 +122,75 @@ $('#to_id').change(function(){
 		// if($('#item_type').val === ''){
 		// 	return;
 		// }
+
+		let options = <?= json_encode($all_item); ?>;
+		options = options.map(opt => {
+			let ans = `${opt.item_name}-${opt.item_form}-`;
+			if(opt.dosage){
+				ans += opt.dosage;
+			}
+			if(opt.dosage_unit){
+				ans += opt.dosage_unit;
+			}
+			return {
+				...opt, 
+				item_name: ans
+			};
+		});
+		console.log(options);
+		// let temp = [];
+		$selectize = $("#item").selectize({
+			labelField: "item_name", 
+			searchField: "item_name", 
+			valueField: "item_id", 
+			options: options, 
+			// allowEmptyOption: true, 
+			// showEmptyOptionInDropdown: true, 
+			maxOptions: 10
+		});
+		let sel = $selectize[0].selectize;
+		sel.setValue(<?= $this->input->post("item") ? $this->input->post("item"): ""; ?>);
 		$('#item_type').change(function(){
 			let optionval = this.value;
 			console.log("Optionval", optionval);
-			$('#item').val('')
-			if(optionval !== ''){
-				$(`#item option[class!="${optionval}"]`).hide();
-				$(`#item option[class="${optionval}"]`).show();
-			}else{
-				$('#item option').show();
+			console.log("changed item_type");
+			// $('#item').val('');
+			sel.setValue('');
+			console.log("NS!!", $(`#item option[class!="${optionval}"]`));
+			for(let i = 0; i < options.length; i++){
+				if(optionval == '' || options[i].item_type_id == optionval){
+					console.log(options[i]);
+					sel.addOption(options[i]);
+					console.log(sel.options);
+				}else{
+					// temp.push(options[i]);
+					// console.log(temp, Number(options[i].item_id));
+					sel.removeOption(Number(options[i].item_id));
+
+				}
 			}
+			console.log(options);
+			// $(`#item option[class="${optionval}"]`).show();
+			
 		});
+
+		let optionval = $('#item_type').val();
+		console.log("init optionval", optionval)
+		console.log("NS!!", $(`#item option[class!="${optionval}"]`));
+		// sel.setValue('');
+		for(let i = 0; i < options.length; i++){
+			if(optionval == '' || options[i].item_type_id == optionval){
+				console.log(options[i]);
+				sel.addOption(options[i]);
+				console.log(sel.options);
+			}else{
+				// temp.push(options[i]);
+				// console.log(temp, Number(options[i].item_id));
+				sel.removeOption(Number(options[i].item_id));
+
+			}
+		}
+		console.log(options);
 	})
 </script>
 <script>
@@ -196,24 +256,7 @@ $('#to_id').change(function(){
 							</div>
 						</div>
 											
-						<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
-							<div class="form-group">
-								<label for="inputitem_type" >Item Type</label>
-									<select name="item_type" id="item_type" class="form-control">
-									<option value="" selected>Select</option>
-										<?php
-										/*
-											foreach($all_item_type as $it)
-												{
-													echo "<option value='".$it->item_type_id."'";
-												if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
-												echo ">".$it->item_type."</option>";
-												}
-												*/
-										?>
-									</select>
-							</div>
-						</div> -->
+						
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--input field item-->
@@ -236,18 +279,9 @@ $('#to_id').change(function(){
 							<div class="form-group">
 							<!--input field item-->
 								<label for="item" >Item<font style="color:red">*</font></label>
-									<select name="item" id="item" class="form-control" required>
+									<select name="item" id="item" class="" required>
 									<option value="">Select</option>
-										<?php
-											foreach($all_item as $i)
-												{
-													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
-													
-													echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
-													if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
-													echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
-												}
-										?>
+										
 									</select>
 							</div>
 						</div>
@@ -312,13 +346,16 @@ $('#to_id').change(function(){
 						<thead>
 
 							<!-- <th>Supply Chain Party</th> -->
+							<th>#</th>
 							<th>Indent ID</th>
+							<th>Issue Date</th>
+							<th>Narration</th>
+							<th>Outward Quantity</th>
+							<th>Inward Quantity</th>
+							<th>Cost</th>
 							<th>Batch</th>
 							<th>Manufacturing date</th>
 							<th>Expiry date</th>
-							<th>Inward/Outward</th>
-							<th>Quantity</th>
-							<th>Cost</th>
 							<th>GTIN code</th>
 							<th>Patient ID</th>
 							<th>Note</th>
@@ -332,8 +369,10 @@ $('#to_id').change(function(){
 			<?php
 				
 							
-				$i=1;
-				$ct = 0;
+				$i = 1;
+				$inward_total_quantity = 0;
+				$outward_total_quantity = 0;
+				$total_cost = 0.0;
 				
 				// $outward = $search
 				log_message("info", "SAIRAM VERSION ".$CI_VERSION);
@@ -343,61 +382,74 @@ $('#to_id').change(function(){
 					<tr>
 						
 					<?php
-					// echo json_encode($inventory_item); 
-					//echo $i++; 
-					// $sub_url="consumables/indent_reports/get_item_inventory";
-					if(!isset($inventory_item))
-						continue;
-
-					$sub_url="consumables/indent_reports/";
-					$item_type_id = '0';
-					if ($inventory_item->item_id) {
-						$item_id = $inventory_item->item_id;
-
-					}
-					$manufacture_date = $inventory_item->manufacture_date;
-					$expiry_date = $inventory_item->expiry_date;
-					// echo strtotime("01-Jan-1970 00:00:00");
-					// echo strtotime(date("Y-m-d", strtotime($manufacture_date)));
-					log_message("info", "SAIRAM ===> ".$inventory_item->batch);
-					if(strtotime(date("d-M-Y", strtotime($manufacture_date))) <= 0){
-						$manufacture_date = "";
-					}
-					if(strtotime(date("d-M-Y", strtotime($expiry_date))) <= 0){
-						$expiry_date = "";
-					}
-					$scp_id = $inventory_item->supply_chain_party_id;
-					$qty_outward = 0;
+					 
 					
-					// $item_i = $inventory
-					$batch = $inventory_item->batch;
+						// $sub_url="consumables/indent_reports/get_item_inventory";
+						if(!isset($inventory_item))
+							continue;
+
+						$sub_url="consumables/indent_reports/";
+						$item_type_id = '0';
+						if ($inventory_item->item_id) {
+							$item_id = $inventory_item->item_id;
+
+						}
+						$manufacture_date = $inventory_item->manufacture_date;
+						$expiry_date = $inventory_item->expiry_date;
+						// echo strtotime("01-Jan-1970 00:00:00");
+						// echo strtotime(date("Y-m-d", strtotime($manufacture_date)));
+						log_message("info", "SAIRAM ===> ".$inventory_item->batch);
+						$issue_date = date("d-M-Y", strtotime($inventory_item->date_time));
+						if(strtotime($issue_date) <= 0){
+							$issue_date = "";
+						}
+						if(strtotime(date("d-M-Y", strtotime($manufacture_date))) <= 0){
+							$manufacture_date = "";
+						}
+						if(strtotime(date("d-M-Y", strtotime($expiry_date))) <= 0){
+							$expiry_date = "";
+						}
+						$scp_id = $inventory_item->supply_chain_party_id;
+						
+						if($inventory_item->inward_outward != "inward"){
+							$outward_total_quantity += $inventory_item->total_quantity;
+						}else if($inventory_item->inward_outward === "inward"){
+							$inward_total_quantity += $inventory_item->total_quantity;
+						}
+						$total_cost += ((float)$inventory_item->cost);
+						// $item_i = $inventory
+						$batch = $inventory_item->batch;
 					?>
 
-
+						<td><? $i++; ?></td>
 						
 						<td><a href="<?= base_url().$sub_url."indents_list_detailed/$inventory_item->indent_id"; ?>"><?= $inventory_item->indent_id;?></a></td>
+						<td><?= $issue_date; ?></td>
+						<td><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td>
+						<td><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): '0';?></td>
+						<td><?= ($inventory_item->inward_outward === "inward") ? ($inventory_item->total_quantity): '0';?></td>
+						<td><?= (float)$inventory_item->cost; ?></td>
 						<td><?= $batch == '0' ? "NO BATCH": $batch; ?></td>
 						<td><?= $manufacture_date == ""? "": date("d-M-Y", strtotime($manufacture_date)); ?></td>
 						<td><?= $expiry_date == ""? "": date("d-M-Y", strtotime($expiry_date)); ?></td>
-						<td><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td>
-						<td><?= ($inventory_item->total_quantity);?></td>
-						<td><?= $inventory_item->cost; ?></td>
 						<td><?= $inventory_item->gtin_code; ?></td>
 						<td><?= $inventory_item->patient_id ? $inventory_item->patient_id: ""; ?></td>
 						<td><?= $inventory_item->note;?></td>
-						<!-- <td><a href="<?php //echo base_url().$sub_url?>"><?php //if ($item_id == '0')
-							  //echo "NA"; 
-							  //else echo $item_id;?></td> -->
+						
 					</tr>
 					<?php
-					$ct++;
+					
 	               
 					}
 					?>
 					<tfoot>
-					<!-- <th>Total </th>
-					<th> </th> -->
-					<!-- <th> </th> -->
+						<th></th>
+						<th>Total </th>
+						<th></th>
+						<th></th>
+						<th><?= $outward_total_quantity; ?></th>
+						<th><?= $inward_total_quantity; ?></th>
+						<th><?= $total_cost; ?></th>
 
 
 					

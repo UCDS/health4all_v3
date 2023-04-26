@@ -11,26 +11,36 @@ class Indent_issue_model extends CI_Model{                                      
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));                           //get to date from the user with input->post method and store it into a var:to_date
 		} 
 		else if($this->input->post('from_date') || $this->input->post('to_date')){                     //checking whether any one of them(from date or to date) are valid
-			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');  //if from_date valid it will be stored else to_date will be stored
-			$to_date=$from_date;                                                                       //to_date is same as from_date
+			$from_date = null;
+			$to_date = null;
+			if($this->input->post('from_date')){
+				$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));  //if from_date valid it will be stored else to_date will be stored
+				$to_date=date("Y-m-d", strtotime(date("Y-m-d").'+23 hour 59 min 59 second'));                                                                       //to_date is same as from_date
+			}else{
+				$from_date = date("Y-m-d", strtotime(0));
+				$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+
+			}
 		}
 		else{                                                      
 			$from_date=date("Y-m-d", strtotime( date( "Y-m-d", strtotime( date("Y-m-d") ) ) . "-1 month" ) ); //by default setting from_date as 1 month back
 			$to_date=date("Y-m-d");                                                                           //by default setting to date as current date
 		}
-		if($this->input->post('auto_indent')!=1){
-		if($this->input->post('item_type')){                                                            //all the below four if conditions are about checking and getting the particular values from user 
-			$this->db->where('item_type.item_type_id',$this->input->post('item_type'));
-		}
-		if($this->input->post('item')){
-			$this->db->where_in('item.item_id',$this->input->post('item'));
-		}
-		    if($this->input->post('from_id')){
-			    $this->db->where('from_party.supply_chain_party_id',$this->input->post('from_id'));
-		    }
-		    if($this->input->post('to_id')){
-			    $this->db->where('to_party.supply_chain_party_id',$this->input->post('to_id'));
-		    }  
+		 
+		if($this->input->post('submit')){
+			// echo "inside not auto indent ". $this->input->post('submit');
+			if($this->input->post('item_type')){                                                            //all the below four if conditions are about checking and getting the particular values from user 
+				$this->db->where('item_type.item_type_id',$this->input->post('item_type'));
+			}
+			if($this->input->post('item')){
+				$this->db->where_in('item.item_id',$this->input->post('item'));
+			}
+				if($this->input->post('from_id')){
+					$this->db->where('from_party.supply_chain_party_id',$this->input->post('from_id'));
+				}
+				if($this->input->post('to_id')){
+					$this->db->where('to_party.supply_chain_party_id',$this->input->post('to_id'));
+				}  
 		}
 	    $this->db->select('indent.approve_date_time,item_type.item_type_id,indent_item.quantity_approved,indent.*,item_type,item_name,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party')->from('indent')
 	    ->join('indent_item','indent.indent_id=indent_item.indent_id','left')
