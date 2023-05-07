@@ -153,3 +153,5 @@ ALTER TABLE `hospital` ADD `print_layout_id` INT(6) NULL AFTER `auto_ip_number`,
 ALTER TABLE `form` ADD `a6_print_layout_id` INT(6) NULL AFTER `hospital_id`;
 
 ALTER TABLE `patient` CHANGE `dob` `dob` DATE NULL DEFAULT NULL;
+
+ALTER TABLE `patient_followup` ADD `map_link` VARCHAR(200) NOT NULL AFTER `note`;
