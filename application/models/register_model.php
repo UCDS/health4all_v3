@@ -1149,9 +1149,11 @@ class Register_model extends CI_Model{
 		hospital_id,
 		longitude,
 		latitude,
+		map_link,
 		life_status,
 		status_date,
-		icd_code,
+		patient_followup.icd_code,
+		icd_code.code_title,
 		diagnosis,
 		last_visit_type,
 		last_visit_date,
@@ -1160,6 +1162,7 @@ class Register_model extends CI_Model{
 		route_secondary_id,
 		volunteer_id,
 		note")->from("patient_followup");
+		$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$resource=$this->db->get();
 		return $resource->row();
@@ -1229,6 +1232,9 @@ class Register_model extends CI_Model{
         }
         if($this->input->post('status_date')){
             $followup_info['status_date'] = $this->input->post('status_date');
+        }
+        if($this->input->post('input_map_link')){
+            $followup_info['map_link'] = $this->input->post('input_map_link');
         }
         if($this->input->post('life_status')){
             $followup_info['life_status'] = $this->input->post('life_status');
