@@ -268,7 +268,7 @@ class Reports extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->data['priority_types']=$this->register_model->get_priority_type();
 		$this->data['route_primary']=$this->register_model->get_primary_route();
-	    $this->data['route_secondary']=$this->register_model->get_secondary_route();
+	    	$this->data['route_secondary']=$this->register_model->get_secondary_route();
 		$this->data['volunteer']=$this->register_model->get_volunteer();
 
 		foreach($this->data['defaultsConfigs'] as $default){		 

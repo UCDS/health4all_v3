@@ -106,8 +106,44 @@
 	
 </style>
 <script>
-
+$(document).ready(function() {
+	onchange_primary_route_dropdown(document.getElementById("route_primary"));
+	var route_secondary = "<?php echo $patient_followup->route_secondary_id; ?>";
+	if(route_secondary != ""){
+			$("#route_secondary").val(route_secondary);
+	}
+});
+function onchange_primary_route_dropdown(dropdownobj) {       	
+	const primaryRouteID = dropdownobj.value;
+	populatePrimaryRouteID(primaryRouteID);		
+}
 	
+function populatePrimaryRouteID(primaryRouteID) {
+	var optionsHtml = getSecondaryRoute(primaryRouteID);
+	$("#route_secondary").html(optionsHtml);		
+}
+
+function getSecondaryRoute(primaryRouteID) {
+	var all_route_secondary = JSON.parse('<?php echo json_encode($route_secondary); ?>'); 
+	var selected_route_secondary = all_route_secondary.filter(all_route_secondary => all_route_secondary.route_primary_id == primaryRouteID);
+	let optionsHtml = buildEmptyOption("Select");
+	if(selected_route_secondary.length > 0) {
+		optionsHtml += selected_route_secondary.map(selected_route_secondary => {
+				return `	<option value="${selected_route_secondary.id}">
+						${selected_route_secondary.route_secondary}
+					</option>`;
+	   });
+			
+        }
+	return optionsHtml;
+}
+
+function buildEmptyOption(optionName = "Select") {
+	return `<option value="" selected>
+					${optionName}
+			</option>`;
+
+}
 		
 	function onAddFollowUpSubmit(){
 		$('#followup_add_details').submit();
@@ -179,6 +215,8 @@ load: function(query, callback) {
 
 		 });
       </script>
+      
+
 <?php
 $patient = $patients[0];
 ?>
@@ -320,13 +358,14 @@ $patient = $patients[0];
 							<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
 						</div>
 				</div>
-
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
-								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" required >
+								
+						
+								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" <?php if($patient_followup->life_status == "1")  echo "checked" ; ?> required >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
-								<input type="radio" name="life_status" id="life_status_notlive" value="0" required >
+								<input type="radio" name="life_status" id="life_status_notlive" <?php if($patient_followup->life_status == "0")  echo "checked" ; ?> value="0" required >
 								<label for="status_dead">Not Alive</label><br>
 
 							</div>
@@ -339,8 +378,8 @@ $patient = $patients[0];
 					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
 				 <?php } else {?>
 					<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
-					<?php if(!!$patient->icd_10){ ?>
-						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
+					<?php if(!!$patient_followup->icd_code){ ?>
+						<option value="<?php echo $patient_followup->icd_code;?>"><?php echo $patient_followup->icd_code." ".$patient_followup->code_title;?></option>
 					<?php } ?>
 					</select>
 					<?php } ?>	
@@ -361,10 +400,10 @@ $patient = $patients[0];
 							<div class="form-group">
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
 								<select class="form-control" name="last_visit_type"   required>
-									<option value="<?php if($patient_followup) echo $patient_followup->last_visit_type;  ?>"><?php if($patient_followup) echo $patient_followup->last_visit_type;  ?></option>
-									<option value='All'>All</option>
-								    <option value='IP'>IP</option>
-								    <option value='OP'>OP</option>  								
+			<option value="">Last Visit Type</option>  
+			<option value="All" <?php echo ($patient_followup->last_visit_type == 'All') ? 'selected' : ''; ?> >All</option>          	
+                        <option value="IP" <?php echo ($patient_followup->last_visit_type == 'IP') ? 'selected' : ''; ?> >IP</option> 
+			<option value="OP" <?php echo ($patient_followup->last_visit_type == 'OP') ? 'selected' : ''; ?> >OP</option>   								
 								</select>
 							</div>
 						</div>
@@ -384,9 +423,11 @@ $patient = $patients[0];
 								<label class="control-label">Priority Type </label>
 								<select class="form-control" name="priority_type" >
 									<option value="Select">Select</option>
-									 <?php foreach($priority_types as $type){										
-									echo "<option value='$type->priority_type_id'>$type->priority_type</option>";
-									}
+									 <?php foreach($priority_types as $type){
+									 echo "<option value='".$type->priority_type_id."'";
+									 if($patient_followup->priority_type_id && $patient_followup->priority_type_id == $type->priority_type_id) echo " selected ";
+				echo ">".$type->priority_type."</option>";
+				}
 									?> 
 								</select>
 							</div>
@@ -395,12 +436,15 @@ $patient = $patients[0];
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Primary Route</label>
-								<select class="form-control" name="route_primary" >
+								<select class="form-control" id="route_primary" onchange='onchange_primary_route_dropdown(this)' name="route_primary" >
 									<option value="Select">Select</option>
-									 <?php foreach($route_primary as $primary){
-									echo "<option value='$primary->route_primary_id'>$primary->route_primary</option>";
-									}
-									?> 
+									
+									<?php foreach($route_primary as $primary){
+									 echo "<option value='".$primary->route_primary_id."'";
+									 if($patient_followup->route_primary_id && $patient_followup->route_primary_id == $primary->route_primary_id) echo " selected ";
+				echo ">".$primary->route_primary."</option>";
+				}
+									?>
 								</select>
 							</div>
 						</div>
@@ -408,12 +452,8 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label class="control-label">Secondary Route</label>
-								<select class="form-control" name="route_secondary" >
-									<option value="Select">Select</option>
-									 <?php foreach($route_secondary as $secondary){
-									echo "<option value='$secondary->id'>$secondary->route_secondary</option>";
-									}
-									?> 
+								<select class="form-control" name="route_secondary" id="route_secondary">
+									<option value="Select">Select</option> 
 								</select>							
 							</div>
 						</div>
@@ -425,10 +465,13 @@ $patient = $patients[0];
 								<label class="control-label">Volunteer </label>
 								<select class="form-control" name="volunteer" >
 									<option value="Select">Select</option>
-									 <?php foreach($volunteer as $volunt){
-									 echo "<option value='$volunt->staff_id'>$volunt->first_name $volunt->last_name</option>";
-									    }
-									?> 
+										
+									<?php foreach($volunteer as $volunt){
+									 echo "<option value='".$volunt->staff_id."'";
+									 if($patient_followup->volunteer_id && $patient_followup->volunteer_id == $volunt->staff_id) echo " selected ";
+				echo ">".$volunt->first_name." ".$volunt->last_name."</option>";
+				}
+									?>
 								</select>
 							</div>
 						</div>										
@@ -440,6 +483,13 @@ $patient = $patients[0];
 								<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="text" value="<?php if($patient_followup) echo $patient_followup->note;  ?>" align="middle">
 						</div> 
 						</div>	
+						
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_map_link">Map link</label>
+								<input class="form-control" name="input_map_link"  id="input_map_link"  placeholder="Enter Map link"  type="text" value="<?php if($patient_followup) echo $patient_followup->map_link;  ?>" align="middle">
+						</div> 
+						</div>
 			</div>	
 		</div>    
             &emsp;&emsp;
