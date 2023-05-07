@@ -234,8 +234,10 @@ function onchange_page_dropdown(dropdownobj){
 		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
                 <label style=" margin-left: 50px"><b>Life Status:  </b></label>
-				<label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') == 0)  echo "checked" ; ?>  >Not Alive </label>
-				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if( ($this->input->post('life_status') == NULL) || ($this->input->post('life_status') == 1))  echo "checked" ; ?> > Alive</label><br>
+		<input type ="radio" name="life_status" class ="form-control" value="1" <?php if( empty($this->input->post('life_status')) || ($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label>Alive</label>
+		<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  ><label>Not Alive </label>
+
+		<br>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
       		    Search by : 
@@ -445,7 +447,8 @@ echo "</select></li>";
 		<th>Priority</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
-		<th>Volunteer</th>			
+		<th>Volunteer</th>
+		<th>Note</th>			
 	</thead>
 	<tbody>
 	<?php
@@ -478,7 +481,7 @@ echo "</select></li>";
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
 		<td><?php echo $followup->fname." ".$followup->lname;?></td>
-
+		<td><?php echo $followup->note;?></td>
 		<?php $sno++;} ?>
 		
 	</tr>

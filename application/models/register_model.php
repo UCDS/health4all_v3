@@ -1294,6 +1294,7 @@ class Register_model extends CI_Model{
 			$this->db->set('route_secondary_id', $this->input->post('route_secondary'));
 			$this->db->set('volunteer_id', $this->input->post('volunteer'));
 			$this->db->set('note', $this->input->post('input_note'));
+			$this->db->set('map_link', $this->input->post('input_map_link'));
 			$this->db->where('patient_id', $this->input->post('patient_id'));
 			if($this->db->update('patient_followup'))
 			

@@ -4378,7 +4378,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 	}
 
 	function get_count_followups(){  
-		$filters = array();
+		/*$filters = array();
 		$filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id','volunteer' => 'patient_followup.volunteer_id',
 		'primary_route' => 'patient_followup.route_primary_id','secondary_route' => 'patient_followup.route_secondary_id'];
 		$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
@@ -4391,7 +4391,32 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                 }
                 $filters[$filter_name_query] = $this->input->post($filter_name);
             }
-        }
+        }*/
+        echo("<script>console.log('PHP: " . $this->input->post('life_status') . "');</script>");
+        	if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
+			$this->db->where('patient_followup.life_status',1);
+                }
+		else if($this->input->post('life_status')== 2){
+			$this->db->where('patient_followup.life_status',0);
+		}
+				
+		if($this->input->post('last_visit_type')){
+			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
+		}
+		
+		if($this->input->post('priority_type')){
+			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
+		}
+		if($this->input->post('volunteer')){
+			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
+		}
+		if($this->input->post('route_primary')){
+			$this->db->where('patient_followup.route_primary_id',$this->input->post('route_primary'));
+		}		
+							
+		if($this->input->post('route_secondary')){
+			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
+		}
       
         $this->db->select("count(*) as count",false)
         ->from('patient_followup')
@@ -4399,8 +4424,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
-		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
-        ->where($filters);
+		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left');
+        //->where($filters);
         //$this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
         $result = $query->result();
@@ -4441,29 +4466,31 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         // }
         //$this->db->select("count(*) as count",false);
 		//Selection of Life Status
-		if($this->input->post('life_status') == 1){
-			$this->db->where('patient_followup.life_status',$this->input->post('life_status'));
+		
+		if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
+			$this->db->where('patient_followup.life_status',1);
                 }
-				else if($this->input->post('life_status')== 0){
-					$this->db->where('patient_followup.life_status',$this->input->post('life_status'));
-						}
+		else if($this->input->post('life_status')== 2){
+			$this->db->where('patient_followup.life_status',0);
+		}
 				
-				if($this->input->post('last_visit_type')){
-				$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-				}
-				if($this->input->post('priority_type')){
-					$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
-					}
-					if($this->input->post('volunteer')){
-						$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
-						}
-						if($this->input->post('route_primary')){
-							$this->db->where('patient_followup.route_primary_id',$this->input->post('route_primary'));
-							}		
+		if($this->input->post('last_visit_type')){
+			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
+		}
+		
+		if($this->input->post('priority_type')){
+			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
+		}
+		if($this->input->post('volunteer')){
+			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
+		}
+		if($this->input->post('route_primary')){
+			$this->db->where('patient_followup.route_primary_id',$this->input->post('route_primary'));
+		}		
 							
-							if($this->input->post('route_secondary')){
-								$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
-								}
+		if($this->input->post('route_secondary')){
+			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
+		}
         $this->db->select("patient_followup.patient_id,
         patient.insert_datetime,
         patient.first_name,
@@ -4482,6 +4509,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         patient_followup.map_link,
         patient_followup.last_visit_type,
         patient_followup.last_visit_date,
+        patient_followup.note,
         priority_type.priority_type,
         route_primary.route_primary,
         route_secondary.route_secondary,
