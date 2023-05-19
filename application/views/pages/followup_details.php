@@ -170,10 +170,49 @@ $(document).ready(function(){
 </script>
 
 <script type="text/javascript">
+$(document).ready(function() {
+	onchange_primary_route_dropdown(document.getElementById("route_primary"));
+	var route_secondary = "<?php echo $this->input->post('route_secondary')?>";
+	if(route_secondary != ""){
+			$("#route_secondary").val(route_secondary);
+	}
+});
+function onchange_primary_route_dropdown(dropdownobj) {       	
+	const primaryRouteID = dropdownobj.value;
+	populatePrimaryRouteID(primaryRouteID);		
+}
+	
+function populatePrimaryRouteID(primaryRouteID) {
+	var optionsHtml = getSecondaryRoute(primaryRouteID);
+	$("#route_secondary").html(optionsHtml);		
+}
+
+function getSecondaryRoute(primaryRouteID) {
+	var all_route_secondary = JSON.parse('<?php echo json_encode($route_secondary); ?>'); 
+	var selected_route_secondary = all_route_secondary.filter(all_route_secondary => all_route_secondary.route_primary_id == primaryRouteID);
+	let optionsHtml = buildEmptyOption("Secondary Route");
+	if(selected_route_secondary.length > 0) {
+		optionsHtml += selected_route_secondary.map(selected_route_secondary => {
+				return `	<option value="${selected_route_secondary.id}">
+						${selected_route_secondary.route_secondary}
+					</option>`;
+	   });
+			
+        }
+	return optionsHtml;
+}
+
+function buildEmptyOption(optionName = "Select") {
+	return `<option value="" selected>
+					${optionName}
+			</option>`;
+
+}
 function doPost(page_no){
-	var page_no_hidden = document.getElementById("page_no");
+	
+	var page_no_hidden = document.getElementById("page_no");	
   	page_no_hidden.value=page_no;
-        $('#followp_list').submit();
+        $('#followup_list').submit();
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
@@ -193,38 +232,17 @@ function onchange_page_dropdown(dropdownobj){
 			<h4>Search follow-Up Details</h4>	
 		</div>
 		<?php echo form_open("reports/followup_detail",array('role'=>'form','class'=>'form-custom','id'=>'followup_list')); ?> 
-
+		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
                 <label style=" margin-left: 50px"><b>Life Status:  </b></label>
-				<label><input type="radio" name="life_status" class ="form-control" value="0" <?php if($this->input->post('life_status') == 0)  echo "checked" ; ?>  >Not Alive </label>
-				<label><input type ="radio" name="life_status" class ="form-control" value="1" <?php if($this->input->post('life_status') == 1)  echo "checked" ; ?> > Alive</label><br>
+		<input type ="radio" name="life_status" class ="form-control" value="1" <?php if( empty($this->input->post('life_status')) || ($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label>Alive</label>
+		<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  ><label>Not Alive </label>
+
+		<br>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
-      		    Search by : <select name="last_visit_type" id="last_visit_type" class="form-control"> 
-				  <option value="">Last Visit Type</option>  
-                        <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
-						<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
-                        </select>
-                <select name="priority_type" id="priority_type" class="form-control">
-                <option value="">Priority Type</option>
-				<?php foreach($priority_types as $type){
-                    echo "<option value='".$type->priority_type_id."'";
-                    if($this->input->post('priority_type') && $this->input->post('priority_type') == $type->priority_type_id) echo " selected ";
-                    echo ">".$type->priority_type."</option>";
-                }
-                ?>
-                </select>
-
-                <select name="volunteer" id="volunteer" class="form-control" >
-                <option value="">Volunteer</option>
-				<?php foreach($volunteer as $volunteer){
-                     echo "<option value='".$volunteer->staff_id."'";
-                     if($this->input->post('first_name') && $this->input->post('first_name') == $volunteer->staff_id) echo " selected ";
-                     echo ">".$volunteer->first_name."</option>";
-                }
-                ?>
-                </select>
-
-                <select name="route_primary" id="route_primary" class="form-control" >
+      		    Search by : 
+      		    
+      		    <select name="route_primary" id="route_primary" class="form-control" onchange='onchange_primary_route_dropdown(this)'>
                     <option value="">Primary Route</option>
 					<?php foreach($route_primary as $primary){
 						echo "<option value='".$primary->route_primary_id."'";
@@ -236,15 +254,39 @@ function onchange_page_dropdown(dropdownobj){
 
                 <select name="route_secondary" id="route_secondary" class="form-control" >
                     <option value="">Secondary Route</option>
-					<?php foreach($route_secondary as $secondary){
-						echo "<option value='".$secondary->id."'";
-						if($this->input->post('route_secondary') && $this->input->post('route_secondary') == $secondary->id) echo " selected ";
-						echo ">".$secondary->route_secondary."</option>";
-                    }
-                 ?>
+                </select>
+                
+                 <select name="priority_type" id="priority_type" class="form-control">
+                <option value="">Priority Type</option>
+				<?php foreach($priority_types as $type){
+                    echo "<option value='".$type->priority_type_id."'";
+                    if($this->input->post('priority_type') && $this->input->post('priority_type') == $type->priority_type_id) echo " selected ";
+                    echo ">".$type->priority_type."</option>";
+                }
+                ?>
                 </select>
 
+
+      		    <select name="last_visit_type" id="last_visit_type" class="form-control"> 
+			<option value="">Last Visit Type</option>  
+			<option value="All" <?php echo ($this->input->post('last_visit_type') == 'All') ? 'selected' : ''; ?> >All</option>          	
+                        <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
+			<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
+					
+                        </select>
                
+
+                <select name="volunteer" id="volunteer" class="form-control" >
+                <option value="">Volunteer</option>
+				<?php foreach($volunteer as $volunteer){
+                     echo "<option value='".$volunteer->staff_id."'";
+                     if($this->input->post('first_name') && $this->input->post('first_name') == $volunteer->staff_id) echo " selected ";
+                     echo ">".$volunteer->first_name."</option>";
+                }
+                ?>
+                </select>
+
+                               
 					<br>
 					<label class="control-label" style="margin-left: 50px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
@@ -394,18 +436,19 @@ echo "</select></li>";
 	<th>SNo</th>
 		<th>Patient ID</th>
 		<th>Registered Date</th>
-		<th>Patient Name/Age/Gender</th>
-		<th>Relative Name</th>
+		<th>Patient Details</th>		
 		<th>Phone</th>
-		<th>Address</th>
+		<th>Map link</th>
+		<th>ICD Code</th>
+		<th>Diagnosis</th>
 		<th>Status Date</th>
-		<th> ICD Code</th>
-    	<th>Diagnosis</th>
-		<th> Last Visit Type</th>
-		<th> Priority</th>
-		<th> Primary Route</th>
-		<th>SecondaryRoute</th>
-		<th>Volunteer</th>			
+		<th>Last Visit Type</th>
+		<th>Last Visit Date</th>		
+		<th>Priority</th>
+		<th>Primary Route</th>
+		<th>Secondary Route</th>
+		<th>Volunteer</th>
+		<th>Note</th>			
 	</thead>
 	<tbody>
 	<?php
@@ -416,26 +459,29 @@ echo "</select></li>";
 	<tr>
 		<td><?php echo $sno;?></td>
 		<td><?php echo $followup->patient_id;?></td>
-		<td><?php echo date('d/m/Y',strtotime($followup->insert_datetime));?></td>
-		<td><?php echo $followup->first_name."".$followup->last_name ."/ ".$followup->age_years ."/" .$followup->gender;?></td>
+		<td><?php echo date('j M Y',strtotime($followup->insert_datetime));?></td>
+		<td><b><?php echo $followup->first_name."".$followup->last_name ."/".$followup->age_years ."/" .$followup->gender;?></b>
 		<?php if (!empty($followup->father_name)) { ?>
-			<td><?php echo $followup->father_name; ?></td>			
+			<?php echo "<br> Relative: ".$followup->father_name; ?>			
 					<?php } elseif (!empty($followup->mother_name)) { ?>
-						<td><?php echo $followup->mother_name; ?>	</td>
+						<?php echo "<br> Relative: ".$followup->mother_name; ?>	
 							<?php } else { ?>
-						<td><?php echo $followup->spouse_name; ?>	</td>
+						<?php echo "<br> Relative: ".$followup->spouse_name; ?>	
 							<?php } ?>
+		
+		<br> Address: <?php echo $followup->address;?></td>
 		<td><?php echo $followup->phone;?></td>
-		<td><?php echo $followup->address;?></td>
-		<td><?php echo date('d/m/Y',strtotime($followup->status_date));?></td>
-		<td><?php echo $followup->icd_code;?></td>
+		<td><a href="<?php if($followup->map_link) { echo $followup->map_link;} else {echo '#';}?>" <?php if($followup->map_link) { ?> target="_blank" rel="noopener noreferrer" <?php } ?>>View</a></td>
+		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
 		<td><?php echo $followup->diagnosis;?></td>
-		<td><?php echo $followup->last_visit_type;?></td>
+		<td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
+		<td><?php echo $followup->last_visit_type?></td>
+		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	
 		<td><?php echo $followup->priority_type; ?></td>
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
 		<td><?php echo $followup->fname." ".$followup->lname;?></td>
-
+		<td><?php echo $followup->note;?></td>
 		<?php $sno++;} ?>
 		
 	</tr>
