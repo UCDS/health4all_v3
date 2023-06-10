@@ -7,11 +7,13 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+<link rel="stylesheet" type="text/css"href="<?php echo base_url(); ?>assets/css/selectize.css">
 <style type="text/css">
 .page_dropdown{
     position: relative;
@@ -69,6 +71,78 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+
+.selectize-control.repositories .selectize-dropdown>div {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.selectize-control.repositories .selectize-dropdown .by {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.selectize-control.repositories .selectize-dropdown .by::before {
+	content: 'by ';
+}
+
+.selectize-control.repositories .selectize-dropdown .name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.selectize-control.repositories .selectize-dropdown .title {
+	display: block;
+}
+
+.selectize-control.repositories .selectize-dropdown .description {
+	font-size: 12px;
+	display: block;
+	color: #a0a0a0;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.selectize-control.repositories .selectize-dropdown .meta {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 10px;
+}
+
+.selectize-control.repositories .selectize-dropdown .meta li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	margin-right: 10px;
+}
+
+.selectize-control.repositories .selectize-dropdown .meta li span {
+	font-weight: bold;
+}
+
+.selectize-control.repositories::before {
+	-moz-transition: opacity 0.2s;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	content: ' ';
+	z-index: 2;
+	position: absolute;
+	display: block;
+	top: 12px;
+	right: 34px;
+	width: 16px;
+	height: 16px;
+	background: url(<?php echo base_url(); ?> assets /images/spinner.gif);
+	background-size: 16px 16px;
+	opacity: 0;
+}
+
+.selectize-control.repositories.loading::before {
+	opacity: 0.4;
+}
+
 </style>
 
 <style type="text/css">
@@ -171,6 +245,40 @@ $(document).ready(function(){
 
 <script type="text/javascript">
 $(document).ready(function() {
+	
+	$("#icd_block").chained("#icd_chapter");
+	
+	$('#icd_code').selectize({
+    valueField: 'code_title',
+    labelField: 'code_title',
+    searchField: 'code_title',
+    create: false,
+    render: {
+        option: function(item, escape) {
+
+            return '<div>' +
+                '<span class="title">' +
+                    '<span class="icd_code">' + escape(item.code_title) + '</span>' +
+                '</span>' +
+            '</div>';
+        }
+    },
+    load: function(query, callback) {
+        if (!query.length) return callback();
+		$.ajax({
+            url: '<?php echo base_url();?>register/search_icd_codes',
+            type: 'POST',
+			dataType : 'JSON',
+			data : {query:query,block:$("#icd_block").val(),chapter:$("#icd_chapter").val()},
+            error: function(res) {
+                callback();
+            },
+            success: function(res) {
+                callback(res.icd_codes.slice(0, 10));
+            }
+        });
+    }
+	});
 	onchange_primary_route_dropdown(document.getElementById("route_primary"));
 	var route_secondary = "<?php echo $this->input->post('route_secondary')?>";
 	if(route_secondary != ""){
@@ -285,6 +393,33 @@ function onchange_page_dropdown(dropdownobj){
                 }
                 ?>
                 </select>
+                <select name="icd_chapter" id="icd_chapter" class="form-control" style="width:330px;" >
+			<option value="">ICD Chapter</option>
+			<?php 
+				foreach($icd_chapters as $v){
+					echo "<option value='".$v->chapter_id."'";
+					if($this->input->post('icd_chapter') && $this->input->post('icd_chapter') == $v->chapter_id) echo " selected ";
+					echo ">".$v->chapter_id." - ".$v->chapter_title."</option>";
+				}
+			?>
+		</select>
+		<br>
+		&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+		<select name="icd_block" id="icd_block" class="form-control" style="width:345px;" >
+			<option value="">ICD Block</option>
+			<?php 
+				foreach($icd_blocks as $v){
+					echo "<option value='".$v->block_id."' class='".$v->chapter_id."' ";
+						if($this->input->post('icd_block') && $this->input->post('icd_block') == $v->block_id) echo " selected ";
+						echo ">".$v->block_id." - ".$v->block_title."</option>";
+				}
+			?>
+		</select>
+		<select id="icd_code" class="repositories" style="width:345px;display:inline;" placeholder="Select ICD Code.." name="icd_code" >
+			<?php if($this->input->post('icd_code')) { ?>
+				<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
+			<?php } ?>
+		</select>
 
                                
 					<br>

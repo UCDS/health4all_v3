@@ -4417,6 +4417,16 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('route_secondary')){
 			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 		}
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
       
         $this->db->select("count(*) as count",false)
         ->from('patient_followup')
@@ -4424,6 +4434,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
+		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left');
         //->where($filters);
         //$this->db->limit($rows_per_page,$start);
@@ -4491,6 +4504,17 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('route_secondary')){
 			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 		}
+		
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
         $this->db->select("patient_followup.patient_id,
         patient.insert_datetime,
         patient.first_name,
@@ -4520,6 +4544,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
        // ->where($filters);
