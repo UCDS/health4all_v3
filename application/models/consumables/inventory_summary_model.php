@@ -285,9 +285,10 @@ class Inventory_summary_model extends CI_Model
         $this->db->trans_complete();
         // if(count($final_balance_records) == 0)
         //     return $latest_summary;
+        $rows_per_page = $this->input->post('rows_per_page');
+		$res_offset = $rows_per_page * ($this->input->post('page_no') - 1);
 
-
-        return $final_balance_records;
+        return array('summary_count' => count($final_balance_records), 'res' => array_slice($final_balance_records, $res_offset, $rows_per_page));
     }
     public function get_inventory_records()
     {

@@ -64,7 +64,7 @@ class Generic_model extends CI_Model {
 			drug_type.drug_type, generic_item.note, generic_item.side_effect')
 			->from('generic_item')
 			// ->join('item_form', 'item_form.item_form_id = generic_item.form_id')
-			->join('item_type', 'item_type.item_type_id = generic_item.item_type_id')
+			->join('item_type', 'item_type.item_type_id = generic_item.item_type_id', 'left')
 			->join('drug_type', 'drug_type.drug_type_id = generic_item.drug_type_id', 'left');
 
 		if($this->input->post('generic_item_id')){

@@ -81,7 +81,7 @@ class Generic_item extends CI_Controller {
 		{
 			// echo '<p>'.json_encode($this->generic_model->get_generic_items()).'</p>';
 			log_message("INFO", "SAIRAM FROM FORM VALIDATION");
-			// $this->data['search_generic_items'] = $this->generic_model->get_generic_items();
+			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
 			
 			$this->load->view('pages/consumables/generic_items_list', $this->data);						
 		}		
@@ -158,8 +158,8 @@ class Generic_item extends CI_Controller {
 				$this->data['msg']="Generic Added Succesfully";					
 			}
 		}
-			$this->load->view('pages/consumables/add_generic_form',$this->data);	
-			$this->load->view('templates/footer');								
+		$this->load->view('pages/consumables/add_generic_form',$this->data);	
+		$this->load->view('templates/footer');								
     }   		
 	function edit(){
 		if($this->session->userdata('logged_in')){  						
@@ -212,7 +212,7 @@ class Generic_item extends CI_Controller {
 			array(
 				'field'   => 'generic_item_id',
 				'label'   => 'Generic Item',
-				'rules'   => 'required|trim|xss_clean'
+				'rules'   => 'trim|xss_clean|required'
 			)	 	
 			
 	   	);
@@ -221,7 +221,7 @@ class Generic_item extends CI_Controller {
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_message('item_type_valid', "Item type entered is not valid");
 		$this->form_validation->set_message('drug_type_valid', "Drug type entered is not valid");
-		if($this->form_validation->run()===FALSE) 							
+		if($this->form_validation->run() === FALSE) 							
 		{
 			$generic_item_id = null;
 			if($this->input->post('navigate_edit')){
