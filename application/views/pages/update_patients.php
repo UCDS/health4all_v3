@@ -779,22 +779,22 @@ function initDistrictSelectize(){
 			<div class="row alt">
                         <div class="col-md-4 col-xs-12 col-lg-4">
 				<label class="control-label">Patient ID Manual
-				<input type="text" name="patient_id_manual" class="form-control" placeholder="Patient ID Manual" value="<?php if($patient) echo $patient->patient_id_manual;?>" <?php if($f->edit==1 && empty($patient->patient_id_manual)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>
+				<input type="text" name="patient_id_manual" class="form-control" placeholder="Patient ID Manual" value="<?php if($patient) echo $patient->patient_id_manual;?>" <?php if($f->edit==1 || !$patient->patient_id_manual) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>
 				</label>
 			</div>
 			<div class="col-md-4 col-xs-12 col-lg-4">
 				<label class="control-label">First Name
-				<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if($patient) echo $patient->first_name;?>" <?php if($f->edit==1 && empty($patient->first_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
+				<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if($patient) echo $patient->first_name;?>" <?php if($f->edit==1 || !$patient->first_name) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
 				</label>
 			</div>
                         <div class="col-md-4 col-xs-12 col-lg-4">
 				<label class="control-label">Middle Name
-				<input type="text" name="middle_name" class="form-control" placeholder="Middle" value="<?php if($patient) echo $patient->middle_name;?>" <?php if($f->edit==1 && empty($patient->middle_name)) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
+				<input type="text" name="middle_name" class="form-control" placeholder="Middle" value="<?php if($patient) echo $patient->middle_name;?>" <?php if($f->edit==1 || !$patient->middle_name) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
 				</label>
 			</div>
 			<div class="col-md-4 col-xs-12 col-lg-4">
 				<label class="control-label">Last Name
-				<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if($patient) echo $patient->last_name;?>" <?php if($f->edit==1 && empty($patient->last_name)) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;"/>
+				<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if($patient) echo $patient->last_name;?>" <?php if($f->edit==1 || !$patient->last_name) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;"/>
 				</label>
 			</div>
 			
@@ -821,9 +821,9 @@ function initDistrictSelectize(){
 			
 			<div class="col-md-6 col-xs-12">
 				<label class="control-label">Age</label>
-				<input type="text" name="age_years" class="form-control" maxlength="3" size="3"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($f->edit==1 && empty($patient->age_years)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>Y
-				<input type="text" name="age_months" class="form-control" maxlength="2" size="2" value="<?php if($patient)  echo $patient->age_months;?>" <?php if($f->edit==1 && empty($patient->age_moths)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>M
-				<input type="text" name="age_days" class="form-control" maxlength="2" size="2"  value="<?php if($patient)  echo $patient->age_days;?>" <?php if($f->edit==1 && empty($patient->age_days)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>D
+				<input type="text" name="age_years" class="form-control" maxlength="3" size="3"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($f->edit==1 || !$patient->age_years) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>Y
+				<input type="text" name="age_months" class="form-control" maxlength="2" size="2" value="<?php if($patient)  echo $patient->age_months;?>" <?php if($f->edit==1 || !$patient->age_moths) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>M
+				<input type="text" name="age_days" class="form-control" maxlength="2" size="2"  value="<?php if($patient)  echo $patient->age_days;?>" <?php if($f->edit==1 || !$patient->age_days) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>D
 			</div>			
 			</div>
                     <div class ="row alt">                       
@@ -842,26 +842,26 @@ function initDistrictSelectize(){
                         <div class="row alt">
                             <div class="col-md-4 col-xs-6">
 				<label class="control-label">Father's Name</label>
-				<input type="text" name="father_name" class="form-control" value="<?php if($patient) echo $patient->father_name;?>" <?php if($f->edit==1 && empty($patient->father_name)) echo ''; else echo ' readonly'; ?>/>				
+				<input type="text" name="father_name" class="form-control" value="<?php if($patient) echo $patient->father_name;?>" <?php if($f->edit==1 || !$patient->father_name) echo ''; else echo ' readonly'; ?>/>				
                             </div>
                             <div class="col-md-4 col-xs-6">
 				<label class="control-label">Mother's Name</label>
-				<input type="text" name="mother_name" class="form-control" value="<?php if($patient) echo $patient->mother_name;?>" <?php if($f->edit==1 && empty($patient->mother_name)) echo ''; else echo ' readonly'; ?>/>				
+				<input type="text" name="mother_name" class="form-control" value="<?php if($patient) echo $patient->mother_name;?>" <?php if($f->edit==1 || !$patient->mother_name) echo ''; else echo ' readonly'; ?>/>				
                             </div>
                             <div class="col-md-4 col-xs-6">
 				<label class="control-label">Spouse Name</label>
-				<input type="text" name="spouse_name" class="form-control" value="<?php if($patient) echo $patient->spouse_name;?>" <?php if($f->edit==1 && empty($patient->spouse_name)) echo ''; else echo ' readonly'; ?>/>				
+				<input type="text" name="spouse_name" class="form-control" value="<?php if($patient) echo $patient->spouse_name;?>" <?php if($f->edit==1 || !$patient->spouse_name) echo ''; else echo ' readonly'; ?>/>				
                             </div>
                         </div>
 			<div class="row alt">
 			
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Address</span></label>
-				<input type="text" name="address" class="form-control" value="<?php if($patient) echo $patient->address;?>" <?php if($f->edit==1 && empty($patient->address)) echo ''; else echo ' readonly'; ?>/>
+				<input type="text" name="address" class="form-control" value="<?php if($patient) echo $patient->address;?>" <?php if($f->edit==1 || !$patient->address) echo ''; else echo ' readonly'; ?>/>
 			</div>
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Place</label>
-				<input type="text" name="place" class="form-control" value="<?php if($patient) echo $patient->place;?>" <?php if($f->edit==1 && empty($patient->place)) echo ''; else echo ' readonly'; ?>/>
+				<input type="text" name="place" class="form-control" value="<?php if($patient) echo $patient->place;?>" <?php if($f->edit==1 || !$patient->place) echo ''; else echo ' readonly'; ?>/>
 			</div>
                         <div class="col-md-4 col-xs-6">
 				<label class="control-label">District</label>
@@ -888,17 +888,17 @@ function initDistrictSelectize(){
 			
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Phone</label>
-				<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($f->edit==1 && empty($patient->phone)) echo ''; else echo ' readonly'; ?>/>
+				<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($f->edit==1 || !$patient->phone) echo ''; else echo ' readonly'; ?>/>
 			</div>
                         <div class="col-md-4 col-xs-6">
 				<label class="control-label">Alt Phone</label>
-				<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($f->edit==1 && empty($patient->phone)) echo ''; else echo ' readonly'; ?>/>
+				<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($f->edit==1 || !$patient->alt_phone) echo ''; else echo ' readonly'; ?>/>
 			</div>
                         </div>
 			<div class="row alt">
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Id Proof Type</label>
-                                <?php if($f->edit==1 && empty($patient->id_proof_type_id)){ ?>
+                                <?php if($f->edit==1 || !$patient->id_proof_type_id){ ?>
 				<select name="id_proof_type_id" class="form-control">
 				<option value="">--Select--</option>
 				<?php 
@@ -920,11 +920,11 @@ function initDistrictSelectize(){
 			</div>
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Id Proof No</label>
-				<input type="text" name="id_proof_number" id="id_proof_no" class="form-control" value="<?php if($patient) echo $patient->id_proof_number;?>" <?php if($f->edit==1 && empty($patient->id_proof_type_id)) echo ''; else echo ' readonly'; ?>/>				
+				<input type="text" name="id_proof_number" id="id_proof_no" class="form-control" value="<?php if($patient) echo $patient->id_proof_number;?>" <?php if($f->edit==1 || !$patient->id_proof_type_id) echo ''; else echo ' readonly'; ?>/>				
 			</div>
 			<div class="col-md-4 col-xs-6">
 				<label class="control-label">Occupation</label>
-                                <?php if($f->edit==1 && empty($patient->occupation_id)){?>
+                                <?php if($f->edit==1 || !$patient->occupation_id){?>
 				<select name="occupation_id" class="form-control">
 				<option value="">--Select--</option>
 				<?php 
@@ -948,21 +948,21 @@ function initDistrictSelectize(){
                 <div class="row alt">
                     <div class="col-md-4 col-xs-6">
                         <label class="control-label">Education Level</label>
-                        <input type="text" name="education_level" id="education_level" class="form-control" value="<?php if($patient) echo $patient->education_level;?>" <?php if($f->edit==1 && empty($patient->education_level)) echo ''; else echo ' readonly'; ?>/>
+                        <input type="text" name="education_level" id="education_level" class="form-control" value="<?php if($patient) echo $patient->education_level;?>" <?php if($f->edit==1 || !$patient->education_level) echo ''; else echo ' readonly'; ?>/>
                     </div>
                     <div class="col-md-4 col-xs-6">
                         <label class="control-label">Edu. Qualification</label>
-                        <input type="text" name="education_qualification" id="education_qualification" class="form-control" value="<?php if($patient) echo $patient->education_qualification;?>" <?php if($f->edit==1 && empty($patient->education_qualification)) echo ''; else echo ' readonly'; ?>/>
+                        <input type="text" name="education_qualification" id="education_qualification" class="form-control" value="<?php if($patient) echo $patient->education_qualification;?>" <?php if($f->edit==1 || !$patient->education_qualification) echo ''; else echo ' readonly'; ?>/>
                     </div>
                     <div class="col-md-4 col-xs-6">
                         <label class="control-label">Identification Marks</label>
-                        <input type="text" name="identification_marks" id="identification_marks" class="form-control" value="<?php if($patient) echo $patient->identification_marks;?>" <?php if($f->edit==1 && empty($patient->identification_marks)) echo ''; else echo ' readonly'; ?>/>
+                        <input type="text" name="identification_marks" id="identification_marks" class="form-control" value="<?php if($patient) echo $patient->identification_marks;?>" <?php if($f->edit==1 || !$patient->identification_marks) echo ''; else echo ' readonly'; ?>/>
                     </div>
                 </div>
                 <div class="row alt">                    
                     <div class="col-md-4 col-xs-6">
                         <label class="control-label">Blood Group</label>
-                        <?php if($f->edit==1  && empty($patient->blood_group)){ ?>
+                        <?php if($f->edit==1 || !$patient->blood_group){ ?>
 					<label class="control-label">Blood Group</label>
 					<select name="blood_group" class="form-control">
 						<option value="">--Select--</option> 
@@ -1063,7 +1063,7 @@ function initDistrictSelectize(){
                                  <div class="row alt">
                               <div class="col-md-4 col-xs-6">
 				<label class="control-label">Department<span class="mandatory" >*</span></label>
-                                <?php if($f->edit==1 && empty($patient->department_id)){ ?>
+                                <?php if($f->edit==1 || !$patient->department_id){ ?>
 				<select name="department" class="form-control department" id="department">
 				<option value="">--Select--</option>
 				<?php 
@@ -1088,7 +1088,7 @@ function initDistrictSelectize(){
                                  
                             <div class="col-md-4 col-xs-6">
 				<label class="control-label">Unit</label>
-                                <?php if($f->edit==1 && empty($patient->unit_id)){ ?>
+                                <?php if($f->edit==1 || !$patient->unit_id){ ?>
 				<select name="unit" id="unit" class="form-control unit">
 				<option value="">--Select--</option>
 				<?php 
@@ -1112,7 +1112,7 @@ function initDistrictSelectize(){
 			</div>
                                      <div class="col-md-4 col-xs-6">
 				<label class="control-label">Area</label>
-                                <?php if($f->edit==1 && empty($patient->area_id)){ ?>
+                                <?php if($f->edit==1 || !$patient->area_id){ ?>
 				<select name="area" id="area" class="form-control area">
 				<option value="">--Select--</option>
 				<?php 
@@ -1138,7 +1138,7 @@ function initDistrictSelectize(){
 			<div class="row alt">
                             <div class="col-md-4 col-xs-6">
                                 <label class="control-label">Visit Name</label>
-                                <?php if($f->edit==1 && empty($patient->visit_name_id)){ ?>
+                                <?php if($f->edit==1 || !$patient->visit_name_id){ ?>
                                 <select name="visit_name_id" id="visit_name_id" class="form-control visit_name">
                                     <option value="">--Select--</option>
                                     <?php 
@@ -1163,7 +1163,7 @@ function initDistrictSelectize(){
                             <div class="col-md-4 col-xs-6">
                                 <label class="control-label">Doctor</label>
 								
-                                <?php if($f->edit==1 && empty($patient->doctor_id)){ ?>
+                                <?php if($f->edit==1 || !$patient->doctor_id){ ?>
                       <!--          <select name="doctor_id" id="doctor_id" class="form-control doctor">
                                     <option value="">--Select--</option>
                                     <?php 
@@ -1187,28 +1187,28 @@ function initDistrictSelectize(){
                             </div>
                             <div class="col-md-4 col-xs-6">
                                 <label class="control-label">Nurse</label>
-                                <input type="text" name="nurse" class="form-control" value="<?php if($patient) echo $patient->nurse;?>" <?php if($f->edit==1 && empty($patient->nurse)) echo ''; else echo ' readonly'; ?>/>
+                                <input type="text" name="nurse" class="form-control" value="<?php if($patient) echo $patient->nurse;?>" <?php if($f->edit==1 || !$patient->nurse) echo ''; else echo ' readonly'; ?>/>
                             </div>
                         </div>
                                  <div class="row alt">
                                      <div class="col-md-4 col-xs-6">
                                          <label class="control-label">Insurance Case: </label>
-                                         <input type="radio" name="insurance_case" class="form-control" value="1" <?php if($patient){ if($patient->insurance_case=='1') echo "checked";};?> <?php if($f->edit==1 && empty($patient->insurance_case)) echo ''; else echo ' readonly'; ?>/>Yes
-                                         <input type="radio" name="insurance_case" class="form-control" value="0" <?php if($patient){ if($patient->insurance_case=='0') echo "checked";};?> <?php if($f->edit==1 && empty($patient->insurance_case)) echo ''; else echo ' readonly'; ?>/>No
+                                         <input type="radio" name="insurance_case" class="form-control" value="1" <?php if($patient){ if($patient->insurance_case=='1') echo "checked";};?> <?php if($f->edit==1 || !$patient->insurance_case) echo ''; else echo ' readonly'; ?>/>Yes
+                                         <input type="radio" name="insurance_case" class="form-control" value="0" <?php if($patient){ if($patient->insurance_case=='0') echo "checked";};?> <?php if($f->edit==1 || !$patient->insurance_case) echo ''; else echo ' readonly'; ?>/>No
                                      </div>
                                      <div class="col-md-4 col-xs-6">
                                          <label class="control-label">Insurance ID</label>
-                                         <input type="text" name="insurance_id" id="insurance_id" class="form-control" value="<?php if($patient) echo $patient->insurance_id;?>" <?php if($f->edit==1 && empty($patient->insurance_id)) echo ''; else echo ' readonly'; ?>/>
+                                         <input type="text" name="insurance_id" id="insurance_id" class="form-control" value="<?php if($patient) echo $patient->insurance_id;?>" <?php if($f->edit==1 || !$patient->insurance_id) echo ''; else echo ' readonly'; ?>/>
                                      </div>
                                      <div class="col-md-4 col-xs-6">
                                          <label class="control-label">Insurance Number</label>
-                                         <input type="text" name="insurance_no" id="insurance_no" class="form-control" value="<?php if($patient) echo $patient->insurance_no;?>" <?php if($f->edit==1 && empty($patient->insurance_no)) echo ''; else echo ' readonly'; ?>/>
+                                         <input type="text" name="insurance_no" id="insurance_no" class="form-control" value="<?php if($patient) echo $patient->insurance_no;?>" <?php if($f->edit==1 || !$patient->insurance_no) echo ''; else echo ' readonly'; ?>/>
                                      </div>
                                  </div>
                                  <div class="row alt">                                     
                                      <div class="col-md-4 col-xs-6">
                                          <label class="control-label">Arrival Mode</label>
-                                         <?php if($f->edit==1 && empty($patient->arrival_mode)){?>
+                                         <?php if($f->edit==1 || !$patient->arrival_mode){?>
                                   <!--       <select name="arrival_mode" id="arrival_mode" class="form-control arrival_mode">
                                             <option value="">--Select--</option>
                                             <?php 
@@ -1232,7 +1232,7 @@ function initDistrictSelectize(){
                                      </div>                                     
                                      <div class="col-md-8 col-xs-6">
                                         <label class="control-label">Referred by Hospital</label>
-                                        <?php if($f->edit==1 && empty($patient->referral_by_hospital_id)){ ?>
+                                        <?php if($f->edit==1 || !$patient->referral_by_hospital_id){ ?>
                			<select id="hospital_id" class="selectize-inline" name="referral_by_hospital_id" style="width: 340px;" class="" placeholder="       --Enter hospital--                      ">
 					<option value="">        --Enter hospital--                       </option>
                                         </select>
