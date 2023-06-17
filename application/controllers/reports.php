@@ -270,6 +270,8 @@ class Reports extends CI_Controller {
 		$this->data['route_primary']=$this->register_model->get_primary_route();
 	    	$this->data['route_secondary']=$this->register_model->get_secondary_route();
 		$this->data['volunteer']=$this->register_model->get_volunteer();
+		$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');	//retrives the values from the function icd_chapter	 in master model
+		$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');      //retrives the values from the function icd_block  in master model
 
 		foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
