@@ -138,6 +138,23 @@ class Indent_issue_model extends CI_Model{                                      
 			return $resource->result();
 	}//get_data
     
+	function search_items_selectize()
+	{
+		$this->db->select('item.item_name,item.item_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
+			->from("item")
+			->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
+			->join('generic_item', 'generic_item.generic_item_id=item.generic_item_id', 'left')
+			->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
+			->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
+			->order_by('item.item_name', 'ASC');
+		if($this->input->post('query')){
+			$this->db->like('item.item_name', $this->input->post('query'));
+		}
+		$query = $this->db->get();
+		return $query->result();
+
+	}
+
 	function issue_indent(){                                                                      //function definition with name:issue_indent
 		$user_data=$this->session->userdata('logged_in');                                         //get user data and store it in a var:user_data
 		$this->db->select('staff_id')->from('user')                                               //select  staff_id of the particular user who logged in

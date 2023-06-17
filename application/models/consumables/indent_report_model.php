@@ -531,13 +531,32 @@ class Indent_report_model extends CI_Model
 		
 
 	}
-	function get_data($type)
+
+	function search_items_selectize()
+	{
+		$this->db->select('item.item_name,item.item_id,item_type.item_type_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
+				->from("item")
+				->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
+				->join('generic_item', 'generic_item.generic_item_id=item.generic_item_id', 'left')
+				->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
+				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
+				->order_by('item.item_name', 'ASC');
+		if($this->input->post('query')){
+			$this->db->like('item.item_name', $this->input->post('query'));
+		}
+		if($this->input->post('item_type')){
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+		}
+		$query = $this->db->get();
+		return $query->result();
+	}
+	function get_data($type, $limit=-1)
 	{
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
 
 		if ($type == "item_type")
 			$this->db->select("*")->from("item_type")->order_by('item_type', 'ASC');
-		else if ($type == "item")
+		else if ($type == "item"){
 			$this->db->select('item.item_name,item.item_id,item_type.item_type_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
 				->from("item")
 				->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
@@ -545,11 +564,19 @@ class Indent_report_model extends CI_Model
 				->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
 				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
 				->order_by('item.item_name', 'ASC');
-		else if ($type == "status")
+			if($this->input->post('item_type')){
+				$this->db->where('item_type.item_type_id', $this->input->post('item.item_type'));
+			}
+		}else if ($type == "status")
 			$this->db->select("indent_status")->from("indent_item");
 		else if ($type == "party")
 			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")
 			->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name', 'ASC');
+		
+		if($limit != -1){
+			$this->db->limit($limit);
+		}
+
 		$resource = $this->db->get();
 		return $resource->result();
 	} //ending of get data method.

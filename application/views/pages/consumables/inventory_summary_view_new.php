@@ -129,6 +129,79 @@
 		outline: 0;
 	}
 </style>
+
+<style type="text/css">
+.selectize-control.items .selectize-dropdown>div {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.selectize-control.items .selectize-dropdown .by {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.selectize-control.items .selectize-dropdown .by::before {
+	content: 'by ';
+}
+
+.selectize-control.items .selectize-dropdown .name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.selectize-control.items .selectize-dropdown .title {
+	display: block;
+}
+
+.selectize-control.items .selectize-dropdown .description {
+	font-size: 12px;
+	display: block;
+	color: #a0a0a0;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.selectize-control.items .selectize-dropdown .meta {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	margin-right: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li span {
+	font-weight: bold;
+}
+
+.selectize-control.items::before {
+	-moz-transition: opacity 0.2s;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	content: ' ';
+	z-index: 2;
+	position: absolute;
+	display: block;
+	top: 12px;
+	right: 34px;
+	width: 16px;
+	height: 16px;
+	background: url(<?php echo base_url(); ?>assets/images/spinner.gif);
+	background-size: 16px 16px;
+	opacity: 0;
+}
+
+.selectize-control.items.loading::before {
+	opacity: 0.4;
+}
+</style>
 <script>
 	function printDiv(i) {
 		var content = document.getElementById(i);
@@ -170,11 +243,30 @@
 
 </script>
 <script>
-	function extend(l1, l2) {
-		for (let i = 0; i < l2.length; i++) {
-			l1.push(l2[i]);
-		}
-	}
+	const onLoadFunction = function(query, callback) {
+		if(!query.length) callback();
+		$('.selectize-control.items').addClass('loading');
+		console.log('loading', $('.selectize-control.items'));
+		$.ajax({
+			url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
+			type: 'POST',
+			dataType: 'JSON', 
+			data: {query: query, item_type: $('#item_type').val()},
+			error: function(res) {
+				callback();
+				setTimeout(() => {
+
+					// $('.selectize-control.items').removeClass('loading');
+				}, 1000);
+			},
+			success: function(res) {
+				callback(res.items);
+				setTimeout(() => {
+					// $('.selectize-control.items').removeClass('loading');
+				}, 1000);
+			}
+		});
+	};
 	$(function () {
 		// if($('#item_type').val === ''){
 		// 	return;
@@ -196,6 +288,7 @@
 		});
 		console.log(options);
 		// let temp = [];
+		
 		$selectize = $("#item").selectize({
 			labelField: "item_name",
 			searchField: "item_name",
@@ -203,7 +296,36 @@
 			options: options,
 			// allowEmptyOption: true, 
 			// showEmptyOptionInDropdown: true, 
-			maxOptions: 10
+			maxOptions: 10,
+			load: function(query, callback) {
+				if(!query.length) return callback();
+				console.log('loading', $('.selectize-control.items'));
+				$('.selectize-control.items').addClass('loading');
+				$.ajax({
+					url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
+					type: 'POST',
+					dataType: 'JSON', 
+					data: {query: query, item_type: $('#item_type').val()},
+					error: function(res) {
+						
+						callback();
+						$('.selectize-control.items').addClass('loading');
+						setTimeout(() => {
+
+							$('.selectize-control.items').removeClass('loading');
+						}, 500);
+					},
+					success: function(res) {
+						
+						callback(res.items);
+						$('.selectize-control.items').addClass('loading');
+						setTimeout(() => {
+							console.log('delayed loading');
+							$('.selectize-control.items').removeClass('loading');
+						}, 500);
+					}
+				});
+			}
 		});
 		let sel = $selectize[0].selectize;
 		sel.setValue(<?= $this->input->post("item") ? $this->input->post("item") : ""; ?>);
@@ -214,41 +336,46 @@
 			console.log("changed item_type");
 			// $('#item').val('');
 			sel.setValue('');
-			console.log("NS!!", $(`#item option[class!="${optionval}"]`));
-			for (let i = 0; i < options.length; i++) {
-				if (optionval == '' || options[i].item_type_id == optionval) {
-					console.log(options[i]);
-					sel.addOption(options[i]);
-					console.log(sel.options);
-				} else {
-					// temp.push(options[i]);
-					// console.log(temp, Number(options[i].item_id));
-					sel.removeOption(Number(options[i].item_id));
-
+			sel.clearOptions();
+			$('.selectize-control.items').addClass('loading');
+			
+			$.ajax({
+				url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
+				type: 'POST',
+				dataType: 'JSON', 
+				data: {query: null, item_type: $('#item_type').val()},
+				error: function(res) {
+					
+					setTimeout(() => {
+						$('.selectize-control.items').removeClass('loading');
+					}, 500);
+				},
+				success: function(res) {
+					let options = res.items.map(opt => {
+						let ans = `${opt.item_name}-${opt.item_form}-`;
+						if (opt.dosage) {
+							ans += opt.dosage;
+						}
+						if (opt.dosage_unit) {
+							ans += opt.dosage_unit;
+						}
+						return {
+							...opt,
+							item_name: ans
+						};
+					});
+					sel.addOption(options);
+					setTimeout(() => {
+						$('.selectize-control.items').removeClass('loading');
+					}, 500);
+					// $('.selectize-control.items').removeClass('loading');
 				}
-			}
-			console.log(options);
-			// $(`#item option[class="${optionval}"]`).show();
+			});
 
 		});
 
-		let optionval = $('#item_type').val();
-		console.log("init optionval", optionval)
-		console.log("NS!!", $(`#item option[class!="${optionval}"]`));
-		// sel.setValue('');
-		for (let i = 0; i < options.length; i++) {
-			if (optionval == '' || options[i].item_type_id == optionval) {
-				console.log(options[i]);
-				sel.addOption(options[i]);
-				console.log(sel.options);
-			} else {
-				// temp.push(options[i]);
-				// console.log(temp, Number(options[i].item_id));
-				sel.removeOption(Number(options[i].item_id));
-
-			}
-		}
-		console.log(options);
+		
+		
 
 
 	})
@@ -369,7 +496,7 @@ if ($this->input->post('to_id')) {
 				<div class="form-group">
 					<!--input field item-->
 					<label for="item">Item</label>
-					<select name="item" id="item" class="">
+					<select name="item" id="item" class="items">
 						<option value="">Select</option>
 
 					</select>
