@@ -34,24 +34,25 @@ if($appointments==1) { ?>
 <?php
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/visit_type_summary";?>">Visit Type Summary</a></button>
 <?php		 }
 
 if($function->user_function=="patient_follow_up"){ ?>
-	<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/followup_detail";?>">Followup List </a></button>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/followup_detail";?>">Followup List </a></button>
 <?php		 }
 
 if($function->user_function=="appointment_by_staff"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_staff";?>">Appointments by Team Member</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_staff";?>">Appointments by Team Member</a></button>
 <?php		 }
 
 	if($function->user_function== "patient_location_report"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
 	<?php		 }
 	
 	if($function->user_function== "referral"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
 	<?php		 }
 
 		} ?>
@@ -72,7 +73,6 @@ foreach($this->data['functions'] as $function){
 
 		}
 ?>
-
 <?php 
 
 if($helpline==1) { ?>
@@ -84,10 +84,22 @@ foreach($this->data['functions'] as $function){
 <?php //		 }
 
 if($function->user_function=="missed_calls_report"){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>
 <?php		 }
 
-		} ?>
+if($function->user_function=="dashboard" ){ ?>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_trend";?>">Trend</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Receivers</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline";?>">Dashboard</a></button>
+				
+				
+
+
+<?php		 }
+
+	}
+
+ ?>
 </div> <?php
 	}
 ?>
@@ -111,18 +123,13 @@ if($admin==1) { ?>
 foreach($this->data['functions'] as $function){
 
 if($function->user_function=="login_report" ){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."reports/login_report";?>">Login Report</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/login_report";?>">Login Report</a></button>
 <?php		 }
 
 if($function->user_function=="helpline_receiver" ){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
 <?php		 }
 
-if($function->user_function=="dashboard" ){ ?>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline";?>">Helpline - Dashboard</a></button>
-				<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Helpline Receiver - Dashboard</a></button>
-
-<?php		 }
 
 		} ?>
 </div> <?php
