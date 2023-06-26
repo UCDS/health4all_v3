@@ -170,8 +170,7 @@
 			<label><input type ="radio" name="trend_type" class ="form-control" value="Day" checked > Daily</label>
             <label><input type="radio" name="trend_type" class ="form-control" value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
             <label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label>
-			<input type="submit" name="submit" value="Go" class="btn btn-primary btn-sm" style="align:left" />
-			<a href="<?php echo base_url()."dashboard/helpline/";?>" class="btn btn-warning btn-sm"><i class="fa fa-pie-chart"></i> Dashboard</a>
+			<input type="submit" name="submit" value="Go" class="btn btn-primary" style="align:left ;" />
             <?php  echo form_close();?>
             
     		<hr>

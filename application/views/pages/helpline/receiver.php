@@ -134,7 +134,7 @@
 					>IP</option>
 			</select>
 			<input type="submit" name="submit" value="Go" class="btn btn-primary btn-sm" />
-			<a href="<?php echo base_url()."dashboard/helpline_trend/";?>" class="btn btn-warning btn-sm"><i class="fa fa-line-chart"></i> Trends</a>
+			
 			</form>
 			<br />
 		</div>
@@ -149,7 +149,7 @@
 				    <h4><i class="fa flaticon-call-center-worker-with-headset" aria-hidden="true"></i>&nbsp Receiver</h4>
 			    </div>
 			    <div class="panel-body">
-			        <div id="volunteerChart" style="height:250px"></div>
+			        <div id="volunteerChart" style="height:800px"></div>
 			    </div>
 			</div>
 		</div>

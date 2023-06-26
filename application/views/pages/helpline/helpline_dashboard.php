@@ -328,7 +328,6 @@
 					>IP</option>
 			</select>
 			<input type="submit" name="submit" value="Go" class="btn btn-primary btn-sm" />
-			<a href="<?php echo base_url()."dashboard/helpline_trend/";?>" class="btn btn-warning btn-sm"><i class="fa fa-line-chart"></i> Trends</a>
 			</form>
 			<br />
 		</div>
