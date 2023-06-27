@@ -479,11 +479,7 @@
 					<td class="item_name" colspan="5">
 					<select name="item[]" id="item" class="items"  data-toggle="tooltip" data-placement="bottom" title="" required>
 						<option value="">Select</option>
-						<?php
-						foreach ($all_item as $t) {
-							echo "<option value='" . $t->item_id . "'>" . $t->item_name . "-" . $t->item_form . "-" . $t->dosage . $t->dosage_unit . "</option>";
-						}
-						?>
+						
 					</select>
 					</td>
 					<td><input class="form-control narrow" type="number" min="0"
@@ -876,11 +872,7 @@
 											<td class="item_name" colspan="5">
 												<select name="item[]" id="item" class="items" data-toggle="tooltip" data-placement="bottom" title="" required>
 													<option value="">Select</option>
-													<?php
-													foreach ($all_item as $t) {
-														echo "<option value='" . $t->item_id . "'>" . $t->item_name . "-" . $t->item_form . "-" . $t->dosage . $t->dosage_unit . "</option>";
-													}
-													?>
+													
 												</select>
 											</td>
 											<td><input class="form-control narrow" type="number" min="0" value="0"

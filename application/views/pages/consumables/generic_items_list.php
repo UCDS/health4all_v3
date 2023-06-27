@@ -117,35 +117,57 @@ $(function(){
 				opacity: 0.4;
 			}
 </style>
-<script>
-	// $(function(){
-	// 	let _selectize_handle = $('#drug_type').selectize({
-	// 		plugins: ["restore_on_backspace"],
-	// 		valueField: 'drug_type_id',
-	// 		labelField: 'drug_type',
-	// 		searchField: 'drug_type',
-	// 		// options: options,
-	// 		create: false,
-	// 		render: {
-	// 			option: function (item, escape) {
-					
-	// 				return '<div>' +
-	// 					'<span class="title">' +
-	// 					'<span>' + escape(item.drug_type) + '</span>' +
-	// 					'</span>' +
-	// 					'</div>';
-	// 			}
-	// 		}, 
-	// 		load: function(query, callback){
-	// 			console.log("loading");
-	// 			callback();
-	// 		}
-	// 	});
-	// 	if($('#drug_type').attr("data-previous-value")){
-	// 		_selectize_handle.selectize.setValue($(this).attr("data-previous-value"));
-	// 	}
-	// })
-</script>
+<style>
+		.page_dropdown {
+		position: relative;
+		float: left;
+		padding: 6px 12px;
+		width: auto;
+		height: 34px;
+		line-height: 1.428571429;
+		text-decoration: none;
+		background-color: #ffffff;
+		border: 1px solid #dddddd;
+		margin-left: -1px;
+		color: #428bca;
+		border-bottom-right-radius: 4px;
+		border-top-right-radius: 4px;
+		display: inline;
+	}
+
+	.page_dropdown:hover {
+		background-color: #eeeeee;
+		color: #2a6496;
+	}
+
+	.page_dropdown:focus {
+		color: #2a6496;
+		outline: 0px;
+	}
+	.rows_per_page {
+		display: inline-block;
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.428571429;
+		color: #555555;
+		vertical-align: middle;
+		background-color: #ffffff;
+		background-image: none;
+		border: 1px solid #cccccc;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		-webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+		transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+	}
+
+	.rows_per_page:focus {
+		border-color: #66afe9;
+		outline: 0;
+	}
+	</style>
+
 
 
 
@@ -162,6 +184,23 @@ pri.document.close();
 pri.focus();
 pri.print();
 }
+function doPost(page_no) {
+		
+		var page_no_hidden = document.getElementById("page_no");
+		page_no_hidden.value = page_no;
+		console.log("page number hidden", page_no_hidden.value, $('#generic_items_search'));
+		let el = document.createElement('input');
+		el.type = "hidden";
+		el.name ="search";
+		el.value = "search";
+		$('#generic_items_search').append(el);
+		// alert("Sairam");
+		$('#generic_items_search').submit();
+
+	}
+	function onchange_page_dropdown(dropdownobj) {
+		doPost(dropdownobj.value);
+	}
 </script>
 
 <div class="col-md-8 col-md-offset-1">
@@ -251,7 +290,15 @@ pri.print();
 							</div>
 							
 						</div>
-								
+						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						Rows per page : 
+								<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
+								echo $this->input->post('rows_per_page');
+							} else {
+								echo $rowsperpage;
+							}  ?> />
+							
+						</div>		
 
 							
 
@@ -259,6 +306,7 @@ pri.print();
 					
 					<div class="row">
 						<div class="col-md-1 col-md-offset-4">
+						<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 						<!--button for searching-->
 						<center><button class="btn btn-primary" type="submit" name="search" value="search" id="btn">Search</button></center>
 					</div>
@@ -289,7 +337,118 @@ pri.print();
 				<!--filters for Add Service Issues view form --->
 				<!--when filter is clicked this form will load --->
 				
-				
+				<?php if(count($search_generic_items) > 0) { ?>
+				<?php
+					if ($this->input->post('rows_per_page')) {
+						$total_records_per_page = $this->input->post('rows_per_page');
+					} else {
+						$total_records_per_page = $rowsperpage;
+					}
+					if ($this->input->post('page_no')) {
+						$page_no = $this->input->post('page_no');
+					} else {
+						$page_no = 1;
+					}
+					$total_records = $generic_items_count[0]->count;
+					$total_no_of_pages = ceil($total_records / $total_records_per_page);
+					if ($total_no_of_pages == 0)
+						$total_no_of_pages = 1;
+					$second_last = $total_no_of_pages - 1;
+					$offset = ($page_no - 1) * $total_records_per_page;
+					$previous_page = $page_no - 1;
+					$next_page = $page_no + 1;
+					$adjacents = "2";
+				?>
+				<div class="container" style="margin-left:14px;">
+					<div class="row">
+					<ul class="pagination" style="margin:0">
+					<?php if ($page_no > 1) {
+						echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
+					} ?>
+
+					<li <?php if ($page_no <= 1) {
+						echo "class='disabled'";
+					} ?>>
+					<a <?php if ($page_no > 1) {
+							echo "href=# onclick=doPost($previous_page)";
+						} ?>>Previous</a>
+					</li>
+		<?php
+			if ($total_no_of_pages <= 10) {
+				for ($counter = 1; $counter <= $total_no_of_pages; $counter++) {
+					if ($counter == $page_no) {
+						echo "<li class='active'><a>$counter</a></li>";
+					} else {
+						echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+					}
+				}
+			} else if ($total_no_of_pages > 10) {
+				if ($page_no <= 4) {
+					for ($counter = 1; $counter < 8; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+							} else {
+								echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+
+					echo "<li><a>...</a></li>";
+					echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
+					echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+				} elseif ($page_no > 4 && $page_no < $total_no_of_pages - 4) {
+					echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+					echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+					echo "<li><a>...</a></li>";
+					for ($counter = $page_no - $adjacents; $counter <= $page_no + $adjacents; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+						} else {
+							echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+					echo "<li><a>...</a></li>";
+					echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
+					echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+				} else {
+					echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+					echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+					echo "<li><a>...</a></li>";
+					for ($counter = $total_no_of_pages - 6; $counter <= $total_no_of_pages; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+						} else {
+							echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+				}
+			}
+		?>
+		<li <?php if ($page_no >= $total_no_of_pages) {
+			echo "class='disabled'";
+		} ?>>
+		<a <?php if ($page_no < $total_no_of_pages) {
+				echo "href=# onclick=doPost($next_page)";
+			} ?>>Next</a>
+		</li>
+
+		<?php if ($page_no < $total_no_of_pages) {
+			echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
+		} ?>
+		<?php if ($total_no_of_pages > 0) {
+			echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
+			for ($counter = 1; $counter <= $total_no_of_pages; $counter++) {
+				echo "<option value=$counter ";
+				if ($page_no == $counter) {
+					echo "selected";
+				}
+				echo ">$counter</option>";
+			}
+			echo "</select></li>";
+		} ?>
+	</ul>
+					</div>
+				</div>
+			<?php } ?>	
 		
 		 <div class="container">
 					<table class="table table-bordered table-striped" id="table-sort">

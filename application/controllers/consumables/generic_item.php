@@ -82,18 +82,28 @@ class Generic_item extends CI_Controller {
 			// echo '<p>'.json_encode($this->generic_model->get_generic_items()).'</p>';
 			log_message("INFO", "SAIRAM FROM FORM VALIDATION");
 			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
-			
+			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;	
+			log_message("INFO", "SAIRAM ".json_encode($this->data['generic_items_count']));
 			$this->load->view('pages/consumables/generic_items_list', $this->data);						
 		}		
-		else
+		else if($this->input->post('search'))
 		{
 			
 			
 			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
-		
+			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;	
+			log_message("INFO", "SAIRAM ".json_encode($this->data['generic_items_count']));
 			
 			log_message("INFO", json_encode($this->data['search_generic_items']));
 			$this->load->view('pages/consumables/generic_items_list', $this->data);		
+		}else{
+			show_404();
 		}
 			// $this->load->view('pages/consumables/add_generic_form',$this->data);	
 			$this->load->view('templates/footer');								
@@ -230,6 +240,7 @@ class Generic_item extends CI_Controller {
 				$generic_item_id = $this->input->post('generic_item_id');
 			}
 			$item_result = $this->generic_model->get_generic_item($generic_item_id);
+			// echo '<h3>'."$generic_item_id".json_encode($item_result).'</h3>';
 			$this->data['item'] = $item_result[0];
 			$this->load->view('pages/consumables/edit_generic_form', $this->data);					
 		}		

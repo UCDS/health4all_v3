@@ -87,11 +87,45 @@ class Item_model extends CI_Model {
 			}
 			$this->db->order_by('item.item_name', 'ASC');
 		}		
+		$rows_per_page = $this->input->post('rows_per_page');
+		$res_offset = $rows_per_page * ($this->input->post('page_no') - 1);
+		$this->db->limit($rows_per_page, $res_offset);
+		$query = $this->db->get();
+		return $query->result();
+
+	}
+
+	function list_items_count()
+	{
+		$this->db->select('COUNT(item.item_id) count')
+			->from('item')
+			->join('item_form', 'item_form.item_form_id = item.item_form_id')
+			->join('generic_item', 'generic_item.generic_item_id = item.generic_item_id')
+			->join('item_type', 'item_type.item_type_id = generic_item.item_type_id');
+			// ->join('drug_type', 'drug_type.drug_type_id = generic_item.drug_type_id', 'left');
+
+		if($this->input->post('item_id')){
+			$this->db->where('item.item_id', $this->input->post('item_id'));
+
+		}else{
+			if($this->input->post('item_type')){
+				$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+			}
+			if($this->input->post('generic_item')){
+				$this->db->where('item.generic_item_id', $this->input->post('generic_item'));
+			}
+			if($this->input->post('item_form')){
+				$this->db->where('item_form.item_form_id', $this->input->post('item_form'));
+			}
+			$this->db->order_by('item.item_name', 'ASC');
+		}
 
 		$query = $this->db->get();
 		return $query->result();
 
 	}
+
+
 	function get_item($item_id)
 	{
 		$this->db->select('item.item_id, item.item_name, generic_item.generic_name,  generic_item.generic_item_id, 

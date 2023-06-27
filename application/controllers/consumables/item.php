@@ -72,13 +72,28 @@ class Item extends CI_Controller {
 		if($this->form_validation->run()===FALSE) 							
 		{
 			$this->data['message']="validation failed";	
+			$this->data['search_items'] = $this->item_model->get_items();
+			$this->data['items_count'] = $this->item_model->list_items_count();
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;	
+			log_message("INFO", "SAIRAM ".json_encode($this->data['items_count']));
 			$this->load->view('pages/consumables/items_list', $this->data);	
 		}		
-		else
+		else if($this->input->post('search'))
 		{
 			$this->data['search_items'] = $this->item_model->get_items();
+			$this->data['items_count'] = $this->item_model->list_items_count();
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;	
+			log_message("INFO", "SAIRAM ".json_encode($this->data['items_count']));
+			
+			
 			log_message("INFO", json_encode($this->data['search_items']));
 			$this->load->view('pages/consumables/items_list', $this->data);		
+		}else{
+			show_404();
 		}
 									
 		$this->load->view('templates/footer');								
