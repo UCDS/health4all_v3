@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
-<style>
-	<style type="text/css">
+
+<style type="text/css">
 .selectize-control.items .selectize-dropdown>div {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }

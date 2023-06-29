@@ -117,6 +117,35 @@ class Indent_issue extends CI_Controller{                                       
             return false;
         }
     }
+    function search_selectize_items()
+	{
+		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
+            $this->data['userdata']=$this->session->userdata('logged_in');                        //taking session data into data array of index:userdata                   
+        }	
+        else{
+            show_404();                                                                          //if user is not logged in then this error will be thrown.
+        }
+		$this->data['userdata'] = $this->session->userdata('logged_in');
+		$user_id = $this->data['userdata']['user_id'];
+		$this->load->model('staff_model');
+		$this->data['functions'] = $this->staff_model->user_function($user_id);
+		$access = -1;
+		//var_dump($item_type_id);
+		foreach ($this->data['functions'] as $function) {
+			if ($function->user_function == "Consumables") {
+				$access = 1;
+				break;
+			}
+		}
+		if ($access != 1) {
+			show_404();
+		}
+
+		$this->load->model('consumables/indent_issue_model');
+		$items = $this->indent_issue_model->search_items_selectize();
+		$res = array('items' => $items);
+		echo json_encode($res);
+	}
 
  function indent_issued(){                                                                        //definition of a method :indent_approval
         if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
@@ -151,7 +180,7 @@ class Indent_issue extends CI_Controller{                                       
         $this->load->view('templates/leftnav',$this->data);                                       //load leftnav(view) file and pass the data array to it
         $this->load->model('consumables/indent_issue_model');                                                 //load indent_issue model file
 	    $this->data['all_item_type']=$this->indent_issue_model->get_supply_chain_party("item_type");  //get item types from get_supply_chain_party method of indent_issue model and store it into data array of index:all_item_types
-        $this->data['all_item']=$this->indent_issue_model->get_supply_chain_party("item");            //get items from get_supply_chain_party method of indent_issue model and store it into data array of index:all_items
+        $this->data['all_item']=$this->indent_issue_model->get_supply_chain_party("item", 20);            //get items from get_supply_chain_party method of indent_issue model and store it into data array of index:all_items
         $this->data['parties']=$this->indent_issue_model->get_supply_chain_party("party");            //get parties from get_chain_party method of indent_approval model and store it into data array of index:parties
         
         $this->form_validation->set_rules('from_date', 'FROM Date',                               //set form validation rule on from_date

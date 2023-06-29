@@ -118,7 +118,7 @@ class Indent_issue_model extends CI_Model{                                      
 		return $query->result();   
 	}//display_issue_details
 
-    function get_supply_chain_party($type=""){  
+    function get_supply_chain_party($type="", $limit=-1){  
 		$hospital=$this->session->userdata('hospital');                                                                //function definition with name :get_data
 	    if($type=="item_type")                                                                    //all these are if conditions to select particular data from database
 			$this->db->select("*")->from("item_type")->order_by('item_type', 'ASC');
@@ -134,8 +134,11 @@ class Indent_issue_model extends CI_Model{                                      
 		else if($type=="party")
 			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")
 			->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name', 'ASC');
-			$resource=$this->db->get();
-			return $resource->result();
+		if($limit != -1){
+			$this->db->limit($limit);
+		}
+		$resource=$this->db->get();
+		return $resource->result();
 	}//get_data
     
 	function search_items_selectize()
@@ -149,6 +152,10 @@ class Indent_issue_model extends CI_Model{                                      
 			->order_by('item.item_name', 'ASC');
 		if($this->input->post('query')){
 			$this->db->like('item.item_name', $this->input->post('query'));
+		}
+
+		if($this->input->post('item_type')){
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
 		}
 		$query = $this->db->get();
 		return $query->result();
