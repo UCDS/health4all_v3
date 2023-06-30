@@ -1646,7 +1646,6 @@ class Reports extends CI_Controller {
                     }
                 }
                 if($access==1){               
-                	echo("<script>console.log('PHP: dfghsdghu');</script>");
                        
                     $this->data['title']="Visit Type Summary";                       //Getting values to populate the selection fields in the query form.
                     $this->data['all_departments']=$this->staff_model->get_department();
@@ -1657,11 +1656,7 @@ class Reports extends CI_Controller {
                     $this->load->helper('form');
                     $this->load->library('form_validation');
                     $this->data['report']=$this->reports_model->get_visit_type_summary();
-                    $json_data = json_encode($this->data['report']);
-                    echo "<script>console.log('".$json_data."');</script>";
-
-
-                   
+                    $json_data = json_encode($this->data['report']);                 
 
                     //This method gets data from the Database, and puts the data in report variable.
                     //Report variable stores all the data returned by reports_model which is passed to the view.
