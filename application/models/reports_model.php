@@ -3703,6 +3703,92 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		return $resource->result();
         }
 
+    function get_visit_type_summary(){
+			$hospital=$this->session->userdata('hospital');
+            //First time ip_op_trends page is opened all records for today will be opened.
+            /*Query is being built from the data input from the user*/
+
+            //Selection of the date field.
+            
+             $date_filter_field="Registration";
+	     if($this->input->post('dateby') && $this->input->post('dateby')=="Appointment"){
+			$date_filter_field="Appointment";
+	     }	
+	     $from_time = '00:00';	
+	     $to_time = '23:59';
+            if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+                //Selection of the visit name.
+		if($this->input->post('visit_name')){
+			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
+		}
+                //Selection of visit type OP/IP
+		 if($this->input->post('visit_type')){
+		 	$this->db->where('patient_visit.visit_type',$this->input->post('visit_type'));
+                }
+                 else{
+                     $this->db->where('patient_visit.visit_type', 'OP');
+                     
+                }
+                 //Setting the selected department in the query. First time all the departments are selected.
+		if($this->input->post('department')){
+			$this->db->where('patient_visit.department_id',$this->input->post('department'));
+		}
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('patient_visit.unit',$this->input->post('unit'));
+		}
+		else{
+			$this->db->select('"0" as unit',false);
+		}
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('patient_visit.area',$this->input->post('area'));
+		}
+		else{
+			$this->db->select('"0" as area',false);
+		}
+		if($date_filter_field=="Registration"){
+			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
+		} 
+		else if($date_filter_field=="Appointment"){
+			$this->db->where("(appointment_time IS NOT NULL)");				
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		}
+                //Counting the number of patients gender wise.
+		$this->db->select(" visit_name.visit_name,
+		SUM(CASE WHEN 1 THEN 1 ELSE 0 END) 'total',
+          SUM(CASE WHEN gender = '0'  THEN 1 ELSE 0 END) 'not_specified',
+           SUM(CASE WHEN gender = 'O'  THEN 1 ELSE 0 END) 'others',
+		SUM(CASE WHEN gender = 'F'  THEN 1 ELSE 0 END) 'female',
+		SUM(CASE WHEN gender = 'M'  THEN 1 ELSE 0 END) 'male',
+		SUM(CASE WHEN signed_consultation > 0 THEN 1 ELSE 0 END) 'signed_consultation',
+		");
+		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('department','patient_visit.department_id=department.department_id','left')
+		 ->join('unit','patient_visit.unit=unit.unit_id','left')
+		 ->join('area','patient_visit.area=area.area_id','left')
+		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')
+		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
+		 ->where("(admit_date BETWEEN '$from_date' AND '$to_date')")
+		 ->group_by('visit_name');
+		$resource=$this->db->get();
+		return $resource->result();
+        }
+
 	function get_login_report(){	
 	     $from_time = '00:00';	
 	     $to_time = '23:59';

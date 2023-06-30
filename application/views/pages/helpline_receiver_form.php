@@ -30,9 +30,11 @@ $(function(){
 
 		$('#phone').attr('disabled', 'disabled');
 		$('#user_id').attr("data-previous-value", helpline_receiver['user_id']);
+		$('#district_id').attr("data-previous-value", helpline_receiver['district_id']);
 
 	}
 	defaultHelplineOnChange();
+	initDistrictSelectize();
 	initUserSelectize();
 });
 
@@ -87,6 +89,33 @@ function initUserSelectize(){
 	});
 	if($('#user_id').attr("data-previous-value")){
 		selectize[0].selectize.setValue($('#user_id').attr("data-previous-value"));
+	}
+}
+
+function initDistrictSelectize(){
+        var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
+	var selectize = $('#district_id').selectize({
+	    valueField: 'district_id',
+	    labelField: 'custom_data',
+	    searchField: ['district','district_alias','state'],
+	    options: districts,
+	    create: false,
+	    render: {
+	        option: function(item, escape) {
+	        	return '<div>' +
+	                '<span class="title">' +
+	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+	                '</span>' +
+	            '</div>';
+	        }
+	    },
+	    load: function(query, callback) {
+	        if (!query.length) return callback();
+		},
+
+	});
+	if($('#district_id').attr("data-previous-value")){
+		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
 	}
 }
 </script>
@@ -159,21 +188,15 @@ textarea {
 					</div>
 				</div>
 
+
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label for="district_id">District<font style="color:red">*</font></label>
-						<select id="district_id" name="district_id" class="form-control" onchange="" required/>
-							<option value="">Select District</option>
-							<?php 
-								foreach($districts as $district){
-									echo "<option value='".$district->district_id."'";
-									echo ">".$district->district. "-" .$district->state. "</option>";
-								}
-								?>
+						<select id="district_id" name="user_id" class="" placeholder="-Enter User Name/Phone-">
+							<option value="">-Enter District-</option>
 						</select>
 					</div>
 				</div>
-
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label for="category">Category<font style="color:red">*</font></label>

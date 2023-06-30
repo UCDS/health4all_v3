@@ -184,6 +184,25 @@ $(function(){
                         <option value="Yes" <?php echo ($this->input->post('activitystatus') == 'Yes') ? 'selected' : ''; ?> >Yes</option> 
                         <option value="No" <?php echo ($this->input->post('activitystatus') == 'No') ? 'selected' : ''; ?> >No</option>          
                         </select>
+
+            Language : <select id="language" name="language" style="width:130px" class="form-control" onchange='onchange_state_dropdown(this)'>
+                <option value="">Select</option>
+                <?php foreach($languages as $language){ ?>
+                    <option value="<?php echo $language->language_id;?>"
+                    <?php if($this->input->post('language') == $language->language_id) echo " selected "; ?>
+                    ><?php echo $language->language;?></option>
+                <?php } ?>
+            </select>
+
+            Proficiency : <select id="proficiency" name="proficiency" style="width:130px" class="form-control" onchange='onchange_state_dropdown(this)'>
+                <option value="">Select</option>
+                <?php foreach($proficiency as $key=>$val ){ ?>
+                    <option value="<?php echo $key;?>"
+                    <?php if($this->input->post('proficiency') == $key) echo " selected "; ?>
+                    ><?php echo $val;?></option>
+                <?php } ?>
+            </select>
+
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
                 Rows per page : <input type="number" class="rows_per_page form-custom form-control" style="width:50px;"name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
  <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
@@ -337,16 +356,18 @@ echo "</select></li>";
             <th style="text-align:center">Phone</th>            
             <th style="text-align:center">Email</th>
             <th style="text-align:center">District/State</th>   
-            <th style="text-align:center">Category</th>
-            <th style="text-align:center">User</th>      
-            <th style="text-align:center">Doctor</th>      
-            <th style="text-align:center">OutBound</th>    
+            <th style="text-align:center">Category</th>    
             <th style="text-align:center">App ID</th>  
             <th style="text-align:center">Helpline</th>  
             <th style="text-align:center">Activity Status</th>
             <th style="text-align:center">Helpline Receiver Note</th>
             <?php  if($helpline_receiver_edit == 1 ) { ?>
-            	<th style="text-align:center">Action</th>     
+            <th style="text-align:center">Language</th>
+            <th style="text-align:center">Proficiency</th>      
+            <th style="text-align:center">User</th>
+            <th style="text-align:center">Doctor</th>      
+            <th style="text-align:center">OutBound</th>
+            <th style="text-align:center">Action</th>     
             <?php } ?>       
         </thead>   
     <tbody>
@@ -361,6 +382,24 @@ echo "</select></li>";
         <td><?php echo $a->email; ?></td>
         <td><?php echo $a->district ;?> </td>    
         <td><?php echo $a->category; ?></td>
+        
+        <td><?php echo $a->app_id; ?></td>
+        <td><?php echo $a->helpline; ?></td>
+        <td>
+            <?php echo $a->activity_status == 1 ? 'Yes': 'No';?>
+        </td>
+        <td>
+        <?php echo $a->helpline_receiver_note; ?>
+        </td>
+        <td>
+        <?php echo $a->language; ?>
+        </td>
+        <td>
+        <?php 
+          foreach($proficiency as $key=>$val){
+            if($key == $a->proficiency){
+             echo $val;}} ?>
+        </td>
         <td>
             <?php echo $a->user_id ? 'Yes': 'No';?>
         </td>
@@ -369,14 +408,6 @@ echo "</select></li>";
         </td>
         <td>
             <?php echo $a->enable_outbound == 1 ? 'Yes': 'No';?>
-        </td>
-        <td><?php echo $a->app_id; ?></td>
-        <td><?php echo $a->helpline; ?></td>
-        <td>
-            <?php echo $a->activity_status == 1 ? 'Yes': 'No';?>
-        </td>
-        <td>
-        <?php echo $a->helpline_receiver_note; ?>
         </td>
         <?php  if($helpline_receiver_edit == 1 ) { ?>
         	<td><a href="<?php echo base_url()."helpline/helpline_receivers_form/".$a->receiver_id;?>" class="btn btn-primary">Edit</a></td>

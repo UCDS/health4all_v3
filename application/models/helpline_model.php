@@ -1524,14 +1524,24 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 				$this->db->like('helpline_receiver.activity_status',0);
 			}
 		}
+
+		if($this->input->post('language')){
+			$this->db->like('helpline_receiver_language.language_id',$this->input->post('language'));
+		}
+
+		if($this->input->post('proficiency')){
+			$this->db->like('helpline_receiver_language.proficiency',$this->input->post('proficiency'));
+		}
 		
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);
 		}
-		$this->db->select("receiver_id, full_name, phone, email, CONCAT(district.district, '-' , state.state) as district, category, user_id, doctor, enable_outbound, app_id, activity_status, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
+		$this->db->select("helpline_receiver.receiver_id, full_name, phone, email, CONCAT(district.district, '-' , state.state) as district, category, user_id, doctor, enable_outbound, app_id, activity_status,language,proficiency, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
 		->join('district', 'helpline_receiver.district_id=district.district_id','left')
+		->join('helpline_receiver_language', 'helpline_receiver.receiver_id=helpline_receiver_language.receiver_id','left')
+		->join('language', 'language.language_id=helpline_receiver_language.language_id','left')
 		->join('state', 'district.state_id= state.state_id','left')
 		->order_by('full_name', 'asc');
 		if ($default_rowsperpage !=0){

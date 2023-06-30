@@ -1634,6 +1634,50 @@ class Reports extends CI_Controller {
         }
 	
     }	
+
+    	public function visit_type_summary(){ 
+            
+            if($this->session->userdata('logged_in')){                          //Checking for user login
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $access=0;
+                foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                    if($function->user_function=="IP Summary"){
+                        $access=1;
+                    }
+                }
+                if($access==1){               
+                	echo("<script>console.log('PHP: dfghsdghu');</script>");
+                       
+                    $this->data['title']="Visit Type Summary";                       //Getting values to populate the selection fields in the query form.
+                    $this->data['all_departments']=$this->staff_model->get_department();
+                    $this->data['units']=$this->staff_model->get_unit();
+                    $this->data['areas']=$this->staff_model->get_area();
+                    $this->data['visit_names']=$this->staff_model->get_visit_name(); 
+                    $this->load->view('templates/header',$this->data);
+                    $this->load->helper('form');
+                    $this->load->library('form_validation');
+                    $this->data['report']=$this->reports_model->get_visit_type_summary();
+                    $json_data = json_encode($this->data['report']);
+                    echo "<script>console.log('".$json_data."');</script>";
+
+
+                   
+
+                    //This method gets data from the Database, and puts the data in report variable.
+                    //Report variable stores all the data returned by reports_model which is passed to the view.
+                    $this->load->view('pages/visit_type_summary',$this->data);
+                    $this->load->view('templates/footer');
+                }
+                else{
+                    show_404();
+                }
+            }
+        else{
+            show_404();
+            
+        }
+	
+    }	
         // This function is used to get login activities in specified period.
         
         public function login_report(){ 
