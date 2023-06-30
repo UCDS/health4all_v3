@@ -13,6 +13,57 @@ class Item_form extends CI_Controller {
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
     }   			//end of constructor.
+
+	function item_forms_list()
+	{
+		if($this->session->userdata('logged_in')){  						
+            $this->data['userdata']=$this->session->userdata('logged_in');  
+			
+		}	
+        else{
+            show_404(); 													
+        } 
+			$access = -1;
+		foreach($this->data['functions'] as $function){
+            if($function->user_function=="Masters - Consumables"){
+                $access = 1;
+				break;
+            }
+		}
+		if($access != 1){
+			show_404();
+		}
+		$this->load->helper('form');										
+		$this->load->library('form_validation'); 							
+		$this->data['title']="Item";										
+		$this->load->view('templates/header', $this->data);				
+		$this->load->view('templates/leftnav');	
+		
+		$config=array(
+			array(
+					'field'   => 'item_form_id',
+					'label'   => 'Item Form Id',
+					'rules'   => 'trim|xss_clean'
+			)
+		);
+
+		$this->load->model('consumables/item_form_model');
+		$this->form_validation->set_rules($config);
+		
+		if($this->form_validation->run()===FALSE) 							
+		{
+			// $this->data['message']="validation failed";	
+			$this->load->view('pages/consumables/item_forms_list', $this->data);	
+		}		
+		else
+		{
+			$this->data['search_item_forms'] = $this->item_form_model->get_item_forms();
+			log_message("INFO", json_encode($this->data['search_item_forms']));
+			$this->load->view('pages/consumables/item_forms_list', $this->data);		
+		}
+									
+		$this->load->view('templates/footer');	
+	}
 	function add_item_form(){
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  
@@ -53,16 +104,17 @@ class Item_form extends CI_Controller {
 		
 		if($this->form_validation->run()===FALSE) 							
 		{
-			$this->data['message']="validation failed";	
+			// $this->data['msg']="validation failed";	
+			$this->load->view('pages/consumables/item_form_view',$this->data);							
 			//echo validation_errors();			
 		}		
 		else
 		{
-		if($this->item_form_model->add_item_form()){							
-			$this->data['msg']="Item Form Added Succesfully";					
+			if($this->item_form_model->add_item_form()){							
+				$this->data['msg']="Item Form Added Succesfully";					
+				$this->load->view('pages/consumables/item_forms_list',$this->data);							
+			}
 		}
-		}
-			$this->load->view('pages/consumables/item_form_view',$this->data);							
 			$this->load->view('templates/footer');								
     }  		//end of add_item_form method.				
 }		//end of item_form.

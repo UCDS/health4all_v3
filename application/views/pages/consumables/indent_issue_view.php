@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
@@ -9,6 +11,79 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
+<style type="text/css">
+.selectize-control.items .selectize-dropdown>div {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.selectize-control.items .selectize-dropdown .by {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.selectize-control.items .selectize-dropdown .by::before {
+	content: 'by ';
+}
+
+.selectize-control.items .selectize-dropdown .name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.selectize-control.items .selectize-dropdown .title {
+	display: block;
+}
+
+.selectize-control.items .selectize-dropdown .description {
+	font-size: 12px;
+	display: block;
+	color: #a0a0a0;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.selectize-control.items .selectize-dropdown .meta {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	margin-right: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li span {
+	font-weight: bold;
+}
+
+.selectize-control.items::before {
+	-moz-transition: opacity 0.2s;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	content: ' ';
+	z-index: 2;
+	position: absolute;
+	display: block;
+	top: 12px;
+	right: 34px;
+	width: 16px;
+	height: 16px;
+	background: url(<?php echo base_url(); ?>assets/images/spinner.gif);
+	background-size: 16px 16px;
+	opacity: 0;
+}
+
+.selectize-control.items.loading::before {
+	opacity: 0.4;
+}
+</style>
+
 <script type="text/javascript">
 $(function(){
 	$("#from_date,#to_date").Zebra_DatePicker({direction:false});
@@ -111,12 +186,150 @@ $(function(){
 });
 </script>
 <script>
-	$(function () {
-	  $('[data-toggle="popover"]').popover({trigger:'hover',html:true});
-		$("#item").chained("#item_type");
-	});
+	// $(function () {
+	//   $('[data-toggle="popover"]').popover({trigger:'hover',html:true});
+	// 	$("#item").chained("#item_type");
+	// });
 	</script>
+<script>
+	const onLoadFunction = function(query, callback) {
+		if(!query.length) callback();
+		$('.selectize-control.items').addClass('loading');
+		console.log('loading', $('.selectize-control.items'));
+		$.ajax({
+			url: '<?php echo base_url(); ?>consumables/indent_issue/search_selectize_items',
+			type: 'POST',
+			dataType: 'JSON', 
+			data: {query: query, item_type: $('#item_type').val()},
+			error: function(res) {
+				callback();
+				setTimeout(() => {
 
+					// $('.selectize-control.items').removeClass('loading');
+				}, 1000);
+			},
+			success: function(res) {
+				callback(res.items);
+				setTimeout(() => {
+					// $('.selectize-control.items').removeClass('loading');
+				}, 1000);
+			}
+		});
+	};
+	$(function () {
+		// if($('#item_type').val === ''){
+		// 	return;
+		// }
+
+		let options = <?= json_encode($all_item); ?>;
+		options = options.map(opt => {
+			let ans = `${opt.item_name}-${opt.item_form}-`;
+			if (opt.dosage) {
+				ans += opt.dosage;
+			}
+			if (opt.dosage_unit) {
+				ans += opt.dosage_unit;
+			}
+			return {
+				...opt,
+				item_name: ans
+			};
+		});
+		console.log(options);
+		// let temp = [];
+		
+		$selectize = $("#item").selectize({
+			labelField: "item_name",
+			searchField: "item_name",
+			valueField: "item_id",
+			options: options,
+			// allowEmptyOption: true, 
+			// showEmptyOptionInDropdown: true, 
+			maxOptions: 10,
+			load: function(query, callback) {
+				if(!query.length) return callback();
+				console.log('loading', $('.selectize-control.items'));
+				$('.selectize-control.items').addClass('loading');
+				$.ajax({
+					url: '<?php echo base_url(); ?>consumables/indent_issue/search_selectize_items',
+					type: 'POST',
+					dataType: 'JSON', 
+					data: {query: query, item_type: $('#item_type').val()},
+					error: function(res) {
+						
+						callback();
+						$('.selectize-control.items').addClass('loading');
+						setTimeout(() => {
+
+							$('.selectize-control.items').removeClass('loading');
+						}, 500);
+					},
+					success: function(res) {
+						
+						callback(res.items);
+						$('.selectize-control.items').addClass('loading');
+						setTimeout(() => {
+							console.log('delayed loading');
+							$('.selectize-control.items').removeClass('loading');
+						}, 500);
+					}
+				});
+			}
+		});
+		console.log($selectize);
+		let sel = $selectize[0].selectize;
+		sel.setValue(<?= $this->input->post("item") ? $this->input->post("item") : ""; ?>);
+
+		$('#item_type').change(function () {
+			let optionval = this.value;
+			console.log("Optionval", optionval);
+			console.log("changed item_type");
+			// $('#item').val('');
+			sel.setValue('');
+			sel.clearOptions();
+			$('.selectize-control.items').addClass('loading');
+			
+			$.ajax({
+				url: '<?php echo base_url(); ?>consumables/indent_issue/search_selectize_items',
+				type: 'POST',
+				dataType: 'JSON', 
+				data: {query: null, item_type: $('#item_type').val()},
+				error: function(res) {
+					
+					setTimeout(() => {
+						$('.selectize-control.items').removeClass('loading');
+					}, 500);
+				},
+				success: function(res) {
+					let options = res.items.map(opt => {
+						let ans = `${opt.item_name}-${opt.item_form}-`;
+						if (opt.dosage) {
+							ans += opt.dosage;
+						}
+						if (opt.dosage_unit) {
+							ans += opt.dosage_unit;
+						}
+						return {
+							...opt,
+							item_name: ans
+						};
+					});
+					sel.addOption(options);
+					setTimeout(() => {
+						$('.selectize-control.items').removeClass('loading');
+					}, 500);
+					// $('.selectize-control.items').removeClass('loading');
+				}
+			});
+
+		});
+
+		
+		
+
+
+	})
+</script>
  <?php if($mode=='update') { 
 	$single_issue = $issue_details[0];
 	?>
@@ -337,16 +550,9 @@ $(function(){
 							<div class="col-md-4">							
 								<div class="form-group"><!-- Item-->
 									<label for="item" >Item</label>
-										<select name="item" id="item" class="form-control" style="width:305px">
+										<select name="item" id="item" class="items" style="width:305px">
 										<option value="">Select</option>
-											<?php 
-												foreach($all_item as $i)
-												{
-													echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
-													if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
-													echo ">".$i->item_name."-".$i->item_form."-".$i->dosage."-".$i->dosage_unit ;"</option>";
-												}
-										   ?>
+											
 										</select>
 								</div><!-- End of item-->
 							</div>

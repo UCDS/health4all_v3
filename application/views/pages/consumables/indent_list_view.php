@@ -77,6 +77,56 @@ $(function(){
   border-radius: 15px;
 }
 	</style>
+	<style>
+		.page_dropdown {
+		position: relative;
+		float: left;
+		padding: 6px 12px;
+		width: auto;
+		height: 34px;
+		line-height: 1.428571429;
+		text-decoration: none;
+		background-color: #ffffff;
+		border: 1px solid #dddddd;
+		margin-left: -1px;
+		color: #428bca;
+		border-bottom-right-radius: 4px;
+		border-top-right-radius: 4px;
+		display: inline;
+	}
+
+	.page_dropdown:hover {
+		background-color: #eeeeee;
+		color: #2a6496;
+	}
+
+	.page_dropdown:focus {
+		color: #2a6496;
+		outline: 0px;
+	}
+	.rows_per_page {
+		display: inline-block;
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.428571429;
+		color: #555555;
+		vertical-align: middle;
+		background-color: #ffffff;
+		background-image: none;
+		border: 1px solid #cccccc;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		-webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+		transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+	}
+
+	.rows_per_page:focus {
+		border-color: #66afe9;
+		outline: 0;
+	}
+	</style>
 	<script>
 function printDiv(i)
 {
@@ -128,16 +178,42 @@ $('#to_id').change(function(){
 	$(function(){
 		$(".time").timeEntry();
 	  $("#item_name").chained("#item_type");
+
+
+	//   $('#indents_list_search').submit();
+	
 	});
+
+	function doPost(page_no) {
+		
+		var page_no_hidden = document.getElementById("page_no");
+		page_no_hidden.value = page_no;
+		console.log("page number hidden", page_no_hidden.value, $('#indents_list_search'));
+		let el = document.createElement('input');
+		el.type = "hidden";
+		el.name ="search";
+		el.value = "search";
+		$('#indents_list_search').append(el);
+		// alert("Sairam");
+		$('#indents_list_search').submit();
+
+	}
+	function onchange_page_dropdown(dropdownobj) {
+		doPost(dropdownobj.value);
+	}
 </script>
 <div class="col-md-8 col-md-offset-2">
 	<?php
-	if($from_date==0 && $to_date==0){
-	$from_date=0;$to_date=0;
-	if($this->input->post('$from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('$from_date'))); else $from_date = date("Y-m-d");
-	if($this->input->post('$to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('$to_date'))); else $to_date = date("Y-m-d");
-	}
-        $from_time=0;$to_time=0;
+	$from_date=0;
+	$to_date=0;
+
+	
+	// echo '<h1>SAIRAM '.$this->input->post('$from_date').' ALERT</h1>';
+	$page_no = 1;
+	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
+	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+	
+    $from_time=0;$to_time=0;
 	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
 	if($from_party == 0) $from_party = $this->input->post('from_party');
@@ -148,7 +224,7 @@ $('#to_id').change(function(){
 	?>
 			   <div class="text-center">
 				<div class="row"><center><h2>Indent List</h2></center></div>
-				<?php echo form_open('consumables/indent_reports/indents_list',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
+				<?php echo form_open('consumables/indent_reports/indents_list',array('class'=>'form-group','role'=>'form','id'=>'indents_list_search')); ?>
 				<div class="container">
 					<div class="row">
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
@@ -189,7 +265,7 @@ $('#to_id').change(function(){
 							<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
 								<div class="form-group">
 								<!--Input field To party-->
-										<label for="inputto_id">Indent To Party</label>
+										<label for="to_id">Indent To Party</label>
 										<select name="to_id" id="to_id" class="form-control">
 											<option value="">Select</option>
 											<?php
@@ -251,8 +327,22 @@ $('#to_id').change(function(){
 							</div>
 					</div>
 					<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
+								
+								<!--Input field To party-->
+								Rows per page : 
+								<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
+								echo $this->input->post('rows_per_page');
+							} else {
+								echo $rowsperpage;
+							}  ?> />
+										
+					</div>
+					<div class="row">
 						<div class="col-md-9">
 							<!--button for searching-->
+							<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
+							<!-- <input type="hidden" name="rows_per_page" id="rows_per_page" value="1" class="sr-only" /> -->
 							<center><button class="btn btn-success" type="submit" name="search" value="search" id="btn">Search</button></center>
 							<?php echo form_close(); ?>	<!--closing of form-->
 						</div>
@@ -265,7 +355,7 @@ $('#to_id').change(function(){
 			
 				<!--set method for hidden the table-->
 		   <?php if(isset($search_indent_detailed)){ ?>
-		  <?php echo form_open('consumables/indent_detailed/get_indent_detailed',array('role'=>'form'))   ?>
+		  
 			<div class="container" style="margin-left:14px">
 				<div class="row">
 					<button type="button" class="btn btn-primary btn-md print  ">
@@ -273,11 +363,129 @@ $('#to_id').change(function(){
 					</button>
 
 					 <a href="#" id="test" onClick="javascript:fnExcelReport();">
-            <button type="button" class="btn btn-primary btn-md excel">
-                <i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel</button></a></br>
+            			<button type="button" class="btn btn-primary btn-md excel">
+                			<i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
+						</button>
+					</a>
+					</br>
 				</div>
 			</div>
-		</br>
+			</br>
+
+			<?php if(count($search_indent_detailed) > 0) { ?>
+				<?php
+					if ($this->input->post('rows_per_page')) {
+						$total_records_per_page = $this->input->post('rows_per_page');
+					} else {
+						$total_records_per_page = $rowsperpage;
+					}
+					if ($this->input->post('page_no')) {
+						$page_no = $this->input->post('page_no');
+					} else {
+						$page_no = 1;
+					}
+					$total_records = $indents_count[0]->count;
+					$total_no_of_pages = ceil($total_records / $total_records_per_page);
+					if ($total_no_of_pages == 0)
+						$total_no_of_pages = 1;
+					$second_last = $total_no_of_pages - 1;
+					$offset = ($page_no - 1) * $total_records_per_page;
+					$previous_page = $page_no - 1;
+					$next_page = $page_no + 1;
+					$adjacents = "2";
+				?>
+				<div class="container" style="margin-left:14px;">
+					<div class="row">
+					<ul class="pagination" style="margin:0">
+					<?php if ($page_no > 1) {
+						echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
+					} ?>
+
+					<li <?php if ($page_no <= 1) {
+						echo "class='disabled'";
+					} ?>>
+					<a <?php if ($page_no > 1) {
+							echo "href=# onclick=doPost($previous_page)";
+						} ?>>Previous</a>
+					</li>
+		<?php
+			if ($total_no_of_pages <= 10) {
+				for ($counter = 1; $counter <= $total_no_of_pages; $counter++) {
+					if ($counter == $page_no) {
+						echo "<li class='active'><a>$counter</a></li>";
+					} else {
+						echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+					}
+				}
+			} else if ($total_no_of_pages > 10) {
+				if ($page_no <= 4) {
+					for ($counter = 1; $counter < 8; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+							} else {
+								echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+
+					echo "<li><a>...</a></li>";
+					echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
+					echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+				} elseif ($page_no > 4 && $page_no < $total_no_of_pages - 4) {
+					echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+					echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+					echo "<li><a>...</a></li>";
+					for ($counter = $page_no - $adjacents; $counter <= $page_no + $adjacents; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+						} else {
+							echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+					echo "<li><a>...</a></li>";
+					echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
+					echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+				} else {
+					echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+					echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+					echo "<li><a>...</a></li>";
+					for ($counter = $total_no_of_pages - 6; $counter <= $total_no_of_pages; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+						} else {
+							echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+				}
+			}
+		?>
+		<li <?php if ($page_no >= $total_no_of_pages) {
+			echo "class='disabled'";
+		} ?>>
+		<a <?php if ($page_no < $total_no_of_pages) {
+				echo "href=# onclick=doPost($next_page)";
+			} ?>>Next</a>
+		</li>
+
+		<?php if ($page_no < $total_no_of_pages) {
+			echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
+		} ?>
+		<?php if ($total_no_of_pages > 0) {
+			echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
+			for ($counter = 1; $counter <= $total_no_of_pages; $counter++) {
+				echo "<option value=$counter ";
+				if ($page_no == $counter) {
+					echo "selected";
+				}
+				echo ">$counter</option>";
+			}
+			echo "</select></li>";
+		} ?>
+	</ul>
+					</div>
+				</div>
+			<?php } ?>
+		<?php echo form_open('consumables/indent_detailed/get_indent_detailed',array('role'=>'form'))   ?>
+
 		<!--filters for Add Service Issues view form --->
 		<!--when filter is clicked this form will load --->
 		 <div class="container">
@@ -325,14 +533,7 @@ $('#to_id').change(function(){
 
 						<td><?php echo $indent->indent_id;?></td>
 						
-<!-- 
-						
-						<td><?php //echo $indent->ordered_by_id." - ". $indent->ordered_by_fname." ".$indent->ordered_by_lname." (".$f_indent_datetime.")";	?></td>
-						<td><?php //echo $indent->approved_by_id." - ".$indent->approved_by_fname." ".$indent->approved_by_lname." (".$f_approval_datetime.")";	?></td>
-						<td><?php //echo $indent->issued_by_id." - ".$indent->issued_by_fname." ".$indent->issued_by_lname." (".$f_issue_datetime.")";?></td>
-						<td><?php //echo $indent->indent_status;?></td>
-						<td><?php //echo $indent->inserted_by_id." - ".$indent->inserted_by_fname." ".$indent->inserted_by_lname." (".$f_insert_datetime.")";?></td>
-						<td><?php //echo $indent->updated_by_id." - ".$indent->updated_by_fname." ".$indent->updated_by_lname." (".$f_update_datetime.")";?></td> -->
+
 
 						<td><?php echo  $f_indent_datetime; ?></td>
 						<td><?php if ($indent->indent_status == "Approved" || $indent->indent_status == "Issued")

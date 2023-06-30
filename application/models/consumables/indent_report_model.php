@@ -223,7 +223,7 @@ class Indent_report_model extends CI_Model
 
 		
 
-		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note")
+		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note")
 		->from('inventory')
 		->join('item', 'item.item_id = inventory.item_id') //remove left later
 		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
@@ -453,7 +453,9 @@ class Indent_report_model extends CI_Model
 			->join("staff staff_updated_by", "staff_updated_by.staff_id = indent.update_user_id");
 			
 		$this->db->where("indent.hospital_id", $hospital['hospital_id']);
-		
+		$rows_per_page = $this->input->post('rows_per_page');
+		$res_offset = $rows_per_page * ($this->input->post('page_no') - 1);
+		$this->db->limit($rows_per_page, $res_offset);
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();
 		// log_message('info', $query_string);
@@ -463,13 +465,98 @@ class Indent_report_model extends CI_Model
 
 	}
 	//calling get data method.
-	function get_data($type)
+
+	function list_indents_count($from_date = 0, $to_date = 0, $from_party = 0, $to_party = 0, $indent_status = 0)
+	{
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+		if($this->input->post('indent_id')){
+			$this->db->where('indent.indent_id', $this->input->post('indent_id'));
+		}else{
+
+			if ($this->input->post('from_date') && $this->input->post('to_date')) {
+				$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+				$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+			} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+				$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+				$to_date = $from_date;
+			} else if ($from_date == '0' && $to_date == '0') {
+				$from_date = date("Y-m-d");
+				$to_date = $from_date;
+			}
+			// log_message("info", "SAIRAM FROM LIST_INDENTS, ".$this->input->post('from_id')." $to_party $indent_status");
+			if (($from_party != '0') || $this->input->post('from_id')) {
+				if ($this->input->post('from_id'))
+					$from_party = $this->input->post('from_id');
+				$this->db->where('scp_from.supply_chain_party_id', $from_party);
+			}
+			if (($to_party != '0') || $this->input->post('to_id')) {
+				if ($this->input->post('to_id'))
+					$to_party = $this->input->post('to_id');
+				$this->db->where('scp_to.supply_chain_party_id', $to_party);
+			}
+			if (($indent_status != '0') || $this->input->post('indent_status')) {
+				if ($this->input->post('indent_status'))
+					$indent_status = $this->input->post('indent_status');
+				if ($indent_status == "Approved") {
+					$this->db->where('indent.indent_status', "Approved");
+					$this->db->or_where('indent.indent_status', "Issued");
+				} else if ($indent_status = "Issued")
+				$this->db->where('indent.indent_status', "Issued");
+			}
+			$this->db->where("(DATE(indent_date) BETWEEN '$from_date' AND '$to_date' )"); //here where condition is for only displaying orders between from_date and to_date
+		}
+		
+		
+
+
+		$this->db->select("count(indent.indent_id) count");
+
+		$this->db->from('indent')
+			->join("supply_chain_party scp_from", "scp_from.supply_chain_party_id = indent.from_id")
+			->join("supply_chain_party scp_to", "scp_to.supply_chain_party_id = indent.to_id")
+			->join("staff staff_orderer", "staff_orderer.staff_id = indent.orderby_id", "left")
+			->join("staff staff_approver", "staff_approver.staff_id = indent.approver_id", "left")
+			->join("staff staff_issuer", "staff_issuer.staff_id = indent.issuer_id", "left")
+			->join("staff staff_inserted_by", "staff_inserted_by.staff_id = indent.insert_user_id")
+			->join("staff staff_updated_by", "staff_updated_by.staff_id = indent.update_user_id");
+			
+		$this->db->where("indent.hospital_id", $hospital['hospital_id']);
+		
+		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		// log_message('info', $query_string);
+
+		//echo $this->db->last_query();
+		return $query->result();
+		
+
+	}
+
+	function search_items_selectize()
+	{
+		$this->db->select('item.item_name,item.item_id,item_type.item_type_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
+				->from("item")
+				->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
+				->join('generic_item', 'generic_item.generic_item_id=item.generic_item_id', 'left')
+				->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
+				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
+				->order_by('item.item_name', 'ASC');
+		if($this->input->post('query')){
+			$this->db->like('item.item_name', $this->input->post('query'));
+		}
+		if($this->input->post('item_type')){
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+		}
+		$query = $this->db->get();
+		return $query->result();
+	}
+	function get_data($type, $limit=-1)
 	{
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
 
 		if ($type == "item_type")
 			$this->db->select("*")->from("item_type")->order_by('item_type', 'ASC');
-		else if ($type == "item")
+		else if ($type == "item"){
 			$this->db->select('item.item_name,item.item_id,item_type.item_type_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
 				->from("item")
 				->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
@@ -477,11 +564,19 @@ class Indent_report_model extends CI_Model
 				->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
 				->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
 				->order_by('item.item_name', 'ASC');
-		else if ($type == "status")
+			if($this->input->post('item_type')){
+				$this->db->where('item_type.item_type_id', $this->input->post('item.item_type'));
+			}
+		}else if ($type == "status")
 			$this->db->select("indent_status")->from("indent_item");
 		else if ($type == "party")
 			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")
 			->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name', 'ASC');
+		
+		if($limit != -1){
+			$this->db->limit($limit);
+		}
+
 		$resource = $this->db->get();
 		return $resource->result();
 	} //ending of get data method.

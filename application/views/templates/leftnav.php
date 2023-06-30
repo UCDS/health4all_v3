@@ -10,7 +10,7 @@
 	function check_if_group_active($group)
 	{
 		if($group == "masters"){
-			return (preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^add_item$^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
+			return (preg_match("^item_forms_list^", current_url()) || preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^generic_items_list^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^items_list^", current_url()) || preg_match("^add_item^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
 		}else if($group == "reports"){
 			return preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()) || preg_match("^get_inventory_summary^", current_url());
 		}
@@ -273,23 +273,23 @@
 							<div class="panel-body">
 									<ul class="list-group">
 										
-												<a class="<?php echo (activate_item("^add_generic^"))?>" 
-													href="<?php echo base_url(); ?>consumables/generic_item/add_generic">Generic
+												<a class="<?php echo (activate_item("^consumables/generic_item/^"))?>" 
+													href="<?php echo base_url(); ?>consumables/generic_item/generic_items_list">Generic
 												Item</a>
-										<a href="<?php echo base_url(); ?>consumables/item/add_item" class="<?php echo (activate_item("^add_item$^"))?>">Item</a>
+										<a href="<?php echo base_url(); ?>consumables/item/items_list" class="<?php echo (activate_item("^consumables/item/^"))?>">Item</a>
 										
-										<a class="<?php echo (activate_item("^add_item_type^"))?>" 
+										<a class="<?php echo (activate_item("^consumables/item_type/^"))?>" 
 													href="<?php echo base_url(); ?>consumables/item_type/add_item_type">Item Type</a>
 										
-										<a class="<?php echo (activate_item("^add_item_form^")) ?>" 
-													href="<?php echo base_url(); ?>consumables/item_form/add_item_form">Item Form</a>
+										<a class="<?php echo (activate_item("^consumables/item_form/^")) ?>" 
+													href="<?php echo base_url(); ?>consumables/item_form/item_forms_list">Item Form</a>
 										
 										<a class="<?php echo (activate_item("^add_dosage^")) ?>" 
 													href="<?php echo base_url(); ?>consumables/dosage/add_dosage">Dosages</a>
 										<a href="<?php echo base_url(); ?>consumables/drug_type/add_drug_type" class="<?php echo (activate_item("^add_drug_type^")) ?>">
 												Drug Type Details</a>
-										<a class="<?php echo (activate_item("^add_supply_chain_party^")) ?>" 
-													href="<?php echo base_url(); ?>consumables/supply_chain_party/add_supply_chain_party">Supply
+										<a class="<?php echo (activate_item("^consumables/supply_chain_party/^")) ?>" 
+													href="<?php echo base_url(); ?>consumables/supply_chain_party/supply_chain_parties_list">Supply
 												Chain
 												Party</a>
 

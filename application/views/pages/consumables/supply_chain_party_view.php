@@ -8,30 +8,31 @@
 	<?php } ?>
 	</center>
 
-				<script type="text/javascript">
- window.onload = function() {
-    document.getElementById('ifYes1').style.display = 'none';
-    document.getElementById('ifYes2').style.display = 'none';
-    
-    
-    document.getElementById('ifNo').style.display = 'none';
-}
-function yesnoCheck() {
-    if (document.getElementById('yesCheck').checked) {
-        document.getElementById('ifYes1').style.display = 'block';
-        document.getElementById('ifYes2').style.display = 'block';
-        document.getElementById('ifNo').style.display = 'none';
+<script type="text/javascript">
+	function yesnoCheck() {
+		if (document.getElementById('yesCheck').checked) {
+			document.getElementById('ifYes1').style.display = 'block';
+			document.getElementById('ifYes2').style.display = 'block';
+			document.getElementById('ifNo').style.display = 'none';
 
-    } 
-    else if(document.getElementById('noCheck').checked) {
-        document.getElementById('ifNo').style.display = 'block';
-        document.getElementById('ifYes1').style.display = 'none';
-        document.getElementById('ifYes2').style.display = 'none';
+		} 
+		else if(document.getElementById('noCheck').checked) {
+			document.getElementById('ifNo').style.display = 'block';
+			document.getElementById('ifYes1').style.display = 'none';
+			document.getElementById('ifYes2').style.display = 'none';
 
-   }
+		}
 
 
-}
+	}
+ 	window.onload = function() {
+		document.getElementById('ifYes1').style.display = 'none';
+		document.getElementById('ifYes2').style.display = 'none';
+		
+		
+		document.getElementById('ifNo').style.display = 'none';
+		yesnoCheck();
+	}
 </script>
 	
 		<div class="container">
@@ -42,7 +43,7 @@ function yesnoCheck() {
 						<div class="col-md-6">
 							<div class="form-group">
 							<!--Supply Chain Party Name Field-->
-								<label for="Name_supply_chain_party_name">Supply Chain Party	<font style="color:red">*</font></label>
+								<label for="supply_chain_party_name">Supply Chain Party	<font style="color:red">*</font></label>
 								<input class="form-control" name="supply_chain_party_name" id="supply_chain_party_name" placeholder="Enter Supply Chain Party Name" type="text" align="middle" required>
 							</div><!--Supply Chain Party Name Field end-->
 						</div>
@@ -50,7 +51,7 @@ function yesnoCheck() {
 							<div class="form-group">
 							<div class="radio">
 								<label  for="yesCheck">
-								<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="yesCheck" value="in_house"  aria-label="...">In House
+								<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="yesCheck" value="in_house"  aria-label="..." checked>In House
 								</label>
 							</div>
 						</div>
@@ -74,7 +75,6 @@ function yesnoCheck() {
 								foreach($departments as $dept)
 									{
 										echo"<option value='".$dept->department_id."'>".$dept->department."</option>";
-									
 									}
 									?>
 								</select>

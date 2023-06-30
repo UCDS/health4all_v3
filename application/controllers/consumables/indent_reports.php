@@ -193,7 +193,7 @@ class Indent_reports extends CI_Controller
 		$this->load->view('templates/leftnav', $this->data);
 		$this->load->model('consumables/indent_report_model');
 		$this->data['all_item_type'] = $this->indent_report_model->get_data("item_type");
-		$this->data['all_item'] = $this->indent_report_model->get_data("item");
+		$this->data['all_item'] = $this->indent_report_model->get_data("item", 20);
 		$this->data['parties'] = $this->indent_report_model->get_data("party");
 
 		$validations = array(
@@ -217,7 +217,12 @@ class Indent_reports extends CI_Controller
 		$this->form_validation->set_rules($validations);
 		$this->form_validation->set_message('message', 'Please input missing details.');
 		if ($this->form_validation->run() === FALSE) {
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;
 			$this->load->view('pages/consumables/inventory_summary_view_new', $this->data);
+
+			
 		} else if ($this->input->post('search')) {
 			$this->data['mode'] = "search";
 			$this->load->model('consumables/inventory_summary_model');
@@ -226,7 +231,12 @@ class Indent_reports extends CI_Controller
 				$to_date = date('Y-m-d', strtotime($this->input->post('to_date')));
 				$as_on_date = date('Y-m-d H:i:s', strtotime($to_date.' +23 hour 59 min 59 second'));
 			}
-			$this->data['search_inventory_summary'] = $this->inventory_summary_model->show_inventory_summary($this->input->post('scp_id'), $as_on_date);
+			$temp = $this->inventory_summary_model->show_inventory_summary($this->input->post('scp_id'), $as_on_date);
+			$this->data['search_inventory_summary'] = $temp['res'];
+			$this->data['summary_count'] = $temp['summary_count'];
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;
 			log_message("info", "SAIRAM ".json_encode($this->data['search_inventory_summary']));
 			$this->load->view('pages/consumables/inventory_summary_view_new', $this->data);
 		} else {
@@ -234,7 +244,35 @@ class Indent_reports extends CI_Controller
 		}
 		$this->load->view('templates/footer');
 	} //ending of get indent summary method.
+	function search_selectize_items()
+	{
+		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
+            $this->data['userdata']=$this->session->userdata('logged_in');                        //taking session data into data array of index:userdata                   
+        }	
+        else{
+            show_404();                                                                          //if user is not logged in then this error will be thrown.
+        }
+		$this->data['userdata'] = $this->session->userdata('logged_in');
+		$user_id = $this->data['userdata']['user_id'];
+		$this->load->model('staff_model');
+		$this->data['functions'] = $this->staff_model->user_function($user_id);
+		$access = -1;
+		//var_dump($item_type_id);
+		foreach ($this->data['functions'] as $function) {
+			if ($function->user_function == "Consumables") {
+				$access = 1;
+				break;
+			}
+		}
+		if ($access != 1) {
+			show_404();
+		}
 
+		$this->load->model('consumables/indent_report_model');
+		$items = $this->indent_report_model->search_items_selectize();
+		$res = array('items' => $items);
+		echo json_encode($res);
+	}
 	function run_report_periodic()
 	{
 		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
@@ -497,15 +535,25 @@ class Indent_reports extends CI_Controller
 		);
 		$this->form_validation->set_rules($validations); //load the fields for validation.
 		$this->form_validation->set_message('message', 'Please input missing details.'); //if any input is missing then display message 'please input missing details.'
+		
 		if ($this->form_validation->run() === FALSE) //checking for validation is successful or not
 		{
 
 			$this->data['search_indent_detailed'] = $this->indent_report_model->list_indents($from_date, $to_date, $from_party, $to_party, $indent_status);
+			$this->data['indents_count'] = $this->indent_report_model->list_indents_count($from_date, $to_date, $from_party, $to_party, $indent_status);
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;	
+			log_message("INFO", "SAIRAM ".json_encode($this->data['indents_count']));
 			$this->load->view('pages/consumables/indent_list_view', $this->data);
 		} else if ($this->input->post('search')) {
 			$this->data['mode'] = "search";
 			$this->data['search_indent_detailed'] = $this->indent_report_model->list_indents($from_date, $to_date, $from_party, $to_party, $indent_status);
-
+			$this->data['indents_count'] = $this->indent_report_model->list_indents_count($from_date, $to_date, $from_party, $to_party, $indent_status);
+			$this->data['rowsperpage'] = 15;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;
+			log_message("INFO", "SAIRAM ".json_encode($this->data['indents_count']));
 			$this->load->view('pages/consumables/indent_list_view', $this->data);
 		} else {
 			show_404();

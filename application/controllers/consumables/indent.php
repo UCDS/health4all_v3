@@ -199,6 +199,37 @@ class Indent extends CI_Controller {
         $this->load->view('templates/footer');	
         
 	}
+
+    function search_selectize_items()
+	{
+		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
+            $this->data['userdata']=$this->session->userdata('logged_in');                        //taking session data into data array of index:userdata                   
+        }	
+        else{
+            show_404();                                                                          //if user is not logged in then this error will be thrown.
+        }
+		$this->data['userdata'] = $this->session->userdata('logged_in');
+		$user_id = $this->data['userdata']['user_id'];
+		$this->load->model('staff_model');
+		$this->data['functions'] = $this->staff_model->user_function($user_id);
+		$access = -1;
+		//var_dump($item_type_id);
+		foreach ($this->data['functions'] as $function) {
+			if ($function->user_function == "Consumables") {
+				$access = 1;
+				break;
+			}
+		}
+		if ($access != 1) {
+			show_404();
+		}
+
+		$this->load->model('consumables/indent_model');
+		$items = $this->indent_model->search_items_selectize();
+		$res = array('items' => $items);
+		echo json_encode($res);
+	}
+
     function auto_indent(){		                                  
         $this->data['userdata']=$this->session->userdata('logged_in');
         $user_id=$this->data['userdata']['user_id']; 

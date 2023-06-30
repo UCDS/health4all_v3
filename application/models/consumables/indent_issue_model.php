@@ -11,26 +11,36 @@ class Indent_issue_model extends CI_Model{                                      
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));                           //get to date from the user with input->post method and store it into a var:to_date
 		} 
 		else if($this->input->post('from_date') || $this->input->post('to_date')){                     //checking whether any one of them(from date or to date) are valid
-			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');  //if from_date valid it will be stored else to_date will be stored
-			$to_date=$from_date;                                                                       //to_date is same as from_date
+			$from_date = null;
+			$to_date = null;
+			if($this->input->post('from_date')){
+				$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));  //if from_date valid it will be stored else to_date will be stored
+				$to_date=date("Y-m-d", strtotime(date("Y-m-d").'+23 hour 59 min 59 second'));                                                                       //to_date is same as from_date
+			}else{
+				$from_date = date("Y-m-d", strtotime(0));
+				$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+
+			}
 		}
 		else{                                                      
 			$from_date=date("Y-m-d", strtotime( date( "Y-m-d", strtotime( date("Y-m-d") ) ) . "-1 month" ) ); //by default setting from_date as 1 month back
 			$to_date=date("Y-m-d");                                                                           //by default setting to date as current date
 		}
-		if($this->input->post('auto_indent')!=1){
-		if($this->input->post('item_type')){                                                            //all the below four if conditions are about checking and getting the particular values from user 
-			$this->db->where('item_type.item_type_id',$this->input->post('item_type'));
-		}
-		if($this->input->post('item')){
-			$this->db->where_in('item.item_id',$this->input->post('item'));
-		}
-		    if($this->input->post('from_id')){
-			    $this->db->where('from_party.supply_chain_party_id',$this->input->post('from_id'));
-		    }
-		    if($this->input->post('to_id')){
-			    $this->db->where('to_party.supply_chain_party_id',$this->input->post('to_id'));
-		    }  
+		 
+		if($this->input->post('submit')){
+			// echo "inside not auto indent ". $this->input->post('submit');
+			if($this->input->post('item_type')){                                                            //all the below four if conditions are about checking and getting the particular values from user 
+				$this->db->where('item_type.item_type_id',$this->input->post('item_type'));
+			}
+			if($this->input->post('item')){
+				$this->db->where_in('item.item_id',$this->input->post('item'));
+			}
+				if($this->input->post('from_id')){
+					$this->db->where('from_party.supply_chain_party_id',$this->input->post('from_id'));
+				}
+				if($this->input->post('to_id')){
+					$this->db->where('to_party.supply_chain_party_id',$this->input->post('to_id'));
+				}  
 		}
 	    $this->db->select('indent.approve_date_time,item_type.item_type_id,indent_item.quantity_approved,indent.*,item_type,item_name,from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party')->from('indent')
 	    ->join('indent_item','indent.indent_id=indent_item.indent_id','left')
@@ -108,7 +118,7 @@ class Indent_issue_model extends CI_Model{                                      
 		return $query->result();   
 	}//display_issue_details
 
-    function get_supply_chain_party($type=""){  
+    function get_supply_chain_party($type="", $limit=-1){  
 		$hospital=$this->session->userdata('hospital');                                                                //function definition with name :get_data
 	    if($type=="item_type")                                                                    //all these are if conditions to select particular data from database
 			$this->db->select("*")->from("item_type")->order_by('item_type', 'ASC');
@@ -124,10 +134,34 @@ class Indent_issue_model extends CI_Model{                                      
 		else if($type=="party")
 			$this->db->select("supply_chain_party_id,supply_chain_party_name")->from("supply_chain_party")
 			->where('supply_chain_party.hospital_id', $hospital['hospital_id'])->order_by('supply_chain_party_name', 'ASC');
-			$resource=$this->db->get();
-			return $resource->result();
+		if($limit != -1){
+			$this->db->limit($limit);
+		}
+		$resource=$this->db->get();
+		return $resource->result();
 	}//get_data
     
+	function search_items_selectize()
+	{
+		$this->db->select('item.item_name,item.item_id,item_form.item_form_id,item_form.item_form,item_type.item_type,dosage.dosage,dosage.dosage_unit')
+			->from("item")
+			->join('item_form', 'item_form.item_form_id=item.item_form_id', 'left')
+			->join('generic_item', 'generic_item.generic_item_id=item.generic_item_id', 'left')
+			->join('item_type', 'item_type.item_type_id=generic_item.item_type_id', 'left')
+			->join('dosage', 'dosage.dosage_id=item.dosage_id', 'left')
+			->order_by('item.item_name', 'ASC');
+		if($this->input->post('query')){
+			$this->db->like('item.item_name', $this->input->post('query'));
+		}
+
+		if($this->input->post('item_type')){
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+		}
+		$query = $this->db->get();
+		return $query->result();
+
+	}
+
 	function issue_indent(){                                                                      //function definition with name:issue_indent
 		$user_data=$this->session->userdata('logged_in');                                         //get user data and store it in a var:user_data
 		$this->db->select('staff_id')->from('user')                                               //select  staff_id of the particular user who logged in

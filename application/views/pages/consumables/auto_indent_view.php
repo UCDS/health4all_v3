@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/bootbox.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/metallic.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/theme.default.css">
@@ -33,7 +35,7 @@
 		min-height: 20px;
 		margin: auto;
 	}
-/* 
+	/* 
 	td#change {
 		padding: 0%;
 	} */
@@ -78,19 +80,81 @@
 	.wide {
 		min-width: 200px;
 	}
-	/* https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp	 */
-	/* Chrome, Safari, Edge, Opera */
-/* input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+	
+</style>
+<style type="text/css">
+.selectize-control.items .selectize-dropdown>div {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Firefox */
-/* input[type=number] {
-  -moz-appearance: textfield;
-}  */
+.selectize-control.items .selectize-dropdown .by {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.selectize-control.items .selectize-dropdown .by::before {
+	content: 'by ';
+}
+
+.selectize-control.items .selectize-dropdown .name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.selectize-control.items .selectize-dropdown .title {
+	display: block;
+}
+
+.selectize-control.items .selectize-dropdown .description {
+	font-size: 12px;
+	display: block;
+	color: #a0a0a0;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.selectize-control.items .selectize-dropdown .meta {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	margin-right: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li span {
+	font-weight: bold;
+}
+
+.selectize-control.items::before {
+	-moz-transition: opacity 0.2s;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	content: ' ';
+	z-index: 2;
+	position: absolute;
+	display: block;
+	top: 12px;
+	right: 34px;
+	width: 16px;
+	height: 16px;
+	background: url(<?php echo base_url(); ?>assets/images/spinner.gif);
+	background-size: 16px 16px;
+	opacity: 0;
+}
+
+.selectize-control.items.loading::before {
+	opacity: 0.4;
+}
 </style>
+
 <script type="text/javascript">
 	var rowcount = 0;
 	$(function () {
@@ -158,12 +222,16 @@ input::-webkit-inner-spin-button {
 		console.log("SAIRAM FROM ADDINVITELEMENT", Number(quantity_indented[index].value), current_sum);
 		let balance = Number(quantity_indented[index].value) - current_sum;
 		current_items[index].quantity_added_inventory = Number(quantity_indented[index].value);
+		// console.log($(item_elements[index]).selectize()[0].selectize.getValue());
+		let sel = $(item_elements[index]).selectize()[0].selectize;
+		console.log(sel.options, Number(sel.getValue()));
+		let option_text = sel.options[Number(sel.getValue())].item_name;
 		$(selector).after(
 			`<tr name="inventory_item_${item_id}[]">\
 						<td><center><button name="remove_inventory_item_${item_id}[]" class="btn btn-danger item"><span class="glyphicon glyphicon-trash"> </span></button></center></td>\
 							<td>\
 								<div class="col">\
-								${$(item_elements[index]).find('[value="' + item_elements[index].value + '"]').html()}\
+								${ option_text.length > 20 ? option_text.slice(0, 20) + "...": option_text}\
 								</div>\
 							</td>\
 							<td>\
@@ -234,7 +302,59 @@ input::-webkit-inner-spin-button {
 		let quantity_elements = $(`[name = 'quantity_indented[]']`);
 		let remove_inventory_item_buttons = null;
 
-		
+		let options = <?= json_encode($all_item); ?>;
+		options = options.map(opt => {
+			let ans = `${opt.item_name}-${opt.item_form}-`;
+			if (opt.dosage) {
+				ans += opt.dosage;
+			}
+			if (opt.dosage_unit) {
+				ans += opt.dosage_unit;
+			}
+			return {
+				...opt,
+				item_name: ans
+			};
+		});
+		$selectize = $("#item").selectize({
+			labelField: "item_name",
+			searchField: "item_name",
+			valueField: "item_id",
+			options: options,
+			// allowEmptyOption: true, 
+			// showEmptyOptionInDropdown: true, 
+			maxOptions: 10,
+			load: function(query, callback) {
+				if(!query.length) return callback();
+				console.log('loading', $('.selectize-control.items'));
+				$($('.selectize-control.items')[curr_id]).addClass('loading');
+				$.ajax({
+					url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
+					type: 'POST',
+					dataType: 'JSON', 
+					data: {query: query, item_type: $('#item_type').val()},
+					error: function(res) {
+						
+						callback();
+						$($('.selectize-control.items')[curr_id]).addClass('loading');
+						setTimeout(() => {
+
+							$($('.selectize-control.items')[curr_id]).removeClass('loading');
+						}, 500);
+					},
+					success: function(res) {
+						
+						callback(res.items);
+						$($('.selectize-control.items')[curr_id]).addClass('loading');
+						setTimeout(() => {
+							console.log('delayed loading');
+							$($('.selectize-control.items')[curr_id]).removeClass('loading');
+						}, 500);
+					}
+				});
+			}
+		});
+
 		let idx = current_items.length - 1;
 		$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 		let last_item_id = item_elements[idx].value;
@@ -253,7 +373,9 @@ input::-webkit-inner-spin-button {
 			let selected = current_items.findIndex(item => item.array_id === curr_id);
 			let itemExists = current_items.findIndex(item => item.item_id == e.target.value);
 			if(itemExists != -1 && itemExists !== selected){
-				e.target.value = "";
+				// e.target.value = "";
+				console.log("FIRST DUPLICATE")
+				$selectize[idx].selectize.setValue("");
 				return;
 			}
 			console.log(selected, current_items, curr_id);
@@ -354,14 +476,10 @@ input::-webkit-inner-spin-button {
 						<center><button type='button' name="add_inventory_item[]" class="btn item"><span
 									class="glyphicon glyphicon-plus"></span></button></center>
 					</td>
-					<td class="item_name">
-					<select name="item[]" id="item" class="form-control"  data-toggle="tooltip" data-placement="bottom" title="" required>
+					<td class="item_name" colspan="5">
+					<select name="item[]" id="item" class="items"  data-toggle="tooltip" data-placement="bottom" title="" required>
 						<option value="">Select</option>
-						<?php
-						foreach ($all_item as $t) {
-							echo "<option value='" . $t->item_id . "'>" . $t->item_name . "-" . $t->item_form . "-" . $t->dosage . $t->dosage_unit . "</option>";
-						}
-						?>
+						
 					</select>
 					</td>
 					<td><input class="form-control narrow" type="number" min="0"
@@ -390,15 +508,72 @@ input::-webkit-inner-spin-button {
 				item_id: null
 			});
 
-			item_elements = $(`[name = 'item[]']`);
-			let quantity_elements = $(`[name = 'quantity_indented[]']`);
-			let add_inventory_item_buttons = $(`[name="add_inventory_item[]"]`);
-			let remove_inventory_item_buttons = null;
+		item_elements = $(`[name = 'item[]']`);
+		let quantity_elements = $(`[name = 'quantity_indented[]']`);
+		let add_inventory_item_buttons = $(`[name="add_inventory_item[]"]`);
+		let remove_inventory_item_buttons = null;
 
-			let current_item_id = null;
-			let idx = current_items.length - 1;
-			console.log("IEIDX", idx, $(item_elements[idx]));
+		let current_item_id = null;
+		let idx = current_items.length - 1;
+		console.log("IEIDX", idx, $(item_elements[idx]));
+		// let $selectize = $('[name="item[]"]').selectize({
+		// 	maxOptions: 10
+		// });
+		let options = <?= json_encode($all_item); ?>;
+		options = options.map(opt => {
+		let ans = `${opt.item_name}-${opt.item_form}-`;
+		if (opt.dosage) {
+			ans += opt.dosage;
+		}
+		if (opt.dosage_unit) {
+			ans += opt.dosage_unit;
+		}
+		return {
+			...opt,
+			item_name: ans
+		};
+		});
+		console.log(options);
+		// let temp = [];
+		
+		$selectize = $('[name="item[]"]').selectize({
+			labelField: "item_name",
+			searchField: "item_name",
+			valueField: "item_id",
+			options: options,
+			// allowEmptyOption: true, 
+			// showEmptyOptionInDropdown: true, 
+			maxOptions: 10,
+			load: function(query, callback) {
+				if(!query.length) return callback();
+				console.log('loading', $('.selectize-control.items'));
+				$($('.selectize-control.items')[idx]).addClass('loading');
+				$.ajax({
+					url: '<?php echo base_url(); ?>consumables/indent/search_selectize_items',
+					type: 'POST',
+					dataType: 'JSON', 
+					data: {query: query, item_type: $('#item_type').val()},
+					error: function(res) {
+						
+						callback();
+						$($('.selectize-control.items')[idx]).addClass('loading');
+						setTimeout(() => {
 
+							$($('.selectize-control.items')[idx]).removeClass('loading');
+						}, 500);
+					},
+					success: function(res) {
+						
+						callback(res.items);
+						$($('.selectize-control.items')[idx]).addClass('loading');
+						setTimeout(() => {
+							console.log('delayed loading');
+							$($('.selectize-control.items')[idx]).removeClass('loading');
+						}, 500);
+					}
+				});
+			}
+		});
 			$(item_elements[idx]).change(e => {
 				$(`[name="inventory_item_${current_item_id}[]"]`).remove();
 				console.log("Toooltop", $(item_elements[idx]));
@@ -406,7 +581,12 @@ input::-webkit-inner-spin-button {
 				let selected = current_items.findIndex(item => item.array_id === current_item_array_id);
 				let itemExists = current_items.findIndex(item => item.item_id == e.target.value);
 				if(itemExists != -1 && itemExists !== selected){
-					e.target.value = "";
+					console.log("SAIRRRRRRRRRRAM item exists");
+					// console.log(e);
+					// e.target.value = "";
+					console.log($selectize);
+					console.log("second duplicate");
+					$selectize[idx].selectize.setValue("");
 					return;
 				}
 				console.log(selected, current_items, current_item_array_id);
@@ -426,7 +606,7 @@ input::-webkit-inner-spin-button {
 				console.log(current_items);
 
 			});
-			
+
 
 
 
@@ -488,7 +668,7 @@ input::-webkit-inner-spin-button {
 					current_items[idx].quantity_added_inventory = proposed_sum;
 					console.log("SAIRAM QTIES", current_items);
 				});
-				
+
 			});
 
 
@@ -502,7 +682,7 @@ input::-webkit-inner-spin-button {
 			console.log(current_items);
 			console.log();
 			for (let i = 0; i < current_items.length; i++) {
-				
+
 				if (current_items[i].quantity_added_inventory != quantity_elements[i].value) {
 					display_message("Quantities of different items must match the number that have been issued.")
 					e.preventDefault();
@@ -537,12 +717,11 @@ input::-webkit-inner-spin-button {
 					}
 				}
 			}
-			
+
 		})
 	});
 
 </script>
-
 <script>
 	$(function () {
 		$('#to_id  option[value="' + $('#from_id').val() + '"]').hide();
@@ -550,7 +729,7 @@ input::-webkit-inner-spin-button {
 			$("#to_id option").show();
 			var optionval = this.value;
 			$('#to_id  option[value="' + optionval + '"]').hide();
-
+			
 		});
 	});
 	$(function () {
@@ -559,9 +738,12 @@ input::-webkit-inner-spin-button {
 			$("#from_id option").show();
 			var optionval = this.value;
 			$('#from_id  option[value="' + optionval + '"]').hide();
-
+			
 		});
 	});
+</script>
+<script>
+	
 </script>
 
 <style>
@@ -614,13 +796,13 @@ input::-webkit-inner-spin-button {
 
 									}
 									?>
-									
+
 								</select>
 							</div>
 						</div> <!--end of From party-->
 						<div class="col-md-3"> <!-- To party-->
 							<div class="form-group">
-								<label for="inputto_id">Indent To Party<font color='red'>*</font></label>
+								<label for="to_id">Indent To Party<font color='red'>*</font></label>
 								<select name="to_id" id="to_id" class="form-control wide" required>
 									<option value="">Select</option>
 									<?php
@@ -642,15 +824,15 @@ input::-webkit-inner-spin-button {
 
 					<div class="row">
 						<div class="col-md-2">
-							<button type="button" name="add_item" id="add_item"
-												class="btn btn-primary">Add Item +</button>
+							<button type="button" name="add_item" id="add_item" class="btn btn-primary">Add Item
+								+</button>
 						</div>
 					</div>
 					<br>
 					<div class="row">
-						
-						
-						
+
+
+
 						<div>
 							<div id="error-alerts" style="max-width: 25%; margin: auto;">
 								<div class="alert alert-danger">
@@ -687,14 +869,10 @@ input::-webkit-inner-spin-button {
 														class="btn item"><span
 															class="glyphicon glyphicon-plus"></span></button></center>
 											</td>
-											<td class="item_name">
-												<select name="item[]" id="item" class="form-control" data-toggle="tooltip" data-placement="bottom" title="" required>
+											<td class="item_name" colspan="5">
+												<select name="item[]" id="item" class="items" data-toggle="tooltip" data-placement="bottom" title="" required>
 													<option value="">Select</option>
-													<?php
-													foreach ($all_item as $t) {
-														echo "<option value='" . $t->item_id . "'>" . $t->item_name . "-" . $t->item_form . "-" . $t->dosage . $t->dosage_unit . "</option>";
-													}
-													?>
+													
 												</select>
 											</td>
 											<td><input class="form-control narrow" type="number" min="0" value="0"
