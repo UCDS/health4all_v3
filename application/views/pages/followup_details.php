@@ -606,7 +606,12 @@ echo "</select></li>";
 		
 		<br> Address: <?php echo $followup->address;?></td>
 		<td><?php echo $followup->phone;?></td>
-		<td><a href="<?php if($followup->map_link) { echo $followup->map_link;} else {echo '#';}?>" <?php if($followup->map_link) { ?> target="_blank" rel="noopener noreferrer" <?php } ?>>View</a></td>
+		<td>
+		<?php 
+		if($followup->map_link) { ?>
+			<a href="<?php echo $followup->map_link; ?>" target="_blank"> View</a>
+		<?php }?>
+		</td>
 		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
 		<td><?php echo $followup->diagnosis;?></td>
 		<td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
