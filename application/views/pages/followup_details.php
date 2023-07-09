@@ -344,7 +344,7 @@ function onchange_page_dropdown(dropdownobj){
                 <label style=" margin-left: 50px"><b>Life Status:  </b></label>
 		<input type ="radio" name="life_status" class ="form-control" value="1" <?php if( empty($this->input->post('life_status')) || ($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label>Alive</label>
 		<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  ><label>Not Alive </label>
-
+		<input type="radio" name="life_status" class ="form-control" value="3" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 3) {echo "checked" ;} ?>  ><label>No Follow up</label>
 		<br>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
@@ -376,8 +376,7 @@ function onchange_page_dropdown(dropdownobj){
 
 
       		    <select name="last_visit_type" id="last_visit_type" class="form-control"> 
-			<option value="">Last Visit Type</option>  
-			<option value="All" <?php echo ($this->input->post('last_visit_type') == 'All') ? 'selected' : ''; ?> >All</option>          	
+			<option value="">Last Visit Type</option>           	
                         <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
 			<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
 					
@@ -574,6 +573,8 @@ echo "</select></li>";
 		<th>Patient Details</th>		
 		<th>Phone</th>
 		<th>Map link</th>
+		<th>Latitude</th>
+		<th>Longitude</th>
 		<th>ICD Code</th>
 		<th>Diagnosis</th>
 		<th>Status Date</th>
@@ -582,8 +583,9 @@ echo "</select></li>";
 		<th>Priority</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
+		<th>Note</th>
 		<th>Volunteer</th>
-		<th>Note</th>			
+		<th>Last update by & Time</th>					
 	</thead>
 	<tbody>
 	<?php
@@ -612,6 +614,8 @@ echo "</select></li>";
 			<a href="<?php echo $followup->map_link; ?>" target="_blank"> View</a>
 		<?php }?>
 		</td>
+		<td><?php echo $followup->latitude;?></td>
+		<td><?php echo $followup->longitude;?></td>
 		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
 		<td><?php echo $followup->diagnosis;?></td>
 		<td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
@@ -620,8 +624,10 @@ echo "</select></li>";
 		<td><?php echo $followup->priority_type; ?></td>
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
-		<td><?php echo $followup->fname." ".$followup->lname;?></td>
 		<td><?php echo $followup->note;?></td>
+		<td><?php echo $followup->fname." ".$followup->lname;?></td>
+		<td><?php echo $followup->followup_update_by." & ".date("j M Y", strtotime("$followup->followup_update_time")).", ".date("h:i A.", strtotime("$followup->followup_update_time")); ?></td>
+		
 		<?php $sno++;} ?>
 		
 	</tr>

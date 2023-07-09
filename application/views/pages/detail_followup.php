@@ -12,6 +12,17 @@
 <!-- <script type="text/javascript" src="<?php //echo base_url();?>assets/js/patient_followp_validations.js"></script> -->
 
 <style>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 	.mandatory{
 	color:red;
 	cursor:default;
@@ -366,7 +377,9 @@ $patient = $patients[0];
 								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" <?php if($patient_followup->life_status == "1")  echo "checked" ; ?> required >
 								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
 								<input type="radio" name="life_status" id="life_status_notlive" <?php if($patient_followup->life_status == "0")  echo "checked" ; ?> value="0" required >
-								<label for="status_dead">Not Alive</label><br>
+								<label for="status_dead">Not Alive</label>&nbsp;&nbsp;								
+								<input type="radio" name="life_status" id="life_status_nofollowup" <?php if($patient_followup->life_status == "2")  echo "checked" ; ?> value="2" required >
+								<label for="status_no_followup">No Followup</label><br>
 
 							</div>
 				</div>
@@ -401,7 +414,6 @@ $patient = $patients[0];
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
 								<select class="form-control" name="last_visit_type"   required>
 			<option value="">Last Visit Type</option>  
-			<option value="All" <?php echo ($patient_followup->last_visit_type == 'All') ? 'selected' : ''; ?> >All</option>          	
                         <option value="IP" <?php echo ($patient_followup->last_visit_type == 'IP') ? 'selected' : ''; ?> >IP</option> 
 			<option value="OP" <?php echo ($patient_followup->last_visit_type == 'OP') ? 'selected' : ''; ?> >OP</option>   								
 								</select>
@@ -488,6 +500,20 @@ $patient = $patients[0];
 						<div class="form-group">
 								<label for="input_map_link">Map link</label>
 								<input class="form-control" name="input_map_link"  id="input_map_link"  placeholder="Enter Map link"  type="text" value="<?php if($patient_followup) echo $patient_followup->map_link;  ?>" align="middle">
+						</div> 
+						</div>
+						
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_latitude">Latitude</label>
+								<input class="form-control" name="input_latitude"  id="input_latitude"  placeholder="Enter Latitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->latitude;  ?>" align="middle">
+						</div> 
+						</div>
+						
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_longitude">Longitude</label>
+								<input class="form-control" name="input_longitude"  id="input_longitude"  placeholder="Enter Longitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->longitude;  ?>" align="middle">
 						</div> 
 						</div>
 			</div>	

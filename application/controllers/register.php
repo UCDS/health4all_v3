@@ -1080,9 +1080,9 @@ class Register extends CI_Controller {
 			
 				$insert_id = $this->register_model->addfor_followup();
 				if($insert_id)
-				$this->data['msg'] = 'Followup Added Successfully';
+				$this->data['msg'] = '<b style="color:#5bff33;">Followup Added Successfully</b>';
 			else
-				$this->data['msg'] = 'Something went wrong try again';
+				$this->data['msg'] = '<b style="color:#ff4633;">Something went wrong try again</b>';
 			//	$this->load->view('pages/patient_followup',$this->data);
 		}
 			 
@@ -1091,9 +1091,9 @@ class Register extends CI_Controller {
 	
 				$update = $this->register_model->updatefor_followup();
 				if($update == true)
-					$this->data['msg'] = 'Updated Successfully';
+					$this->data['msg'] = '<b style="color:#5bff33;">Updated Successfully</b>';
 					else
-					$this->data['msg'] = 'Something went wrong try again';
+					$this->data['msg'] = '<b style="color:#ff4633;">Something went wrong try again</b>';
 			 }
 			// $response = $this->input->post();
 			// $update_patients = array();

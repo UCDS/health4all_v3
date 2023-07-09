@@ -155,3 +155,9 @@ ALTER TABLE `form` ADD `a6_print_layout_id` INT(6) NULL AFTER `hospital_id`;
 ALTER TABLE `patient` CHANGE `dob` `dob` DATE NULL DEFAULT NULL;
 
 ALTER TABLE `patient_followup` ADD `map_link` VARCHAR(300) NOT NULL AFTER `note`;
+
+ALTER TABLE `patient_followup` ADD `add_by` INT AFTER `map_link`, ADD `add_time` DATETIME AFTER `add_by`, ADD `update_by` INT AFTER `add_time`, ADD `update_time` DATETIME AFTER `update_by`;
+
+ALTER TABLE `patient_followup` CHANGE `longitude` `longitude` DOUBLE;
+ALTER TABLE `patient_followup` CHANGE `latitude` `latitude` DOUBLE;
+ALTER TABLE `patient_followup` CHANGE `life_status` `life_status` TINYINT(4) NOT NULL COMMENT '\'0\' - death \'1\' - Alive \'2\' - No follow up';
