@@ -4478,14 +4478,16 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                 $filters[$filter_name_query] = $this->input->post($filter_name);
             }
         }*/
-        echo("<script>console.log('PHP: " . $this->input->post('life_status') . "');</script>");
+        
         	if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
 			$this->db->where('patient_followup.life_status',1);
                 }
 		else if($this->input->post('life_status')== 2){
 			$this->db->where('patient_followup.life_status',0);
 		}
-				
+		else if($this->input->post('life_status')== 3){
+			$this->db->where('patient_followup.life_status',2);
+		}		
 		if($this->input->post('last_visit_type')){
 			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
 		}
@@ -4572,6 +4574,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		else if($this->input->post('life_status')== 2){
 			$this->db->where('patient_followup.life_status',0);
 		}
+		else if($this->input->post('life_status')== 3){
+			$this->db->where('patient_followup.life_status',2);
+		}
 				
 		if($this->input->post('last_visit_type')){
 			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
@@ -4619,16 +4624,21 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         patient_followup.map_link,
         patient_followup.last_visit_type,
         patient_followup.last_visit_date,
+        patient_followup.latitude,
+        patient_followup.longitude,
         patient_followup.note,
         priority_type.priority_type,
         route_primary.route_primary,
         route_secondary.route_secondary,
         staff.first_name as fname,
-        staff.last_name as lname,",false)
+        staff.last_name as lname,
+        patient_followup.update_time as followup_update_time,   
+	CONCAT(followup_update_by.first_name, ' ', followup_update_by.last_name) as followup_update_by",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','both')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
+		->join('staff as followup_update_by','patient_followup.update_by=followup_update_by.staff_id','left')
 		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
 		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
 		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')

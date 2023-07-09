@@ -195,10 +195,17 @@ $patient = $patients[0];
 			
 	</div>
 	</div>
-	<?php if(count($patients)==0){
+	
+	<?php if(count($patients)==0 && ! isset($msg)){
 			echo "<b>". "No patient record found. Register Patient and add for Followup" ."</b>" ;
 		}
-		else {
-			echo "<b>". $msg ."</b>";
-
-		} ?>
+		
+		
+		if ($msg){
+		
+		echo  $msg;
+		}
+		
+		 ?>
+		
+		

@@ -1267,7 +1267,18 @@ class Register_model extends CI_Model{
             $followup_info['note'] = $this->input->post('input_note');
         }
         
-         
+        if($this->input->post('input_latitude')){
+            $followup_info['latitude'] = $this->input->post('input_latitude');
+        }
+        
+        if($this->input->post('input_longitude')){
+            $followup_info['longitude'] = $this->input->post('input_longitude');
+        }
+       
+        $followup_info['add_by'] = $followup_info['update_by'] = $this->session->userdata('logged_in')['staff_id'];
+	$followup_info['add_time'] = $followup_info['update_time'] = date("Y-m-d H:i:s");
+	
+	
       //  $this->db->trans_start();
         $this->db->insert('patient_followup', $followup_info);
 		$insert_id = $this->db->insert_id();
@@ -1295,6 +1306,10 @@ class Register_model extends CI_Model{
 			$this->db->set('volunteer_id', $this->input->post('volunteer'));
 			$this->db->set('note', $this->input->post('input_note'));
 			$this->db->set('map_link', $this->input->post('input_map_link'));
+			$this->db->set('update_by', $this->session->userdata('logged_in')['staff_id']);
+			$this->db->set('update_time', date("Y-m-d H:i:s"));
+			$this->db->set('latitude', $this->input->post('input_latitude'));
+			$this->db->set('longitude', $this->input->post('input_longitude'));
 			$this->db->where('patient_id', $this->input->post('patient_id'));
 			if($this->db->update('patient_followup'))
 			
