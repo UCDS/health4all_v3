@@ -192,7 +192,7 @@ textarea {
 				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 					<div class="form-horizontal">
 						<label for="district_id">District<font style="color:red">*</font></label>
-						<select id="district_id" name="user_id" class="" placeholder="-Enter User Name/Phone-">
+						<select id="district_id" name="district_id" class="" placeholder="-Enter User Name/Phone-">
 							<option value="">-Enter District-</option>
 						</select>
 					</div>
