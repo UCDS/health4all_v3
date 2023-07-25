@@ -396,9 +396,15 @@ echo "</select></li>";
         </td>
         <td>
         <?php 
-          foreach($proficiency as $key=>$val){
-            if($key == $a->proficiency){
-             echo $val;}} ?>
+          $keys = explode(',',$a->proficiency);
+
+            $proficiency_array = array();
+            foreach($keys as $key){
+                if(isset($proficiency[$key])){
+                  $proficiency_array[] = $proficiency[$key];}    
+                  } 
+            echo implode(", ", $proficiency_array);
+        ?>
         </td>
         <td>
             <?php echo $a->user_id ? 'Yes': 'No';?>
