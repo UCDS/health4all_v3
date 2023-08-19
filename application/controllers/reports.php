@@ -381,7 +381,7 @@ class Reports extends CI_Controller {
 		if($access==1){
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-		$this->data['title']="OP Detail 3";
+		$this->data['title']="OP Detail - Follow up";
 		$this->data['all_departments']=$this->staff_model->get_department();
 		$this->data['units']=$this->staff_model->get_unit();
 		$this->data['areas']=$this->staff_model->get_area();
