@@ -1536,14 +1536,15 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		if(isset($data['phone'])){
 			$this->db->where('phone', '0' . $data['phone']);
 		}
-		$this->db->select("helpline_receiver.receiver_id, full_name, phone, email, CONCAT(district.district, '-' , state.state) as district, category, user_id, doctor, enable_outbound, app_id, activity_status,language,proficiency, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
+		$this->db->select("helpline_receiver.receiver_id, full_name, phone, email, CONCAT(district.district, '-' , state.state) as district, category, user_id, doctor, enable_outbound, app_id, activity_status,GROUP_CONCAT(language) AS language,GROUP_CONCAT(proficiency) AS proficiency, CONCAT(helpline.note, ' - ', helpline.helpline) as helpline,helpline_receiver_note", false)
 		->from('helpline_receiver')
 		->join('helpline', 'helpline_receiver.helpline_id=helpline.helpline_id','left')
 		->join('district', 'helpline_receiver.district_id=district.district_id','left')
 		->join('helpline_receiver_language', 'helpline_receiver.receiver_id=helpline_receiver_language.receiver_id','left')
 		->join('language', 'language.language_id=helpline_receiver_language.language_id','left')
 		->join('state', 'district.state_id= state.state_id','left')
-		->order_by('full_name', 'asc');
+		->order_by('full_name', 'asc')
+		->group_by('receiver_id,full_name');
 		if ($default_rowsperpage !=0){
 			$this->db->limit($rows_per_page,$start);
 		}
