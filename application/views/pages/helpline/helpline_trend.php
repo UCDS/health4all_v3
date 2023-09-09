@@ -80,7 +80,7 @@
         Highcharts.chart('calls_chart', {
 
                         title: {
-                            text: 'Total Calls (<?=$total_calls;?>)'
+                            text: 'Total Calls - <?=$total_calls;?>'
                         },
                         xAxis: {
 							
