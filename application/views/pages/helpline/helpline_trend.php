@@ -80,14 +80,14 @@
         Highcharts.chart('calls_chart', {
 
                         title: {
-                            text: 'Total Calls (<?=$total_calls;?>)'
+                            text: 'Total Number of Calls (<?=$total_calls;?>)'
                         },
                         xAxis: {
 							
 								plotBands: [{ // visualize the weekend
 									from: 4.5,
 									to: 6.5,
-									color: 'rgba(68, 170, 213, .2)'
+									color: 'rgba(255, 0, 0, .2)'
 								}],
 								categories: [<?php $i=1;foreach($report as $a)  { echo "'".$a->datefield;if($i<count($report)) echo "' ,"; else echo "'"; $i++; }?>]
 								},
