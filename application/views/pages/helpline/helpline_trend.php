@@ -87,7 +87,7 @@
 								plotBands: [{ // visualize the weekend
 									from: 4.5,
 									to: 6.5,
-									color: 'rgba(68, 170, 213, .2)'
+									color: 'rgba(65, 105, 225, .2)'
 								}],
 								categories: [<?php $i=1;foreach($report as $a)  { echo "'".$a->datefield;if($i<count($report)) echo "' ,"; else echo "'"; $i++; }?>]
 								},
