@@ -634,7 +634,7 @@ class Helpline extends CI_Controller {
 		curl_setopt($ch, CURLOPT_URL, "https://".$api_key.":".$api_token."@".$account_subdomain."/v1/Accounts/".$account_sid."/Calls/connect");
 
 		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query( array( 'From' => $from, 'Url' => $app_url, 'CallerId' => $calledId, 'CallType' => $call_type) ) );
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query( array( 'From' => $from, 'Url' => $app_url, 'CallerId' => $calledId, 'CallType' => $call_type,'Record' => 'true') ) );
 
 		// Receive server response ...
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
