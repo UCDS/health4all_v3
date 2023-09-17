@@ -208,7 +208,8 @@ class Register_model extends CI_Model{
 	
 	function insert_update_summary_link($summary_link_patient_id,$summary_link_patient_visit_id,$summary_link_contents){
 		$base64_encode_summary_link_contents = base64_encode($summary_link_contents);
-		$summary_link_contents_md5 = md5($base64_encode_summary_link_contents);
+		$summary_link_contents_md5 = base64_encode(md5($base64_encode_summary_link_contents,True));
+		$summary_link_contents_md5 = str_replace("+","sai",$summary_link_contents_md5);
 		$data=array(
 	        'summary_link_patient_id'=>$summary_link_patient_id,
 			'summary_link_patient_visit_id'=>$summary_link_patient_visit_id,
