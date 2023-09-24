@@ -108,7 +108,7 @@ if($function->user_function=="dashboard" ){ ?>
 
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard"){
+			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" || $function->user_function=="edit_demographic"){
 				$admin=1;
 				?>
 				<button class="accordion">Admin</button>
@@ -129,6 +129,10 @@ if($function->user_function=="login_report" ){ ?>
 
 if($function->user_function=="helpline_receiver" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
+<?php		 }
+
+if($function->user_function=="edit_demographic" ){ ?>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/edit_patient_demographic_details";?>">Edit patient details</a></button>
 <?php		 }
 
 

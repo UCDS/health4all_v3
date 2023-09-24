@@ -15,8 +15,9 @@ class Patient extends CI_Controller {
         $this->data['departments']=$this->staff_model->user_department($user_id);
         
 	foreach ($this->data['functions'] as $f ){
-            if($f->user_function=="Bloodbank" || $f->user_function=="IP Summary" || $f->user_function=="Update Patients"){
+            if($f->user_function=="Bloodbank" || $f->user_function=="IP Summary" || $f->user_function=="Update Patients" || $f->user_function=="edit_demographic"){
 		$access=1;
+		break;
             }		
         }
         if($access==0){
@@ -69,6 +70,20 @@ class Patient extends CI_Controller {
         }
         $this->load->view('pages/bloodbank/external_patient_request',$this->data);
         $this->load->view('templates/footer');
+    }
+    
+    function edit_patient_demographic_details(){
+    	$this->data['title']="Edit Patient Demographic details";
+    	$this->load->model('masters_model');
+    	$this->load->model('patient_model');
+    	$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+	$this->load->view('templates/header',$this->data);
+	$this->load->helper('form');
+	$this->data['patient_data'] = $this->patient_model->get_patient_data();
+	echo("<script>console.log('hospitals: " .json_encode( $this->data['patient_data']) . "');</script>");
+	$this->load->view('pages/edit_patient_demographic_details',$this->data);	
+	$this->load->view('templates/footer');
+    	
     }
     
     function casesheet_mrd_status(){

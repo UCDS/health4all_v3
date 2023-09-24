@@ -115,6 +115,24 @@ class patient_model extends CI_Model {
         return $result;
     }
     
+    function get_patient_data(){
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        else{
+            return false;
+        }
+        
+        $this->db->select('patient_id,first_name,middle_name,last_name, phone, alt_phone, gender, age_years,age_months,age_days,address,place,father_name,mother_name,spouse_name,patient_id_manual')
+                ->from('patient')
+                ->where('patient.patient_id', "$patient_id");
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+    
     function get_patients(){
         $year = '';
         $visit_type = '';
