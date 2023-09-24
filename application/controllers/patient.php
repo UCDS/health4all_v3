@@ -80,12 +80,44 @@ class Patient extends CI_Controller {
 	$this->load->view('templates/header',$this->data);
 	$this->load->helper('form');
 	$this->data['patient_data'] = $this->patient_model->get_patient_data();
-	echo("<script>console.log('hospitals: " .json_encode( $this->data['patient_data']) . "');</script>");
+	$this->data['patient_data_edit_history'] = $this->patient_model->get_patient_data_edit_history();
+	
+	if (count($this->data['patient_data']) == 0 && $this->input->post('patient_id')){
+		$this->data['error']="No details found";
+	}
 	$this->load->view('pages/edit_patient_demographic_details',$this->data);	
 	$this->load->view('templates/footer');
     	
     }
     
+    
+    function update_patient_demographic_details(){
+    	$input_data = json_decode(trim(file_get_contents('php://input')), true);
+    	$this->load->model('patient_model');
+    	$result = $this->patient_model->update_patient_data($input_data);
+    	if ($result == 1) {
+    		header('Content-Type: application/json; charset=UTF-8');
+	    	header('HTTP/1.1 500 Internal Server Error');    
+	    	$result=array();    	
+		$result['Message'] = 'Patient ID is missing!';        
+		echo(json_encode($result));
+    	
+    	}  else if ($result == 2) {
+		header('Content-Type: application/json; charset=UTF-8');
+		header('HTTP/1.1 500 Internal Server Error');    
+	        $result=array();    	
+		$result['Message'] = 'Error in transaction!';        
+		echo(json_encode($result));
+	} else {
+		header('Content-Type: application/json; charset=UTF-8');
+		header('HTTP/1.1 200 OK');  
+	    	$result=array(); 
+	    	$result['Message'] = 'Patient data updated successfully!'; 
+	    	echo(json_encode($result));
+	}
+	    	
+    	
+    }
     function casesheet_mrd_status(){
         $this->data['userdata']=$this->session->userdata('hospital');
         $this->load->helper('form');
