@@ -115,6 +115,97 @@ class patient_model extends CI_Model {
         return $result;
     }
     
+    function get_patient_data(){
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        else{
+            return;
+        }
+        
+        $this->db->select('patient_id,first_name,middle_name,last_name, phone, alt_phone, gender, age_years,age_months,age_days,address,place,father_name,mother_name,spouse_name,patient_id_manual')
+                ->from('patient')
+                ->where('patient.patient_id', "$patient_id");
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+    
+    
+    function get_patient_data_edit_history(){
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        else{
+            return;
+        }
+        
+        $this->db->select("table_name,field_name,previous_value,new_value,edit_date_time,CONCAT(staff.first_name, ' ', staff.last_name) as edit_staff",false)
+                ->from('patient_info_edit_history')
+                ->join('staff','patient_info_edit_history.edit_staff_id=staff.staff_id','left')
+                ->where('patient_id', "$patient_id");
+        $this->db->order_by('edit_date_time','DESC');      
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+    
+    
+    function update_patient_data($input_data){
+        if(!array_key_exists('patient_id',$input_data)){
+            return 1;
+        }
+         
+        $patient_id  = $input_data['patient_id'];
+        $staff_id = $this->session->userdata('logged_in')['staff_id'];
+	$edit_time = date("Y-m-d H:i:s");
+        $table_name='patient';
+        $edit_history = array();
+        $patient = array();
+        $elements = ['patient_id_manual','first_name','middle_name','last_name','phone','alt_phone','gender','age_years','age_months','age_days','address','place','father_name','mother_name','spouse_name'];
+        foreach ($elements as $column) {
+        	if (array_key_exists($column,$input_data)){ 
+			$edit_data = array();
+			$patient[$column] = $input_data[$column]['new'];  
+			$edit_data['patient_id'] = $patient_id;
+			$edit_data['edit_date_time'] = $edit_time;
+			$edit_data['edit_staff_id'] = $staff_id; 
+			$edit_data['previous_value'] = $input_data[$column]['old'];
+			$edit_data['new_value'] = $input_data[$column]['new'];
+			$edit_data['field_name'] = $column; 
+			$edit_data['table_name'] = 'patient';  
+			array_push($edit_history,$edit_data);  
+        	}
+        }
+        //echo("<script>console.log('edit_history: " .json_encode($edit_history) . "');</script>");
+        $this->db->trans_start(); # Starting Transaction
+
+
+	$this->db->insert_batch('patient_info_edit_history', $edit_history); # Inserting data
+
+
+	$this->db->where('patient_id', $patient_id);
+	$this->db->update('patient', $patient); 
+
+	$this->db->trans_complete(); # Completing transaction
+
+
+	if ($this->db->trans_status() === FALSE) {
+    		# Something went wrong.
+    		$this->db->trans_rollback();
+    		return 2;
+	} else {
+		# Everything is Perfect. 
+	    	# Committing data to the database.
+	    	$this->db->trans_commit();
+	    	return 0;
+	}
+
+    }
+    
     function get_patients(){
         $year = '';
         $visit_type = '';
