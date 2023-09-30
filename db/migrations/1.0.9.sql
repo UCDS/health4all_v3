@@ -161,3 +161,18 @@ ALTER TABLE `patient_followup` ADD `add_by` INT AFTER `map_link`, ADD `add_time`
 ALTER TABLE `patient_followup` CHANGE `longitude` `longitude` DOUBLE;
 ALTER TABLE `patient_followup` CHANGE `latitude` `latitude` DOUBLE;
 ALTER TABLE `patient_followup` CHANGE `life_status` `life_status` TINYINT(4) NOT NULL COMMENT '\'0\' - death \'1\' - Alive \'2\' - No follow up';
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'edit_demographic', 'Edit Demographic', 'This is for to validate whether user is having permission to edit the demographic details of the patient');
+
+CREATE TABLE `patient_info_edit_history` (
+ `edit_id` int(11) NOT NULL AUTO_INCREMENT,
+ `patient_id` int(11) NOT NULL,
+ `table_name` varchar(200) NOT NULL,
+ `field_name` varchar(200) NOT NULL,
+ `previous_value` varchar(2000) NOT NULL,
+ `new_value` varchar(2000) NOT NULL,
+ `edit_date_time` datetime NOT NULL,
+ `edit_staff_id` int(11) NOT NULL,
+ PRIMARY KEY (`edit_id`),
+ KEY `patient_id` (`patient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

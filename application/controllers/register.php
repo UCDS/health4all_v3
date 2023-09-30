@@ -310,6 +310,7 @@ class Register extends CI_Controller {
 				$basetemplate = str_replace("{#helpline_number#}",$val->helpline, $basetemplate);
 				$basetemplate = str_replace("{#map_link#}",$val->map_link, $basetemplate);
 				$basetemplate = str_replace("{#download_link#}",$downloadurl.$key, $basetemplate);
+				$basetemplate = str_replace("{#keyvariable#}",$key, $basetemplate);
 				$basetemplate = str_replace("{#visit_name#}",$val->visit_name, $basetemplate);
 				if ($val->signed=="0"){
 					$basetemplate = str_replace("{#doctor_name#}","Doctor", $basetemplate);

@@ -15,8 +15,9 @@ class Patient extends CI_Controller {
         $this->data['departments']=$this->staff_model->user_department($user_id);
         
 	foreach ($this->data['functions'] as $f ){
-            if($f->user_function=="Bloodbank" || $f->user_function=="IP Summary" || $f->user_function=="Update Patients"){
+            if($f->user_function=="Bloodbank" || $f->user_function=="IP Summary" || $f->user_function=="Update Patients" || $f->user_function=="edit_demographic"){
 		$access=1;
+		break;
             }		
         }
         if($access==0){
@@ -71,6 +72,52 @@ class Patient extends CI_Controller {
         $this->load->view('templates/footer');
     }
     
+    function edit_patient_demographic_details(){
+    	$this->data['title']="Edit Patient Demographic details";
+    	$this->load->model('masters_model');
+    	$this->load->model('patient_model');
+    	$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+	$this->load->view('templates/header',$this->data);
+	$this->load->helper('form');
+	$this->data['patient_data'] = $this->patient_model->get_patient_data();
+	$this->data['patient_data_edit_history'] = $this->patient_model->get_patient_data_edit_history();
+	
+	if (count($this->data['patient_data']) == 0 && $this->input->post('patient_id')){
+		$this->data['error']="No details found";
+	}
+	$this->load->view('pages/edit_patient_demographic_details',$this->data);	
+	$this->load->view('templates/footer');
+    	
+    }
+    
+    
+    function update_patient_demographic_details(){
+    	$input_data = json_decode(trim(file_get_contents('php://input')), true);
+    	$this->load->model('patient_model');
+    	$result = $this->patient_model->update_patient_data($input_data);
+    	if ($result == 1) {
+    		header('Content-Type: application/json; charset=UTF-8');
+	    	header('HTTP/1.1 500 Internal Server Error');    
+	    	$result=array();    	
+		$result['Message'] = 'Patient ID is missing!';        
+		echo(json_encode($result));
+    	
+    	}  else if ($result == 2) {
+		header('Content-Type: application/json; charset=UTF-8');
+		header('HTTP/1.1 500 Internal Server Error');    
+	        $result=array();    	
+		$result['Message'] = 'Error in transaction!';        
+		echo(json_encode($result));
+	} else {
+		header('Content-Type: application/json; charset=UTF-8');
+		header('HTTP/1.1 200 OK');  
+	    	$result=array(); 
+	    	$result['Message'] = 'Patient data updated successfully!'; 
+	    	echo(json_encode($result));
+	}
+	    	
+    	
+    }
     function casesheet_mrd_status(){
         $this->data['userdata']=$this->session->userdata('hospital');
         $this->load->helper('form');
