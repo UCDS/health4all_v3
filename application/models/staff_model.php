@@ -100,14 +100,8 @@ class Staff_model extends CI_Model{
             	$details = "IP Address: ".$ipaddress;
 		$details = $details.", Browser: ".$browser;
 		$details = $details.", OS: ".$os_platform;
-		if($ipaddress!='127.0.0.1' && $ipaddress!='localhost'){
-			$arrContextOptions=array(
-      				"ssl"=>array(
-           				"verify_peer"=>false,
-            				"verify_peer_name"=>false,
-        			),
-    			); 
-            		$json   = file_get_contents("https://ipinfo.io/$ipaddress/geo?token=$token",false, stream_context_create($arrContextOptions));
+            	if($ipaddress!='127.0.0.1' && $ipaddress!='localhost'){
+            		$json     = file_get_contents("https://ipinfo.io/$ipaddress/geo?token=$token");
 			$json     = json_decode($json, true);
 			if( isset( $json['country'] ) ){
    				$details = $details.", Country: ".$json['country'];

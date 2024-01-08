@@ -597,7 +597,7 @@ echo "</select></li>";
 		<td><?php echo $sno;?></td>
 		<td><?php echo $followup->patient_id;?></td>
 		<td><?php echo date('j M Y',strtotime($followup->insert_datetime));?></td>
-		<td><b><?php echo $followup->first_name." ".$followup->last_name ."/".$followup->age_years ."/" .$followup->gender;?></b>
+		<td><b><?php echo $followup->first_name."".$followup->last_name ."/".$followup->age_years ."/" .$followup->gender;?></b>
 		<?php if (!empty($followup->father_name)) { ?>
 			<?php echo "<br> Relative: ".$followup->father_name; ?>			
 					<?php } elseif (!empty($followup->mother_name)) { ?>
