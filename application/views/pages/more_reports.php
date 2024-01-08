@@ -88,6 +88,11 @@ if($function->user_function=="missed_calls_report"){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>
 <?php		 }
 
+if($function->user_function=="missed_calls_report"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/receiver_call_activity_report";?>">Receiver Call Activity Report</a></button>
+<?php		 }
+
+
 if($function->user_function=="dashboard" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_trend";?>">Trend</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Receivers</a></button>
