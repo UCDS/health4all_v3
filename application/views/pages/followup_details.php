@@ -346,6 +346,8 @@ function onchange_page_dropdown(dropdownobj){
 		<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  ><label>Not Alive </label>
 		<input type="radio" name="life_status" class ="form-control" value="3" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 3) {echo "checked" ;} ?>  ><label>No Follow up</label>
 		<br>
+		
+		<br>
                 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 
       		    Search by : 
@@ -419,6 +421,20 @@ function onchange_page_dropdown(dropdownobj){
 				<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
 			<?php } ?>
 		</select>
+
+		<!-- Newly added 12-01-2023 (am)-->
+		<select id="sort_by_age" name="sort_by_age"  class="form-control">
+			<option value="0">Sort by age</option>           	
+            <option value="1" <?php echo ($this->input->post('sort_by_age') == '1') ? 'selected' : ''; ?> >Ascending</option> 
+			<option value="2" <?php echo ($this->input->post('sort_by_age') == '2') ? 'selected' : ''; ?> >Descending</option>       
+		</select>
+
+		<select id="ndps" name="ndps"  class="form-control">
+			<option value="0" >NDPS Status</option>           	
+            <option value="1" <?php echo ($this->input->post('ndps') == '1') ? 'selected' : ''; ?> >Yes</option> 
+			<option value="2" <?php echo ($this->input->post('ndps') == '2') ? 'selected' : ''; ?> >No</option>       
+		</select>
+		<!-- till here -->
 
                                
 					<br>
@@ -584,12 +600,13 @@ echo "</select></li>";
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
 		<th>Note</th>
+		<th>NDPS</th>
 		<th>Volunteer</th>
 		<th>Last update by & Time</th>					
 	</thead>
 	<tbody>
 	<?php
-	//print_r($results);
+	//print_r($this->db->last_query());die;
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 		foreach($results as $followup){
 	 ?>
@@ -625,6 +642,10 @@ echo "</select></li>";
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
 		<td><?php echo $followup->note;?></td>
+		<?php if($followup->ndps==1) { ?>
+		<td><?php echo $followup->drug." / ".$followup->dose." / ".date('j M Y',strtotime($followup->last_dispensed_date)).' / '.$followup->last_dispensed_quantity; ?></td>  <!--Newly added 12-01-2024 (am) -->
+		<?php } else { ?> <td></td> <?php } ?>
+		
 		<td><?php echo $followup->fname." ".$followup->lname;?></td>
 		<td><?php echo $followup->followup_update_by." & ".date("j M Y", strtotime("$followup->followup_update_time")).", ".date("h:i A.", strtotime("$followup->followup_update_time")); ?></td>
 		

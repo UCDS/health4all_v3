@@ -363,12 +363,15 @@ $patient = $patients[0];
 			<input type="hidden" class="sr-only" value="<?php echo $transaction_id;?>" name="transaction_id" />
 			<div class="row">
 				
-				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+				<!-- newly commented on 12-01-2024 -->
+				<!-- <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				        <div class="form-group">
-							<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br>
-							<input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/>
-						</div>
-				</div>
+							<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br> -->
+							<!-- <input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/> -->
+							<input class="form-control"  type="hidden"  name="status_date" id="status_date" 
+							value=<?php echo date("Y-m-d"); ?>  readonly/>
+						<!-- </div>
+				</div> -->
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
@@ -516,6 +519,82 @@ $patient = $patients[0];
 								<input class="form-control" name="input_longitude"  id="input_longitude"  placeholder="Enter Longitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->longitude;  ?>" align="middle">
 						</div> 
 						</div>
+						
+						<!-- Newly added 12-01-2024 (am)-->
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+							<label for="input_ndps">NDPS <span class="mandatory">*</span></label><br>
+							<input type ="radio" name="ndps_status"  value="1" id="chkYes" > <label>Yes</label>
+							<input type="radio" name="ndps_status"  value="0"  id="chkNo" > <label>No</label>
+							<input type="hidden" name="edit_ndps" id="edit_ndps" value="<?php echo $patient_followup->ndps ?>" >
+						</div> 
+						</div>
+
+						<script>
+							$(document).ready(function(e) {
+								var getValue= $("#edit_ndps").val();
+								if(getValue==1)
+								{
+									$('#chkYes').prop('checked', true);
+								}else{
+									var def = $('#chkNo').prop('checked', true);
+									var ndps = $('input[name="ndps_status"]:checked').val();
+									if(ndps==0)
+									{
+										$("#dvPinNo").hide();
+									}
+								}
+								$('input[name="ndps_status"]').on("click",function() {
+									var ndps_status = $('input[name="ndps_status"]:checked').val();
+									if(ndps_status==1)
+									{
+										$("#dvPinNo").show();
+										$('input[name="drug"]').attr('required', true);
+										$('input[name="dose"]').attr('required', true);
+										$('input[name="last_dispensed_date"]').attr('required', true);
+										$('input[name="last_dispensed_quantity"]').attr('required', true);
+									}
+									else{
+										$("#dvPinNo").hide();
+										$('input[name="drug"]').removeAttr('required');
+										$('input[name="dose"]').removeAttr('required');
+										$('input[name="last_dispensed_date"]').removeAttr('required');
+										$('input[name="last_dispensed_quantity"]').removeAttr('required');
+									}
+								});
+							});
+						</script>
+						<div id="dvPinNo">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_longitude">Drug <span class="mandatory">*</span></label>
+								<input class="form-control" name="drug"  id="drug" placeholder="Enter Drug" autocomplete="OFF" type="text" value="<?php if($patient_followup) echo $patient_followup->drug;  ?>" align="middle" >
+						</div> 
+						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_longitude">Dose <span class="mandatory">*</span> </label>
+								<input class="form-control" name="dose"  id="dose"  placeholder="Enter Dose" autocomplete="OFF" type="text" value="<?php if($patient_followup) echo $patient_followup->dose;  ?>" align="middle" >
+						</div> 
+						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_longitude">Last Dispensary Date <span class="mandatory">*</span> </label>
+								<input class="form-control" name="last_dispensed_date"  id="last_dispensed_date" autocomplete="OFF" placeholder="Enter Last Dispensary Date"  type="date" value="<?php if($patient_followup) echo $patient_followup->last_dispensed_date;  ?>" align="middle" >
+						</div> 
+						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="input_longitude">Last Dispensary Quantity <span class="mandatory">*</span></label>
+								<input class="form-control" name="last_dispensed_quantity"  id="last_dispensed_quantity" autocomplete="OFF" placeholder="Enter Last Dispensary Quantity"  type="text" value="<?php if($patient_followup) echo $patient_followup->last_dispensed_quantity;  ?>" align="middle" >
+						</div> 
+						</div>
+						</div>
+
+						<!-- till here (am)-->
 			</div>	
 		</div>    
             &emsp;&emsp;

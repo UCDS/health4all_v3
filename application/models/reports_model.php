@@ -4808,6 +4808,21 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
+		// Newly added 12-01-2023 (am)
+		if($this->input->post('ndps')!=0)
+		{
+			if($this->input->post('ndps')==1){
+				$this->db->where('patient_followup.ndps',1);
+			}if($this->input->post('ndps')==2){
+				$this->db->where('patient_followup.ndps',0);
+			}
+		}
+		if($this->input->post('sort_by_age')==1){
+			$this->db->order_by('patient.age_years',ASC);
+		}else{
+			$this->db->order_by('patient.age_years',DESC);
+		}
+		//till here
         $this->db->select("patient_followup.patient_id,
         patient.insert_datetime,
         patient.first_name,
@@ -4834,8 +4849,14 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         route_secondary.route_secondary,
         staff.first_name as fname,
         staff.last_name as lname,
-        patient_followup.update_time as followup_update_time,   
-	CONCAT(followup_update_by.first_name, ' ', followup_update_by.last_name) as followup_update_by",false)
+        patient_followup.update_time as followup_update_time,
+		patient_followup.ndps,
+		patient_followup.drug,
+		patient_followup.dose,
+		patient_followup.last_dispensed_date,
+		patient_followup.last_dispensed_quantity,
+		CONCAT(patient_followup.drug,' / ',patient_followup.dose,' / ',patient_followup.last_dispensed_date,' / ',patient_followup.last_dispensed_quantity) as ndps_status, 
+		CONCAT(followup_update_by.first_name, ' ', followup_update_by.last_name) as followup_update_by",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','both')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')

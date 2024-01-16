@@ -1162,7 +1162,12 @@ class Register_model extends CI_Model{
 		route_primary_id,
 		route_secondary_id,
 		volunteer_id,
-		note")->from("patient_followup");
+		note,
+		ndps,
+		drug,
+		dose,
+		last_dispensed_date,
+		last_dispensed_quantity")->from("patient_followup");
 		$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$resource=$this->db->get();
@@ -1275,12 +1280,22 @@ class Register_model extends CI_Model{
         if($this->input->post('input_longitude')){
             $followup_info['longitude'] = $this->input->post('input_longitude');
         }
-       
+		
+		if($this->input->post('ndps_status')=='1')
+		{
+			$followup_info['ndps']= $this->input->post('ndps_status');
+			$followup_info['drug']= $this->input->post('drug');
+			$followup_info['dose']= $this->input->post('dose');
+			$followup_info['last_dispensed_date']= $this->input->post('last_dispensed_date');
+			$followup_info['last_dispensed_quantity']= $this->input->post('last_dispensed_quantity');  
+		}
+
         $followup_info['add_by'] = $followup_info['update_by'] = $this->session->userdata('logged_in')['staff_id'];
-	$followup_info['add_time'] = $followup_info['update_time'] = date("Y-m-d H:i:s");
+		$followup_info['add_time'] = $followup_info['update_time'] = date("Y-m-d H:i:s");
 	
 	
       //  $this->db->trans_start();
+		//print_r($this->input->post('status_date'));die;
         $this->db->insert('patient_followup', $followup_info);
 		$insert_id = $this->db->insert_id();
 		return $insert_id;
@@ -1311,6 +1326,25 @@ class Register_model extends CI_Model{
 			$this->db->set('update_time', date("Y-m-d H:i:s"));
 			$this->db->set('latitude', $this->input->post('input_latitude'));
 			$this->db->set('longitude', $this->input->post('input_longitude'));
+			
+			//Newly added on 12-01-2024
+			$this->db->set('ndps', $this->input->post('ndps_status'));
+			if($this->input->post('ndps_status')=='1')
+			{
+				$this->db->set('drug', $this->input->post('drug'));
+				$this->db->set('dose', $this->input->post('dose'));
+				$this->db->set('last_dispensed_date', $this->input->post('last_dispensed_date'));
+				$this->db->set('last_dispensed_quantity', $this->input->post('last_dispensed_quantity'));  
+			}else
+			{
+				$this->db->set('drug', '');
+				$this->db->set('dose', '');
+				$this->db->set('last_dispensed_date', NULL);
+				$this->db->set('last_dispensed_quantity', '');
+			}
+			
+			//till here
+
 			$this->db->where('patient_id', $this->input->post('patient_id'));
 			if($this->db->update('patient_followup'))
 			
