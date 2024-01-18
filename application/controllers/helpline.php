@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct  script access allowed');
 
 class Helpline extends CI_Controller {
 
@@ -871,4 +871,51 @@ class Helpline extends CI_Controller {
 
 		}
 	}
+
+	function receiver_call_activity_report(){
+
+			if($this->session->userdata('logged_in')){  	
+				echo("<script>console.log('PHP:');</script>");					
+				$this->data['userdata']=$this->session->userdata('logged_in');  
+			} else{
+						show_404(); 													
+					} 
+			$access=0;
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="Helpline Reports"){
+						$access=1;
+						// echo("<script>console.log('PHP: access=1');</script>");
+				}
+			}
+			
+			if($access==1){
+				// echo("<script>console.log('PHP:');</script>");
+				$this->load->helper('form');
+				$this->load->library('form_validation');
+				$user=$this->session->userdata('logged_in');
+				$this->data['user_id']=$user['user_id'];
+				$this->data['title']="HelpLine Receiver Calls - Detailed Report";		
+				$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");	
+				$this->load->view('templates/header',$this->data);	 
+				 foreach($this->data['defaultsConfigs'] as $default){		 
+				 if($default->default_id=='pagination'){
+						 $this->data['rowsperpage'] = $default->value;
+						 $this->data['upper_rowsperpage']= $default->upper_range;
+						 $this->data['lower_rowsperpage']= $default->lower_range;	 
+	
+					 }
+				}
+				$this->data['calls']=$this->helpline_model->get_receiver_activity_report($this->data['rowsperpage']);
+				$this->data['calls_count']=$this->helpline_model->get_receiver_call_activity_report_count();
+				$this->data['helpline']=$this->helpline_model->get_helplines();
+
+	
+					
+				$this->load->view('pages/helpline/report_call_activity',$this->data);
+				$this->load->view('templates/footer');
+			}
+			else {
+				show_404();
+			} 
+		}	
 }
