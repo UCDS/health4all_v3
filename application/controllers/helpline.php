@@ -873,7 +873,6 @@ class Helpline extends CI_Controller {
 	}
 
 	function receiver_call_activity_report(){
-			echo("<script>console.log('PHP:');</script>");
 
 			if($this->session->userdata('logged_in')){  	
 				echo("<script>console.log('PHP:');</script>");					
@@ -885,12 +884,12 @@ class Helpline extends CI_Controller {
 			foreach($this->data['functions'] as $function){
 				if($function->user_function=="Helpline Reports"){
 						$access=1;
-						echo("<script>console.log('PHP: access=1');</script>");
+						// echo("<script>console.log('PHP: access=1');</script>");
 				}
 			}
 			
 			if($access==1){
-				echo("<script>console.log('PHP:');</script>");
+				// echo("<script>console.log('PHP:');</script>");
 				$this->load->helper('form');
 				$this->load->library('form_validation');
 				$user=$this->session->userdata('logged_in');
@@ -909,7 +908,6 @@ class Helpline extends CI_Controller {
 				$this->data['calls']=$this->helpline_model->get_receiver_activity_report($this->data['rowsperpage']);
 				$this->data['calls_count']=$this->helpline_model->get_receiver_call_activity_report_count();
 				$this->data['helpline']=$this->helpline_model->get_helplines();
-				echo("<script>console.log('PHP: " . json_encode($this->data['calls_count']) . "');</script>");
 
 	
 					
@@ -917,7 +915,6 @@ class Helpline extends CI_Controller {
 				$this->load->view('templates/footer');
 			}
 			else {
-				echo("<script>console.log('PHP: here');</script>");
 				show_404();
 			} 
 		}	
