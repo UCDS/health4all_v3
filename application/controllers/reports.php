@@ -768,7 +768,16 @@ class Reports extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="completed_calls_report" || $function->user_function=="missed_calls_report" || $function->user_function=="appointment_by_staff" || $function->user_function=="login_report" || $function->user_function=="patient_location_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" ||  $function->user_function=="referral" || $function->user_function=="patient_follow_up" || $function->user_function=="edit_demographic"){
+			if($function->user_function=="OP Detail" || 
+				$function->user_function=="completed_calls_report" || 
+				$function->user_function=="missed_calls_report" || 
+				$function->user_function=="appointment_by_staff" || 
+				$function->user_function=="login_report" || 
+				$function->user_function=="patient_location_report" || 
+				$function->user_function=="helpline_receiver" || 
+				$function->user_function=="dashboard" ||  
+				$function->user_function=="referral" || $function->user_function=="patient_follow_up" || 
+				$function->user_function=="edit_demographic"){
 				$access=1;
 				break;
 			}
@@ -2029,5 +2038,97 @@ class Reports extends CI_Controller {
 	// 		show_404();
 	// 		}
  
-	
+	public function issue_list($department=0,$unit=0,$area=0,$from_date=0,$to_date=0,$discharge_status=0)
+	{
+		
+		if($this->session->userdata('logged_in')){
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="OP Detail"){
+				$access=1;
+			}
+		}
+		if($access==1){
+		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->data['title']="Issue List";
+		$this->data['all_departments']=$this->staff_model->get_department();
+		$this->data['units']=$this->staff_model->get_unit();
+		$this->data['areas']=$this->staff_model->get_area();
+		$this->data['visit_names']=$this->staff_model->get_visit_name();
+		$this->data['helpline_doctor']=$this->reports_model->get_helpline_doctor();
+		$this->load->view('templates/header',$this->data);
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		foreach($this->data['defaultsConfigs'] as $default){		 
+		 	if($default->default_id=='pagination'){
+		 			$this->data['rowsperpage'] = $default->value;
+		 			$this->data['upper_rowsperpage']= $default->upper_range;
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+		 		}
+			}
+		$discharge_status = $this->input->post('discharge_status');
+		$this->data['report_count']=$this->reports_model->get_issue_list_count($department,$unit,$area,$from_date,$to_date,$discharge_status);
+		$this->data['report']=$this->reports_model->get_issue_list($this->data['rowsperpage']);		
+		$this->form_validation->set_rules('from_date', 'From Date',
+		'trim|required|xss_clean');
+	    $this->form_validation->set_rules('to_date', 'To Date', 
+	    'trim|required|xss_clean');
+			
+		if ($this->form_validation->run() === FALSE)
+		{	
+			$this->load->view('pages/issue_list',$this->data);
+		}
+		else{
+			$this->load->view('pages/issue_list',$this->data);
+		}
+		$this->load->view('templates/footer');
+		}
+		else{
+		show_404();
+		}
+		}
+		else{
+		show_404();
+		}
+		
+	}
+
+
+	public function issue_summary()
+	{        
+		if($this->session->userdata('logged_in')){                          //Checking for user login
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$access=0;
+			foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+				if($function->user_function=="OP Detail"){
+					$access=1;
+				}
+			}
+			if($access==1){     
+				                             
+				$this->data['title']="Issue Summary";                       //Getting values to populate the selection fields in the query form.
+				$this->data['all_departments']=$this->staff_model->get_department();
+				$this->data['units']=$this->staff_model->get_unit();
+				$this->data['areas']=$this->staff_model->get_area();
+				$this->data['visit_names']=$this->staff_model->get_visit_name(); 
+				$discharge_status = $this->input->post('discharge_status');
+				$this->load->view('templates/header',$this->data);
+				$this->load->helper('form');
+				$this->load->library('form_validation');
+				$this->data['report']=$this->reports_model->get_issue_summary(); //This method gets data from the Database, and puts the data in report variable.
+				//Report variable stores all the data returned by reports_model which is passed to the view.
+				$this->load->view('pages/issue_summary',$this->data);
+				$this->load->view('templates/footer');
+			}
+			else{
+				show_404();
+			}
+		}
+		else{
+			show_404();
+		}
+	}
 }
