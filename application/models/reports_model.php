@@ -4717,6 +4717,20 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
+
+		if($this->input->post('ndps')!=0)
+		{
+			if($this->input->post('ndps')==1){
+				$this->db->where('patient_followup.ndps',1);
+			}if($this->input->post('ndps')==2){
+				$this->db->where('patient_followup.ndps',0);
+			}
+		}
+		if($this->input->post('sort_by_age')==1){
+			$this->db->order_by('patient.age_years',ASC);
+		}else{
+			$this->db->order_by('patient.age_years',DESC);
+		}
       
         $this->db->select("count(*) as count",false)
         ->from('patient_followup')
@@ -4893,20 +4907,23 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 		else if($this->input->post('from_date') || $this->input->post('to_date')){
 			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
 			$to_date=$from_date;
+			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 		else{
 			$from_date=date("Y-m-d");
 			$to_date=$from_date;
+			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 	
         if($this->input->post('from_time') && $this->input->post('to_time')){
 			$from_time=date("H:i",strtotime($this->input->post('from_time')));
 			$to_time=date("H:i",strtotime($this->input->post('to_time')));
-				
+			$this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");
 		}
 		else if($this->input->post('from_time') || $this->input->post('to_time'))
 		{
@@ -4916,21 +4933,16 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                         }else{
                             $from_time = '00:00';
                             $to_time=$this->input->post('to_time');
-                        }				
+                        }
+			$this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");				
 		}		
 		else{
 			$to_time = '23:59';
 		 	$from_time = '00:00';
+			 $this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");
 		}
 
-		if($this->input->post('from_date') || $this->input->post('to_date'))
-		{
-			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
-		}
-		if($this->input->post('from_time') || $this->input->post('to_time'))
-		{
-			$this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");
-		}
+		
 		
 		if($this->input->post('visit_name')){
 			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
@@ -4990,20 +5002,23 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 		else if($this->input->post('from_date') || $this->input->post('to_date')){
 			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
 			$to_date=$from_date;
+			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 		else{
 			$from_date=date("Y-m-d");
 			$to_date=$from_date;
+			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 	
         if($this->input->post('from_time') && $this->input->post('to_time')){
 			$from_time=date("H:i",strtotime($this->input->post('from_time')));
 			$to_time=date("H:i",strtotime($this->input->post('to_time')));
-				
+			$this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");
 		}
 		else if($this->input->post('from_time') || $this->input->post('to_time')){
 			if($this->input->post('from_time')){
@@ -5012,21 +5027,15 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                         }else{
                             $from_time = '00:00';
                             $to_time=$this->input->post('to_time');
-                        }				
+                        }
+						$this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");				
 		}		
 		else{
 			$to_time = '23:59';
 		 	$from_time = '00:00';
+			 $this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");
 		}
 		
-		if($this->input->post('from_date') || $this->input->post('to_date'))
-		{
-			$this->db->where("(pv.admit_date BETWEEN '$from_date' AND '$to_date')");
-		}
-		if($this->input->post('from_time') || $this->input->post('to_time'))
-		{
-			$this->db->where("(pv.admit_time BETWEEN '$from_time' AND '$to_time')");
-		}
 
 		if($this->input->post('visit_name')){
 			$this->db->where('pv.visit_name_id',$this->input->post('visit_name'));
@@ -5090,20 +5099,23 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 		else if($this->input->post('from_date') || $this->input->post('to_date')){
 			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
 			$to_date=$from_date;
+			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 		else{
 			$from_date=date("Y-m-d");
 			$to_date=$from_date;
+			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
 		}
 
 		if($this->input->post('from_time') && $this->input->post('to_time')){
 			$from_time=date("H:i",strtotime($this->input->post('from_time')));
 			$to_time=date("H:i",strtotime($this->input->post('to_time')));
-				
+			$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
 		}
 		else if($this->input->post('from_time') || $this->input->post('to_time')){
 			if($this->input->post('from_time'))
@@ -5113,21 +5125,15 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			}else{
 				$from_time = '00:00';
 				$to_time=$this->input->post('to_time');
-			}				
+			}
+			$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");				
 		}		
 		else{
 			$to_time = '23:59';
 		 	$from_time = '00:00';
+			 $this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
 		}
 
-		if($this->input->post('from_date') || $this->input->post('to_date'))
-		{
-			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
-		}
-		if($this->input->post('from_time') || $this->input->post('to_time'))
-		{
-			$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
-		}
 			//Selection of the visit name.
 		if($this->input->post('visit_name')){
 			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
@@ -5144,21 +5150,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($this->input->post('department')){
 			$this->db->where('patient_visit.department_id',$this->input->post('department'));
 		}
-
-		// if($this->input->post('unit')){
-		// 	$this->db->select('IF(unit!="",unit,0) unit',false);
-		// 	$this->db->where('patient_visit.unit',$this->input->post('unit'));
-		// }
-		// else{
-		// 	$this->db->select('"0" as unit',false);
-		// }
-		// if($this->input->post('area')){
-		// 	$this->db->select('IF(area!="",area,0) area',false);
-		// 	$this->db->where('patient_visit.area',$this->input->post('area'));
-		// }
-		// else{
-		// 	$this->db->select('"0" as area',false);
-		// }
+		
+		if($this->input->post('discharge_status')){	
+			$this->db->where('patient_visit.outcome',$this->input->post('discharge_status'));
+		}
+		
 			//Counting the number of patients gender wise.
 		$this->db->select("count(department.department_id) as issue_count,area.area_name,department.department as department_name,unit.unit_name");
 		$this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
@@ -5174,6 +5170,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	
+		
 }
 ?>

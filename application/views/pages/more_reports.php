@@ -21,7 +21,8 @@ $appointments=0;
 $helpline=0;
 $admin=0;
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral" || $function->user_function=="patient_follow_up"){
+			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral" || $function->user_function=="patient_follow_up"
+			|| $function->user_function=="issue_list" || $function->user_function=="issue_summary" || $function->user_function=="followup_summary"){
 				$appointments=1;
 				
 				?>
@@ -37,15 +38,6 @@ foreach($this->data['functions'] as $function){
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_followup";?>">Out Patient Detail - Followup</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/visit_type_summary";?>">Visit Type Summary</a></button>
-			<!-- Newly added on jan 17 2024 -->
-			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
-					<a class="anchor_style" href="<?php echo base_url()."reports/issue_list";?>">Issue List</a>
-			</button>
-			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
-				<a class="anchor_style" href="<?php echo base_url()."reports/issue_summary";?>">Issue Summary</a>
-			</button>
-			<!-- till here -->
-
 <?php		 }
 
 if($function->user_function=="patient_follow_up"){ ?>
@@ -56,16 +48,25 @@ if($function->user_function=="appointment_by_staff"){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_staff";?>">Appointments by Team Member</a></button>
 <?php		 }
 
-	if($function->user_function== "patient_location_report"){ ?>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
-	<?php		 }
-	
-	if($function->user_function== "referral"){ ?>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
-	<?php		 }
+if($function->user_function== "patient_location_report"){ ?>
+			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
+<?php		 }
 
-		} ?>
+if($function->user_function== "referral"){ ?>
+			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
+			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
+<?php		 } 
+
+if($function->user_function== "followup_summary"){ ?>
+		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary";?>">Followup Summary</a></button>
+	
+<?php } if($function->user_function== "issue_list"){ ?>
+		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><a class="anchor_style" href="<?php echo base_url()."reports/issue_list";?>">Issue List</a></button>
+
+<?php } if($function->user_function== "issue_summary"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><a class="anchor_style" href="<?php echo base_url()."reports/issue_summary";?>">Issue Summary</a></button>
+
+<?php } } ?>
 </div> <?php
 	}
 ?>
