@@ -446,7 +446,13 @@ echo "</select></li>";
 		<td><?php echo $s->unit_name.", "."$s->area_name";?></td>
 		<td><?php echo $s->visit_name ?></td>
 		<td><?php echo $s->final_diagnosis; ?></td>
-		<td><?php echo $s->note.", "."$s->registeredby";?></td>
+		<?php $updatedTime="";
+		if(!!$s->updated_time){
+			$updatedTime = date("j M Y h:i A.", strtotime("$s->updated_time"));
+		}
+		
+		?>
+		<td><?php echo $s->note.", ".$s->updatedby.", ".$updatedTime;?></td>
 		<td><?php if($s->outcome!='0'){ echo $s->outcome; }else { " "; };?></td>
 		<td><?php if($s->outcome_date!="0000-00-00"){ echo date("j M Y", strtotime("$s->outcome_date")); }?></td>
 		<td><?php echo $s->decision_note;?></td>

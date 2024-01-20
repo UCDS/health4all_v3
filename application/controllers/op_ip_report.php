@@ -68,7 +68,7 @@ class Op_Ip_report extends CI_Controller {
 				$this->data['visit_names']=$this->staff_model->get_visit_name();    
 				$this->data['priority_types']=$this->register_model->get_priority_type();
 				$this->data['route_primary']=$this->register_model->get_primary_route();
-	    		$this->data['route_secondary']=$this->register_model->get_secondary_route();
+	    			$this->data['route_secondary']=$this->register_model->get_secondary_route();
 				$this->data['volunteer']=$this->register_model->get_volunteer();
 				$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');	//retrives the values from the function icd_chapter	 in master model
 				$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');

@@ -4966,17 +4966,15 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		$this->db->select("count(*) as count",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
+		 ->join('patient_followup as pf','pf.patient_id=p.patient_id','left')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
-		 ->join('district','p.district_id=district.district_id','left')
-		 ->join('state','district.state_id=state.state_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
 		 ->join('area','pv.area=area.area_id','left')
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
-		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
-		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
-		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('staff as updatedby','pf.update_by=updatedby.staff_id','left')
+		 ->join('user as volunteer_user','pv.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
-		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
+		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');			
 		$resource=$this->db->get();
@@ -5064,25 +5062,19 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
-		p.place, p.phone, pvd.department, admit_date, admit_time, p.patient_id_manual,pv.outcome,pv.outcome_date,pv.decision as decision_note,updated.first_name as updatedby,
-		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,area.*,unit.*,volunteer_user.username,registered.first_name as registeredby,
-		pv.signed_consultation as signed,district.district,state.state,vn.visit_name,pv.visit_name_id,pf.diagnosis,pt.priority_type,pf.note,pv.final_diagnosis as final_diagnosis",false);
+		p.place, p.phone, pvd.department, admit_date, admit_time, p.patient_id_manual,pv.outcome,pv.outcome_date,pv.decision as decision_note,
+		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as registeredby,area.area_name,unit.unit_name,
+		pv.signed_consultation as signed,vn.visit_name,pv.visit_name_id,pv.final_diagnosis as final_diagnosis,pf.note as note,CONCAT(updatedby.first_name, ' ', updatedby.last_name) as updatedby,pf.update_time as updated_time",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('patient_followup as pf','pf.patient_id=p.patient_id','left')
-		 ->join('priority_type as pt','pt.priority_type_id=pf.priority_type_id','left')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
-		 ->join('district','p.district_id=district.district_id','left')
-		 ->join('state','district.state_id=state.state_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
 		 ->join('area','pv.area=area.area_id','left')
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
-		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
-		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
-		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('staff as updatedby','pf.update_by=updatedby.staff_id','left')
+		 ->join('user as volunteer_user','pv.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
-		 ->join('staff as updated','pf.update_by=updated.staff_id','left')
-		 ->join('staff as registered','pf.add_by=registered.staff_id','left')
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');
