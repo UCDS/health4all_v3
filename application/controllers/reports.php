@@ -777,7 +777,8 @@ class Reports extends CI_Controller {
 				$function->user_function=="helpline_receiver" || 
 				$function->user_function=="dashboard" ||  
 				$function->user_function=="referral" || $function->user_function=="patient_follow_up" || 
-				$function->user_function=="edit_demographic"){
+				$function->user_function=="edit_demographic" || $function->user_function=="issue_list" || $function->user_function=="issue_summary"
+				|| $function->user_function=="followup_summary"){
 				$access=1;
 				break;
 			}
@@ -2045,7 +2046,7 @@ class Reports extends CI_Controller {
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail"){
+			if($function->user_function=="issue_list"){
 				$access=1;
 			}
 		}
@@ -2103,7 +2104,7 @@ class Reports extends CI_Controller {
 			$this->data['userdata']=$this->session->userdata('logged_in');
 			$access=0;
 			foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
-				if($function->user_function=="OP Detail"){
+				if($function->user_function=="issue_summary"){
 					$access=1;
 				}
 			}

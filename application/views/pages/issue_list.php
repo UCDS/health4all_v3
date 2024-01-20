@@ -450,8 +450,9 @@ echo "</select></li>";
 		<td><?php if($s->outcome!='0'){ echo $s->outcome; }else { " "; };?></td>
 		<td><?php if($s->outcome_date!="0000-00-00"){ echo date("j M Y", strtotime("$s->outcome_date")); }?></td>
 		<td><?php echo $s->decision_note;?></td>
-		<td><?php echo $s->username;?></td>
-		<td><?php echo $s->updatedby;?></td>
+		<td><?php echo $s->registeredby;?></td>
+		<!-- <td><?php echo $s->updatedby;?></td> -->
+		<td></td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
