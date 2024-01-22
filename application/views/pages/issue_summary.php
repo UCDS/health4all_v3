@@ -148,13 +148,14 @@ function fnExcelReport() {
                 }
                 ?>
                 </select>
-                <select name="discharge_status" id="discharge_status" class="form-control" >
+                <!-- Commented for enhancement jan 22 2024 
+                    <select name="discharge_status" id="discharge_status" class="form-control" >
                    <option value="">Discharge Status</option>
                    <option value="Discharge">Discharge</option>
                    <option value="LAMA">LAMA</option>
                    <option value="Absconded">Absconded</option>
                    <option value="Death">Death</option>
-                </select>
+                </select> -->
                 <!-- Add Select Doctor -->
                 <input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 	</form>
@@ -184,7 +185,12 @@ function fnExcelReport() {
                 <th style="text-align: center">Department</th>
                 <th style="text-align: center">Unit</th>
                 <th style="text-align: center">Area</th>
-                <th style="text-align: center">Count of Issues</th>
+                <th style="text-align: center">Discharge</th>
+                <th style="text-align: center">LAMA</th>
+                <th style="text-align: center">LWI</th>
+                <th style="text-align: center">Expired</th>
+                <th style="text-align: center">Not Updated</th>
+                <th style="text-align: center">Total Count</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -194,10 +200,22 @@ function fnExcelReport() {
     {
 	?>
 	<tr>
+        <?php
+            $tot_discharge_count+=$s->dicharge_count;
+            $tot_lama_count+=$s->lama_count;
+            $tot_absconded_count+=$s->absconded_count;
+            $tot_death_count+=$s->death_count;
+            $tot_notupdated_count+=$s->notupdated_count;
+        ?>
 		<td><?php echo $sno;?></td>
         <td><?php echo $s->department_name;?></td>
 		<td><?php echo $s->unit_name;?></td>
 		<td><?php echo $s->area_name;?></td>
+        <td style="text-align:center;"><?php echo $s->dicharge_count ?></td>
+        <td style="text-align:center;"><?php echo $s->lama_count ?></td>
+        <td style="text-align:center;"><?php echo $s->absconded_count ?></td>
+        <td style="text-align:center;"><?php echo $s->death_count ?></td>
+        <td style="text-align:center;"><?php echo $s->notupdated_count ?></td>
 		<td style="text-align: center"><?php $sum+=$s->issue_count; echo $s->issue_count;?></td>
 	</tr>
 	<?php $sno++;}	?>
@@ -208,6 +226,11 @@ function fnExcelReport() {
         <th></th>
         <th></th>
         <th style="text-align:right;">Total</th>
+        <th style="text-align:center;"><?php echo $tot_discharge_count ?></th>
+        <th style="text-align:center;"> <?php echo $tot_lama_count ?></th>
+        <th style="text-align:center;"><?php echo $tot_absconded_count ?></th>
+        <th style="text-align:center;"><?php echo $tot_death_count ?></th>
+        <th style="text-align:center;"><?php echo $tot_notupdated_count ?></th>
         <th style="text-align:center;"><?php echo $sum;?></th>
     </tr>
   </tfoot>

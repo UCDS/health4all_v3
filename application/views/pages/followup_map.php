@@ -96,17 +96,14 @@
 <?php 
 	$pins = array();
     foreach($report as $pin){
-		if($pin->district_id){
 			$visitsTotal[] = $pin->total;
 			$pins[] = (object) array(
 				'district_id' => $pin->district_id,
-				'district_name' => $pin->district,
+				'district_name' => $pin->dname,
 				'latitude' => $pin->latitude,
 				'longitude' => $pin->longitude,
 				'Visits' => $pin->total
 			);
-		}
-		
     }
 	if(isset($visitsTotal))
 		$maxVisit = max($visitsTotal);
@@ -230,7 +227,7 @@ $(function(){
     var data_type = 'data:application/vnd.ms-excel';
     $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
     //downloaded excel sheet name is given here
-    $('#test').attr('download', 'followup_summary.xls');
+    $('#test').attr('download', 'followup_map.xls');
 
   }
 
@@ -360,9 +357,9 @@ function onchange_page_dropdown(dropdownobj){
 
     <h3>
 	<CENTER>
-		Followup Summary
+		Followup Map
 	  </CENTER></h3><br>
-		<?php echo form_open("op_ip_report/followup_summary",array('role'=>'form','class'=>'form-custom')); ?>
+		<?php echo form_open("op_ip_report/followup_map",array('role'=>'form','class'=>'form-custom')); ?>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-4">
@@ -443,11 +440,11 @@ function onchange_page_dropdown(dropdownobj){
 							<?php } ?>
 						</select>
 			
-						<!-- <select id="sort_by_age" name="sort_by_age"  class="form-control">
+						<select id="sort_by_age" name="sort_by_age"  class="form-control">
 							<option value="0">Sort by age</option>           	
 							<option value="1" <?php echo ($this->input->post('sort_by_age') == '1') ? 'selected' : ''; ?> >Ascending</option> 
 							<option value="2" <?php echo ($this->input->post('sort_by_age') == '2') ? 'selected' : ''; ?> >Descending</option>       
-						</select> -->
+						</select>
 
 						<select id="ndps" name="ndps"  class="form-control">
 							<option value="0" >NDPS Status</option>           	
@@ -490,7 +487,7 @@ function onchange_page_dropdown(dropdownobj){
 					}
 					
 					</script>
-						<!-- <div class="col-md-2">
+					<div class="col-md-2">
 							<select name="department" id="department" class="form-control" style="width:100%">
 								<option value="">Department</option>
 								<?php 
@@ -502,7 +499,7 @@ function onchange_page_dropdown(dropdownobj){
 								?>
 							</select>
 						</div>
-						<div class="col-md-2">
+						<!-- <div class="col-md-2">
 							<select name="visit_name" id="visit_name" class="form-control" style="width:100%" >
 								<option value="">Visit Type</option>
 								<?php 
@@ -516,6 +513,7 @@ function onchange_page_dropdown(dropdownobj){
 						</div> -->
 					</div> 
 			</div>
+			
 			<div class="container" style="padding-top:20px;">
 				<div class="row">
 					<div class="col-md-1">
@@ -528,102 +526,73 @@ function onchange_page_dropdown(dropdownobj){
 			</div>				
 				
 	<br />
-</form>
-<?php if(isset($report) && count($report)>0){ ?>
+	</form>
+       
+		 <div style="width:100%; display:inline-flex;margin-bottom:30px;" >
+		 	<!-- <div style="width:50%;"> -->
+				<div class="panel-primary col-md-12" >
+					<div class="panel-primary-inner-body">
+						<div class="panel-heading">
+							<h3 class="panel-title"><strong><center>Districts wise patients details</center></strong></h3>
+						</div>
+						<div id="map" style="height:550px;">  </div>
+					</div>
+				</div>
+			<!-- </div> -->
+			<!-- <div style="width:50%; padding-top:35px; ">
+				<div>
+					<div class="panel panel-default">
+					<div class="panel-body">
+					<canvas id="hospitalChart" width=300" height="150"></canvas>
+					</div>
+					</div>
+				</div>
+			</div> -->
+		</div>
+            
 
-		<div style='padding: 0px 2px;'>
-            <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
-        </div>
-               
-		<button type="button" class="btn btn-default btn-md print">
-		  <span class="glyphicon glyphicon-print"></span> Print
-		</button>
-        
-        <a href="#" id="test" onClick="javascript:fnExcelReport();">
-            <button type="button" class="btn btn-default btn-md excel">
-                <i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
-            </button>
-        </a><br><br>
 
-		<table class="table table-bordered table-striped" id="table-sort">
-			<thead>
-				<tr>
-					<th style="text-align:center;">S.no</th>
-					<th style="text-align:center;">ICD Chapter</th>
-					<th style="text-align:center;">ICD Block</th>
-					<?php 
-						foreach ($priority_types as $header){
-						if($header->priority_type_id==1){ 
-					?>
-					<th style="text-align:center;">High</th>
-					<?php } if($header->priority_type_id==2){  ?>
-					<th style="text-align:center;">Medium</th>
-					<?php } if($header->priority_type_id==3){  ?>
-						<th style="text-align:center;">Low</th>
-					<?php } } ?>
-					<th style="text-align:center;">Total Count</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php 
-				$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
-				foreach($report as $s)
-				{
-					$total_highcount+=$s->highcount;
-					$total_mediumcount+=$s->mediumcount;
-					$total_lowcount+=$s->lowcount;
-				?>
-				<tr>
-					<td><?php echo $sno;?></td>
-					<td><?php echo $s->chapter_title;?></td>
-					<td><?php echo $s->block_title;?></td>
-					<?php 
-					 	foreach($priority_types as $pt){
-						if($pt->priority_type_id==1)
-						{
-					?>
-					<td style="text-align:right;"><?php echo $s->highcount;?></td>
-					<?php } if($pt->priority_type_id==2)
-						{ ?> 
-					<td style="text-align:right;"><?php echo $s->mediumcount;?></td>
-					<?php } if($pt->priority_type_id==3)
-						{  ?>
-					<td style="text-align:right;"><?php echo $s->lowcount;?></td>
-					<?php } } ?>
+<script> 
+	var map;
+	function initMap() {
+		var bounds = new google.maps.LatLngBounds();
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 18,
+			mapTypeId: 'terrain'
+			}
+		);
+		<?php 
+		if(isset($maxVisit)){
+			foreach($pins as $pin){  
+				if(!!$pin->latitude) { 
+		?>
+			
+				contentString_<?= $pin->district_id; ?> = "<b><?=$pin->dname?></b><b><?=$pin->first_name?></b><b><?=$pin->phone?></b><br/>Visits: <?=$pin->Visits;?>";
 
-					<td style="text-align: center">
-						<?php echo $tot = $s->highcount+$s->mediumcount+$s->lowcount; ?>
-					</td>
-				</tr>
-				<?php $sno++;}	?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<th></th>
-					
-					<th style="text-align:right;">Total</th>
-					<th></th>
-					<?php 
-					 	foreach($priority_types as $pt){
-						if($pt->priority_type_id==1)
-						{
-					?>
-					<th style="text-align:right;"><?php echo $total_highcount;?></th>
-					<?php } if($pt->priority_type_id==2)
-						{ ?> 
-					<th style="text-align:right;"><?php echo $total_mediumcount;?></th>
-					<?php } if($pt->priority_type_id==3)
-						{  ?>
-					<th style="text-align:right;"><?php echo $total_lowcount;?></th>
-					<?php } } ?>
-					<th style="text-align:center;">
-						<?php echo $tot = $total_highcount+$total_mediumcount+$total_lowcount; ?>
-					</th>
-				</tr>
-			</tfoot>
-	</table>
-	<?php } else { ?>
-	No patient registrations on the given date.
-	<?php } ?>
+				var infowindow_<?= $pin->district_id; ?> = new google.maps.InfoWindow({
+                	content: contentString_<?= $pin->district_id; ?>
+            	});
 
-  
+				var location_<?= $pin->district_id; ?> = {lat: <?= $pin->latitude ?>, lng: <?= $pin->longitude ?>};
+				
+				var marker_<?=$pin->district_id?> = new google.maps.Marker({
+					position: location_<?= $pin->district_id; ?>,
+					map: map,
+					title: '<?=$pin->dname?>'
+				});
+				console.log(marker_<?=$pin->district_id?>);
+				bounds.extend(location_<?= $pin->district_id; ?>);
+            
+				map.fitBounds(bounds);
+				
+				marker_<?= $pin->district_id; ?>.addListener('click', function() {
+					infowindow_<?= $pin->district_id; ?>.open(map, marker_<?= $pin->district_id; ?>);
+				});
+		<?php 
+				}
+			}
+		} 
+		?>
+	}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-1GMntG8XK9s7m4uWyWjhQdTaX-xZxYs&callback=initMap" async defer></script>

@@ -243,6 +243,30 @@ $(document).ready(function(){
 
 </script>
 
+<script>
+
+function fnExcelReport() {
+      //created a variable named tab_text where 
+    var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+    //row and columns arrangements
+    tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+    tab_text = tab_text + '<x:Name>Excel Sheet</x:Name>';
+
+    tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+    tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+    tab_text = tab_text + "<table border='100px'>";
+    //id is given which calls the html table
+    tab_text = tab_text + $('#table-sort').html();
+    tab_text = tab_text + '</table></body></html>';
+    var data_type = 'data:application/vnd.ms-excel';
+    $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+    //downloaded excel sheet name is given here
+    $('#test').attr('download', 'followup_list.xls');
+
+}
+</script>
+
 <script type="text/javascript">
 $(document).ready(function() {
 	
@@ -376,14 +400,11 @@ function onchange_page_dropdown(dropdownobj){
                 ?>
                 </select>
 
-
-      		    <select name="last_visit_type" id="last_visit_type" class="form-control"> 
-			<option value="">Last Visit Type</option>           	
+      		    <!-- <select name="last_visit_type" id="last_visit_type" class="form-control"> 
+						<option value="">Last Visit Type</option>           	
                         <option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
-			<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
-					
-                        </select>
-               
+						<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
+                </select> -->
 
                 <select name="volunteer" id="volunteer" class="form-control" >
                 <option value="">Volunteer</option>
@@ -581,6 +602,19 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
+	<div class="container">
+		<!-- PDF & Excel Button -->
+		<button type="button" class="btn btn-default btn-md print">
+			<span class="glyphicon glyphicon-print"></span> Print
+		</button>
+			<!--created button which converts html table to Excel sheet-->
+		<a href="#" id="test" onClick="javascript:fnExcelReport();">
+			<button type="button" class="btn btn-default btn-md excel">
+					<i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
+			</button>
+		</a>
+	</div>
+
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 	<th>SNo</th>
@@ -589,13 +623,13 @@ echo "</select></li>";
 		<th>Patient Details</th>		
 		<th>Phone</th>
 		<th>Map link</th>
-		<th>Latitude</th>
-		<th>Longitude</th>
+		<!-- <th>Latitude</th>
+		<th>Longitude</th> -->
 		<th>ICD Code</th>
 		<th>Diagnosis</th>
-		<th>Status Date</th>
+		<!-- <th>Status Date</th>
 		<th>Last Visit Type</th>
-		<th>Last Visit Date</th>		
+		<th>Last Visit Date</th>		 -->
 		<th>Priority</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
@@ -628,16 +662,16 @@ echo "</select></li>";
 		<td>
 		<?php 
 		if($followup->map_link) { ?>
-			<a href="<?php echo $followup->map_link; ?>" target="_blank"> View</a>
-		<?php }?>
+			<a href="<?php echo $followup->map_link; ?>" target="_blank" > View</a> <?php echo $followup->latitude." ,".$followup->longitude ?>
+		<?php } else { echo "No map link <br>"." ,".$followup->latitude." ,".$followup->longitude; } ?>
 		</td>
-		<td><?php echo $followup->latitude;?></td>
-		<td><?php echo $followup->longitude;?></td>
+		<!-- <td><?php echo $followup->latitude;?></td>
+		<td><?php echo $followup->longitude;?></td> -->
 		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
 		<td><?php echo $followup->diagnosis;?></td>
-		<td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
+		<!-- <td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
 		<td><?php echo $followup->last_visit_type?></td>
-		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	
+		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	 -->
 		<td><?php echo $followup->priority_type; ?></td>
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>

@@ -4794,9 +4794,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$this->db->where('patient_followup.life_status',2);
 		}
 				
-		if($this->input->post('last_visit_type')){
-			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-		}
+		// if($this->input->post('last_visit_type')){
+		// 	$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
+		// }
 		
 		if($this->input->post('priority_type')){
 			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
@@ -4848,13 +4848,10 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         patient.spouse_name,
         patient.phone,
         patient.address,
-        patient_followup.status_date,
         patient_followup.icd_code,
         icd_code.code_title,
         patient_followup.diagnosis,
         patient_followup.map_link,
-        patient_followup.last_visit_type,
-        patient_followup.last_visit_date,
         patient_followup.latitude,
         patient_followup.longitude,
         patient_followup.note,
@@ -5056,25 +5053,36 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$this->db->select('"0" as area',false);
 		}
 		
-		if($this->input->post('discharge_status')){	
+		if($this->input->post('discharge_status')=='Notupdated')
+		{
+			$this->db->where('pv.outcome','0');
+		}else if($this->input->post('discharge_status')){
 			$this->db->where('pv.outcome',$this->input->post('discharge_status'));
 		}
 
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
-		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
-		p.place, p.phone, pvd.department, admit_date, admit_time, p.patient_id_manual,pv.outcome,pv.outcome_date,pv.decision as decision_note,
-		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as registeredby,area.area_name,unit.unit_name,
-		pv.signed_consultation as signed,vn.visit_name,pv.visit_name_id,pv.final_diagnosis as final_diagnosis,pf.note as note,CONCAT(updatedby.first_name, ' ', updatedby.last_name) as updatedby,pf.update_time as updated_time",false);
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,insertuserby.first_name as insertedusername,
+		p.place, p.phone, pvd.department, admit_date, admit_time, p.patient_id_manual,pv.outcome,pv.outcome_date,pv.outcome_time,pv.decision as decision_note,updated.first_name as updatedby,
+		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,area.*,unit.*,volunteer_user.username,registered.first_name as registeredby,
+		pv.signed_consultation as signed,district.district,state.state,vn.visit_name,pv.visit_name_id,pf.diagnosis,pt.priority_type,pf.note,pv.final_diagnosis as final_diagnosis",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('patient_followup as pf','pf.patient_id=p.patient_id','left')
+		 ->join('priority_type as pt','pt.priority_type_id=pf.priority_type_id','left')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
+		 ->join('district','p.district_id=district.district_id','left')
+		 ->join('state','district.state_id=state.state_id','left')
 		 ->join('unit','pv.unit=unit.unit_id','left')
 		 ->join('area','pv.area=area.area_id','left')
 		 ->join('hospital','pv.hospital_id=hospital.hospital_id','left')
-		 ->join('staff as updatedby','pf.update_by=updatedby.staff_id','left')
-		 ->join('user as volunteer_user','pv.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('staff as appointment_with','pv.appointment_with=appointment_with.staff_id','left')
+		 ->join('department as sd', 'appointment_with.department_id=sd.department_id','left')
+		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
+		 ->join('user as patientvisitinsert','pv.insert_by_user_id = patientvisitinsert.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
+		 ->join('staff as updated','pf.update_by=updated.staff_id','left')
+		 ->join('staff as registered','pf.add_by=registered.staff_id','left')
+		 ->join('staff as insertuserby','patientvisitinsert.user_id=insertuserby.staff_id','left')
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');
@@ -5143,12 +5151,17 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$this->db->where('patient_visit.department_id',$this->input->post('department'));
 		}
 		
-		if($this->input->post('discharge_status')){	
-			$this->db->where('patient_visit.outcome',$this->input->post('discharge_status'));
-		}
+		// if($this->input->post('discharge_status')){	
+		// 	$this->db->where('patient_visit.outcome',$this->input->post('discharge_status'));
+		// }
 		
 			//Counting the number of patients gender wise.
-		$this->db->select("count(department.department_id) as issue_count,area.area_name,department.department as department_name,unit.unit_name");
+		$this->db->select("count(department.department_id) as issue_count,area.area_name,department.department as department_name,unit.unit_name,patient_visit.patient_id,
+		SUM(CASE when patient_visit.outcome='Discharge' THEN 1 ELSE 0 END) as dicharge_count,
+		SUM(CASE when patient_visit.outcome='LAMA' THEN 1 ELSE 0 END) as lama_count,
+		SUM(CASE when patient_visit.outcome='Absconded' THEN 1 ELSE 0 END) as absconded_count,
+		SUM(CASE when patient_visit.outcome='Death' THEN 1 ELSE 0 END) as death_count,
+		SUM(CASE when patient_visit.outcome='0' THEN 1 ELSE 0 END) as notupdated_count");
 		$this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		->join('patient_followup','patient_visit.patient_id=patient_followup.patient_id','left')
 		->join('department','patient_visit.department_id=department.department_id','left')

@@ -245,10 +245,11 @@ display: inline-grid;
 			</select>
 			<select name="discharge_status" id="discharge_status" class="form-control" >
 				<option value="">Discharge Status</option>
-				<option value="Discharge">Discharge</option>
-				<option value="LAMA">LAMA</option>
-				<option value="Absconded">Absconded</option>
-				<option value="Death">Death</option>
+				<option value="Notupdated" <?php if($this->input->post('discharge_status')=='Notupdated'){ echo "selected"; } ?>>Not Updated</option>
+				<option value="Discharge" <?php if($this->input->post('discharge_status')=='Discharge'){ echo "selected"; } ?>>Discharge</option>
+				<option value="LAMA" <?php if($this->input->post('discharge_status')=='LAMA'){ echo "selected"; } ?>>LAMA</option>
+				<option value="Absconded" <?php if($this->input->post('discharge_status')=='Absconded'){ echo "selected"; } ?>>LWI</option>
+				<option value="Death" <?php if($this->input->post('discharge_status')=='Death'){ echo "selected"; } ?>>Expired</option>
 			</select>
 			  Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
@@ -422,6 +423,16 @@ echo "</select></li>";
 		<th>Note</th>
 		<th>Registered By</th>
 		<th>Updated By</th>
+		<?php 
+		$access=0;
+		foreach($this->data['functions'] as $function){
+			if($function->user_function=="Update Patients"){
+				$access=1;break;
+			}
+		}if($access=='1'){ 
+		?>
+		<th>Update</th>
+		<?php } ?>
 	</thead>
 	<tbody>
 	<?php 
@@ -446,19 +457,21 @@ echo "</select></li>";
 		<td><?php echo $s->unit_name.", "."$s->area_name";?></td>
 		<td><?php echo $s->visit_name ?></td>
 		<td><?php echo $s->final_diagnosis; ?></td>
-		<?php $updatedTime="";
-		if(!!$s->updated_time){
-			$updatedTime = date("j M Y h:i A.", strtotime("$s->updated_time"));
-		}
-		
-		?>
-		<td><?php echo $s->note.", ".$s->updatedby.", ".$updatedTime;?></td>
+		<td><?php echo $s->note.", "."$s->registeredby";?></td>
 		<td><?php if($s->outcome!='0'){ echo $s->outcome; }else { " "; };?></td>
-		<td><?php if($s->outcome_date!="0000-00-00"){ echo date("j M Y", strtotime("$s->outcome_date")); }?></td>
+		<td><?php if($s->outcome_date!="0000-00-00"){ echo date("j M Y", strtotime("$s->outcome_date")).", ".date("h:i A.", strtotime("$s->outcome_time")); }?></td>
 		<td><?php echo $s->decision_note;?></td>
-		<td><?php echo $s->registeredby;?></td>
+		<td><?php echo $s->insertedusername;?></td>
 		<!-- <td><?php echo $s->updatedby;?></td> -->
 		<td></td>
+		<?php if($access=='1'){ ?> 
+			<td><button type="button" class="btn btn-success" onclick="$('#patient_visit_<?php echo $s->visit_id;?>').submit()" autofocus>Update</button>
+				<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'patient_visit_'.$s->visit_id)); ?>
+				<input type="text" class="sr-only" hidden value="<?php echo $s->visit_id;?>" form="patient_visit_<?php echo $s->visit_id;?>" name="selected_patient" />
+				<input type="text" class="sr-only" hidden value="<?php echo $s->patient_id;?>" name="patient_id" />
+				</form>
+			</td>
+		<?php } ?>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
