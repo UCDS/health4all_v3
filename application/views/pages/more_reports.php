@@ -22,7 +22,7 @@ $helpline=0;
 $admin=0;
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral" || $function->user_function=="patient_follow_up"
-			|| $function->user_function=="issue_list" || $function->user_function=="issue_summary" || $function->user_function=="followup_summary"){
+			|| $function->user_function=="issue_list" || $function->user_function=="issue_summary" || $function->user_function=="followup_summary" || $function->user_function=="followup_map"){
 				$appointments=1;
 				
 				?>
@@ -65,6 +65,11 @@ if($function->user_function== "followup_summary"){ ?>
 
 <?php } if($function->user_function== "issue_summary"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><a class="anchor_style" href="<?php echo base_url()."reports/issue_summary";?>">Issue Summary</a></button>
+
+<?php } 
+
+if($function->user_function== "followup_map"){ ?>
+		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_map";?>">Followup Map</a></button>
 
 <?php } } ?>
 </div> <?php

@@ -368,8 +368,9 @@ $patient = $patients[0];
 				        <div class="form-group">
 							<label for="inputstatus">Status Date <span class="mandatory" >*</span> </label><br> -->
 							<!-- <input class="form-control"  type="date"  name="status_date" id="status_date" value=<?php if($patient_followup) echo $patient_followup->status_date;  ?>  required/> -->
-							<input class="form-control"  type="hidden"  name="status_date" id="status_date" 
-							value=<?php echo date("Y-m-d"); ?>  readonly/>
+							<!-- Commenting for improvment Jan 22 2024
+								<input class="form-control"  type="hidden"  name="status_date" id="status_date" 
+							value=<?php echo date("Y-m-d"); ?>  readonly/> -->
 						<!-- </div>
 				</div> -->
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
@@ -402,23 +403,24 @@ $patient = $patients[0];
                 </div>
 				</div>
 
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+					<div class="form-group">
+							<label for="Inputdiagnosis">Diagnosis</label>
+							<input class="form-control" name="diagnosis" id="inputdiagnosis" placeholder="Enter Diagnosis" type="TEXT" value="<?php if($patient_followup) echo $patient_followup->diagnosis;  ?>" align="middle">
+					</div> 
+				</div>
+
 			</div>
 
 			<div class="row">
-					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-						<div class="form-group">
-								<label for="Inputdiagnosis">Diagnosis</label>
-								<input class="form-control" name="diagnosis" id="inputdiagnosis" placeholder="Enter Diagnosis" type="TEXT" value="<?php if($patient_followup) echo $patient_followup->diagnosis;  ?>" align="middle">
-						</div> 
-					</div>								
-						
-						<div class="col-md-4">
+						<!-- Commenting for Improvement Jan 22 2024
+							<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
 								<select class="form-control" name="last_visit_type"   required>
-			<option value="">Last Visit Type</option>  
-                        <option value="IP" <?php echo ($patient_followup->last_visit_type == 'IP') ? 'selected' : ''; ?> >IP</option> 
-			<option value="OP" <?php echo ($patient_followup->last_visit_type == 'OP') ? 'selected' : ''; ?> >OP</option>   								
+									<option value="">Last Visit Type</option>  
+                        			<option value="IP" <?php echo ($patient_followup->last_visit_type == 'IP') ? 'selected' : ''; ?> >IP</option> 
+									<option value="OP" <?php echo ($patient_followup->last_visit_type == 'OP') ? 'selected' : ''; ?> >OP</option>   								
 								</select>
 							</div>
 						</div>
@@ -429,7 +431,7 @@ $patient = $patients[0];
 								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" value=<?php if($patient_followup) echo $patient_followup->last_visit_date;  ?>  required />
 
 							</div>
-						</div>
+						</div> -->
 			</div>	
 			
 			<div class="row">		
@@ -489,15 +491,14 @@ $patient = $patients[0];
 									?>
 								</select>
 							</div>
-						</div>										
-											
-						
+						</div>	
+
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
-								<label for="Inputdiagnosis">Note</label>
-								<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="text" value="<?php if($patient_followup) echo $patient_followup->note;  ?>" align="middle">
+								<label for="input_longitude">Longitude</label>
+								<input class="form-control" name="input_longitude"  id="input_longitude"  placeholder="Enter Longitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->longitude;  ?>" align="middle">
 						</div> 
-						</div>	
+						</div>					
 						
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
@@ -515,11 +516,13 @@ $patient = $patients[0];
 						
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
-								<label for="input_longitude">Longitude</label>
-								<input class="form-control" name="input_longitude"  id="input_longitude"  placeholder="Enter Longitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->longitude;  ?>" align="middle">
+								<label for="Inputdiagnosis">Note</label>
+								<textarea class="form-control" name="input_note"  id="input_note" rows="1" placeholder="Enter Note" value="<?php if($patient_followup) echo $patient_followup->note;  ?>"> <?php echo $patient_followup->note; ?> </textarea>
+								<!-- Commented and changed to textarea for improvement
+									<input class="form-control" name="input_note"  id="input_note"  placeholder="Enter Note"  type="textarea" value="<?php if($patient_followup) echo $patient_followup->note;  ?>" align="middle"> -->
 						</div> 
 						</div>
-						
+
 						<!-- Newly added 12-01-2024 (am)-->
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
@@ -565,6 +568,7 @@ $patient = $patients[0];
 							});
 						</script>
 						<div id="dvPinNo">
+						<div class="row container">
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 								<label for="input_longitude">Drug <span class="mandatory">*</span></label>
@@ -579,7 +583,7 @@ $patient = $patients[0];
 						</div> 
 						</div>
 
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-3">
 						<div class="form-group">
 								<label for="input_longitude">Last Dispensary Date <span class="mandatory">*</span> </label>
 								<input class="form-control" name="last_dispensed_date"  id="last_dispensed_date" autocomplete="OFF" placeholder="Enter Last Dispensary Date"  type="date" value="<?php if($patient_followup) echo $patient_followup->last_dispensed_date;  ?>" align="middle" >
@@ -591,6 +595,7 @@ $patient = $patients[0];
 								<label for="input_longitude">Last Dispensary Quantity <span class="mandatory">*</span></label>
 								<input class="form-control" name="last_dispensed_quantity"  id="last_dispensed_quantity" autocomplete="OFF" placeholder="Enter Last Dispensary Quantity"  type="text" value="<?php if($patient_followup) echo $patient_followup->last_dispensed_quantity;  ?>" align="middle" >
 						</div> 
+						</div>
 						</div>
 						</div>
 
