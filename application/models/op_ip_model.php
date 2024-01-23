@@ -207,8 +207,6 @@ function get_dist_summary(){
 		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
 		 ->join('department','patient_visit.department_id=department.department_id')
-		 ->join('unit','patient_visit.unit=unit.unit_id','left')
-		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->join('district','patient.district_id=district.district_id','left')
 		 ->join('state','district.state_id=state.state_id','left')
@@ -254,11 +252,7 @@ function get_dist_summary(){
 			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
 			$this->db->where('icd_code.icd_code',$icd_code);
 		}
-		// if($this->input->post('sort_by_age')==1){
-		// 	$this->db->order_by('patient.age_years',ASC);
-		// }else{
-		// 	$this->db->order_by('patient.age_years',DESC);
-		// }
+		
 		if($this->input->post('ndps')!=0)
 		{
 			if($this->input->post('ndps')==1){
@@ -273,16 +267,7 @@ function get_dist_summary(){
 		if($this->input->post('district')){
 			$this->db->where('patient.district_id',$this->input->post('district'));
 		}
-		if($this->input->post('department')){
-			$this->db->where('patient_visit.department_id',$this->input->post('department'));
-		}
-		if($this->input->post('visit_name')){
-			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
-		}
-		// if($this->input->post('last_visit_type')){
-		// 	$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-		// }
-
+		
 		$this->db->select("icd_block.block_title,icd_chapter.chapter_title,patient_followup.icd_code,priority_type,
 		(SELECT COUNT(patient_followup.priority_type_id) FROM patient_followup
 		WHERE patient_followup.icd_code = icd_code.icd_code &&  patient_followup.priority_type_id=1 ) AS highcount,
@@ -292,8 +277,7 @@ function get_dist_summary(){
 		WHERE patient_followup.icd_code = icd_code.icd_code &&  patient_followup.priority_type_id=3 ) AS lowcount");
 
 		$this->db->from('patient_followup')
-     	 ->join('patient_visit','patient_followup.patient_id=patient_visit.patient_id','left')
-     	 ->join('patient','patient_followup.patient_id=patient.patient_id')
+     	 ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		 ->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		 ->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		 ->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
@@ -301,13 +285,9 @@ function get_dist_summary(){
 		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
 		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
-		 ->join('department','patient_visit.department_id=department.department_id')
-		 ->join('unit','patient_visit.unit=unit.unit_id','left')
-		 ->join('area','patient_visit.area=area.area_id','left')
-		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->join('district','patient.district_id=district.district_id','left')
 		 ->join('state','district.state_id=state.state_id','left')
-		 ->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		 ->where('patient_followup.hospital_id',$hospital['hospital_id']);
 
 		$this->db->group_by('icd_code.block_id');
 		$this->db->group_by('icd_block.chapter_id');

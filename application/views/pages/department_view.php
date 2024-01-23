@@ -73,14 +73,13 @@ if (isset($msg)){ ?>
 								<div class="row">
 									<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-4">
 										<div class="form-group">
-											<label for = "inputClinical"  name="clinical">Clinical</label>
+										<label for = "inputClinical"  name="clinical">Clinical</label>
 											    <div class="radio">																
-												<label><input type="radio" name="optradio">yes</label>
+												<label><input type="radio" name="optradioyes" value="1">yes</label>
 												</div>
-																															
-													<div class="radio">
-														<label><input type="radio" name="optradio">no</label>														
-													</div>																																															
+												<div class="radio">
+													<label><input type="radio" name="optradiono" value="2">no</label>														
+												</div>																																															
 										</div>
 									</div>
 								</div>

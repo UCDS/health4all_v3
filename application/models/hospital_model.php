@@ -273,9 +273,20 @@ class Hospital_model extends CI_Model {
          if($this->input->post('op_room_no')){
             $department_info['op_room_no'] = $this->input->post('op_room_no');
         }
-         if($this->input->post('clinical')){
-            $department_info['clinical'] = $this->input->post('clinical');
+        // Commented on 23-01-2024 clinical not inserting
+        //  if($this->input->post('clinical')){
+        //     $department_info['clinical'] = $this->input->post('clinical');
+        // }
+
+        /* Newly added Jan 23-01-2024 */
+        if($this->input->post('optradioyes')){
+            $department_info['clinical'] = $this->input->post('optradioyes');
         }
+
+        if($this->input->post('optradiono')){
+            $department_info['clinical'] = $this->input->post('optradiono');
+        }
+        /* Till here */
          if($this->input->post('floor')){
             $department_info['floor'] = $this->input->post('floor');
         }
