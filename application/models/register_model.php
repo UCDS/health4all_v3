@@ -1307,12 +1307,9 @@ class Register_model extends CI_Model{
 
 
 	function updatefor_followup(){
-			$this->db->set('status_date', $this->input->post('status_date'));
 			$this->db->set('life_status', $this->input->post('life_status'));	
 			$this->db->set('icd_code', $this->input->post('icd_code'));
 			$this->db->set('diagnosis', $this->input->post('diagnosis'));
-			$this->db->set('last_visit_type', $this->input->post('last_visit_type'));
-			$this->db->set('last_visit_date', $this->input->post('last_visit_date'));	
 			$this->db->set('priority_type_id', $this->input->post('priority_type'));
 			$this->db->set('route_primary_id', $this->input->post('route_primary'));
 			$this->db->set('route_secondary_id', $this->input->post('route_secondary'));
