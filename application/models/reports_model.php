@@ -5061,9 +5061,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
-		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,insertuserby.first_name as insertedusername,
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,registered.first_name as insertedusername,
 		p.place, p.phone, pvd.department, admit_date, admit_time, p.patient_id_manual,pv.outcome,pv.outcome_date,pv.outcome_time,pv.decision as decision_note,updated.first_name as updatedby,
-		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,area.*,unit.*,volunteer_user.username,registered.first_name as registeredby,
+		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,area.area_name,unit.unit_name,volunteer_user.username,registered.first_name as registeredby,
 		pv.signed_consultation as signed,district.district,state.state,vn.visit_name,pv.visit_name_id,pf.diagnosis,pt.priority_type,pf.note,pv.final_diagnosis as final_diagnosis",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
