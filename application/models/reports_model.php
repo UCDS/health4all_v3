@@ -5061,7 +5061,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
-		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,registered.first_name as insertedusername,
+		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,CONCAT(IF(insertuserby.first_name=NULL,'',insertuserby.first_name),' ',IF(insertuserby.last_name=NULL,'',insertuserby.last_name)) as insertedusername,
 		p.place, p.phone, pvd.department, admit_date, admit_time, p.patient_id_manual,pv.outcome,pv.outcome_date,pv.outcome_time,pv.decision as decision_note,updated.first_name as updatedby,
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,area.area_name,unit.unit_name,volunteer_user.username,registered.first_name as registeredby,
 		pv.signed_consultation as signed,district.district,state.state,vn.visit_name,pv.visit_name_id,pf.diagnosis,pt.priority_type,pf.note,pv.final_diagnosis as final_diagnosis",false);
@@ -5082,7 +5082,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
 		 ->join('staff as updated','pf.update_by=updated.staff_id','left')
 		 ->join('staff as registered','pf.add_by=registered.staff_id','left')
-		 ->join('staff as insertuserby','patientvisitinsert.user_id=insertuserby.staff_id','left')
+		 ->join('staff as insertuserby','patientvisitinsert.staff_id=insertuserby.staff_id','left')
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
 		 ->where('pv.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','OP');
