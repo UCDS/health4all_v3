@@ -254,6 +254,34 @@ class User_panel extends CI_Controller {
 		 $this->load->view('templates/footer');	
 		}
 	}
-
+	// Newly added on Jan 25 2024
+	function user_function_act_list()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="User Function Action List";
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+			foreach($this->data['defaultsConfigs'] as $default){		 
+			if($default->default_id=='pagination'){
+					$this->data['rowsperpage'] = $default->value;
+					$this->data['upper_rowsperpage']= $default->upper_range;
+					$this->data['lower_rowsperpage']= $default->lower_range;
+				}
+			}
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->data['user']=$this->masters_model->get_user_details($this->data['rowsperpage']);
+			$this->data["user_functions"]=$this->staff_model->get_user_function();
+			$this->data["related_users"]=$this->masters_model->get_functions_related_user($this->data['rowsperpage']);
+			$this->data["related_users_count"]=$this->masters_model->get_functions_related_user_count();
+			$this->load->view('pages/user_function_act_list',$this->data);
+			$this->load->view('templates/footer');	
+		}
+		else
+		{
+            show_404();
+        }
+	}
 	
 }

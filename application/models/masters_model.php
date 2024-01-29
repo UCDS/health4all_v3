@@ -1710,5 +1710,67 @@ else if($type=="dosage"){
 		$query = $this->db->get();
 		return $query->result();
 	}
+
+	function get_functions_related_user($default_rowsperpage)
+	{
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$this->db->select("user_function_link.user_id,user_function_link.add,user_function_link.view,user_function_link.edit,user_function.user_function,
+						   user_function.description,staff.first_name,staff.gender,staff.specialisation,staff.email,staff.phone,staff.status,
+						   staff.designation")
+				->from("user_function_link")
+				->join('user_function','user_function.user_function_id=user_function_link.function_id','left')
+				->join('user','user.user_id=user_function_link.user_id','left')
+				->join('staff','staff.staff_id=user.staff_id','left')
+				->where('user_function_link.function_id',$this->input->post('user_functions'));
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_functions_related_user_count()
+    {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$this->db->select("count(*) as count",false)
+				->from("user_function_link")
+				->join('user_function','user_function.user_function_id=user_function_link.function_id','left')
+				->join('user','user.user_id=user_function_link.user_id','left')
+				->join('staff','staff.staff_id=user.staff_id','left')
+				->where('user_function_link.function_id',$this->input->post('user_functions'));
+		$query = $this->db->get();
+		return $query->result();
+    }
 }
 ?>

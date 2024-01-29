@@ -125,7 +125,9 @@ if($function->user_function=="dashboard" ){ ?>
 
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" || $function->user_function=="edit_demographic"){
+			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" || $function->user_function=="edit_demographic"
+			|| $function->user_function=="delete_patient_visit_duplicate" 
+			 || $function->user_function=="list_patient_visit_duplicate" || $function->user_function=="list_patient_edits"){
 				$admin=1;
 				?>
 				<button class="accordion">Admin</button>
@@ -151,7 +153,15 @@ if($function->user_function=="helpline_receiver" ){ ?>
 if($function->user_function=="edit_demographic" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/edit_patient_demographic_details";?>">Edit patient details</a></button>
 <?php		 }
-
+if($function->user_function=="delete_patient_visit_duplicate"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_visit_duplicate";?>">Delete patient visit duplicate</a></button>
+<?php		 }
+if($function->user_function=="list_patient_visit_duplicate"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_patient_visit_duplicate";?>">List patient visit duplicate</a></button>
+<?php		 }
+if($function->user_function=="list_patient_edits"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_patient_edits";?>">List patient edits</a></button>
+<?php		 }
 
 		} ?>
 </div> <?php

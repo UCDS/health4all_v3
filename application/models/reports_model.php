@@ -4866,10 +4866,10 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		patient_followup.dose,
 		patient_followup.last_dispensed_date,
 		patient_followup.last_dispensed_quantity,
-		CONCAT(patient_followup.drug,' / ',patient_followup.dose,' / ',patient_followup.last_dispensed_date,' / ',patient_followup.last_dispensed_quantity) as ndps_status, 
-		CONCAT(followup_update_by.first_name, ' ', followup_update_by.last_name) as followup_update_by",false)
+		followup_update_by.first_name,
+		followup_update_by.last_name")
         ->from('patient_followup')
-        ->join('patient','patient_followup.patient_id=patient.patient_id','both')
+        ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		->join('staff as followup_update_by','patient_followup.update_by=followup_update_by.staff_id','left')

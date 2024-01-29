@@ -711,6 +711,12 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/edit_user"; ?>">Edit</a>
 			</li>
+			<!-- Newly added Jan 25 2024-->
+			<li <?php if (preg_match("^user_panel/user_function_act_list^", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/user_function_act_list"; ?>">User Function List</a>
+			</li>
+			<!-- Till here -->
 			<li <?php if (preg_match("^user_panel/user_hospital_link^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/user_hospital_link"; ?>">Hospital</a>
