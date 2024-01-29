@@ -744,7 +744,9 @@ function initDistrictSelectize(){
                 </div>
 				<div id="print-div_layout" class="sr-only" style="width:100%;height:100%;"> 
 		<?php 
-		$this->load->view($update_print_layout);?>
+					$this->load->view($update_print_layout);
+			       echo("<script>console.log('PHP: " . $update_print_layout . "');</script>");	
+		?>
 		</div>
 		<div id="a6-label" class="sr-only"> 
 	    	<?php $this->load->view($update_print_layout_a6);?>
@@ -1322,7 +1324,7 @@ function initDistrictSelectize(){
                                             </select>
                                          </td>
                                          <td>
-                                         <input type="datetime-local" name="transfer_date" class="form-control transfer_date" value="<?php echo date("d-M-Y g:iA");?>" id="transfer_date" />
+                                         <input type="datetime-local" name="transfer_date" class="form-control transfer_date" value="<?php echo date("Y-m-d\TH:i:s");?>" id="transfer_date" />
                                    
                                          </td>
                                          </tr>
