@@ -744,8 +744,7 @@ function initDistrictSelectize(){
                 </div>
 				<div id="print-div_layout" class="sr-only" style="width:100%;height:100%;"> 
 		<?php 
-					$this->load->view($update_print_layout);
-			       echo("<script>console.log('PHP: " . $update_print_layout . "');</script>");	
+			$this->load->view($update_print_layout);
 		?>
 		</div>
 		<div id="a6-label" class="sr-only"> 
