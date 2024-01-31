@@ -126,7 +126,7 @@
 		</tr>
 		<tr>
 			<td>
-				<font size="3" align="left"><u><b>Investigation:<b></u></font>
+				<font size="3" align="left"><u><b>Investigation:</b></u></font>
 			</td>
 		</tr>
 	    <tr>
