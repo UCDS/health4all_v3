@@ -341,6 +341,7 @@ class patient_model extends CI_Model {
 
     function insert_into_duplicate_table($data) 
     {
+        $this->db->trans_start();
         $data = array(
             'visit_id' => $data[0]->visit_id,
             'hospital_id' => $data[0]->hospital_id,
@@ -410,14 +411,20 @@ class patient_model extends CI_Model {
             'staff_id' => $this->session->userdata('logged_in')['staff_id']
         );
         
-        $result = $this->db->insert('patient_visit_duplicate', $data);
-        return $result;
+        $this->db->insert('patient_visit_duplicate', $data);
+        $this->db->delete('patient_visit',array('visit_id'=> $visit_id));
+        $this->db->trans_complete();
+        if($this->db->trans_status()===FALSE)
+        {
+			return false;
+		}
+		else return true;
     }
 
-    function delete_from_patient_visit($visit_id) 
-    {
-        $this->db->where('visit_id', $visit_id)->delete('patient_visit');
-    }
+    // function delete_from_patient_visit($visit_id) 
+    // {
+    //     $this->db->where('visit_id', $visit_id)->delete('patient_visit');
+    // }
 
     function get_patient_visit_id_delete_history($patient_id)
     {
