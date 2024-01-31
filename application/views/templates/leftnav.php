@@ -676,7 +676,11 @@
 			<li>Forms</li>
 			<li <?php if (preg_match("^user_panel/form_layout^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url() . "user_panel/form_layout"; ?>">Create New</a>
+				<a href="<?php echo base_url() . "user_panel/form_layout"; ?>">Add Custom Form</a>
+			</li>
+			<li <?php if (preg_match("^user_panel/print_layouts", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/print_layouts"; ?>">Print Layouts</a>
 			</li>
 			<li <?php if (preg_match("^add_hospital/hospital_view^", current_url()))
 				echo 'class="active"'; ?>>
@@ -697,6 +701,14 @@
 			<li <?php if (preg_match("^add_unit^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital_units/add_unit">Add Units</a>
+			</li>
+			<li <?php if (preg_match("user_panel/primary_routes", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/primary_routes"; ?>"> Add / Update Primary Routes</a>
+			</li>
+			<li <?php if (preg_match("user_panel/secondary_routes", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/secondary_routes"; ?>"> Add / Update Secondary Routes</a>
 			</li>
 
 			<li class="nav-divider"></li>

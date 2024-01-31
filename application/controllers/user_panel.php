@@ -283,5 +283,235 @@ class User_panel extends CI_Controller {
             show_404();
         }
 	}
+
+	function print_layouts(){
+		if($this->session->userdata('logged_in')){
+		$this->load->helper('form');
+		$this->data['title']="User Panel";
+		$this->data['userdata']=$this->session->userdata('logged_in');
+		$this->data['print_layouts']=$this->staff_model->get_print_layouts();
+		$this->data['districts']=$this->staff_model->get_district();
+		//Updating name
+		$update_name = $this->input->post('print_layout_new_name');
+		$print_layout_id = $this->input->post('print_layout_id');
+		$update = $this->staff_model->update_new_print_layout_name($update_name,$print_layout_id);
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/print_layouts',$this->data);
+		$this->load->view('templates/footer');	
+		}
+		else{
+			show_404();
+		}
+	}
+
+
+	function primary_routes($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Routes Primary";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$route_primary = $this->input->post('route_primary');
+					if($this->masters_model->check_route_primary($hospital['hospital_id'], $route_primary)) 
+					{
+						$this->data['error'] = 'Primary Route already exists';
+					}
+					else
+					{
+						$data_to_insert = array(
+							'hospital_id' => $hospital['hospital_id'],
+							'route_primary' => $route_primary,
+						);
+						$this->masters_model->insert_route_primary($data_to_insert);
+						$this->data['success'] = 'Primary Route Added Successfully';
+					}
+				}
+				// Fetch all records from primary table
+				$this->data['all_primary_routes'] = $this->masters_model->get_all_primary_routes($this->data['rowsperpage']);
+				$this->data['all_primary_routes_count'] = $this->masters_model->get_all_primary_routes_count();
+
+				//Fetch record to edit
+				$this->data['edit_primary_route'] = $this->masters_model->get_edit_primary_route_by_id($record_id);
+			
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/primary_routes',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+    function update_primary_routes() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Route Primary";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$route_primary = $this->input->post('route_primary');
+				if($this->masters_model->check_route_primary($hospital['hospital_id'], $route_primary)) 
+				{
+					$this->data['error'] = 'Primary Route Cannot Be Updated Combination Already Exists';
+				}else
+				{
+					$update_data = array(
+						'route_primary' => $route_primary,
+					);
+					$this->masters_model->update_primary_routes_name($update_record_id, $update_data);
+					$this->data['success'] = 'Primary Route Updated Successfully';
+				}
+			// Fetch all records from primary table
+			$this->data['all_primary_routes'] = $this->masters_model->get_all_primary_routes($this->data['rowsperpage']);
+			$this->data['all_primary_routes_count'] = $this->masters_model->get_all_primary_routes_count();
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/primary_routes',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}	
+    }
+
+	function secondary_routes($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Route Secondary";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$route_primary = $this->input->post('route_primary_id');
+					$route_secondary = $this->input->post('route_secondary');
+
+					if($this->masters_model->check_route_secondary($hospital['hospital_id'], $route_primary, $route_secondary)) 
+					{
+						$this->data['error'] = 'Secondary route already exists with primary route and hospital';
+					}
+					else if($route_primary=='0')
+					{
+						$this->data['error'] = 'Please select primary route';
+					}
+					else
+					{
+						$data_to_insert = array(
+							'hospital_id' => $hospital['hospital_id'],
+							'route_primary_id' => $route_primary,
+							'route_secondary' => $route_secondary,
+						);
+						$this->masters_model->insert_route_secondary($data_to_insert);
+						$this->data['success'] = 'Secondary Route Added Successfully';
+					}
+				}
+				//Fetch all primary routes into dropdown
+				$this->data['get_all_primary_routes_dd'] = $this->masters_model->get_all_primary_routes();
+
+				//Fetch all records from primary table
+				$this->data['all_secondary_routes'] = $this->masters_model->get_all_secondary_routes($this->data['rowsperpage']);
+				$this->data['all_secondary_routes_count'] = $this->masters_model->get_all_secondary_routes_count();
+
+				//Fetch record to edit
+				$this->data['edit_secondary_route'] = $this->masters_model->get_edit_secondary_route_by_id($record_id);
+
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/secondary_routes',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_secondary_route()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Route Primary";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$route_primary = $this->input->post('route_primary_id');
+				$route_secondary = $this->input->post('route_secondary');
+				if($this->masters_model->check_route_secondary($hospital['hospital_id'], $route_primary, $route_secondary)) 
+				{
+					$this->data['error'] = 'Secondary Route Cannot Be Updated Combination Already Exists';
+				}else
+				{
+					$update_data = array(
+						'route_primary_id' => $route_primary,
+						'route_secondary' => $route_secondary,
+					);
+					$this->masters_model->update_secondary_routes_name($update_record_id,$update_data);
+					$this->data['success'] = 'Secondary Route Updated Successfully';
+				}
+			//Fetch all primary routes into dropdown
+			$this->data['get_all_primary_routes_dd'] = $this->masters_model->get_all_primary_routes();
+
+			//Fetch all records from primary table
+			$this->data['all_secondary_routes'] = $this->masters_model->get_all_secondary_routes($this->data['rowsperpage']);
+			$this->data['all_secondary_routes_count'] = $this->masters_model->get_all_secondary_routes_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/secondary_routes',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
 	
 }
