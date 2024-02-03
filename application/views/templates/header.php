@@ -341,7 +341,8 @@ break;
 					}
 				?>
 				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report" ||  $f->user_function=="helpline_receiver" || $f->user_function=="referral"
-				|| $f->user_function=="issue_list" || $f->user_function=="issue_summary" || $f->user_function=="followup_summary" || $f->user_function=="followup_map"){ $more_reports=1; ?>
+				|| $f->user_function=="issue_list" || $f->user_function=="issue_summary" || $f->user_function=="followup_summary" || $f->user_function=="followup_map"
+				|| $f->user_function=="delete_patient_visit_duplicate" || $f->user_function=="list_patient_visit_duplicate" || $f->user_function=="list_patient_edits"){ $more_reports=1; ?>
 					
 				<?php } ?>
 				<?php

@@ -1233,9 +1233,6 @@ class Register_model extends CI_Model{
 		if($hospital_id){
             $followup_info['hospital_id'] = $hospital_id;
         }
-        if($this->input->post('status_date')){
-            $followup_info['status_date'] = $this->input->post('status_date');
-        }
         if($this->input->post('input_map_link')){
             $followup_info['map_link'] = $this->input->post('input_map_link');
         }
@@ -1248,13 +1245,7 @@ class Register_model extends CI_Model{
          if($this->input->post('diagnosis')){
             $followup_info['diagnosis'] = $this->input->post('diagnosis');
         }
-         if($this->input->post('last_visit_type')){
-            $followup_info['last_visit_type'] = $this->input->post('last_visit_type');
-        }
-        if($this->input->post('last_visit_date')){
-			$followup_info['last_visit_date'] = $this->input->post('last_visit_date');			    
-        }
-         if($this->input->post('priority_type')){
+        if($this->input->post('priority_type')){
             $followup_info['priority_type_id'] = $this->input->post('priority_type');
         }
          if($this->input->post('route_primary')){

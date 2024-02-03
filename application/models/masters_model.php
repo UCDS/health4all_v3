@@ -1710,5 +1710,165 @@ else if($type=="dosage"){
 		$query = $this->db->get();
 		return $query->result();
 	}
+
+	function get_functions_related_user($default_rowsperpage)
+	{
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$this->db->select("user_function_link.user_id,user_function_link.add,user_function_link.view,user_function_link.edit,user_function.user_function,
+						   user_function.description,staff.first_name,staff.gender,staff.specialisation,staff.email,staff.phone,staff.status,
+						   staff.designation")
+				->from("user_function_link")
+				->join('user_function','user_function.user_function_id=user_function_link.function_id','left')
+				->join('user','user.user_id=user_function_link.user_id','left')
+				->join('staff','staff.staff_id=user.staff_id','left')
+				->where('user_function_link.function_id',$this->input->post('user_functions'));
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_functions_related_user_count()
+    {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$this->db->select("count(*) as count",false)
+				->from("user_function_link")
+				->join('user_function','user_function.user_function_id=user_function_link.function_id','left')
+				->join('user','user.user_id=user_function_link.user_id','left')
+				->join('staff','staff.staff_id=user.staff_id','left')
+				->where('user_function_link.function_id',$this->input->post('user_functions'));
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+	//Newly added on jan 31 2024 - to end
+	function check_route_primary($hospital_id, $route_primary) 
+    {
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('route_primary', $route_primary);
+        $query = $this->db->get('route_primary');
+        return $query->num_rows() > 0;
+    }
+
+    function insert_route_primary($data) 
+    {
+        $this->db->insert('route_primary', $data);
+    }
+
+    function get_all_primary_routes()
+    {
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("route_primary.route_primary_id,route_primary.route_primary as route_name,hospital.hospital as hospital_name")
+		->from("route_primary")
+		->join('hospital','hospital.hospital_id=route_primary.hospital_id','left');
+		$this->db->where('route_primary.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_primary_routes_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("route_primary")
+		->join('hospital','hospital.hospital_id=route_primary.hospital_id','left');
+		$this->db->where('route_primary.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_primary_route_by_id($record_id) 
+	{
+		$this->db->select('route_primary_id,route_primary');
+        $query = $this->db->get_where('route_primary', array('route_primary_id' => $record_id));
+        return $query->row_array();
+    }
+
+    function update_primary_routes_name($record_id, $data) {
+        $this->db->where('route_primary_id', $record_id);
+        $this->db->update('route_primary', $data);
+    }
+
+	function check_route_secondary($hospital_id, $route_primary, $route_secondary) 
+    {
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('route_primary_id', $route_primary);
+        $this->db->where('route_secondary', $route_secondary);
+        $query = $this->db->get('route_secondary');
+        return $query->num_rows() > 0;
+    }
+
+	function insert_route_secondary($data) 
+    {
+        $this->db->insert('route_secondary', $data);
+    }
+
+	function get_all_secondary_routes()
+    {
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("route_secondary.id,route_secondary.route_secondary as secondary_name, route_primary.route_primary as primary_name, hospital.hospital as hname")
+		->from("route_secondary")
+		->join("route_primary",'route_primary.route_primary_id=route_secondary.route_primary_id','left')
+		->join('hospital','hospital.hospital_id=route_secondary.hospital_id','left');
+		$this->db->where('route_secondary.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_secondary_routes_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("route_secondary")
+		->join("route_primary",'route_primary.route_primary_id=route_secondary.route_primary_id','left')
+		->join('hospital','hospital.hospital_id=route_secondary.hospital_id','left');
+		$this->db->where('route_secondary.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_secondary_route_by_id($record_id) 
+	{
+		$this->db->select('id,route_primary_id,hospital_id,route_secondary');
+        $query = $this->db->get_where('route_secondary', array('id' => $record_id));
+        return $query->row_array();
+    }
+
+	function update_secondary_routes_name($record_id, $data) {
+        $this->db->where('id', $record_id);
+        $this->db->update('route_secondary', $data);
+    }
 }
 ?>

@@ -299,6 +299,249 @@ class patient_model extends CI_Model {
         echo $visit_id;
         return $visit_id;
     }
+
+    function get_patient_visits_data(){
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        else{
+            return;
+        }
+        
+        $this->db->select('patient_visit.patient_id,patient_visit.visit_type,patient.age_years,patient.age_months,patient.age_days,patient.gender,patient.phone,
+        patient.address,patient.first_name,patient_visit.hosp_file_no as op_ip_no,patient_visit.admit_date,hospital.hospital as hospital_name,department.department as dept_name,
+        visit_name.visit_name,patient_visit.appointment_time,patient_visit.visit_id')
+                ->from('patient_visit')
+                ->join('patient','patient.patient_id=patient_visit.patient_id','left')
+                ->join('hospital','hospital.hospital_id=patient_visit.hospital_id','left')
+                ->join('department','department.department_id=patient_visit.department_id','left')
+                ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
+                ->where('patient_visit.patient_id', "$patient_id");
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+    
+    function get_patient_visit_id_details($visit_id)
+    {
+        $this->db->select('visit_id,hospital_id,admit_id,visit_type,visit_name_id,patient_id,hosp_file_no,admit_date,admit_time,department_id,unit,area,doctor_id,nurse,insurance_case,
+        insurance_id,insurance_no,presenting_complaints,past_history,family_history,admit_weight,pulse_rate,respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,hb1ac,clinical_findings,
+        cvs,rs,pa,cns,cxr,provisional_diagnosis,signed_consultation,final_diagnosis,decision,advise,icd_10,icd_10_ext,discharge_weight,outcome,outcome_date,outcome_time,ip_file_received,
+        mlc,arrival_mode,referral_by_hospital_id,insert_by_user_id,update_by_user_id,insert_datetime,update_datetime,appointment_with,appointment_time,appointment_update_by,appointment_update_time,
+        summary_sent_time,temp_visit_id,appointment_status_id,appointment_status_update_by,appointment_status_update_time')
+                ->from('patient_visit')
+                ->where('visit_id', $visit_id);
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function insert_into_duplicate_table($data) 
+    {
+        $this->db->trans_start();
+        $data = array(
+            'visit_id' => $data[0]->visit_id,
+            'hospital_id' => $data[0]->hospital_id,
+            'admit_id' => $data[0]->admit_id,
+            'visit_type' => $data[0]->visit_type,
+            'visit_name_id' => $data[0]->visit_name_id,
+            'patient_id' => $data[0]->patient_id,
+            'hosp_file_no' => $data[0]->hosp_file_no,
+            'admit_date' => $data[0]->admit_date,
+            'admit_time' => $data[0]->admit_time,
+            'department_id' => $data[0]->department_id,
+            'unit' => $data[0]->unit,
+            'area' => $data[0]->area,
+            'doctor_id' => $data[0]->doctor_id,
+            'nurse' => $data[0]->nurse,
+            'insurance_case' => $data[0]->insurance_case,
+            'insurance_id' => $data[0]->insurance_id,
+            'insurance_no' => $data[0]->insurance_no,
+            'presenting_complaints' => $data[0]->presenting_complaints,
+            'past_history' => $data[0]->past_history,
+            'family_history' => $data[0]->family_history,
+            'admit_weight' => $data[0]->admit_weight,
+            'pulse_rate' => $data[0]->pulse_rate,
+            'respiratory_rate' => $data[0]->respiratory_rate,
+            'temperature' => $data[0]->temperature,
+            'sbp' => $data[0]->sbp,
+            'dbp' => $data[0]->dbp,
+            'spo2' => $data[0]->spo2,
+            'blood_sugar' => $data[0]->blood_sugar,
+            'hb' => $data[0]->hb,
+            'hb1ac' => $data[0]->hb1ac,
+            'clinical_findings' => $data[0]->clinical_findings,
+            'cvs' => $data[0]->cvs,
+            'rs'=> $data[0]->rs,
+            'pa' => $data[0]->pa,
+            'cns' => $data[0]->cns,
+            'cxr' => $data[0]->cxr,
+            'provisional_diagnosis' => $data[0]->provisional_diagnosis,
+            'signed_consultation' => $data[0]->signed_consultation,
+            'final_diagnosis' => $data[0]->final_diagnosis,
+            'decision' => $data[0]->decision,
+            'advise' => $data[0]->advise,
+            'icd_10' => $data[0]->icd_10,
+            'icd_10_ext' => $data[0]->icd_10_ext,
+            'discharge_weight' => $data[0]->discharge_weight,
+            'outcome' => $data[0]->outcome,
+            'outcome_date' => $data[0]->outcome_date,
+            'outcome_time' => $data[0]->outcome_time,
+            'ip_file_received' => $data[0]->ip_file_received,
+            'mlc' => $data[0]->mlc,
+            'arrival_mode' => $data[0]->arrival_mode,
+            'referral_by_hospital_id' => $data[0]->referral_by_hospital_id,
+            'insert_by_user_id' => $data[0]->insert_by_user_id,
+            'update_by_user_id' => $data[0]->update_by_user_id,
+            'insert_datetime' => $data[0]->insert_datetime,
+            'update_datetime' => $data[0]->update_datetime,
+            'appointment_with' => $data[0]->appointment_with,
+            'appointment_time' => $data[0]->appointment_time,
+            'appointment_update_by' => $data[0]->appointment_update_by,
+            'appointment_update_time' => $data[0]->appointment_update_time,
+            'summary_sent_time' => $data[0]->summary_sent_time,
+            'temp_visit_id' => $data[0]->temp_visit_id,
+            'appointment_status_id' => $data[0]->appointment_status_id,
+            'appointment_status_update_by' => $data[0]->appointment_status_update_by,
+            'appointment_status_update_time' => $data[0]->appointment_status_update_time,
+            'delete_datetime' => date("Y-m-d H:i:s"),
+            'staff_id' => $this->session->userdata('logged_in')['staff_id']
+        );
+        
+        $this->db->insert('patient_visit_duplicate', $data);
+        $this->db->delete('patient_visit',array('visit_id'=> $visit_id));
+        $this->db->trans_complete();
+        if($this->db->trans_status()===FALSE)
+        {
+			return false;
+		}
+		else return true;
+    }
+
+    // function delete_from_patient_visit($visit_id) 
+    // {
+    //     $this->db->where('visit_id', $visit_id)->delete('patient_visit');
+    // }
+
+    function get_patient_visit_id_delete_history($patient_id)
+    {
+        //$patient = $this->input->post('patient_id');
+        $this->db->select('patient_visit_duplicate.patient_id,patient_visit_duplicate.visit_type,patient.age_years,patient.age_months,patient.age_days,patient.gender,patient.phone,
+        patient.address,patient.first_name,patient_visit_duplicate.hosp_file_no as op_ip_no,patient_visit_duplicate.admit_date,hospital.hospital as hospital_name,department.department as dept_name,
+        visit_name.visit_name,patient_visit_duplicate.appointment_time,patient_visit_duplicate.visit_id,staff.first_name as staff_name,patient_visit_duplicate.delete_datetime,
+        patient_visit_duplicate.delete_id')
+                ->from('patient_visit_duplicate')
+                ->join('patient','patient.patient_id=patient_visit_duplicate.patient_id','left')
+                ->join('hospital','hospital.hospital_id=patient_visit_duplicate.hospital_id','left')
+                ->join('department','department.department_id=patient_visit_duplicate.department_id','left')
+                ->join('visit_name','visit_name.visit_name_id=patient_visit_duplicate.visit_name_id','left')
+                ->join('staff','staff.staff_id=patient_visit_duplicate.staff_id','left')
+                ->where('patient_visit_duplicate.patient_id', $patient_id);
+        $query = $this->db->get();
+        $result = $query->result_array();
+        return $result;
+    }
+
+    function get_deleted_duplicate_data()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(delete_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select('patient.first_name,patient.last_name,patient_visit_duplicate.patient_id,patient_visit_duplicate.visit_type,patient.age_years,patient.age_months,patient.age_days,patient.gender,patient.phone,
+        patient.address,patient.first_name,patient_visit_duplicate.hosp_file_no as op_ip_no,patient_visit_duplicate.admit_date,hospital.hospital as hospital_name,department.department as dept_name,
+        visit_name.visit_name,patient_visit_duplicate.appointment_time,patient_visit_duplicate.visit_id,staff.first_name as staff_name,patient_visit_duplicate.delete_datetime,
+        patient_visit_duplicate.delete_id')
+                ->from('patient_visit_duplicate')
+                ->join('patient','patient.patient_id=patient_visit_duplicate.patient_id','left')
+                ->join('hospital','hospital.hospital_id=patient_visit_duplicate.hospital_id','left')
+                ->join('department','department.department_id=patient_visit_duplicate.department_id','left')
+                ->join('visit_name','visit_name.visit_name_id=patient_visit_duplicate.visit_name_id','left')
+                ->join('staff','staff.staff_id=patient_visit_duplicate.staff_id','left');
+                
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_patient_edits_info()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(edit_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select('patient_info_edit_history.patient_id,patient_info_edit_history.table_name,
+        patient_info_edit_history.field_name,patient_info_edit_history.previous_value,patient_info_edit_history.new_value,patient_info_edit_history.edit_date_time,staff.first_name as staff_name,patient.first_name')
+                ->from('patient_info_edit_history')
+                ->join('patient','patient.patient_id=patient_info_edit_history.patient_id','left')
+                ->join('staff','staff.staff_id=patient_info_edit_history.edit_staff_id','left');
+                
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_patient_edits_info_count()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(edit_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select("count(*) as count",false)
+                ->from('patient_info_edit_history')
+                ->join('staff','staff.staff_id=patient_info_edit_history.edit_staff_id','left');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
 }
 
 ?>

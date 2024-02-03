@@ -233,4 +233,113 @@ function update_patient(){
         $this->load->view('pages/patients/update_patients',$this->data);
         $this->load->view('templates/footer');
     }
+    
+    function delete_patient_visit_duplicate()
+    {
+        $this->input->post('patient_id');
+    	$this->data['title']="Delete Patient Visit Duplicate";
+    	$this->load->model('masters_model');
+    	$this->load->model('patient_model');
+    	$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+	    $this->load->view('templates/header',$this->data);
+	    $this->load->helper('form');
+        //get data from Original table
+	    $this->data['patient_visit_data'] = $this->patient_model->get_patient_visits_data();
+        
+        $this->load->view('pages/delete_patient_visit_duplicate',$this->data);	
+        $this->load->view('templates/footer');
+    }
+    
+    function refresh_table()
+    {
+        $this->load->model('masters_model');
+        $this->load->model('patient_model');
+        $patient_id = $this->input->post('patient_id');
+        $data = $this->patient_model->get_patient_visit_id_delete_history($patient_id);
+        echo json_encode($data);
+    }
+
+    function delete_patient_visit_id()
+    {
+        $this->data['title']="Delete Patient Visit Duplicate";
+    	$this->load->model('masters_model');
+    	$this->load->model('patient_model');
+    	$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+	    $this->load->view('templates/header',$this->data);
+	    $this->load->helper('form');
+        $visit_id = $this->input->post('visit_id');
+        $original_data = $this->patient_model->get_patient_visit_id_details($visit_id);
+        $this->patient_model->ins_del_ops_duplicate_data($original_data,$visit_id);
+        //$this->patient_model->delete_from_patient_visit($visit_id);
+        $this->load->view('pages/delete_patient_visit_duplicate',$this->data);	
+        $this->load->view('templates/footer');
+    }
+    
+    function list_patient_visit_duplicate()
+    {
+        if($this->session->userdata('logged_in')){                          //Checking for user login
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                if($function->user_function=="list_patient_visit_duplicate"){
+                    $access=1;break;
+                }
+            }
+            if($access==1){ 
+                $this->data['title']="List Patient Visit Duplicate";
+                $this->load->model('masters_model');
+                $this->load->model('patient_model');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                $this->load->view('templates/header',$this->data);
+                $this->load->helper('form');
+                $this->data['deleted_duplicate_data'] = $this->patient_model->get_deleted_duplicate_data();
+                $this->load->view('pages/list_patient_visit_duplicate',$this->data);	
+                $this->load->view('templates/footer');
+            }else{
+                show_404();
+            }
+        }
+        else{
+            show_404();
+            }
+    }
+
+    function list_patient_edits()
+    {
+        if($this->session->userdata('logged_in')){                          //Checking for user login
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                if($function->user_function=="list_patient_edits"){
+                    $access=1;break;
+                }
+            }
+            if($access==1){ 
+                if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+                $this->data['title']="List Patient Edits";
+                $this->load->model('masters_model');
+                $this->load->model('patient_model');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                foreach($this->data['defaultsConfigs'] as $default){		 
+                    if($default->default_id=='pagination'){
+                            $this->data['rowsperpage'] = $default->value;
+                            $this->data['upper_rowsperpage']= $default->upper_range;
+                            $this->data['lower_rowsperpage']= $default->lower_range;	 
+       
+                        }
+                   }
+                $this->load->view('templates/header',$this->data);
+                $this->load->helper('form');
+                $this->data['patient_edits_count']=$this->patient_model->get_patient_edits_info_count($from_date,$to_date);
+                $this->data['patient_edits'] = $this->patient_model->get_patient_edits_info($this->data['rowsperpage']);
+                $this->load->view('pages/list_patient_edits',$this->data);	
+                $this->load->view('templates/footer');
+            }else{
+                show_404();
+            }
+        }
+        else{
+            show_404();
+            }
+    }
 }

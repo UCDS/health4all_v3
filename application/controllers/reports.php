@@ -778,7 +778,8 @@ class Reports extends CI_Controller {
 				$function->user_function=="dashboard" ||  
 				$function->user_function=="referral" || $function->user_function=="patient_follow_up" || 
 				$function->user_function=="edit_demographic" || $function->user_function=="issue_list" || $function->user_function=="issue_summary"
-				|| $function->user_function=="followup_summary" || $function->user_function=="followup_map"){
+				|| $function->user_function=="followup_summary" || $function->user_function=="followup_map" || $function->user_function=="delete_patient_visit_duplicate"
+				|| $function->user_function=="list_patient_visit_duplicate"|| $function->user_function=="list_patient_edits"){
 				$access=1;
 				break;
 			}
