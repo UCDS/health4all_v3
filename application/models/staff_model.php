@@ -819,5 +819,22 @@ class Staff_model extends CI_Model{
 		$query=$this->db->get();
 		return $query->result();
 	}
+
+	function update_new_print_layout_name($update_name,$print_layout_id)
+	{
+		$this->db->trans_start();
+        $this->db->where('print_layout_id',$print_layout_id);
+        $this->db->update('print_layout', array('print_layout_name'=>$update_name));
+        $this->db->trans_complete();
+        if($this->db->trans_status()==FALSE)
+		{
+			return false;
+		}
+        else
+		{
+			return true;
+		} 
+	}
+
 }
 ?>
