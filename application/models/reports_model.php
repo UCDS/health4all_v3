@@ -4866,8 +4866,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		patient_followup.dose,
 		patient_followup.last_dispensed_date,
 		patient_followup.last_dispensed_quantity,
-		followup_update_by.first_name,
-		followup_update_by.last_name")
+		followup_update_by.first_name as updated_first_name,
+		followup_update_by.last_name as updated_last_name")
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
