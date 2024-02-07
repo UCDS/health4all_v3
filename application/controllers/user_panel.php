@@ -284,7 +284,8 @@ class User_panel extends CI_Controller {
         }
 	}
 
-	function print_layouts(){
+	function print_layouts()
+	{
 		if($this->session->userdata('logged_in')){
 		$this->load->helper('form');
 		$this->data['title']="User Panel";
@@ -293,8 +294,12 @@ class User_panel extends CI_Controller {
 		$this->data['districts']=$this->staff_model->get_district();
 		//Updating name
 		$update_name = $this->input->post('print_layout_new_name');
-		$print_layout_id = $this->input->post('print_layout_id');
+		$print_layout_id = $this->input->post('print_layout');
 		$update = $this->staff_model->update_new_print_layout_name($update_name,$print_layout_id);
+		if($update)
+		{
+			$this->data['print_layouts']=$this->staff_model->get_print_layouts();
+		}
 		$this->load->view('templates/header',$this->data);
 		$this->load->view('pages/print_layouts',$this->data);
 		$this->load->view('templates/footer');	

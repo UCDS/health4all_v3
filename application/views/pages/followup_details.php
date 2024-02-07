@@ -681,7 +681,7 @@ echo "</select></li>";
 		<?php } else { ?> <td></td> <?php } ?>
 		
 		<td><?php echo $followup->fname." ".$followup->lname;?></td>
-		<td><?php echo $followup->first_name.' '.$followup->last_name." & ".date("j M Y", strtotime("$followup->followup_update_time")).", ".date("h:i A.", strtotime("$followup->followup_update_time")); ?></td>
+		<td><?php echo $followup->updated_first_name.' '.$followup->updated_last_name." & ".date("j M Y", strtotime("$followup->followup_update_time")).", ".date("h:i A.", strtotime("$followup->followup_update_time")); ?></td>
 		
 		<?php $sno++;} ?>
 		

@@ -82,7 +82,7 @@ if(isset($patient_visit_data) && count($patient_visit_data)>0)
 											<td style="text-align:center"><?php echo $p->visit_name;?></td>
 											<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
 											<td>
-												<a data-id="<?php echo $p->visit_id;?>" class="btn btn-success" id="del" >Delete</a>
+												<a data-id="<?php echo $p->visit_id;?>" class="btn btn-danger" id="del" >Delete</a>
 											</td>
 											</tr>
 										<?php $prev = $p;

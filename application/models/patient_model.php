@@ -339,7 +339,7 @@ class patient_model extends CI_Model {
         return $result;
     }
 
-    function ins_del_ops_duplicate_data($data) 
+    function ins_del_ops_duplicate_data($data,$visit_id) 
     {
         $this->db->trans_start();
         $data = array(
