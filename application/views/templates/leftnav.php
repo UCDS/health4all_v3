@@ -678,6 +678,10 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/form_layout"; ?>">Add Custom Form</a>
 			</li>
+			<li <?php if (preg_match("user_panel/delete_custorm_forms", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/delete_custorm_forms"; ?>"> Delete Custorm Forms </a>
+			</li>
 			<li <?php if (preg_match("^user_panel/print_layouts", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/print_layouts"; ?>">Print Layouts</a>
@@ -709,6 +713,18 @@
 			<li <?php if (preg_match("user_panel/secondary_routes", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/secondary_routes"; ?>"> Add / Update Secondary Routes</a>
+			</li>
+			<li <?php if (preg_match("user_panel/update_des_user_function", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/update_des_user_function"; ?>"> Update Description User Function</a>
+			</li>
+			<li <?php if (preg_match("user_panel/counseling_type", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/counseling_type"; ?>"> Add / Update Counseling Type</a>
+			</li>
+			<li <?php if (preg_match("user_panel/counseling_text", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/counseling_text"; ?>"> Add / Update Counseling Text</a>
 			</li>
 
 			<li class="nav-divider"></li>

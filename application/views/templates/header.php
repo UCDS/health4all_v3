@@ -67,14 +67,14 @@
 					if($f->user_function=="Out Patient Registration" || $f->user_function=="In Patient Registration" || $f->user_function == "View Patients" || $f->user_function == "Update Patients"){
 					// If they do, display dropdown menu which will contain all the links to the forms. ?>
 						<li class="dropdown  <?php if(preg_match("^".base_url()."register^",current_url())){ echo "active";}?>">
-									<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown"><i class="fa fa-user"></i> Patients <b class="caret"></b></a>
+									<a href="#" class="dropdown-toggle js-activated" data-toggle="dropdown"><i class="fa fa-user"></i> Visits <b class="caret"></b></a>
 									<ul class="dropdown-menu">
 						<?php
 						//Loop through the user session data to check if the user has access to Out Patient forms
 						foreach($functions as $f){
 						//If they do, display all the OP forms available
 								if($f->user_function=="Out Patient Registration"){ ?>
-									<li class="dropdown-header">OutPatient</li>
+									<li class="dropdown-header">OP Visit</li>
 									<?php foreach($op_forms as $form){ ?>
 										<li><a href="<?php echo base_url()."register/custom_form/$form->form_id"; ?>"><?php echo $form->form_name;?></a></li>
 									<?php }
@@ -87,7 +87,7 @@
 						//Repeat for all list items, and menu items.
 						foreach($functions as $f){
 								if($f->user_function=="In Patient Registration"){ ?>
-								  <li class="dropdown-header">InPatient</li>
+								  <li class="dropdown-header">In Visit</li>
 								  <?php foreach($ip_forms as $form){ ?>
 									<li><a href="<?php echo base_url()."register/custom_form/$form->form_id"; ?>"><?php echo $form->form_name;?></a></li>
 								  <?php }
@@ -108,7 +108,7 @@
 							<?php
 								foreach($functions as $f){
 									if($f->user_function == "Update Patients"){ ?>
-										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Patient/Visits</a></li>
+										<li><a href="<?php echo base_url()."register/update_patients"; ?>">Update Visits</a></li>
 									<?php
 									break;
 									}
@@ -117,7 +117,7 @@
 											<?php 
 							foreach($functions as $f){
 								if($f->user_function=="patient_follow_up") { ?>
-	<li> <a  href="<?php echo base_url()."register/patient_follow_up";?>">Patient Follow Up</a></li>
+	<li> <a  href="<?php echo base_url()."register/patient_follow_up";?>">Follow Up</a></li>
 <?php		
 break;
 } 
@@ -342,7 +342,7 @@ break;
 				?>
 				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report" ||  $f->user_function=="helpline_receiver" || $f->user_function=="referral"
 				|| $f->user_function=="issue_list" || $f->user_function=="issue_summary" || $f->user_function=="followup_summary" || $f->user_function=="followup_map"
-				|| $f->user_function=="delete_patient_visit_duplicate" || $f->user_function=="list_patient_visit_duplicate" || $f->user_function=="list_patient_edits"){ $more_reports=1; ?>
+				|| $f->user_function=="delete_patient_visit_duplicate" || $f->user_function=="list_patient_visit_duplicate" || $f->user_function=="list_patient_edits" || $f->user_function=="edit_patient_visits" || $f->user_function=="list_edit_patient_visits"){ $more_reports=1; ?>
 					
 				<?php } ?>
 				<?php

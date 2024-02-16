@@ -81,8 +81,12 @@ $('#to_time').ptTimeSelect();
 function doPost(page_no){
 	var page_no_hidden = document.getElementById("page_no");
   	page_no_hidden.value=page_no;
-        $('#appointment').submit();
+        $('#secondary_route').submit();
    }
+   $('ul.pagination a').on('click', function(event) {
+        doPost($(this).text(), event);
+    });
+	
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
@@ -164,9 +168,9 @@ display: inline-grid;
 	<h2><?php echo $title; ?></h2>	
 <div class="row">
 		<?php if(!empty($edit_secondary_route)) { ?>
-			<?php echo form_open('user_panel/update_secondary_route',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
+			<?php echo form_open('user_panel/update_secondary_route',array('class'=>'form-group','role'=>'form','id'=>'secondary_route')); ?>
 		<?php } else { ?>
-		<?php echo form_open('user_panel/secondary_routes',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
+		<?php echo form_open('user_panel/secondary_routes',array('class'=>'form-group','role'=>'form','id'=>'secondary_route')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
@@ -189,12 +193,12 @@ display: inline-grid;
 					value="<?php if($edit_secondary_route){ echo $edit_secondary_route['route_secondary']; }?>" autocomplete="off" required>
 				</div>
 			</div>
-				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+				
 				<input type="hidden" name="record_id" value="<?php echo $edit_secondary_route['id']; ?>" >
 				<?php if(!empty($edit_secondary_route)) { ?>
-					<input class="btn btn-sm btn-primary" type="submit" value="Update" style="margin-top:2%;">
+					<input class="btn btn-md btn-success" type="submit" value="Update Secondary Route" style="margin-top:2%;">
 				<?php } else { ?>
-				<input class="btn btn-sm btn-primary" type="submit" value="Submit" style="margin-top:2%;">
+				<input class="btn btn-md btn-primary" type="submit" value="Add Secondary Route" style="margin-top:2%;">
 				<?php } ?>
 		</div>
 		</form>
@@ -205,9 +209,33 @@ display: inline-grid;
 		<?php endif; ?>
 	<br />
 
+<div class="container-fluid">
+	<h3><b>Search Primary Route<b></h3>
+	<?php echo form_open('user_panel/secondary_routes',array('class'=>'form-group','role'=>'form','id'=>'secondary_route')); ?>
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+			<div class="form-group">
+				<label for="inputrouteprimary ">Select Route Primary <span class="mandatory" style="color:red;">*</span> </label>
+				<select name="search_route_primary_id" required class="form-control">
+				<option value="0">Choose option</option>
+					<?php foreach($get_all_primary_routes_dd as $d){ ?>
+						<option <?php if($this->input->post('route_primary_id')==$d->route_primary_id){ echo "selected"; }?> value="<?php echo $d->route_primary_id; ?>"><?php echo $d->route_name; ?></option>
+					<?php } ?>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-2 ">
+			<label for="inputrouteprimary ">Rows Per Page: <span class="mandatory" style="color:red;">*</span> </label>
+			<input type="text" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+		</div>
+		<div class="col-md-2 ">
+			<input class="btn btn-sm btn-primary" type="submit" value="Search Primary Route" style="margin-top:15%;"> 
+		</div>
+	</form>
+</div> <br/><br/><br/><br/> 
 
 <?php if(isset($all_secondary_routes) && count($all_secondary_routes)>0)
 { ?>
+
 <div style='padding: 0px 2px;'>
 
 <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
@@ -341,9 +369,8 @@ echo "</select></li>";
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th style="text-align:center">#</th>
-		<!-- <th style="text-align:center">Hospital Name</th> -->
-		<th style="text-align:center">Route Primary</th>
-		<th style="text-align:center">Route Secondary</th>
+		<th style="text-align:left">Route Primary</th>
+		<th style="text-align:left">Route Secondary</th>
 		<th style="text-align:center">Actions</th>		
 	</thead>
 	<tbody>
@@ -353,10 +380,9 @@ echo "</select></li>";
 	foreach($all_secondary_routes as $ru) { 
 	?>
 	<tr>
-		<td style="text-align:right"><?php echo $sno;?></td>	
-		<!-- <td style="text-align:center"><?php echo $ru->hname; ?></td>	 -->
-		<td style="text-align:center"><?php echo $ru->primary_name; ?></td>	
-		<td style="text-align:center"><?php echo $ru->secondary_name; ?></td>	
+		<td style="text-align:center"><?php echo $sno;?></td>	
+		<td style="text-align:left"><?php echo $ru->primary_name; ?></td>	
+		<td style="text-align:left"><?php echo $ru->secondary_name; ?></td>	
 		<td style="text-align:center">
 		<a class="btn btn-success" href="<?php echo base_url('user_panel/secondary_routes/'.$ru->id); ?>" style="color:white!important;">Edit</a></td>
 	</tr>

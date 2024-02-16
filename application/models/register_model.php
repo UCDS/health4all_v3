@@ -431,6 +431,7 @@ class Register_model extends CI_Model{
 
 		if($this->input->post('patient_id')){
 			//if the patient id is received in the post variables, use it to update the particular patient.
+			unset($data['insert_datetime']);
 			$patient_id=$this->input->post('patient_id');
 			$this->db->where('patient_id',$patient_id);
 			$this->db->update('patient',$data);
@@ -670,6 +671,31 @@ class Register_model extends CI_Model{
 				}
 			}
 		}
+		
+		if($this->input->post('counseling_text_id')!='')
+		{
+			$this->db->select("sequence_id");
+			$this->db->from("counseling");
+			$this->db->where("visit_id",$this->input->post('visit_id'));
+			$this->db->order_by("counseling_id",'DESC');
+			$query = $this->db->get();
+			$result = $query->row();
+			if($result->sequence_id=='')
+			{
+				$seq=1;
+			}else{
+				$seq=$result->sequence_id+1;
+			}
+			$counseling_text_id = array();
+			$counseling_text_id[] = array(
+				'visit_id'=>$this->input->post('visit_id'),
+				'counseling_text_id'=> $this->input->post('counseling_text_id'),
+				'sequence_id'=> $seq,
+				'created_by'=> $this->input->post('created_by'),
+				'created_date_time'=> $this->input->post('created_date_time')
+			);
+		}
+		$this->db->insert_batch('counseling',$counseling_text_id);
 		
 		$outcome = $this->input->post('outcome');              
 		if(!!$outcome) {
@@ -1535,7 +1561,8 @@ class Register_model extends CI_Model{
 		->join('hospital as referral','patient_visit.referral_by_hospital_id=referral.hospital_id','left')
 		->join('hospital as mainhospital','patient_visit.hospital_id=mainhospital.hospital_id','left')
 		->join('staff','patient_visit.signed_consultation = staff.staff_id','left')
-		->order_by('name','ASC');
+		//->order_by('name','ASC');
+		->order_by('patient_visit.admit_date','DESC');
 		$query=$this->db->get();
 		
 		//return the search results

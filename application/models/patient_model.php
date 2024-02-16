@@ -318,7 +318,7 @@ class patient_model extends CI_Model {
                 ->join('department','department.department_id=patient_visit.department_id','left')
                 ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
                 ->where('patient_visit.patient_id', "$patient_id");
-        
+                $this->db->order_by('patient_visit.admit_date','DESC');
         $query = $this->db->get();
         $result = $query->result();
         return $result;
@@ -333,7 +333,7 @@ class patient_model extends CI_Model {
         summary_sent_time,temp_visit_id,appointment_status_id,appointment_status_update_by,appointment_status_update_time')
                 ->from('patient_visit')
                 ->where('visit_id', $visit_id);
-        
+        $this->db->order_by('patient_visit.admit_date','DESC');
         $query = $this->db->get();
         $result = $query->result();
         return $result;
@@ -538,6 +538,194 @@ class patient_model extends CI_Model {
         $this->db->select("count(*) as count",false)
                 ->from('patient_info_edit_history')
                 ->join('staff','staff.staff_id=patient_info_edit_history.edit_staff_id','left');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    //feb 5 to add to live from here
+    function get_patient_visits_to_edit()
+    {
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        else{
+            return;
+        }
+        $this->db->select('visit_id,patient_id,admit_date,admit_time,unit,area,visit_type,presenting_complaints,past_history,family_history,
+        admit_weight,pulse_rate,respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,rs,pa,cns,cxr,
+        provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,hosp_file_no,department.department as dname')
+                ->from('patient_visit')
+                ->join('department','department.department_id=patient_visit.department_id','left')
+                ->where('patient_visit.patient_id',$patient_id);
+        $this->db->order_by('patient_visit.admit_date','DESC');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_patient_visit_details_for_edits($edit_visit_id)
+    {
+        $this->db->select('patient_visit.admit_date,patient_visit.admit_time,department.department as dnmame,patient_visit.unit,patient_visit.area,
+        patient_visit.visit_name_id,patient_visit.presenting_complaints,patient_visit.past_history,patient_visit.family_history,patient_visit.admit_weight,
+        patient_visit.pulse_rate,patient_visit.respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,
+        rs,pa,cns,cxr,provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,unit.unit_name,area.area_name,
+        visit_name.visit_name')
+            ->from('patient_visit')
+            ->join('department','department.department_id=patient_visit.department_id','left')
+            ->join('unit','unit.unit_id=patient_visit.unit','left')
+            ->join('area','area.area_id=patient_visit.area','left')
+            ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
+            ->where('patient_visit.visit_id',$edit_visit_id);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function patient_visits_edits($input_data)
+    {
+        $patient_id = $input_data['patient_id'];
+        $visit_id  = $input_data['visit_id']; // Editing visit id
+        $user_id =   $input_data['user_id']; // login user id
+	    $edit_time = date("Y-m-d H:i:s");
+        $table_name='patient_visit';
+        $edit_visit_history = array();
+        $patient = array();
+        $elements = ['admit_date','admit_time','department_id','unit','area','visit_name_id','presenting_complaints','past_history','family_history','admit_weight','pulse_rate','respiratory_rate','temperature','sbp','dbp',
+                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time'];
+        foreach ($elements as $column) {
+        	if (array_key_exists($column,$input_data))
+            { 
+                $edit_data = array();
+                $patient[$column] = $input_data[$column]['new'];  
+                $edit_data['patient_id'] = $patient_id;
+                $edit_data['visit_id'] = $visit_id;
+                $edit_data['edit_date_time'] = $edit_time;
+                $edit_data['edit_user_id'] = $user_id; 
+                $edit_data['previous_value'] = $input_data[$column]['old'];
+                $edit_data['new_value'] = $input_data[$column]['new'];
+                $edit_data['field_name'] = $column; 
+                $edit_data['table_name'] = $table_name;  
+                array_push($edit_visit_history,$edit_data);  
+        	}
+        }
+        
+        $this->db->trans_start(); 
+	    $this->db->insert_batch('patient_visits_edit_history', $edit_visit_history); 
+
+        $this->db->where('visit_id', $visit_id);
+        $this->db->update('patient_visit', $patient); 
+
+	    $this->db->trans_complete(); 
+        if($visit_id=='')
+        {
+            $this->db->trans_rollback();
+            return 1;
+        }
+        else if ($this->db->trans_status() === FALSE) 
+        {
+    		$this->db->trans_rollback();
+    		return 2;
+        }
+        else 
+        {
+            $this->db->trans_commit();
+            return 0;
+        }
+    }
+
+    function get_patient_visits_edit_history()
+    {
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        $this->db->select("table_name,field_name,previous_value,new_value,edit_date_time,user.username,
+        (SELECT department FROM department WHERE patient_visits_edit_history.field_name='department_id'
+        AND patient_visits_edit_history.new_value = department.department_id) as dname,
+        (SELECT unit_name FROM unit WHERE patient_visits_edit_history.field_name='unit'
+        AND patient_visits_edit_history.new_value = unit.unit_id) as uname,
+        (SELECT area_name FROM area WHERE patient_visits_edit_history.field_name='area'
+        AND patient_visits_edit_history.new_value = area.area_id) as aname,
+        (SELECT visit_name FROM visit_name WHERE patient_visits_edit_history.field_name='visit_name_id'
+        AND patient_visits_edit_history.new_value = visit_name.visit_name_id) as vname")
+                ->from('patient_visits_edit_history')
+                ->join('user','patient_visits_edit_history.edit_user_id=user.user_id','left')
+                ->where('patient_visits_edit_history.patient_id',$patient_id);
+        $this->db->order_by('patient_visits_edit_history.edit_date_time','DESC');      
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_all_patient_visits_edits()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(patient_visits_edit_history.edit_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select('patient_visits_edit_history.patient_id,patient_visits_edit_history.table_name,patient_visits_edit_history.visit_id,
+        patient_visits_edit_history.field_name,patient_visits_edit_history.previous_value,patient_visits_edit_history.new_value,
+        patient_visits_edit_history.edit_date_time,user.username,patient.first_name,
+        (SELECT department FROM department WHERE patient_visits_edit_history.field_name="department_id"
+        AND patient_visits_edit_history.new_value = department.department_id) as dname,
+        (SELECT unit_name FROM unit WHERE patient_visits_edit_history.field_name="unit"
+        AND patient_visits_edit_history.new_value = unit.unit_id) as uname,
+        (SELECT area_name FROM area WHERE patient_visits_edit_history.field_name="area"
+        AND patient_visits_edit_history.new_value = area.area_id) as aname,
+        (SELECT visit_name FROM visit_name WHERE patient_visits_edit_history.field_name="visit_name_id"
+        AND patient_visits_edit_history.new_value = visit_name.visit_name_id) as vname')
+                ->from('patient_visits_edit_history')
+                ->join('patient','patient.patient_id=patient_visits_edit_history.patient_id','left')
+                ->join('user','user.user_id=patient_visits_edit_history.edit_user_id','left');
+        $this->db->order_by('patient_visits_edit_history.edit_date_time','DESC');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_all_patient_visits_edits_count()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(patient_visits_edit_history.edit_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select("count(*) as count",false)
+                ->from('patient_visits_edit_history')
+                ->join('patient','patient.patient_id=patient_visits_edit_history.patient_id','left')
+                ->join('user','user.user_id=patient_visits_edit_history.edit_user_id','left');
+        $this->db->order_by('patient_visits_edit_history.edit_date_time','DESC');
         $query = $this->db->get();
         $result = $query->result();
         return $result;

@@ -1,4 +1,4 @@
-		<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 		<?php $patient=$patients[0];?>
@@ -439,6 +439,21 @@
 					</td>
 				</tr>
 				<?php } ?>
+				
+				<?php
+					if ($print_summary_counseling) 
+					{
+						foreach($print_summary_counseling as $psc)
+						{
+				?>
+				<tr class="print-element" width="95%">
+					<td style="padding-top:20px" colspan="3">
+						<b><?php echo $psc->counseling_type; ?></b><br />
+						<?php echo $psc->counseling_text; ?>
+					</td>
+				</tr>
+				<?php } }?>
+
 				<tr class="print-element" width="95%" >
 				<?php if(!!$patient->doctor_name){ ?>
 			<td colspan="3" style="text-align:right">

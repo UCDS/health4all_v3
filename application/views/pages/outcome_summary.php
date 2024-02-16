@@ -116,7 +116,7 @@ $(function(){
 					}
 					?>
 					</select>
-					<select name="visit_name" id="visit_name" class="form-control" >
+					<!-- <select name="visit_name" id="visit_name" class="form-control" >
 					<option value="">All</option>
 					<?php 
 					foreach($visit_names as $v){
@@ -125,9 +125,9 @@ $(function(){
 						echo ">".$v->visit_name."</option>";
 					}
 					?>
-					</select>
+					</select> -->
 					<select name="outcome_type" id="outcome_type" class="form-control" >
-					<option value="">All</option>
+					<option value="">All Outcomes</option>
 					<option value="Discharge" 
 					<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Discharge") echo " selected ";?>
 					>Discharge</option>
@@ -145,8 +145,8 @@ $(function(){
 					>Unupdated</option>
 					</select>
                     <select name="date_type_selection" id="date_type_selection" class="form-control">
-                        <option value="admit_date" selected>Admit date</option>
-                        <option value="outcome_date">Outcome Date</option>
+                        <option <?php if($this->input->post('date_type_selection') && $this->input->post('date_type_selection') == "admit_date") echo " selected ";?> value="admit_date" selected>Admit date</option>
+                        <option <?php if($this->input->post('date_type_selection') && $this->input->post('date_type_selection') == "outcome_date") echo " selected ";?> value="outcome_date">Outcome Date</option>
                     </select>
 					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>

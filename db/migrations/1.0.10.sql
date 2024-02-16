@@ -78,3 +78,47 @@ CREATE TABLE `patient_visit_duplicate` (
 );
 ALTER TABLE `patient_visit_duplicate` ADD `delete_id` INT NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`delete_id`);
 ALTER TABLE `patient_visit_duplicate` ADD `delete_datetime` DATETIME NOT NULL AFTER `appointment_status_update_time`, ADD `staff_id` INT NOT NULL AFTER `delete_datetime`;
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'edit_patient_visits', 'edit_patient_visits', 'patient visits edits');
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'list_edit_patient_visits', 'list_edit_patient_visits', 'list edit patient visits');
+CREATE TABLE `patient_visits_edit_history` (
+  `edit_id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `visit_id` int(11) NOT NULL,
+  `table_name` varchar(200) NOT NULL,
+  `field_name` varchar(200) NOT NULL,
+  `previous_value` varchar(2000) NOT NULL,
+  `new_value` varchar(2000) NOT NULL,
+  `edit_date_time` datetime NOT NULL,
+  `edit_user_id` int(11) NOT NULL
+);
+CREATE TABLE `counseling` (
+  `counseling_id` int(11) NOT NULL,
+  `visit_id` int(11) NOT NULL,
+  `counseling_text_id` int(11) NOT NULL,
+  `sequence_id` int(11) NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `created_date_time` datetime DEFAULT NULL,
+  `updated_date_time` datetime DEFAULT NULL
+);
+CREATE TABLE `counseling_text` (
+  `counseling_text_id` int(11) NOT NULL,
+  `counseling_type_id` int(11) NOT NULL,
+  `language_id` int(11) NOT NULL,
+  `global_text` smallint(6) DEFAULT NULL COMMENT '1=>global, 0=>only hospital',
+  `counseling_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `active_text` tinyint(4) DEFAULT NULL COMMENT '1=>active, 2=>inactive, ',
+  `hospital_id` int(11) NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `created_date_time` datetime DEFAULT NULL,
+  `updated_date_time` datetime DEFAULT NULL
+);
+CREATE TABLE `counseling_type` (
+  `counseling_type_id` int(11) NOT NULL,
+  `counseling_type` varchar(250) NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `created_date_time` datetime DEFAULT NULL,
+  `updated_date_time` datetime DEFAULT NULL
+);

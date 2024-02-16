@@ -326,7 +326,7 @@ class User_panel extends CI_Controller {
 
 					}
 				}
-				if ($this->input->post()) 
+				if ($this->input->post('route_primary')) 
 				{
 					$hospital = $this->session->userdata('hospital');
 					$route_primary = $this->input->post('route_primary');
@@ -415,6 +415,7 @@ class User_panel extends CI_Controller {
 			$this->data['userdata']=$this->session->userdata('logged_in');
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			
+			$search_route_primary_id = $this->input->post('search_route_primary_id');
 			foreach($this->data['defaultsConfigs'] as $default){		 
 				if($default->default_id=='pagination'){
 						$this->data['rowsperpage'] = $default->value;
@@ -423,7 +424,7 @@ class User_panel extends CI_Controller {
 
 					}
 				}
-				if ($this->input->post()) 
+				if ($this->input->post('route_primary_id') || $this->input->post('route_secondary')) 
 				{
 					$hospital = $this->session->userdata('hospital');
 					$route_primary = $this->input->post('route_primary_id');
@@ -512,6 +513,334 @@ class User_panel extends CI_Controller {
 			$this->load->view('templates/leftnav',$this->data);
 			$this->load->view('pages/secondary_routes',$this->data);
 			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_des_user_function($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Update Description User Function";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			
+			$this->data["user_functions"]=$this->staff_model->get_user_function();
+			$this->data['fetch_user_function_display'] = $this->masters_model->get_user_function_display($record_id);
+	
+			if($this->input->post())
+			{
+				$update_record_id = $this->input->post('record_id');
+					$data_to_update = array(
+						'user_function_display' => $this->input->post('user_function_display'),
+						'description' => $this->input->post('description'),
+					);
+				if($this->masters_model->update_des_user_function($update_record_id,$data_to_update))
+				{
+					$this->data['msg'] = 'Function Display & Description Updated ';
+					$this->data["user_functions"]=$this->staff_model->get_user_function();
+				}
+			}
+				$this->load->view('pages/update_description_user_function',$this->data);	
+				$this->load->view('templates/footer');	
+		}
+	}
+
+	function counseling_type($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Counseling Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$counseling_type = $this->input->post('counseling_type');
+					$added_by = $this->input->post('added_by');
+					$insert_datetime = $this->input->post('insert_datetime');
+					if($this->masters_model->check_couseling_type($counseling_type)) 
+					{
+					 	$this->data['error'] = 'Counseling type already exists';
+					}
+					else
+					{
+					 	$data_to_insert = array(
+					 		//'hospital_id' => $hospital['hospital_id'],
+					 		'counseling_type' => $counseling_type,
+					 		'created_by' => $added_by,
+					 		'created_date_time' => $insert_datetime,
+					 	);
+					 	$this->masters_model->insert_counseling_type($data_to_insert);
+					 	$this->data['success'] = 'Counseling type Added Successfully';
+					}
+				}
+				// Fetch all records from primary table
+				$this->data['all_counseling_type'] = $this->masters_model->get_all_counseling_type($this->data['rowsperpage']);
+				$this->data['all_counseling_type_count'] = $this->masters_model->get_all_counseling_type_count();
+
+				//Fetch record to edit
+				$this->data['edit_counseling_type'] = $this->masters_model->get_edit_counseling_type_by_id($record_id);
+			    
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/counseling_type',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_counseling_type() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Counseling Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$counseling_type = $this->input->post('counseling_type');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+				if($this->masters_model->check_couseling_type($counseling_type)) 
+				{
+					$this->data['error'] = 'Counselling Type Cannot Be Updated Combination Already Exists';
+				}else
+				{
+					$update_data = array(
+						'counseling_type' => $counseling_type,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+					);
+					$this->masters_model->update_counseling_type($update_record_id, $update_data);
+					$this->data['success'] = 'Counseling Type Updated Successfully';
+				}
+			// Fetch all records from primary table
+			$this->data['all_counseling_type'] = $this->masters_model->get_all_counseling_type($this->data['rowsperpage']);
+			$this->data['all_counseling_type_count'] = $this->masters_model->get_all_counseling_type_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/counseling_type',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}	
+    }
+
+	function counseling_text($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Counseling Text";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+
+					$counseling_type_id = $this->input->post('counseling_type_id');
+					$counseling_text = $this->input->post('counseling_text');
+					$language_id = $this->input->post('language');
+					$active_text = $this->input->post('status');
+					$added_by = $this->input->post('added_by');
+					$global_text = $this->input->post('global_text');
+					$insert_datetime = $this->input->post('insert_datetime');
+					if($this->masters_model->check_counseling_text($hospital['hospital_id'], $counseling_type_id, $counseling_text)) 
+					{
+						$this->data['error'] = 'Counseling text exists with counseling type and hospital';
+					}
+					else if($counseling_type_id=='0')
+					{
+						$this->data['error'] = 'Please select counseling type';
+					}
+					else if($language_id=='0')
+					{
+						$this->data['error'] = 'Please select language';
+					}
+					else if($active_text=='0')
+					{
+						$this->data['error'] = 'Please select active status';
+					}
+					else
+					{
+						$data_to_insert = array(
+							'hospital_id' => $hospital['hospital_id'],
+							'counseling_type_id' => $counseling_type_id,
+							'counseling_text' => $counseling_text,
+							'language_id' => $language_id,
+							'active_text' => $active_text,
+							'created_by' => $added_by,
+					 		'created_date_time' => $insert_datetime,
+					 		'global_text' => $global_text,
+						);
+						$this->masters_model->insert_counseling_text($data_to_insert);
+						$this->data['success'] = 'Counseling text Added Successfully';
+					}
+				}
+				//Fetch all counseling type into dropdown
+				$this->data['get_all_counseling_type_dd'] = $this->masters_model->get_all_counseling_type();
+				
+				//Fetch all language
+				$this->data['fetch_all_languages']= $this->masters_model->get_all_language_ct();
+
+				//Fetch all records from primary table
+				$this->data['all_counseling_text'] = $this->masters_model->get_all_counseling_text($this->data['rowsperpage']);
+				$this->data['all_counseling_text_count'] = $this->masters_model->get_all_counseling_text_count();
+
+				//Fetch record to edit
+				$this->data['edit_counseling_text'] = $this->masters_model->get_edit_counseling_text_by_id($record_id);
+
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/counseling_text',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_counseling_text()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Counseling Text";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$counseling_type_id = $this->input->post('counseling_type_id');
+				$counseling_text = $this->input->post('counseling_text');
+				$language_id = $this->input->post('language');
+				$active_text = $this->input->post('status');
+				$global_text = $this->input->post('global_text');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+				if($this->masters_model->check_counseling_text($hospital['hospital_id'], $counseling_type_id, $counseling_text)) 
+				{
+					$this->data['error'] = 'Counseling Text Cannot Be Updated Combination Already Exists';
+				}else if($counseling_type_id=='0')
+				{
+					$this->data['error'] = 'Please select counseling type';
+				}
+				else if($language_id=='0')
+				{
+					$this->data['error'] = 'Please select language';
+				}
+				else if($active_text=='0')
+				{
+					$this->data['error'] = 'Please select active status';
+				}else
+				{
+					$update_data = array(
+						'counseling_type_id' => $counseling_type_id,
+						'counseling_text' => $counseling_text,
+						'language_id' => $language_id,
+						'active_text' => $active_text,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+						'global_text' => $global_text,
+					);
+					$this->masters_model->update_counseling_text_name($update_record_id,$update_data);
+					$this->data['success'] = 'Counseling Text Updated Successfully';
+				}
+			//Fetch all counseling type into dropdown
+			$this->data['get_all_counseling_type_dd'] = $this->masters_model->get_all_counseling_type();
+			
+			//Fetch all language
+			$this->data['fetch_all_languages']= $this->masters_model->get_all_language_ct();
+
+			//Fetch all records from primary table
+			$this->data['all_counseling_text'] = $this->masters_model->get_all_counseling_text($this->data['rowsperpage']);
+			$this->data['all_counseling_text_count'] = $this->masters_model->get_all_counseling_text_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/counseling_text',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function delete_custorm_forms($delete_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Delete Custom Form";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default)
+			{		 
+				if($default->default_id=='pagination')
+				{
+					$this->data['rowsperpage'] = $default->value;
+					$this->data['upper_rowsperpage']= $default->upper_range;
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+				}
+			}
+				$delete_id = $this->input->post('delete_id');
+				$this->masters_model->delete_custom_form($delete_id);
+				
+				$this->data['all_cutom_forms'] = $this->masters_model->get_all_custom_forms($this->data['rowsperpage']);
+				$this->data['all_cutom_forms_count'] = $this->masters_model->get_all_custom_forms_count();
+
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/delete_custom_forms',$this->data);
+				$this->load->view('templates/footer');		
 		}
 		else
 		{
