@@ -122,3 +122,11 @@ CREATE TABLE `counseling_type` (
   `created_date_time` datetime DEFAULT NULL,
   `updated_date_time` datetime DEFAULT NULL
 );
+
+ALTER TABLE patient_visits_edit_history MODIFY COLUMN `edit_id` int(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`edit_id`); 
+
+ALTER TABLE counseling MODIFY COLUMN `counseling_id` int(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`counseling_id`); 
+
+ALTER TABLE counseling_text MODIFY COLUMN `counseling_text_id` int(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`counseling_text_id`); 
+
+ALTER TABLE counseling_type MODIFY COLUMN `counseling_type_id` int(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`counseling_type_id`); 

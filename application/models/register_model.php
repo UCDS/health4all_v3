@@ -694,8 +694,9 @@ class Register_model extends CI_Model{
 				'created_by'=> $this->input->post('created_by'),
 				'created_date_time'=> $this->input->post('created_date_time')
 			);
+			$this->db->insert_batch('counseling',$counseling_text_id);
 		}
-		$this->db->insert_batch('counseling',$counseling_text_id);
+		
 		
 		$outcome = $this->input->post('outcome');              
 		if(!!$outcome) {
