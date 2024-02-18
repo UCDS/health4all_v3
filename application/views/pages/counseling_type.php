@@ -162,25 +162,40 @@ display: inline-grid;
 	
 	?>
 	<h2><?php echo $title; ?></h2>	
-		<div class="row">
-		<?php if(!empty($edit_primary_route)) { ?>
-			<?php echo form_open('user_panel/update_primary_routes',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
+<div class="row">
+		<?php if(!empty($edit_counseling_type)) { ?>
+			<?php echo form_open('user_panel/update_counseling_type',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('user_panel/primary_routes',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
+			<?php echo form_open('user_panel/counseling_type',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
 			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 				<div class="form-group">
-					<label for="inputrouteprimary ">Add Route Primary <span class="mandatory" style="color:red;">*</span> </label>
-					<input class="form-control" name="route_primary" id="inputrouteprimary" 
-					placeholder="Enter Primary Route" type="text" 
-					value="<?php if(!empty($edit_primary_route)) { echo $edit_primary_route['route_primary']; } ?>" autocomplete="off" required>
+					<label for="inputrouteprimary ">Add Counseling Type <span class="mandatory" style="color:red;">*</span> </label>
+					<input class="form-control" name="counseling_type" id="inputrouteprimary" 
+					placeholder="Enter Counseling Type" type="text" 
+					value="<?php echo $edit_counseling_type['counseling_type'] ?>" autocomplete="off" required>
 				</div>
+				 <?php 
+				 	$user=$this->session->userdata('logged_in'); 
+					$user['user_id'];
+					$user_data=$this->session->userdata('logged_in');
+					$user_data['staff_id'];
+					if(!empty($edit_counseling_type))
+					{
+				?>
+					<input type="hidden" class="form-control" name="updated_by" value="<?php echo $user['staff_id'] ?>">
+					<input type="hidden" class="form-control" name="updated_datetime" value="<?php echo date('Y-m-d H:i:s') ?>">
+				<?php } else { ?>
+					<input type="hidden" class="form-control" name="added_by" value="<?php echo $user['staff_id'] ?>">
+					<input type="hidden" class="form-control" name="insert_datetime" value="<?php echo date('Y-m-d H:i:s') ?>">
+				<?php } ?>
+				
 			</div>
 				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			    <input type="hidden" name="record_id" value="<?php echo $edit_primary_route['route_primary_id']; ?>" >
-				<?php if(!empty($edit_primary_route)) { ?>
+			    <input type="hidden" name="record_id" value="<?php echo $edit_counseling_type['counseling_type_id']; ?>" >
+				<?php if(!empty($edit_counseling_type)) { ?>
 					<input class="btn btn-md btn-success" type="submit" value="Update" style="margin-top:2%;">
 				<?php } else { ?>
 					<input class="btn btn-md btn-primary" type="submit" value="Submit" style="margin-top:2%;">
@@ -195,7 +210,7 @@ display: inline-grid;
 	<br />
 
 
-<?php if(isset($all_primary_routes) && count($all_primary_routes)>0)
+<?php if(isset($all_counseling_type) && count($all_counseling_type)>0)
 { ?>
 <div style='padding: 0px 2px;'>
 
@@ -214,7 +229,7 @@ display: inline-grid;
 	else{
 		$page_no = 1;
 	}
-	$total_records = $all_primary_routes_count[0]->count ;
+	$total_records = $all_counseling_type_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -330,21 +345,30 @@ echo "</select></li>";
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th style="text-align:center">#</th>
-		<!-- <th style="text-align:center">Hospital Name</th> -->
-		<th style="text-align:center">Route Primary</th>
+		<th style="text-align:center">Counseling Type</th>
+		<th style="text-align:center">Added by</th>
+		<th style="text-align:center">Updated by</th>		
+		<th style="text-align:center">Created Datetime</th>		
+		<th style="text-align:center">Updated Datetime</th>		
 		<th style="text-align:center">Actions</th>		
 	</thead>
 	<tbody>
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($all_primary_routes as $ru) { 
+	foreach($all_counseling_type as $alt) { 
 	?>
 	<tr>
 		<td style="text-align:right"><?php echo $sno;?></td>	
-		<!--<td style="text-align:center"><?php echo $ru->hospital_name; ?></td>-->
-		<td style="text-align:center"><?php echo $ru->route_name; ?></td>	
-		<td style="text-align:center;"><a class="btn btn-success" href="<?php echo base_url('user_panel/primary_routes/'.$ru->route_primary_id); ?>" style="color:white!important;">Edit</a></td>
+		<td style="text-align:center"><?php echo $alt->counseling_type; ?></td>	
+		<td style="text-align:center"><?php echo $alt->first_name; ?></td>	
+		<td style="text-align:center"><?php echo $alt->updated_by_name; ?></td>	
+		<td style="text-align:center"><?php echo date("j M Y h:i A.", strtotime("$alt->created_date_time")); ?></td>	
+		<td style="text-align:center">
+			<?php if($alt->updated_date_time!=''){ echo date("j M Y h:i A.", strtotime("$alt->updated_date_time")); } ?>
+		</td>	
+		<td style="text-align:center;">
+		<a class="btn btn-success" href="<?php echo base_url('user_panel/counseling_type/'.$alt->counseling_type_id); ?>" style="color:white!important;">Edit</a></td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
@@ -456,4 +480,6 @@ echo "</select></li>";
 	<?php } else { ?>
 	No data to display
 <?php }  ?>
-</div>
+</div>	
+
+  

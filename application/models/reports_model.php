@@ -3111,9 +3111,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		} else {
 			$this->db->where("(admit_time BETWEEN '00:00' AND '23:59')");
 		}
-		if (($visit_name != '-1' && $visit_name != '0') || $this->input->post('visit_name')) {
-			if ($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
-			$this->db->where('patient_visit.visit_name_id', $visit_name);
+		// if (($visit_name != '-1' && $visit_name != '0') || $this->input->post('visit_name')) {
+		// 	if ($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
+		// 	$this->db->where('patient_visit.visit_name_id', $visit_name);
+		// }outcome_type
+		if (($outcome_type != '' && $outcome_type != '0') || $this->input->post('outcome_type')) 
+		{
+			if ($this->input->post('outcome_type')) {
+				$outcome_type = $this->input->post('outcome_type');
+				$this->db->where('patient_visit.outcome', $outcome_type); }
 		}
 		if ($department != '-1' || $this->input->post('department')) {
 			if ($this->input->post('department')) $department = $this->input->post('department');
@@ -3215,9 +3221,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		else{
 			$this->db->where("(admit_time BETWEEN '00:00' AND '23:59')");
 		}
-		if(($visit_name!='-1' && $visit_name != '0') || $this->input->post('visit_name')){
-			if($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
-			$this->db->where('patient_visit.visit_name_id',$visit_name);
+		// if(($visit_name!='-1' && $visit_name != '0') || $this->input->post('visit_name')){
+		// 	if($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
+		// 	$this->db->where('patient_visit.visit_name_id',$visit_name);
+		// }
+		if (($outcome_type != '' && $outcome_type != '0') || $this->input->post('outcome_type')) 
+		{
+			if ($this->input->post('outcome_type')) {
+				$outcome_type = $this->input->post('outcome_type');
+				$this->db->where('patient_visit.outcome', $outcome_type); }
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
@@ -3268,7 +3280,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 
 		$this->db->select("patient.patient_id, hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,
-		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,mlc_number_manual,
+		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,department.department_id,unit_name,area_name,mlc_number,mlc_number_manual,
 		outcome,outcome_date,outcome_time",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
@@ -4199,9 +4211,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         }else{
             $this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
         }
-		if($this->input->post('visit_name')){
+		/*if($this->input->post('visit_name')){
 			$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
-		}
+		}*/
 		if($this->input->post('department')){
 			$this->db->where('patient_visit.department_id',$this->input->post('department'));
 		}
@@ -4219,6 +4231,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		else{
 			$this->db->select('"0" as area',false);
 		}
+
 		$this->db->select("department 'department', department.department_id,
         SUM(CASE WHEN 1  THEN 1 ELSE 0 END) 'outcome',
         SUM(CASE WHEN gender = 'F'  THEN 1 ELSE 0 END) 'outcome_female',

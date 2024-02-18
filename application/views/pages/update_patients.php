@@ -4,6 +4,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/moment.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap-datetimepicker.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 <!-- < <script type="text/javascript" src="<?php echo base_url();?>assets/js/viewer.min.js"></script> -->
 <!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/patient_field_validations.js"></script> -->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/Chart.min.js"></script>
@@ -165,7 +166,20 @@
 		.selectize_district{
 			display: inline-grid;
 		}
-		
+		.accordion {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-color: #eee!important;
+			padding: 23px;
+			cursor: pointer;
+		}
+
+		.accordion-content {
+			display: none;
+			padding: 10px;
+			border-top: 1px solid #ddd;
+		}
 		
 	
 </style>
@@ -2223,126 +2237,302 @@ function initDistrictSelectize(){
 		<?php 
 			foreach($functions as $f){ 
 				if($f->user_function == "Discharge" && ($f->add==1 || $f->edit==1)) { ?>
+
+			
 		<div role="tabpanel" class="tab-pane" id="discharge">
-                    <div data-patient-quick-info></div>
-			<div class="row">
-			<div class="col-md-12 alt">
-				<div class="col-md-2">
-				<label class="control-label">Outcome</label>
+            <div data-patient-quick-info></div>
+				<div class="accordion" onclick="toggleAccordion('accordion1')" style="background-color:white!important;">
+					<div class="accordion-name" style="color:#333333!important;margin-left:-15px;">Outcome</div>
+					<div class="plus-minus">&#43;</div>
 				</div>
-				<div class="col-md-8">
-				<?php if(!!$patient->outcome) { ?> 
-					<p><?php echo $patient->outcome; ?></p>
-				<?php } else {?>
-				<label><input type="radio" value="Discharge" name="outcome" />Discharge</label>
-				<label><input type="radio" value="LAMA" name="outcome" />LAMA</label>
-				<label><input type="radio" value="Absconded" name="outcome" />Absconded</label>
-				<label><input type="radio" value="Death" name="outcome" />Death</label>
-				<?php } ?>
-				</div>
-			</div>
-                            <script>
-				$(function(){
-		/*			$(".ip_file_received").Zebra_DatePicker({
-						direction:[false,'<?php echo date("d-M-Y",strtotime($patient->ip_file_received));?>']
-					}); */
-				});
-                            </script>
-                        <div class="col-md-12 alt">
-						<div class="col-md-2">	<!-- here -->
-				<script>
-				$(function(){
-					<?php if($patient->outcome_date == 0){ ?>
-					$('.outcome_date').datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-						minDate : "<?php echo date("Y/m/d ",strtotime($patient->admit_date)).date("g:i A",strtotime($patient->admit_time));?>",
-						defaultDate : false
-					});
-					<?php } ?>
-					$(".transfer_date").datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-                        minDate:'<?php if(isset($transfers) && sizeof($transfers) !=0) echo date("Y/m/d ",strtotime($transfers[sizeof($transfers)-1]->transfer_date)).date("g:i A",strtotime($transfers[sizeof($transfers)-1]->transfer_time)); else echo date("Y/m/d ",strtotime($patient->admit_date)).date("g:i A",strtotime($patient->admit_time));?>',
-						defaultDate : false
-                    });
-					$(".transport_start_date,.transport_end_date").datetimepicker({
-						format : "D-MMM-YYYY h:ssA",
-						defaultDate : false
-                    });
-			//		$(".imp_date").Zebra_DatePicker();
-			//		$(".edd_date").Zebra_DatePicker();
-			//		$(".date_of_birth").Zebra_DatePicker();
-			//		$(".date_of_death").Zebra_DatePicker();
-			//		$(".dob").Zebra_DatePicker({
-			//			direction:[false,'<?php echo date("d-M-Y",strtotime($patient->dob));?>']
-			//		});
-                                $(".transfer_time").timeEntry();
-					$(".time").timeEntry({minTime: new Date(<?php echo date("Y,m,d",strtotime($patient->admit_date)).date(",h,i,s",strtotime($patient->admit_time));?>)});
-				});
-				</script>
-				<label>Outcome Date & Time</label>
-				</div> 
-				<div class="col-md-4">
-				<?php if($patient->outcome_date=='0000-00-00'){ ?>
-				<input type="date" name="outcome_date" class="form-control" />
-				<input type="time" name="outcome_time" class="form-control" />
-				<?php } else { ?>
-					<p><?php echo date("d-M-Y",strtotime($patient->outcome_date)).' '.date("g:iA",strtotime($patient->outcome_time)); ?></p>
-				<?php } ?>
-				</div>
-                            <div class="col-md-2">
-                                <label class="control-label">Case Sheet Recieved at MRD on </label>
-                            </div>
-                            <div class="col-md-4">
+				<div class="accordion-content" id="accordion1"><br/>
+					<div class="row">
+						<div class="col-md-6">
+							<?php if(!!$patient->outcome) { ?> 
+								<p><?php echo $patient->outcome; ?></p>
+							<?php } else {?>
+							<label><input type="radio" value="Discharge" name="outcome" />&nbsp;Discharge</label>&nbsp;
+							<label><input type="radio" value="LAMA" name="outcome" />&nbsp;LAMA</label>&nbsp;
+							<label><input type="radio" value="Absconded" name="outcome" />&nbsp;Absconded</label>&nbsp;
+							<label><input type="radio" value="Death" name="outcome" />&nbsp;Death</label>
+							<?php } ?>
+						</div>
+						<div class="col-md-6">	<!-- here -->
+							<label>Outcome Date & Time</label>&nbsp;&nbsp;&nbsp;&nbsp;
+							<script>
+							$(function(){
+								<?php if($patient->outcome_date == 0){ ?>
+								$('.outcome_date').datetimepicker({
+									format : "D-MMM-YYYY h:ssA",
+									minDate : "<?php echo date("Y/m/d ",strtotime($patient->admit_date)).date("g:i A",strtotime($patient->admit_time));?>",
+									defaultDate : false
+								});
+								<?php } ?>
+								$(".transfer_date").datetimepicker({
+									format : "D-MMM-YYYY h:ssA",
+									minDate:'<?php if(isset($transfers) && sizeof($transfers) !=0) echo date("Y/m/d ",strtotime($transfers[sizeof($transfers)-1]->transfer_date)).date("g:i A",strtotime($transfers[sizeof($transfers)-1]->transfer_time)); else echo date("Y/m/d ",strtotime($patient->admit_date)).date("g:i A",strtotime($patient->admit_time));?>',
+									defaultDate : false
+								});
+								$(".transport_start_date,.transport_end_date").datetimepicker({
+									format : "D-MMM-YYYY h:ssA",
+									defaultDate : false
+								});
+						
+								$(".transfer_time").timeEntry();
+								$(".time").timeEntry({minTime: new Date(<?php echo date("Y,m,d",strtotime($patient->admit_date)).date(",h,i,s",strtotime($patient->admit_time));?>)});
+							});
+							</script>
+							<?php if($patient->outcome_date=='0000-00-00'){ ?>
+							<input type="date" name="outcome_date" class="form-control" />
+							<input type="time" name="outcome_time" class="form-control" />
+							<?php } else { ?>
+								<p><?php echo date("d-M-Y",strtotime($patient->outcome_date)).' '.date("g:iA",strtotime($patient->outcome_time)); ?></p>
+							<?php } ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+                            <label class="control-label">Case Sheet Recieved at MRD on </label> &nbsp;&nbsp;&nbsp;&nbsp;
 							<?php if($patient->ip_file_received =='0000-00-00') {?>
                                 <input type="date" name="ip_file_received" class="form-control" />
 							<?php }	else { ?>
 								<p><?php echo date("d-M-Y",strtotime($patient->ip_file_received)); ?></p>
 							<?php } ?>
-                            </div>			
-				
+						</div>
+						<div class="col-md-6">
+							<label class="control-label">ICD Code</label>
+							<?php if(!empty($patient->icd_10)){?>
+								<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
+							<?php } else {?>
+								<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
+									<?php if(!!$patient->icd_10){ ?>
+										<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
+									<?php } ?>
+								</select>
+							<?php } ?>
+						</div>
+					</div>
+				</div>
+				<script>
+					function toggleAccordion(accordionId) 
+					{
+						var accordionContent = document.getElementById(accordionId);
+						if(accordionContent.style.display === 'block') 
+						{
+							accordionContent.style.display = 'none';
+						} 
+						else 
+						{
+							accordionContent.style.display = 'block';
+						}
+					}
+				</script>
+			<div class="row">
+				<div class="col-md-12 alt ">
+					<div class="col-md-2">
+					<label class="control-label">Final Diag.</label>
+					</div>
+					<div class="col-md-8">
+					<textarea name="final_diagnosis" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->final_diagnosis)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->final_diagnosis) echo $patient->final_diagnosis;?></textarea>
+					</div>
+				</div>
+				<div class="col-md-12 alt ">
+					<div class="col-md-2">
+					<label class="control-label">Decision</label>
+					</div>
+					<div class="col-md-8">
+					<textarea name="decision" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->decision)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->decision) echo $patient->decision;?></textarea>
+					</div>
+				</div>
+				<div class="col-md-12 alt ">
+					<div class="col-md-2">
+					<label class="control-label">Advise</label>
+					</div>
+					<div class="col-md-8">
+					<textarea name="advise" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->advise) echo $patient->advise;?></textarea>
+					</div>
+				</div>
 			</div>
-			<div class="col-md-12 alt ">
-				<div class="col-md-2">
-				<label class="control-label">Final Diag.</label>
-				</div>
-				<div class="col-md-8">
-				<textarea name="final_diagnosis" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->final_diagnosis)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->final_diagnosis) echo $patient->final_diagnosis;?></textarea>
-				</div>
-			</div>
-			<div class="col-md-12 alt ">
-				<div class="col-md-2">
-				<label class="control-label">Decision</label>
-				</div>
-				<div class="col-md-8">
-				<textarea name="decision" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->decision)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->decision) echo $patient->decision;?></textarea>
-				</div>
-			</div>
-			<div class="col-md-12 alt ">
-				<div class="col-md-2">
-				<label class="control-label">Advise</label>
-				</div>
-				<div class="col-md-8">
-				<textarea name="advise" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->advise) echo $patient->advise;?></textarea>
-				</div>
-			</div>
-			<div class="col-md-12 alt">	
-				<div class="col-md-2">
-					<label>ICD Code</label>
-				</div>
-				<div class="col-md-8">
-				<?php if(!empty($patient->icd_10)){?>
-					<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
-				 <?php } else {?>
-					<select id="icd_code" class="repositories" placeholder="Search ICD codes" name="icd_code" >
-					<?php if(!!$patient->icd_10){ ?>
-						<option value="<?php echo $patient->icd_10;?>"><?php echo $patient->icd_10." ".$patient->code_title;?></option>
-					<?php } ?>
+			<div class="row">
+				<div class="col-md-6" style="margin-left:-12px;margin-top:10px;"> &nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="control-label">Counseling Type</label>
+					<select name="counseling_type" id="counseling_type" class="form-control counseling_type" 
+					style="width:45%;margin-left:55px;">
+						<option value="">--Select--</option>
+						<?php foreach($all_counseling_type as $act){ ?>
+							<option value= "<?php echo $act->counseling_type_id; ?>" > <?php echo $act->counseling_type; ?> </option>
+						<?php } ?>
 					</select>
-				<?php } ?>
 				</div>
+				<div class="col-md-6" style="margin-top:10px;"> &nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="control-label">Language</label>
+					<select name="language" class="form-control" id="language" style="width:45%;margin-left:55px;">
+						<option value="">Choose Language</option>
+						<?php foreach($fetch_all_languages as $f){ ?>
+							<option value="<?php echo $f->language_id; ?>"><?php echo $f->language; ?></option>
+						<?php } ?>
+					</select>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-12" alt style="margin-left:8px;margin-top:25px;"> 
+					<label class="control-label">Counseling Text</label>
+					<textarea name="counseling_text" id="counseling_text" disabled class="form-control counseling_text" rows="5" cols="60" 
+					style="margin-left:55px;" value="">
+
+					</textarea>
+				</div>
+			</div>
+			<table class="table table-bordered" id="counseling_text_table">
+				<thead>
+					<td style="text-align:center;">S.no</td>
+					<td style="text-align:left;">Counseling Text</td>
+					<td style="text-align:left;">Action</td>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+			<div class="container-fluid" >
+				<h3>Counseling History</h3>
+				<table class="table table-striped table-bordered" id="" >
+						<thead>
+							<tr>
+								<th>#</th>
+								<th style="text-align:left">Counseling Type</th>
+								<th style="text-align:left">Counseling</th>
+								<th style="text-align:left">Sequence</th>
+								<th style="text-align:left">Created by </th>
+								<th style="text-align:left">Created Datetime</th>
+								<!-- <th>Updated by</th>
+								<th>Updated Datetime</th> -->
+							</tr>
+						</thead>
+						<tbody id="tableBodys">
+							
+						</tbody>
+						<tfoot>
+							
+						</tfoot>
+				</table>
+				<script>
+					function fetchAndRefreshTable() {
+						var get_visit_id = $('#summary_link_patient_visit_id').val();
+						//alert(get_visit_id);
+						$.ajax({
+							url: '<?php echo base_url("register/counseling_his_table"); ?>',
+							type: 'POST',
+							data: { get_visit_id:get_visit_id },
+							dataType: 'json',
+							success: function(response) {
+								$('#tableBodys').empty();
+								i=1;
+								$.each(response, function(index, item) {
+									var createdDateTime = item.created_date_time && item.created_date_time !== '' ? new Date(item.created_date_time) : null;
+									var formattedDateTime = createdDateTime ? formatDate(createdDateTime) : '';
+									var row = '<tr><td>' + i++ + '</td>' +
+												'<td>' + item.counseling_type + '</td>' +
+												'<td>' + item.counseling_text + '</td>'+
+												'<td>' + item.sequence_id +'</td>'+
+												'<td>' + item.username + '</td>'+
+												'<td>' + formattedDateTime + '</td>'
+												'</tr>';
+									$('#tableBodys').append(row);
+								});
+							},
+							error: function(error) {
+								console.log('Error fetching table data:', error);
+							}
+						});
+					}
+					$(document).ready(function() {
+						fetchAndRefreshTable();
+					});
+					function formatDate(date) {
+						var options = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+						var formattedDate = date.toLocaleDateString('en-GB', options).replace(',', '');
+						var hour = date.getHours();
+						var ampm = hour >= 12 ? 'PM' : 'AM';
+						formattedDate = formattedDate.replace(/\d{2}:\d{2}/, function (match) {
+							return match + ' ' + ampm;
+						});
+						return formattedDate;
+					}
+				</script>
+			</div>
+			<?php 
+				$user=$this->session->userdata('logged_in'); 
+				$user['user_id'];
+				$user_data=$this->session->userdata('logged_in');
+				$user_data['staff_id'];
+			?>
+			<input type="hidden" name="visit_id" value="<?php echo $patient->visit_id; ?>">
+			<input type="hidden" name="counseling_text_id" id="counseling_text_id" value="">
+			<input type="hidden" name="sequence_id" value="">
+			<input type="hidden" name="created_by" value="<?php echo $user['user_id']; ?>">
+			<input type="hidden" name="updated_by" value="">
+			<input type="hidden" name="created_date_time" value="<?php echo date('Y-m-d H:i:s') ?>">
+			<input type="hidden" name="updated_date_time" value="">
 		</div>
+		<script>
+			$(document).ready(function () {
+				$('#counseling_type, #language').change(function () {
+					$('#counseling_text').val('');
+					var counseling_type = $('#counseling_type').val();
+					var language = $('#language').val();
+					$.ajax({
+						url: "<?php echo base_url('register/getCounselingText'); ?>",
+						type: 'POST',
+						data: {counseling_type:counseling_type,language:language },
+						dataType: 'json',
+						success: function (response) {
+							var tableBody = $('#counseling_text_table tbody');
+							if (response.length > 0) {
+								tableBody.empty(); 
+								$.each(response, function (index, text) {
+									var row = '<tr>' +
+									'<td style="text-align:center;">' + (index + 1) + '</td>' +
+									'<td  id="appendToTextarearesp_' + index + '"  style="text-align:left;">' + text.counseling_text + '</td>' +
+									'<input type="hidden" class="counseling_text_id" value="' + text.counseling_text_id + '">' +
+									'<td style="text-align:left;"><button class="btn btn-success" value="' + text.counseling_text + '" id="appendToTextarea1">Select</button></td>'
+									'</tr>';
+									tableBody.append(row);
+									triggerevents();
+								});
+							} else {
+								tableBody.empty().append('<tr><td colspan="3">No counseling text available for the selected criteria.</td></tr>');
+							}
+						}
+					});
+				});
+			});
+			function triggerevents() 
+			{
+				$("[id^='appendToTextarea1']").click(function (event) {
+					var response = $(this).val();
+					let htmlContent = response;
+					let pattern = /<li>(.*?)<\/li>|<p>(.*?)<\/p>/g;
+					let match;
+					let textContent = '';
+					let olIndex = 1;
+					htmlContent.replace(pattern, function(match, liContent, pContent) {
+						if (liContent !== undefined) {
+							textContent += olIndex + '. ' + liContent + '\n';
+							olIndex++;
+						}
+						else if (pContent !== undefined) {
+							textContent += pContent + '\n';
+						}
+						return '';
+					});
+					$('#counseling_text').val(textContent);
+
+					var counseling_text_id = $(this).closest('tr').find('.counseling_text_id').val();
+        			$('#counseling_text_id').val(counseling_text_id);
+					event.preventDefault();
+				});
+            }
+		</script>
 		<?php 
 				break;
 		}} ?>
@@ -2362,6 +2552,7 @@ function initDistrictSelectize(){
 			</div>
 			<div class="row">
 			<div class="col-md-12">
+			
 			<table class="table table-striped table-bordered" id="detailed_table" >
 				<thead>
 					<tr>
@@ -2476,7 +2667,7 @@ function initDistrictSelectize(){
 		</div> <!--Patient Document Upload -->
 			
 	  </div>	
-
+	  
 	<div class="col-md-4 text-right">
 			<label class="control-label">
 				<input type="text" name="selected_tab" id="selected_tab" class="sr-only" hidden value="" />
@@ -2546,7 +2737,7 @@ function initDistrictSelectize(){
 			<tr onclick="$('#select_visit_<?php echo $visit->visit_id;?>').submit()" style="cursor:pointer">
 				<td>
 					<?php echo form_open('register/view_patients',array('role'=>'form','id'=>'select_visit_'.$visit->visit_id));?>
-					<input type="text" class="sr-only" hidden value="<?php echo $visit->visit_id;?>" name="selected_patient" />
+					<input type="text" class="sr-only" hidden value="<?php echo $visit->visit_id;?>"  name="selected_patient" />
 					<input type="text" class="sr-only" hidden value="<?php echo $visit->patient_id;?>" name="patient_id" />
 					</form>
 				<?php 
@@ -2565,6 +2756,7 @@ function initDistrictSelectize(){
 		</tbody>
 	</table>
 	</div>
+	
 <?php } ?>
 <br>
 <div class="col-md-12">
@@ -3173,7 +3365,7 @@ function initDistrictSelectize(){
 		// if prescription selected & any of the 12 notes fields is not mentioned. [CLINICAL TAB + discharge tab]
 		if(flag && $("#prescription_table [name^=drug_]").filter(function() {return !!$(this).val()}).length > 0){
 			var optionalFlag = false;
-			$("[name=presenting_complaints],[name=past_history],[name=family_history],[name=clinical_findings],[name=cvs],[name=rs],[name=pa],[name=cns],[name=final_diagnosis],[name=decision],[name=advise],[name=icd_code]").each(function(){
+			$("[name=presenting_complaints],[name=past_history],[name=family_history],[name=clinical_findings],[name=cvs],[name=rs],[name=pa],[name=cns],[name=final_diagnosis],[name=decision],[name=advise],[name=icd_code],[name=visit_id],[name=counseling_text_id],[name=sequence_id],[name=created_by],[name=created_date_time]").each(function(){
 				if(!optionalFlag && $(this).val()){
 					optionalFlag = true;
 				}
@@ -3242,7 +3434,7 @@ function initDistrictSelectize(){
 		if(flag){
 			$('form#update_patients').append('<input type="hidden" value="Update" name="update_patient" />').submit();
 		}
-
+		
 	}
 
 	var defaultsConfigs = JSON.parse(JSON.stringify(<?php echo (isset($defaultsConfigs) && count($defaultsConfigs) > 0) ? json_encode($defaultsConfigs) : 'null'; ?>));

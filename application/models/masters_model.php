@@ -1788,8 +1788,26 @@ else if($type=="dosage"){
         $this->db->insert('route_primary', $data);
     }
 
-    function get_all_primary_routes()
+    function get_all_primary_routes($default_rowsperpage)
     {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("route_primary.route_primary_id,route_primary.route_primary as route_name,hospital.hospital as hospital_name")
 		->from("route_primary")
@@ -1798,6 +1816,7 @@ else if($type=="dosage"){
 		$query = $this->db->get();
 		return $query->result();
     }
+
 	function get_all_primary_routes_count()
 	{
 		$hospital=$this->session->userdata('hospital');
@@ -1836,8 +1855,31 @@ else if($type=="dosage"){
         $this->db->insert('route_secondary', $data);
     }
 
-	function get_all_secondary_routes()
+	function get_all_secondary_routes($default_rowsperpage)
     {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+		$search_route_primary_id = $this->input->post('search_route_primary_id');
+		if($this->input->post('search_route_primary_id'))
+		{
+			$this->db->where('route_secondary.route_primary_id',$search_route_primary_id);
+		}
+
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("route_secondary.id,route_secondary.route_secondary as secondary_name, route_primary.route_primary as primary_name, hospital.hospital as hname")
 		->from("route_secondary")
@@ -1847,8 +1889,15 @@ else if($type=="dosage"){
 		$query = $this->db->get();
 		return $query->result();
     }
+
 	function get_all_secondary_routes_count()
 	{
+		$search_route_primary_id = $this->input->post('search_route_primary_id');
+		if($this->input->post('search_route_primary_id'))
+		{
+			$this->db->where('route_secondary.route_primary_id',$search_route_primary_id);
+		}
+		
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("count(*) as count",false)
 		->from("route_secondary")
@@ -1870,5 +1919,230 @@ else if($type=="dosage"){
         $this->db->where('id', $record_id);
         $this->db->update('route_secondary', $data);
     }
+
+	function get_user_function_display($record_id)
+	{
+		$this->db->select('user_function_id,user_function,description,user_function_display');
+        $query = $this->db->get_where('user_function', array('user_function_id' => $record_id));
+        return $query->row_array();
+	}
+
+	function update_des_user_function($record_id, $data) 
+	{
+        $this->db->where('user_function_id', $record_id);
+        $query = $this->db->update('user_function', $data);
+		return $query ;
+    }
+	//counseling type functions start
+	function check_couseling_type($counseling_type) 
+    {
+        $this->db->where('counseling_type', $counseling_type);
+        $query = $this->db->get('counseling_type');
+        return $query->num_rows() > 0;
+    }
+
+    function insert_counseling_type($data) 
+    {
+        $this->db->insert('counseling_type', $data);
+    }
+
+    function get_all_counseling_type()
+    {
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("counseling_type.counseling_type_id,counseling_type.counseling_type, 
+		staff.first_name, counseling_type.created_date_time,counseling_type.updated_date_time,updated_by.first_name as updated_by_name")
+		->from("counseling_type")
+		->join('staff','staff.staff_id=counseling_type.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=counseling_type.updated_by','left');
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_counseling_type_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("counseling_type")
+		->join('staff','staff.staff_id=counseling_type.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=counseling_type.updated_by','left');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_counseling_type_by_id($record_id) 
+	{
+		$this->db->select('counseling_type,created_by,updated_by,created_date_time,updated_date_time,counseling_type_id');
+        $query = $this->db->get_where('counseling_type', array('counseling_type_id' => $record_id));
+        return $query->row_array();
+    }
+
+    function update_counseling_type($record_id, $data) {
+        $this->db->where('counseling_type_id', $record_id);
+        $this->db->update('counseling_type', $data);
+    }
+	// conseling type functions end here
+
+	//counseling text function start here
+	function check_counseling_text($hospital_id, $counseling_type_id, $counseling_text) 
+    {
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('counseling_type_id', $counseling_type_id);
+        $this->db->where('counseling_text', $counseling_text);
+        $query = $this->db->get('counseling_text');
+        return $query->num_rows() > 0;
+    }
+
+	function insert_counseling_text($data) 
+    {
+        $this->db->insert('counseling_text', $data);
+    }
+
+	function get_all_counseling_text()
+    {
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("h.hospital as hname,counseling_type.counseling_type,counseling_text.counseling_text,staff.first_name,
+		counseling_text.created_date_time,counseling_text.updated_date_time,counseling_text.counseling_text_id,updated_by.first_name as updated_by_name,
+		language.language as lname,counseling_text.active_text,counseling_text.global_text,counseling_text.hospital_id")
+		->from("counseling_text")
+		->join("counseling_type",'counseling_type.counseling_type_id=counseling_text.counseling_type_id','left')
+		->join('staff','staff.staff_id=counseling_text.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=counseling_text.updated_by','left')
+		->join('language','language.language_id=counseling_text.language_id','left')
+		->join('hospital as h','h.hospital_id=counseling_text.hospital_id','left');
+		$this->db->where('counseling_text.hospital_id', $hospital['hospital_id']);
+		$this->db->or_where("(counseling_text.global_text = 1 AND counseling_text.hospital_id != '".$hospital['hospital_id']."')", null, false);
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_counseling_text_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("counseling_text")
+		->join("counseling_type",'counseling_type.counseling_type_id=counseling_text.counseling_type_id','left')
+		->join('hospital','hospital.hospital_id=counseling_text.hospital_id','left')
+		->join('staff','staff.staff_id=counseling_text.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=counseling_text.updated_by','left')
+		->join('language','language.language_id=counseling_text.language_id','left')
+		->join('hospital as h','h.hospital_id=counseling_text.hospital_id','left');
+		$this->db->where('counseling_text.hospital_id', $hospital['hospital_id']);
+		$this->db->or_where("(counseling_text.global_text = 1 AND counseling_text.hospital_id != '".$hospital['hospital_id']."')", null, false);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_counseling_text_by_id($record_id) 
+	{
+		$this->db->select('counseling_text.language_id,counseling_text_id,counseling_type_id,counseling_text,
+		active_text,hospital_id,created_by,updated_by,created_date_time,updated_date_time,counseling_text.global_text');
+        $query = $this->db->get_where('counseling_text', array('counseling_text_id' => $record_id));
+        return $query->row_array();
+    }
+
+	function update_counseling_text_name($record_id, $data) {
+         $this->db->where('counseling_text_id', $record_id);
+         $this->db->update('counseling_text', $data);
+    }
+
+	function get_all_language_ct()
+	{
+		$this->db->select("language,language_id")
+		->from("language");
+		$query = $this->db->get();
+		return $query->result();
+	}
+	//counseling text function end here
+
+	/* Custom form function start here */
+	function get_all_custom_forms($default_rowsperpage)
+    {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+		
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("form.form_id,form.form_name,form.num_columns,form.form_type,form.print_layout_id,form.a6_print_layout_id")
+		->from("form")
+		->join('hospital','hospital.hospital_id=form.hospital_id','left');
+		$this->db->where('form.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+	function get_all_custom_forms_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("form")
+		->join('hospital','hospital.hospital_id=form.hospital_id','left');
+		$this->db->where('form.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function delete_custom_form($data_to_insert)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->trans_start();
+		$this->db->delete('form',array('form_id' => $data_to_insert,'hospital_id'=>$hospital['hospital_id']));
+		$this->db->delete('form_layout',array('form_id' => $data_to_insert));
+		$this->db->trans_complete();
+		if($this->db->trans_status()===FALSE){
+			return false;
+		}
+		else return true;
+	}
+	/* Custom Form ends here */
+
+	function get_counseling_text_options($counselingTypeId,$language)
+	{
+		$this->db->select('counseling_text,counseling_text_id');
+        $this->db->from('counseling_text');
+        $this->db->where('counseling_type_id', $counselingTypeId);
+        $this->db->where('language_id', $language);
+        $this->db->where('active_text',1);
+		$this->db->where("(global_text = 1 OR global_text IS NULL)", null, false);
+        $query = $this->db->get();
+		return $query->result_array();
+	}
+
+	function get_all_couseling($visit_id)
+	{
+		$this->db->select('counseling.visit_id,counseling_type.counseling_type,counseling.sequence_id,user.username,counseling.updated_by,counseling.created_date_time,counseling.updated_date_time,counseling_text.counseling_text')
+        ->from('counseling')
+		->join("counseling_text",'counseling_text.counseling_text_id=counseling.counseling_text_id','left')
+		->join("counseling_type",'counseling_type.counseling_type_id=counseling_text.counseling_type_id','left')
+		->join("user",'user.user_id=counseling.created_by','left');
+        $this->db->where('counseling.visit_id', $visit_id);
+        $this->db->order_by('counseling.sequence_id', 'ASC');
+        $query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_all_couseling_for_print($hosp_file_no)
+	{	
+		$this->db->select('counseling_text.counseling_text,counseling_type.counseling_type')
+		->from('counseling')
+		->join("patient_visit",'patient_visit.visit_id=counseling.visit_id','left')
+		->join("counseling_text",'counseling_text.counseling_text_id=counseling.counseling_text_id','left')
+		->join("counseling_type",'counseling_type.counseling_type_id=counseling_text.counseling_type_id','left');
+        $this->db->where('patient_visit.hosp_file_no', $hosp_file_no);
+        $query = $this->db->get();
+		return $query->result();
+	}
 }
 ?>

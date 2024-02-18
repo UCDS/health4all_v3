@@ -157,49 +157,30 @@ display: inline-grid;
 </style>
 
 	<?php 
+	$from_date=0;$to_date=0;
+	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
+	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
 	
 	$page_no = 1;	
 	
 	?>
-	<h2><?php echo $title; ?></h2>	
-		<div class="row">
-		<?php if(!empty($edit_primary_route)) { ?>
-			<?php echo form_open('user_panel/update_primary_routes',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
-		<?php } else { ?>
-			<?php echo form_open('user_panel/primary_routes',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
-		<?php } ?>
+<div class="row">
+		<h4>List Patient Edits</h4>	
+		<?php echo form_open("patient/list_edit_patient_visits",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
-		<div class="row" style="margin-top:2%;">
-			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
-				<div class="form-group">
-					<label for="inputrouteprimary ">Add Route Primary <span class="mandatory" style="color:red;">*</span> </label>
-					<input class="form-control" name="route_primary" id="inputrouteprimary" 
-					placeholder="Enter Primary Route" type="text" 
-					value="<?php if(!empty($edit_primary_route)) { echo $edit_primary_route['route_primary']; } ?>" autocomplete="off" required>
-				</div>
-			</div>
-				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			    <input type="hidden" name="record_id" value="<?php echo $edit_primary_route['route_primary_id']; ?>" >
-				<?php if(!empty($edit_primary_route)) { ?>
-					<input class="btn btn-md btn-success" type="submit" value="Update" style="margin-top:2%;">
-				<?php } else { ?>
-					<input class="btn btn-md btn-primary" type="submit" value="Submit" style="margin-top:2%;">
-				<?php } ?>
-		</div>
+			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+	        Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
-		<?php if (!empty($error) || $error!=0): ?>
-			<span style="color: red;"><?php echo $error; ?></span>
-		<?php elseif (isset($success)): ?>
-			<span style="color: green;"><?php echo $success; ?></span>
-		<?php endif; ?>
 	<br />
 
 
-<?php if(isset($all_primary_routes) && count($all_primary_routes)>0)
+<?php if(isset($all_patient_visits_edits) && count($all_patient_visits_edits)>0)
 { ?>
 <div style='padding: 0px 2px;'>
 
-<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
+<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
 
 </div>
 <?php 
@@ -214,7 +195,7 @@ display: inline-grid;
 	else{
 		$page_no = 1;
 	}
-	$total_records = $all_primary_routes_count[0]->count ;
+	$total_records = $all_patient_visits_edits_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -237,7 +218,7 @@ echo "href=# onclick=doPost($previous_page)";
 } ?>>Previous</a>
 </li>
 <?php
-  if ($total_no_of_pages <= 10){   
+  if ($total_no_of_pages <= 10){  	 
 	for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 	if ($counter == $page_no) {
 	echo "<li class='active'><a>$counter</a></li>";	
@@ -329,22 +310,57 @@ echo "</select></li>";
 	
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
-		<th style="text-align:center">#</th>
-		<!-- <th style="text-align:center">Hospital Name</th> -->
-		<th style="text-align:center">Route Primary</th>
-		<th style="text-align:center">Actions</th>		
+		<th style="text-align:center">SNo</th>
+		<th style="text-align:left">Patient id</th>
+		<th style="text-align:left">Visit id</th>
+		<th style="text-align:left">Name</th>
+		<th style="text-align:left">Table name</th>
+		<th style="text-align:left">Field name</th>
+		<th style="text-align:left">Previous value</th>
+		<th style="text-align:left">New value</th>
+		<th style="text-align:left">Edit date/time</th>
+		<th style="text-align:left">Edited by</th>		
 	</thead>
 	<tbody>
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($all_primary_routes as $ru) { 
+	foreach($all_patient_visits_edits as $pve){
 	?>
 	<tr>
-		<td style="text-align:right"><?php echo $sno;?></td>	
-		<!--<td style="text-align:center"><?php echo $ru->hospital_name; ?></td>-->
-		<td style="text-align:center"><?php echo $ru->route_name; ?></td>	
-		<td style="text-align:center;"><a class="btn btn-success" href="<?php echo base_url('user_panel/primary_routes/'.$ru->route_primary_id); ?>" style="color:white!important;">Edit</a></td>
+		<td style="text-align:center"><?php echo $sno;?></td>
+		<td style="text-align:left"><?php echo $pve->patient_id; ?></td> 	
+		<td style="text-align:left"><?php echo $pve->visit_id; ?></td> 	
+		<td style="text-align:left"><?php echo $pve->first_name; ?></td> 	
+		<td style="text-align:left"><?php echo $pve->table_name; ?></td>	
+		<td style="text-align:left"><?php echo $pve->field_name ?></td>	
+		<td style="text-align:left"><?php echo $pve->previous_value ?></td>	
+		<td style="text-align:left">
+			<?php 
+				if($pve->dname!='')
+				{ 
+				  echo $pve->dname; 
+				}
+				if($pve->uname!='')
+				{ 
+				  echo $pve->uname; 
+				}
+				if($pve->aname!='')
+				{ 
+				  echo $pve->aname; 
+				}
+				if($pve->vname!='')
+				{ 
+					echo $pve->vname; 
+				}
+				if(empty($pve->dname) && empty($pve->uname) && empty($pve->aname) && empty($pve->vname))
+				{ 
+				  echo $pve->new_value; 
+				}
+			?>
+		</td>	
+		<td style="text-align:left"><?php echo date("d-M-Y",strtotime($pve->edit_date_time));?></td>
+		<td style="text-align:left"><?php echo $pve->username; ?> </td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
@@ -454,6 +470,9 @@ echo "</select></li>";
 } ?>
 </ul>
 	<?php } else { ?>
-	No data to display
+	
+	No patient edit found on the given date.
 <?php }  ?>
-</div>
+</div>	
+
+  

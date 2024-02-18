@@ -617,7 +617,6 @@ class Register extends CI_Controller {
         	
 	}
 	function update_patients(){
-	
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
@@ -877,11 +876,28 @@ class Register extends CI_Controller {
 					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
 					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
 					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
-
+					
+					
 				}
 				 //Set the print layout page based on the form selected.
+				 /* Newly added Jan 30 2024 */
+				 $print_layout_id = $this->input->post('print_layout_id');
+				 $this->data['all_print_layouts'] = $this->staff_model->get_print_layouts();
+				 $this->data['new_print_layout'] = $this->staff_model->get_print_layout($print_layout_id);
+				 //$this->data['default_layout'] = $this->staff_model->select_default_layout();
+				 /*if(!empty($print_layout_id) || $print_layout_id!='0')
+				 {
+				 	$this->data['update_print_layout'] = $this->staff_model->update_hospital_print_layout($print_layout_id);
+				 }*/
+				 /* Till here */
 				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
 				 $this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
+            
+				 $this->data['all_counseling_type'] = $this->masters_model->get_all_counseling_type();
+				 $this->data['fetch_all_languages']= $this->masters_model->get_all_language_ct();
+
+				 $this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no);
+				 
         //--- end  18_02_2023 --- //
 				$this->load->view('pages/update_patients',$this->data);
 			}
@@ -896,6 +912,22 @@ class Register extends CI_Controller {
 		show_404();
 		}
 	}
+
+	// Newly added
+	function getCounselingText()
+	{
+		$counselingTypeId = $this->input->post("counseling_type");
+		$language = $this->input->post('language');
+		$counselingTextOptions = $this->masters_model->get_counseling_text_options($counselingTypeId,$language);
+		echo json_encode($counselingTextOptions);
+	}
+	// Newly added
+	function counseling_his_table()
+    {
+        $get_visit_id = $this->input->post('get_visit_id');
+        $data = $this->masters_model->get_all_couseling($get_visit_id);
+        echo json_encode($data);
+    }
 
 	function search_icd_codes(){
 		if($icd_codes = $this->register_model->search_icd_codes()){

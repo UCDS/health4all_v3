@@ -177,6 +177,7 @@ $(document).ready(function(){
 	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
 	?>
 	<div class="row">
+	
 		<h4>Outcome Detailed report</h4>	
 		<?php echo form_open("reports/outcome_detail",array('role'=>'form','class'=>'form-custom')); ?> 
 					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
@@ -211,7 +212,7 @@ $(document).ready(function(){
 					}
 					?>
 					</select>
-					<select name="visit_name" id="visit_name" class="form-control" >
+					<!-- <select name="visit_name" id="visit_name" class="form-control" >
 					<option value="">All</option>
 					<?php 
 					foreach($visit_names as $v){
@@ -220,6 +221,19 @@ $(document).ready(function(){
 						echo ">".$v->visit_name."</option>";
 					}
 					?>
+					</select> -->
+					<select name="outcome_type" id="outcome_type" class="form-control" >
+					<option value="">All  Outcomes</option>
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Discharge") echo " selected ";?> value="Discharge"
+					>Discharge</option>
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "LAMA") echo " selected ";?> value="LAMA"
+					>LAMA</option>
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Absconded") echo " selected ";?> value="Absconded"			
+					>Absconded</option>
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Death") echo " selected ";?> value="Death"			
+					>Death</option>
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Unupdated") echo " selected ";?> value="Unupdated"					
+					>Unupdated</option>
 					</select>
 					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
 						echo $this->input->post('rows_per_page');
