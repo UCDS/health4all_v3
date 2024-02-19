@@ -104,6 +104,9 @@ if(isset($patient_visit_data) && count($patient_visit_data)>0)
 														//console.log(response);
 														$btn.closest('tr').remove();
 														fetchAndRefreshTable();
+														document.querySelectorAll('td:first-child').forEach(function(td, i) {
+															td.textContent = i + 1;
+														});
 													},
 													error: function(error) {
 														console.error("Error:", error);

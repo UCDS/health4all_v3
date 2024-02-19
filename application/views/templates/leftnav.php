@@ -716,7 +716,7 @@
 			</li>
 			<li <?php if (preg_match("user_panel/update_des_user_function", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url() . "user_panel/update_des_user_function"; ?>"> Update Description User Function</a>
+				<a href="<?php echo base_url() . "user_panel/update_des_user_function"; ?>"> Update User Function Description </a>
 			</li>
 			<li <?php if (preg_match("user_panel/counseling_type", current_url()))
 				echo 'class="active"'; ?>>

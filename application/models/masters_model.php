@@ -2110,12 +2110,13 @@ else if($type=="dosage"){
 
 	function get_counseling_text_options($counselingTypeId,$language)
 	{
-		$this->db->select('counseling_text,counseling_text_id');
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select('counseling_text,counseling_text_id,global_text');
         $this->db->from('counseling_text');
         $this->db->where('counseling_type_id', $counselingTypeId);
         $this->db->where('language_id', $language);
         $this->db->where('active_text',1);
-		$this->db->where("(global_text = 1 OR global_text IS NULL)", null, false);
+		$this->db->where("(global_text = 1 OR (global_text=0 AND hospital_id='".$hospital['hospital_id']."'))");
         $query = $this->db->get();
 		return $query->result_array();
 	}

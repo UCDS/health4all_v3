@@ -2359,19 +2359,45 @@ function initDistrictSelectize(){
 					<select name="counseling_type" id="counseling_type" class="form-control counseling_type" 
 					style="width:45%;margin-left:55px;">
 						<option value="">--Select--</option>
-						<?php foreach($all_counseling_type as $act){ ?>
-							<option value= "<?php echo $act->counseling_type_id; ?>" > <?php echo $act->counseling_type; ?> </option>
-						<?php } ?>
+						
 					</select>
+					<script>
+						$(document).ready(function () {
+							$.ajax({
+								url: "<?php echo base_url('register/get_all_counselingtype'); ?>",
+								type: "GET",
+								dataType: "json",
+								success: function (data) {
+									var dropdown = $('#counseling_type');
+									$.each(data, function (key, value) {
+										dropdown.append($('<option></option>').val(value.counseling_type_id).text(value.counseling_type));
+									});
+								}
+							});
+						});
+					</script>
 				</div>
 				<div class="col-md-6" style="margin-top:10px;"> &nbsp;&nbsp;&nbsp;&nbsp;
 					<label class="control-label">Language</label>
 					<select name="language" class="form-control" id="language" style="width:45%;margin-left:55px;">
 						<option value="">Choose Language</option>
-						<?php foreach($fetch_all_languages as $f){ ?>
-							<option value="<?php echo $f->language_id; ?>"><?php echo $f->language; ?></option>
-						<?php } ?>
+						
 					</select>
+					<script>
+						$(document).ready(function () {
+							$.ajax({
+								url: "<?php echo base_url('register/get_all_languagesct'); ?>",
+								type: "GET",
+								dataType: "json",
+								success: function (data) {
+									var dropdown = $('#language');
+									$.each(data, function (key, value) {
+										dropdown.append($('<option></option>').val(value.language_id).text(value.language));
+									});
+								}
+							});
+						});
+					</script>
 				</div>
 			</div>
 			<div class="row">
@@ -2394,7 +2420,7 @@ function initDistrictSelectize(){
 				</tbody>
 			</table>
 			<div class="container-fluid" >
-				<h3>Counseling History</h3>
+				<h3>Counseling</h3>
 				<table class="table table-striped table-bordered" id="" >
 						<thead>
 							<tr>
@@ -2490,8 +2516,9 @@ function initDistrictSelectize(){
 							if (response.length > 0) {
 								tableBody.empty(); 
 								$.each(response, function (index, text) {
+									var icons = (text.global_text == 1) ? ' <i class="fa-solid fa fa-globe"></i>' : '';
 									var row = '<tr>' +
-									'<td style="text-align:center;">' + (index + 1) + '</td>' +
+									'<td style="text-align:center;">' + (index + 1) + icons + '</td>' +
 									'<td  id="appendToTextarearesp_' + index + '"  style="text-align:left;">' + text.counseling_text + '</td>' +
 									'<input type="hidden" class="counseling_text_id" value="' + text.counseling_text_id + '">' +
 									'<td style="text-align:left;"><button class="btn btn-success" value="' + text.counseling_text + '" id="appendToTextarea1">Select</button></td>'
@@ -4004,7 +4031,7 @@ function initDistrictSelectize(){
         </div>
         <div class="col-md-4 col-xs-6">
             <b><?php if( $patient->visit_type == "IP") echo "Admit Date:"; else echo "Visit Date:";?></b>
-            <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:ia", strtotime($patient->admit_time));?>
+            <?php echo date("d-M-Y", strtotime($patient->admit_date)).", ".date("g:i A", strtotime($patient->admit_time));?>
         </div>
     </div>
 </template>

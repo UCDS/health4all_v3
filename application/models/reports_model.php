@@ -3115,11 +3115,19 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		// 	if ($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
 		// 	$this->db->where('patient_visit.visit_name_id', $visit_name);
 		// }outcome_type
-		if (($outcome_type != '' && $outcome_type != '0') || $this->input->post('outcome_type')) 
+		if (($outcome_type != '') || $this->input->post('outcome_type')) 
 		{
-			if ($this->input->post('outcome_type')) {
-				$outcome_type = $this->input->post('outcome_type');
-				$this->db->where('patient_visit.outcome', $outcome_type); }
+			if ($this->input->post('outcome_type')) 
+			{
+				if($this->input->post('outcome_type')=="Unupdated")
+				{
+					$outcome_type=0;
+				}else
+				{
+					$outcome_type = $this->input->post('outcome_type');
+				}
+				$this->db->where('patient_visit.outcome', $outcome_type); 
+			}
 		}
 		if ($department != '-1' || $this->input->post('department')) {
 			if ($this->input->post('department')) $department = $this->input->post('department');
@@ -3225,11 +3233,19 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		// 	if($this->input->post('visit_name')) $visit_name = $this->input->post('visit_name');
 		// 	$this->db->where('patient_visit.visit_name_id',$visit_name);
 		// }
-		if (($outcome_type != '' && $outcome_type != '0') || $this->input->post('outcome_type')) 
+		if (($outcome_type != '') || $this->input->post('outcome_type')) 
 		{
-			if ($this->input->post('outcome_type')) {
-				$outcome_type = $this->input->post('outcome_type');
-				$this->db->where('patient_visit.outcome', $outcome_type); }
+			if ($this->input->post('outcome_type')) 
+			{
+				if($this->input->post('outcome_type')=="Unupdated")
+				{
+					$outcome_type=0;
+				}else
+				{
+					$outcome_type = $this->input->post('outcome_type');
+				}
+				$this->db->where('patient_visit.outcome', $outcome_type); 
+			}
 		}
 		if($department!='-1' || $this->input->post('department')){
 			if($this->input->post('department')) $department=$this->input->post('department');
