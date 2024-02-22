@@ -234,7 +234,7 @@ $(document).ready(function(){
 					<div class="col-md-12">
 						<table class="table table-bordered table-striped">
 							<thead>
-								<th>Function</th>
+								<th>User Function</th>
 								<th>Add</th>
 								<th>Edit</th>
 								<th>View</th>
@@ -243,10 +243,10 @@ $(document).ready(function(){
 							<tbody>
 							<tr>
 								<td>All</td>
-								<td><input type="checkbox" class="add_all" value="add_all" /></td>
-								<td><input type="checkbox" class="edit_all" value="add_all" /></td>
-								<td><input type="checkbox" class="view_all" value="add_all" /></td>
-								<td><input type="checkbox" class="remove_all" value="add_all" /></td>
+								<td style="text-align:center;"><input type="checkbox" class="add_all" value="add_all" /></td>
+								<td style="text-align:center;"><input type="checkbox" class="edit_all" value="add_all" /></td>
+								<td style="text-align:center;"><input type="checkbox" class="view_all" value="add_all" /></td>
+								<td style="text-align:center;"><input type="checkbox" class="remove_all" value="add_all" /></td>
 							</tr>
 							<?php foreach($user_functions as $f){
 								
@@ -265,15 +265,14 @@ $(document).ready(function(){
 							?>
 								<tr>
 									<td>
-									
-				<div data-toggle="popover" data-placement="bottom" data-content="<?php echo $f->description;?>">
-								<?php echo $f->user_function;?>									  
-				</div>
+									<div data-toggle="popover" data-placement="bottom" data-content="<?php echo $f->description;?>">
+										<?php echo $f->user_function_display;?>&nbsp;&nbsp;( <?php echo $f->user_function;?> )								  
+									</div>
 									<input type="checkbox" value="<?php echo $f->user_function_id;?>" name="user_function[]" class="sr-only" checked /></td>
-									<td><input type="checkbox" class="add" name="<?php echo $f->user_function_id;?>[]" value="add" <?php echo $add;?> /></td>
-									<td><input type="checkbox" class="edit" name="<?php echo $f->user_function_id;?>[]" value="edit" <?php echo $edit;?>  /></td>
-									<td><input type="checkbox" class="view" name="<?php echo $f->user_function_id;?>[]" value="view" <?php echo $view;?>  /></td>
-									<td><input type="checkbox" class="remove" name="<?php echo $f->user_function_id;?>[]" value="remove" <?php echo $remove;?>  /></td>
+									<td style="text-align:center;"><input type="checkbox" class="add" name="<?php echo $f->user_function_id;?>[]" value="add" <?php echo $add;?> /></td>
+									<td style="text-align:center;"><input type="checkbox" class="edit" name="<?php echo $f->user_function_id;?>[]" value="edit" <?php echo $edit;?>  /></td>
+									<td style="text-align:center;"><input type="checkbox" class="view" name="<?php echo $f->user_function_id;?>[]" value="view" <?php echo $view;?>  /></td>
+									<td style="text-align:center;"><input type="checkbox" class="remove" name="<?php echo $f->user_function_id;?>[]" value="remove" <?php echo $remove;?>  /></td>
 								</tr>
 							<?php } ?>
 							</tbody>

@@ -684,11 +684,11 @@ class User_panel extends CI_Controller {
 					$added_by = $this->input->post('added_by');
 					$global_text = $this->input->post('global_text');
 					$insert_datetime = $this->input->post('insert_datetime');
-					if($this->masters_model->check_counseling_text($hospital['hospital_id'], $counseling_type_id, $counseling_text)) 
-					{
-						$this->data['error'] = 'Counseling text exists with counseling type and hospital';
-					}
-					else if($counseling_type_id=='0')
+					// if($this->masters_model->check_counseling_text($hospital['hospital_id'], $counseling_type_id, $counseling_text)) 
+					// {
+					// 	$this->data['error'] = 'Counseling text exists with counseling type and hospital';
+					// }
+					if($counseling_type_id=='0')
 					{
 						$this->data['error'] = 'Please select counseling type';
 					}
@@ -765,10 +765,11 @@ class User_panel extends CI_Controller {
 				$global_text = $this->input->post('global_text');
 				$updated_by = $this->input->post('updated_by');
 				$update_datetime = $this->input->post('updated_datetime');
-				if($this->masters_model->check_counseling_text($hospital['hospital_id'], $counseling_type_id, $counseling_text)) 
-				{
-					$this->data['error'] = 'Counseling Text Cannot Be Updated Combination Already Exists';
-				}else if($counseling_type_id=='0')
+				// if($this->masters_model->check_counseling_text($hospital['hospital_id'], $counseling_type_id, $counseling_text)) 
+				// {
+				// 	$this->data['error'] = 'Counseling Text Cannot Be Updated Combination Already Exists';
+				// }
+				if($counseling_type_id=='0')
 				{
 					$this->data['error'] = 'Please select counseling type';
 				}

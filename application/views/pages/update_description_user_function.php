@@ -136,11 +136,11 @@ $(function(){
 
 
 
-<center> <h3> Edit User Funtion Description</h3></center><br>
+<center> <h3> Update User Function Description </h3></center><br>
 <div class="row col-md-offset-2">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h4>Edit User Funtion Description</h4>
+			<h4>Update User Function Description</h4>
 		</div>
 		<?php if($msg){ ?>
 		<div class="alert alert-info"><?php echo $msg;?></div>

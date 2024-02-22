@@ -832,6 +832,8 @@ class Register extends CI_Controller {
 						$a6_print_layout = $this->staff_model->get_print_layout($a6_print_layout_id);					
 						$print_layout_page = $print_layout->print_layout_page;
 						$print_layout_a6 = $a6_print_layout->print_layout_page;
+					$this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no);
+
 				}
 				 //Set the print layout page based on the form selected.
 				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
@@ -892,10 +894,6 @@ class Register extends CI_Controller {
 				 /* Till here */
 				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
 				 $this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
-            
-				 $this->data['all_counseling_type'] = $this->masters_model->get_all_counseling_type();
-				 $this->data['fetch_all_languages']= $this->masters_model->get_all_language_ct();
-
 				 $this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no);
 				 
         //--- end  18_02_2023 --- //
@@ -912,6 +910,18 @@ class Register extends CI_Controller {
 		show_404();
 		}
 	}
+
+	function get_all_counselingtype() 
+	{
+        $counselingtypes  = $this->masters_model->get_all_counseling_type();
+        echo json_encode($counselingtypes);
+    }
+
+	function get_all_languagesct() 
+	{
+        $all_languagesct  = $this->masters_model->get_all_language_ct();
+        echo json_encode($all_languagesct);
+    }
 
 	// Newly added
 	function getCounselingText()

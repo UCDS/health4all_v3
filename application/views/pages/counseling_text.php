@@ -440,12 +440,7 @@ echo "</select></li>";
 		<td style="text-align:left"><?php echo $act->updated_by_name;?></td>	
 		<td style="text-align:left"><?php echo date("j M Y h:i A.", strtotime("$act->created_date_time")); ?></td>	
 		<td style="text-align:left"><?php if($act->updated_date_time!=''){ echo date("j M Y h:i A.", strtotime("$act->updated_date_time")); } ?></td>
-		<?php 
-			if($act->global_text==1 && $act->hospital_id!=$hospital['hospital_id'])
-			{
-		?>
 		<td style="text-align:left"><?php echo $act->hname; ?></td>
-		<?php } else { echo "<td> </td>"; }?>
 		<?php 
 			$hospital=$this->session->userdata('hospital');
 			if($act->hospital_id==$hospital['hospital_id'])

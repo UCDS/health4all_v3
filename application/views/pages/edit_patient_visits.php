@@ -668,8 +668,10 @@ bootbox.confirm({
         url: '<?php echo base_url();?>patient/update_patient_visit_details',
         contentType : "application/json; charset=UTF-8",
                 type : "POST",
-        success: function (data) {	
-            alert(data);
+        success: function (data) {
+            var bracetoast = JSON.parse(data);
+            var plaintxt = bracetoast.Message;	
+            alert(plaintxt);
             location.reload();
         },
         error: function(data){
@@ -836,7 +838,7 @@ bootbox.confirm({
         <td>Admit Time</td>
         <td class="old-value-container" id="admit_time_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="admit_time_update" name="admit_time_update" value="admit_time_update"></td>
-        <td><input type="text" class="form-control" id="admit_time_update_new_value" name="admit_time_update_new_value" placeholder="" value="<?php echo $time_2 ?>" disabled></td>
+        <td><input type="time" class="form-control" id="admit_time_update_new_value" name="admit_time_update_new_value" placeholder="" value="<?php echo $time_2 ?>" disabled></td>
       </tr>
       
       <tr>
@@ -1084,7 +1086,7 @@ bootbox.confirm({
         <td>Outcome Time</td>
         <td class="old-value-container" id="outcome_time_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="outcome_time_update" name="outcome_time_update" value="outcome_time_update"></td>
-        <td><input type="text" class="form-control" id="outcome_time_update_new_value" name="outcome_time_update_new_value" placeholder="" value="<?php echo $time ?>"  disabled></td>
+        <td><input type="time" class="form-control" id="outcome_time_update_new_value" name="outcome_time_update_new_value" placeholder="" value="<?php echo $time ?>"  disabled></td>
       </tr>
       
     </tbody>
