@@ -568,9 +568,12 @@ class Register_model extends CI_Model{
 		$visit_data = array();
 		$patient_data = array();
 		$mlc_data = array();
+		$user_data=$this->session->userdata('logged_in');
 		foreach($this->patient_visit as $column){
 			if($this->input->post($column)){
 				$visit_data[$column] = $this->input->post($column);
+				$visit_data['update_datetime']=date("Y-m-d H:i:s");
+				$visit_data['update_by_user_id']=$user_data['staff_id'];
 			}
 		}
 		if($this->input->post('icd_code')){

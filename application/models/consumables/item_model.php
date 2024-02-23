@@ -85,7 +85,7 @@ class Item_model extends CI_Model {
 			if($this->input->post('item_form')){
 				$this->db->where('item_form.item_form_id', $this->input->post('item_form'));
 			}
-			$this->db->order_by('item.item_name', 'ASC');
+			$this->db->order_by('item.item_id', 'ASC');
 		}		
 		$rows_per_page = $this->input->post('rows_per_page');
 		$res_offset = $rows_per_page * ($this->input->post('page_no') - 1);
@@ -117,7 +117,7 @@ class Item_model extends CI_Model {
 			if($this->input->post('item_form')){
 				$this->db->where('item_form.item_form_id', $this->input->post('item_form'));
 			}
-			$this->db->order_by('item.item_name', 'ASC');
+			$this->db->order_by('item.item_id', 'ASC');
 		}
 
 		$query = $this->db->get();

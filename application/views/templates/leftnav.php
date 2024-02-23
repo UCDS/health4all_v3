@@ -10,9 +10,20 @@
 	function check_if_group_active($group)
 	{
 		if($group == "masters"){
-			return (preg_match("^item_forms_list^", current_url()) || preg_match("^add_item_form^", current_url()) || preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) || preg_match("^generic_items_list^", current_url()) || preg_match("^add_generic^", current_url()) || preg_match("^items_list^", current_url()) || preg_match("^add_item^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) || preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) || preg_match("^add_drug_type^", current_url()));
+			return (preg_match("^item_forms_list^", current_url()) || preg_match("^add_item_form^", current_url()) || 
+			preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()) 
+			|| preg_match("^generic_items_list^", current_url()) 
+			|| preg_match("^add_generic^", current_url()) || preg_match("^items_list^", current_url()) 
+			|| preg_match("^add_item^", current_url()) || preg_match("^add_supply_chain_party^", current_url()) 
+			|| preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) 
+			|| preg_match("^add_drug_type^", current_url()) || preg_match("^update_item_type^", current_url())
+			|| preg_match("^update_item_form^", current_url()) || preg_match("^update_dosage^", current_url())
+			|| preg_match("^update_drug_type^", current_url()) || preg_match("^supply_chain_parties_list^", current_url()));
 		}else if($group == "reports"){
-			return preg_match("^get_indent_summary^", current_url()) || preg_match("^indents_list^", current_url()) || preg_match("^get_inventory_summary^", current_url());
+			return preg_match("^get_indent_summary^", current_url()) 
+			|| preg_match("^indents_list^", current_url()) 
+			|| preg_match("^get_inventory_summary^", current_url())
+			|| preg_match("^get_item_summary^", current_url());
 		}
 	}
 	function activate_item($item_regexp)
@@ -287,7 +298,7 @@
 										<a class="<?php echo (activate_item("^add_dosage^")) ?>" 
 													href="<?php echo base_url(); ?>consumables/dosage/add_dosage">Dosages</a>
 										<a href="<?php echo base_url(); ?>consumables/drug_type/add_drug_type" class="<?php echo (activate_item("^add_drug_type^")) ?>">
-												Drug Type Details</a>
+												Drug Type</a>
 										<a class="<?php echo (activate_item("^consumables/supply_chain_party/^")) ?>" 
 													href="<?php echo base_url(); ?>consumables/supply_chain_party/supply_chain_parties_list">Supply
 												Chain
@@ -304,7 +315,7 @@
 										<a class="<?php if (preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()))
 											echo 'list-group-item active';
 										else
-											echo 'list-group-item' ?>" href="<?php echo base_url(); ?>hospital/drugs_available">Add Drugs</a>
+											echo 'list-group-item' ?>" href="<?php echo base_url(); ?>hospital/drugs_available">Hospital Drug List</a>
 									
 
 					<?php
@@ -334,8 +345,8 @@
 							<div id="collapseTwo" class="panel-collapse collapse <?php if(check_if_group_active("reports")) echo 'in'?>">
 							<div class="panel-body">
 									<ul class="list-group">
-										<a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indent
-												Reports </span></a>
+										<a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indented
+												Items </span></a>
 										<a class="<?php echo (activate_item("^indents_list^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/indents_list">Indents
 										List </span></a>
 										<a class="<?php echo (activate_item("^get_inventory_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_summary">Inventory 
@@ -669,9 +680,9 @@
 
 <?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^hospital/search_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url())) { ?>
 
-	<div class="col-xs-1 col-md-1 sidebar-left">
+	<div class="col-xs-1 col-md-2 sidebar-left">
 		<strong>Settings</strong>
-		<ul class="nav nav-sidebar nav-stacked">
+		<ul class="nav nav-sidebar nav-stacked" style="margin-left:0px!important;">
 			<li class="nav-divider"></li>
 			<li>Forms</li>
 			<li <?php if (preg_match("^user_panel/form_layout^", current_url()))
@@ -716,7 +727,7 @@
 			</li>
 			<li <?php if (preg_match("user_panel/update_des_user_function", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url() . "user_panel/update_des_user_function"; ?>"> Update User Function Description </a>
+				<a href="<?php echo base_url() . "user_panel/update_des_user_function"; ?>"> Update User Function Description</a>
 			</li>
 			<li <?php if (preg_match("user_panel/counseling_type", current_url()))
 				echo 'class="active"'; ?>>
@@ -726,6 +737,7 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/counseling_text"; ?>"> Add / Update Counseling Text</a>
 			</li>
+			
 
 			<li class="nav-divider"></li>
 

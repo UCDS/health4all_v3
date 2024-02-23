@@ -875,8 +875,8 @@
 													
 												</select>
 											</td>
-											<td><input class="form-control narrow" type="number" min="0" value="0"
-													name="quantity_indented[]" /></td>
+											<td><input class="form-control narrow" type="number" min="0" value=""
+													name="quantity_indented[]" placeholder="Quantity" /></td>
 											<td></td>
 											<td></td>
 											<td></td>

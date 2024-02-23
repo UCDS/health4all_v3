@@ -532,9 +532,9 @@ $('#to_id').change(function(){
 				</div></br>
 					<div class="container">
 						<div class="row">
-							<div class="col-md-4">							
+							<div class="col-md-3">							
 								<div class="form-group"><!-- Item type-->
-									<label for="item_type" >Item Type</label>
+									<label for="item_type" >Item Type</label></br>
 										<select name="item_type" id="item_type" class="form-control" style="width:280px">
 											<option value="">Select</option>
 												<?php 
@@ -548,7 +548,7 @@ $('#to_id').change(function(){
 										</select>
 								</div><!-- End of item type-->
 							</div>
-							<div class="col-md-4">							
+							<div class="col-md-8">							
 								<div class="form-group"><!-- Item-->
 									<label for="item" >Item</label>
 										<select name="item" id="item" class="items" style="width:305px">

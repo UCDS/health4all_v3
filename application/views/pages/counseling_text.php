@@ -200,7 +200,7 @@ display: inline-grid;
 					<select name="status" required class="form-control">
 						<option value="0">Choose option</option>
 						<option <?php if($edit_counseling_text['active_text']=='1'){ echo "selected"; } ?> value="1">Yes</option>
-						<option <?php if($edit_counseling_text['active_text']=='0'){ echo "selected"; } ?> value="2">No</option>
+						<option <?php if($edit_counseling_text['active_text']=='2'){ echo "selected"; } ?> value="2">No</option>
 					</select>
 				</div>
 			</div>

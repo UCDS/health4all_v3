@@ -202,7 +202,7 @@ $('#to_id').change(function(){
 		doPost(dropdownobj.value);
 	}
 </script>
-<div class="col-md-8 col-md-offset-2">
+<div class="col-md-12">
 	<?php
 	$from_date=0;
 	$to_date=0;
@@ -259,85 +259,68 @@ $('#to_id').change(function(){
 										?>
 									</select>
 							</div>
-						    	</div>
 						</div>
-						<div class="row">
-							<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
-								<div class="form-group">
-								<!--Input field To party-->
-										<label for="to_id">Indent To Party</label>
-										<select name="to_id" id="to_id" class="form-control">
-											<option value="">Select</option>
-											<?php
-												foreach($parties as $t)
-												{
-													//foreach loop for displaying all To parties.
-													echo "<option value='".$t->supply_chain_party_id."'";
-													if($to_party == $t->supply_chain_party_id) echo " selected ";
-													echo ">".$t->supply_chain_party_name."</option>";
-												}
-											?>
-										</select>
-								</div>
-						       </div>
-					     
-						
-						
-								<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-								<div class="form-group">
-								<!--Input field Indent Status-->
-									<label for="inputindent_status" >Indent Status </label>
-									<select class="form-control" name="indent_status">
+						<div class="col-md-3">
+							<div class="form-group">
+							<!--Input field To party-->
+								<label for="to_id">Indent To Party</label>
+								<select name="to_id" id="to_id" class="form-control">
 									<option value="">Select</option>
-								                    	<option value="Indented"
-														<?php
-															if($indent_status == "Indented")
-															 echo " selected ";
-													    ?>>Indented
-														</option>
-                                                         <option value="Approved"
-														 <?php
-															if($indent_status== "Approved")
-															 echo " selected ";
-													    ?>>Approved
-														</option>
-														<option value="Issued"
-														<?php
-															if($indent_status == "Issued")
-															 echo " selected ";
-													    ?>>Issued
-														</option>
-
-      						                    </select>
-									<!--<select name="indent_status" id="indent_status" class="form-control">
-												<option value="">Select</option>
-												<option value="Indented">Indented</option>
-												<option value="Approved">Approved</option>
-												<option value="Issued">Issued</option>
-
-									</select>-->
-								</div>
+									<?php
+										foreach($parties as $t)
+										{
+											//foreach loop for displaying all To parties.
+											echo "<option value='".$t->supply_chain_party_id."'";
+											if($to_party == $t->supply_chain_party_id) echo " selected ";
+											echo ">".$t->supply_chain_party_name."</option>";
+										}
+									?>
+								</select>
 							</div>
-							<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-								<div class="form-group">
-									<!--Input field Indent Status-->
-									<label for="indent_id" >Indent Id</label>
-									<input class="form-control" name="indent_id" placeholder="Indent ID">
-								</div>
+						</div>
+						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+							<div class="form-group">
+								<!--Input field Indent Status-->
+								<label for="inputindent_status" >Indent Status </label>
+								<select class="form-control" name="indent_status">
+									<option value="">Select</option>
+									<option value="Indented"
+									<?php
+										if($indent_status == "Indented")
+											echo " selected ";
+									?>>Indented
+									</option>
+										<option value="Approved"
+										<?php
+										if($indent_status== "Approved")
+											echo " selected ";
+									?>>Approved
+									</option>
+									<option value="Issued"
+									<?php
+										if($indent_status == "Issued")
+											echo " selected ";
+									?>>Issued
+									</option>
+								</select>
 							</div>
-					</div>
-					<div class="row">
-					<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
-								
+						</div>
+						<div class = "col-md-3">
+							<div class="form-group">
+								<!--Input field Indent Status-->
+								<label for="indent_id" >Indent Id</label>
+								<input class="form-control" name="indent_id" placeholder="Indent ID">
+							</div>
+						</div>
+						<div class="col-md-3">
 								<!--Input field To party-->
-								Rows per page : 
-								<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
-								echo $this->input->post('rows_per_page');
+							Rows per page : 
+							<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
+							echo $this->input->post('rows_per_page');
 							} else {
 								echo $rowsperpage;
 							}  ?> />
-										
-					</div>
+						</div>
 					<div class="row">
 						<div class="col-md-9">
 							<!--button for searching-->
@@ -347,28 +330,29 @@ $('#to_id').change(function(){
 							<?php echo form_close(); ?>	<!--closing of form-->
 						</div>
 					</div>
-					
-							
-
 					</div>
 				</div>
 			
 				<!--set method for hidden the table-->
 		   <?php if(isset($search_indent_detailed)){ ?>
 		  
-			<div class="container" style="margin-left:14px">
-				<div class="row">
-					<button type="button" class="btn btn-primary btn-md print  ">
-						<span class="glyphicon glyphicon-print"></span> Print
-					</button>
+			<div class="container-fluid" style="text-align:left!important">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-4">
+							<button type="button" class="btn btn-default btn-md print  ">
+								<span class="glyphicon glyphicon-print"></span> Print
+							</button>
 
-					 <a href="#" id="test" onClick="javascript:fnExcelReport();">
-            			<button type="button" class="btn btn-primary btn-md excel">
-                			<i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
-						</button>
-					</a>
-					</br>
-				</div>
+							<a href="#" id="test" onClick="javascript:fnExcelReport();">
+								<button type="button" class="btn btn-default btn-md excel">
+									<i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
+								</button>
+							</a>
+		   				</div>
+						</br>
+					</div>
+		   		</div>
 			</div>
 			</br>
 
@@ -394,9 +378,9 @@ $('#to_id').change(function(){
 					$next_page = $page_no + 1;
 					$adjacents = "2";
 				?>
-				<div class="container" style="margin-left:14px;">
+				<div class="container" style="text-align:left !important;margin-left:14px;">
 					<div class="row">
-					<ul class="pagination" style="margin:0">
+					<ul class="pagination">
 					<?php if ($page_no > 1) {
 						echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
 					} ?>

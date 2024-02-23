@@ -11,6 +11,7 @@
 <style type="text/css">
 .selectize-control.items .selectize-dropdown>div {
 	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	text-align: left!important;
 }
 
 .selectize-control.items .selectize-dropdown .by {
@@ -29,6 +30,7 @@
 
 .selectize-control.items .selectize-dropdown .title {
 	display: block;
+	
 }
 
 .selectize-control.items .selectize-dropdown .description {
@@ -273,7 +275,7 @@ $('#to_id').change(function(){
 	<h2 align="center">Add Indent Form</h2></br>
 <?php }?>
 	  <?php echo form_open('consumables/indent/add_indent',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
-		<div class="col-xs-4 col-md-offset-2">
+		<div class="col-xs-12 col-md-offset-1">
             <div class="container">
 				<div class="row">
                         <div class="col-md-2">  <!--indent date-->
@@ -323,8 +325,8 @@ $('#to_id').change(function(){
 						
 		<div class="container">
 			<div class="row">
-				<div class="col-md-7 col-md-offset-1">
-					<table style="width:900px;height:100px;text-align:center;border:2px solid #ccc;background:#f6f6f6;border-spacing:10px;" class="table table-bordered" id="slot_table"> 
+				<div class="col-md-12">
+					<table style="width:950px;height:100px;text-align:center;border:2px solid #ccc;background:#f6f6f6;border-spacing:10px;" class="table table-bordered" id="slot_table"> 
 						<thead>
 							<tr id="slot_row_">
 								<th class="col-md-1"><center>#</center></th>
@@ -337,7 +339,7 @@ $('#to_id').change(function(){
 							<tr id="slot_row_">
 								<td>
 								</td>
-								<td>
+								<td style="width:55%;">
 									<div class="form-group">	<!--Item-->
 										<select name="item[]" id="item" class="items" required>
 										<option value="">Select</option>
@@ -345,7 +347,7 @@ $('#to_id').change(function(){
 									   </select>
 									 </div>						<!--end of Item-->
 								 </td>
-			                     <td>
+			                     <td style="width:7%;">
 				                       
 								<div class="form-group">
 										<input type="number" min="1" step="1" class="number form-control" name="quantity_indented[]" required  /></div>
@@ -363,29 +365,29 @@ $('#to_id').change(function(){
 				 </div>
 			</div>
 				    
-				    <div class="container">			
-							<div class="row">
-								<div class="col-md-4">
-									<div class="form-group form-group-lg">
-										<label for="indent_note">Note </label>
-										<textarea class="form-control" name="indent_note" id="indent_note" placeholder="Add a note for the indent"></textarea>
-									</div>
-
-								</div>
-							</div>			
-							<div class="row">
-								<div class="col-md-9">
-									<center><button class="btn btn-primary" type="submit" name="Submit" value="Submit" id="btn">Submit</button>
-									<?php if($mode=="auto_indent") { ?>
-									<input type="hidden" name="auto_indent" value="1"/>
-									<?php }else { ?>
-									<input type="hidden" name="auto_indent" value="0"/>
-									<?php } ?>
-									</center>
-								</div>
-								
-							</div>
+			<div class="container">			
+				<div class="row">
+					<div class="col-md-3"></div>
+					<div class="col-md-4">
+						<div class="form-group form-group-lg">
+							<label for="indent_note">Note </label>
+							<textarea class="form-control" name="indent_note" id="indent_note" placeholder="Add a note for the indent"></textarea>
+						</div>
 					</div>
+					<div class="col-md-3"></div>
+				</div>			
+				<div class="row">
+					<div class="col-md-10">
+						<center><button class="btn btn-primary" type="submit" name="Submit" value="Submit" id="btn">Submit</button>
+						<?php if($mode=="auto_indent") { ?>
+						<input type="hidden" name="auto_indent" value="1"/>
+						<?php }else { ?>
+						<input type="hidden" name="auto_indent" value="0"/>
+						<?php } ?>
+						</center>
+					</div>
+				</div>
+			</div>
 			</div>
 	     <?php echo form_close(); ?> 
 	 </div>

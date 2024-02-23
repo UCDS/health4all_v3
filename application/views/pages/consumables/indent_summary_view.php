@@ -256,12 +256,12 @@ $('#to_id').change(function(){
 			<div class="container">
 				<div class="row">
 					<div class="col-md-3 col-md-offset-2">
-					<button type="button" class="btn btn-primary btn-md print  ">
+					<button type="button" class="btn btn-default btn-md print  ">
 						<span class="glyphicon glyphicon-print"></span> Print
 					</button>
 
 					 <a href="#" id="test" onClick="javascript:fnExcelReport();">
-            <button type="button" class="btn btn-primary btn-md excel">
+            <button type="button" class="btn btn-default btn-md excel">
                 <i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel</button></a></br>
 				</div>
 			</div>

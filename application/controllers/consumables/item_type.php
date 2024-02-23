@@ -3,6 +3,7 @@ class Item_type extends CI_Controller {
     function __construct() {
 		   parent::__construct();	
 		$this->load->model('staff_model');
+		$this->load->model('masters_model');
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
 		$user_id=$userdata['user_id'];
@@ -13,10 +14,21 @@ class Item_type extends CI_Controller {
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
     }   			//end of constructor.
-	function add_item_type(){
+
+
+	function add_item_type($record_id='')
+	{
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  
-			
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+   
+					}
+			   }
 		}	
         else{
             show_404(); 													
@@ -31,38 +43,91 @@ class Item_type extends CI_Controller {
 		if($access != 1){
 			show_404();
 		}
-			$this->load->helper('form');										
-			$this->load->library('form_validation'); 							
-			$this->data['title']="Add Item_type";										
-			$this->load->view('templates/header', $this->data);				
-			$this->load->view('templates/leftnav');	
-			$config=array(
-               array(
-                     'field'   => 'item_type',
-                     'label'   => 'item type',
-                     'rules'   => 'required|trim|xss_clean|is_unique[item_type.item_type]', 
-					 'errors' => array(
-						'is_unique[item_type.item_type]' => 'Item type already exists'
-					 )
-                  ) 	
-		     
-			);
 
+		$this->load->helper('form');										
+		$this->load->library('form_validation'); 							
+		$this->data['title']="Item Type";										
+		$this->load->view('templates/header', $this->data);				
+		$this->load->view('templates/leftnav');	
 		$this->load->model('consumables/item_type_model');
-		$this->form_validation->set_rules($config);
-		
-		if($this->form_validation->run()===FALSE) 							
+		if($this->input->post()) 
 		{
-			$this->data['message']="validation failed";	
-			//echo validation_errors();			
-		}		
+			$item_type = $this->input->post('item_type');
+			$added_by = $this->input->post('added_by');
+			$insert_datetime = $this->input->post('insert_datetime');
+			if($this->item_type_model->check_item_type($item_type)) 
+			{
+				$this->data['error'] = 'Item Type already exists';
+			}
+			else
+			{
+				$data_to_insert = array(
+					'item_type' => $item_type,
+					'created_by' => $added_by,
+					'created_date_time' => $insert_datetime,
+				);
+				$this->item_type_model->insert_item_type($data_to_insert);
+				$this->data['success'] = 'Item Type Added Successfully';
+			}
+		}
+		// Fetch all records from primary table
+		$this->data['all_item_type'] = $this->item_type_model->get_all_item_type($this->data['rowsperpage']);
+		$this->data['all_item_type_count'] = $this->item_type_model->get_all_item_type_count();
+		//Fetch record to edit
+		$this->data['edit_item_type'] = $this->item_type_model->get_edit_item_type_id($record_id);
+
+		$this->load->view('pages/consumables/item_type_view',$this->data);							
+		$this->load->view('templates/footer');								
+    }  			
+	//end of Add item_type.
+
+	function update_item_type()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->load->model('consumables/item_type_model');
+			$this->data['title']="Item Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$update_record_id = $this->input->post('record_id');
+				$item_type = $this->input->post('item_type');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+				if($this->item_type_model->check_item_type($item_type)) 
+				{
+					$this->data['error'] = 'Item Type Cannot Be Updated Combination Already Exists';
+				}else
+				{
+					$update_data = array(
+						'item_type' => $item_type,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+					);
+					$this->item_type_model->update_item_type($update_record_id, $update_data);
+					$this->data['success'] = 'Item Type Updated Successfully';
+				}
+			// Fetch all records from primary table
+			$this->data['all_item_type'] = $this->item_type_model->get_all_item_type($this->data['rowsperpage']);
+			$this->data['all_item_type_count'] = $this->item_type_model->get_all_item_type_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/consumables/item_type_view',$this->data);	
+			$this->load->view('templates/footer');
+		}
 		else
 		{
-		if($this->item_type_model->add_item_type()){							
-			$this->data['msg']="Item Type Added Succesfully";					
-		}
-		}
-			$this->load->view('pages/consumables/item_type_view',$this->data);							
-			$this->load->view('templates/footer');								
-    }  		//end of add_item_form method.				
-}		//end of item_type.
+			show_404();
+		}						
+    }  			
+	//end of update item_type.
+}		

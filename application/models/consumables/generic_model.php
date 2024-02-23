@@ -78,7 +78,8 @@ class Generic_model extends CI_Model {
 			if($this->input->post('drug_type')){
 				$this->db->where('drug_type.drug_type_id', $this->input->post('drug_type'));
 			}
-			$this->db->order_by('generic_item.generic_name', 'ASC');
+			//$this->db->order_by('generic_item.generic_name', 'ASC'); old
+			$this->db->order_by('generic_item.generic_item_id', 'ASC');
 		}	
 		
 		$rows_per_page = $this->input->post('rows_per_page');
@@ -110,12 +111,14 @@ class Generic_model extends CI_Model {
 			if($this->input->post('drug_type')){
 				$this->db->where('drug_type.drug_type_id', $this->input->post('drug_type'));
 			}
-			$this->db->order_by('generic_item.generic_name', 'ASC');
+			//$this->db->order_by('generic_item.generic_name', 'ASC'); old
+			$this->db->order_by('generic_item.generic_item_id', 'ASC');
 		}
 
 		$query = $this->db->get();
 		return $query->result();
 	}
+	
 	function get_generic_item($generic_item_id)
 	{
 		$this->db->select('generic_item.generic_item_id, generic_item.drug_type_id, generic_item.item_type_id, generic_item.generic_name,  item_type.item_type, 

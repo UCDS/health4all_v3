@@ -532,8 +532,8 @@ $(function(){
 					<div class="container">
 						<div class="row">
 							<div class="col-md-4">							
-								<div class="form-group"><!-- Item type-->
-									<label for="item_type" >Item Type</label>
+								<div class="form-group" style="margin-top:1%;"><!-- Item type-->
+									<label for="item_type" >Item Type</label></br>
 										<select name="item_type" id="item_type" class="form-control" style="width:280px">
 											<option value="">Select</option>
 												<?php 
