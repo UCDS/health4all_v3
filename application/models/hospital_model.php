@@ -238,7 +238,7 @@ class Hospital_model extends CI_Model {
     
     
     function get_hospital($hospital_id){  //Function that returns all the details of the hospitals.
-        $this->db->select("hospital.hospital_id,hospital,hospital_short_name,description, hospital.helpline_id,auto_ip_number, print_layout_id, a6_print_layout_id, place,district.district, district.district_id,type1,type2,type3,type4,type5,type6",false)
+        $this->db->select("hospital.hospital_id,hospital.logo,hospital,hospital_short_name,description, hospital.helpline_id,auto_ip_number, print_layout_id, a6_print_layout_id, place,district.district, district.district_id,type1,type2,type3,type4,type5,type6",false)
         ->from('hospital')
         ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
         ->join('district','hospital.district_id=district.district_id','left')

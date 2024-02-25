@@ -3,6 +3,7 @@ class Generic_item extends CI_Controller {
     function __construct() {
 		parent::__construct();	
 			$this->load->model('staff_model');
+			$this->load->model('masters_model');
 				if($this->session->userdata('logged_in')){
 					$userdata=$this->session->userdata('logged_in');
 					$user_id=$userdata['user_id'];
@@ -83,9 +84,15 @@ class Generic_item extends CI_Controller {
 			log_message("INFO", "SAIRAM FROM FORM VALIDATION");
 			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
 			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
-			$this->data['rowsperpage'] = 15;
-			$this->data['lower_rowsperpage'] = 1;
-			$this->data['upper_rowsperpage'] = 30;	
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+   
+					}
+			   }
 			log_message("INFO", "SAIRAM ".json_encode($this->data['generic_items_count']));
 			$this->load->view('pages/consumables/generic_items_list', $this->data);						
 		}		
@@ -95,9 +102,15 @@ class Generic_item extends CI_Controller {
 			
 			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
 			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
-			$this->data['rowsperpage'] = 15;
-			$this->data['lower_rowsperpage'] = 1;
-			$this->data['upper_rowsperpage'] = 30;	
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+   
+					}
+			   }
 			log_message("INFO", "SAIRAM ".json_encode($this->data['generic_items_count']));
 			
 			log_message("INFO", json_encode($this->data['search_generic_items']));

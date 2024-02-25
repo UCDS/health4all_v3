@@ -48,7 +48,8 @@ if(isset($patient_visit_data) && count($patient_visit_data)>0)
 					<div class="panel-heading">
 							<h4><b>Search Results</b></h4>
 							<?php  echo "| <b>H4A Patient ID</b> : ".$p->patient_id." | ";
-							 echo "<b>Patient</b> : ".$p->first_name." | ";
+							 echo "<b>Patient</b> : ".$p->first_name."  ";
+							 echo  $p->last_name." ";
 							 echo "<b>Age</b> : ".$p->age_years."Y ".$p->age_months."M ".$p->age_days."D"." | ";
 							 if ($p->gender!="0"){							 
 							 	echo "<b>Gender</b> : ".$p->gender." | ";			 

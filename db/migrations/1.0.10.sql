@@ -130,3 +130,11 @@ ALTER TABLE counseling MODIFY COLUMN `counseling_id` int(11) NOT NULL AUTO_INCRE
 ALTER TABLE counseling_text MODIFY COLUMN `counseling_text_id` int(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`counseling_text_id`); 
 
 ALTER TABLE counseling_type MODIFY COLUMN `counseling_type_id` int(11) NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`counseling_type_id`); 
+
+ALTER TABLE `item_type` ADD `created_by` INT NOT NULL AFTER `item_type`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+
+ALTER TABLE `item_form` ADD `created_by` INT NOT NULL AFTER `item_form`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+
+ALTER TABLE `dosage` ADD `created_by` INT NOT NULL AFTER `dosage`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+
+ALTER TABLE `drug_type` ADD `created_by` INT NOT NULL AFTER `description`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;

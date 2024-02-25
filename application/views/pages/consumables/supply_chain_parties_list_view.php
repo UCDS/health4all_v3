@@ -189,50 +189,24 @@
 			<?php echo form_open('consumables/supply_chain_party/supply_chain_parties_list', array('class' => 'form-group', 'role' => 'form', 'id' => 'scp_search')); ?>
 			<div class="container">
 
-				<div class="col-md-6 col-md-offset-2">
+				<div class="col-md-12">
 					<div class="row">
-						
-						<div class="col-md-3">
-							<div class="form-group">
-								<div class="radio">
-									<label for="yesCheck">
-										<input type="radio" onclick="javascript:yesnoCheck();" name="in_house"
-											id="yesCheck" value="in_house" aria-label="..." checked>In House
-									</label>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-3">
-							<div class="radio">
-								<label class="radio-inline" for="noCheck">
-									<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="noCheck"
-										value="external" aria-label="...">External
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-md-offset-2">
-					<div class="row">
-						<div class="col-md-4" id="ifYes1" style="display:none">
+						<div class="col-md-3" id="ifYes1" style="display:none">
 							<div class="form-group">
 								<label for="department">Department</label>
-								<!--Department field-->
 								<select name="department" id="department" class="form-control">
 									<option value="">Select</option>
 									<?php
 									foreach ($departments as $dept) {
 										echo "<option value='" . $dept->department_id . "'>" . $dept->department . "</option>";
-
 									}
 									?>
 								</select>
 							</div>
-							<!--Department field end-->
 						</div>
-						<div class="col-md-4" id="ifYes2" style="display:none">
+						<div class="col-md-3" id="ifYes2" style="display:none">
 							<div class="form-group">
 								<label for="area">Area</label>
-								<!--Area field-->
 								<select name="area" id="area" class="form-control">
 									<option value="">Select</option>
 									<?php
@@ -243,14 +217,8 @@
 									?>
 								</select>
 							</div>
-							<!--Area field end-->
 						</div>
-					</div>
-				</div>
-				<div class="col-md-6 col-md-offset-2">
-					<div class="row">
-
-						<div class=" col-md-6" id="ifNo" style="display:none">
+						<div class=" col-md-3" id="ifNo" style="display:none">
 							<div class="form-group">
 								<label for="vendor">Vendor</label>
 								<!--Vendor field-->
@@ -266,13 +234,19 @@
 							</div>
 							<!--Vendor field end-->
 						</div>
+						<div style="margin-top:30px;">
+							<div class="col-md-2">
+								<label class="radio-inline" for="yesCheck"></label>
+								<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="yesCheck" value="in_house" aria-label="..." checked> In House
+							</div>
+							<div class="col-md-2">
+								<label class="radio-inline" for="noCheck"></label>
+									<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="noCheck" value="external" aria-label="..."> External
+							</div>
+						</div>
 					</div>
 				</div>
-
-
-
-
-
+				
 				<div class="row">
 					<div class="col-md-1 col-md-offset-4">
 						<!--button for searching-->
@@ -293,14 +267,14 @@
 
 			<div class="container">
 				<div class="row">
-					<div class="col-md-3 col-md-offset-2">
-						<button type="button" class="btn btn-primary btn-md print  ">
+					<div class="col-md-3">
+						<button type="button" class="btn btn-default btn-md print  ">
 							<span class="glyphicon glyphicon-print"></span> Print
 						</button>
 
 						<a href="#" id="test" onClick="javascript:fnExcelReport();">
-							<button type="button" class="btn btn-primary btn-md excel">
-								<i class="fa fa-file-excel-o" aria-hidden="true"></i>Export to excel</button></a></br>
+							<button type="button" class="btn btn-default btn-md excel">
+								<i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to excel</button></a></br>
 					</div>
 				</div>
 			</div>

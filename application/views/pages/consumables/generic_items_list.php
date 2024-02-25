@@ -226,7 +226,7 @@ function doPost(page_no) {
 				<?php echo form_open('consumables/generic_item/generic_items_list', array('class' => 'form-group', 'role' => 'form', 'id' => 'generic_items_search')); ?>
 				<div class="container">
 					<div class="row">
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
+						<div class = "col-md-4">
 							<div class="form-group">
 							<!--Input field From date-->
 							<label for="generic_item_id" >Generic Item ID: </label>
@@ -234,7 +234,7 @@ function doPost(page_no) {
 							</div>
 						</div>
 						
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						<div class = "col-md-4">
 							<div class="form-group">
 							<!--Input field Item Type-->
 								<label for="item_type" >Item Type</label>
@@ -271,7 +271,7 @@ function doPost(page_no) {
 							</div>
 						</div> -->
 						
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
+						<div class = "col-md-4">
 							<div class="form-group">
 							<!--Input field From date-->
 							<label for="drug_type" >Drug Type</label>
@@ -290,7 +290,7 @@ function doPost(page_no) {
 							</div>
 							
 						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+						<div class = "col-sm-2 ">
 						Rows per page : 
 								<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
 								echo $this->input->post('rows_per_page');
@@ -299,9 +299,6 @@ function doPost(page_no) {
 							}  ?> />
 							
 						</div>		
-
-							
-
 					</div>
 					
 					<div class="row">
@@ -322,13 +319,13 @@ function doPost(page_no) {
 			
 			<div class="container">
 				<div class="row">
-					<div class="col-md-3 col-md-offset-2">
-						<button type="button" class="btn btn-primary btn-md print  ">
+					<div class="col-md-3" style="padding-left:30px;">
+						<button type="button" class="btn btn-default btn-md print  ">
 							<span class="glyphicon glyphicon-print"></span> Print
 						</button>
 						
 						<a href="#" id="test" onClick="javascript:fnExcelReport();">
-							<button type="button" class="btn btn-primary btn-md excel">
+							<button type="button" class="btn btn-default btn-md excel">
 								<i class="fa fa-file-excel-o" aria-hidden="true"></i> Export to excel</button></a></br>
 							</div>
 						</div>
@@ -359,9 +356,9 @@ function doPost(page_no) {
 					$next_page = $page_no + 1;
 					$adjacents = "2";
 				?>
-				<div class="container" style="margin-left:14px;">
+				<div class="container-fluid" >
 					<div class="row">
-					<ul class="pagination" style="margin:0">
+					<ul class="pagination" style="margin:0px 0px 0px -25%">
 					<?php if ($page_no > 1) {
 						echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
 					} ?>

@@ -4,24 +4,47 @@ class drug_type_model extends CI_Model {
     
     function __construct() {
         parent::__construct();
-    }		//end of constructor.
-	//This is function that is used to insert drug_type data into drug_type table.
-	function add_drug_type(){																	
-        $get_drug_type = array();																
-		if($this->input->post('drug_type')){														
-            $get_drug_type['drug_type'] = $this->input->post('drug_type');							
-        }
-		if($this->input->post('description')){														
-            $get_drug_type['description'] = $this->input->post('description');							
-        }
-		   $this->db->trans_start();
-		   $this->db->insert('drug_type',$get_drug_type);
-			$this->db->trans_complete();
-		if($this->db->trans_status()==FALSE){
-			return false;
-			}
-        else{
-           return true;
-        }  
-}				//end of add_drug-type method.
-}				//end of drug_type model.
+    }		
+	
+    function check_drug_type($drug_type,$description) 
+    {
+        $this->db->where('drug_type', $drug_type);
+        $this->db->where('description', $description);
+        $query = $this->db->get('drug_type');
+        return $query->num_rows() > 0;
+    }
+
+    function add_drug_type($data) 
+    {
+        $this->db->insert('drug_type', $data);
+    }
+
+	function get_all_drug_type()
+    {
+		$this->db->select("drug_type.drug_type,drug_type.drug_type_id,drug_type.created_date_time,staff.first_name,
+		updated_by.first_name as updated_by_name,drug_type.updated_date_time,drug_type.description")
+		->from("drug_type")
+		->join('staff','staff.staff_id=drug_type.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=drug_type.updated_by','left');
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_drug_type_count()
+	{
+		$this->db->select("count(*) as count",false)
+		->from("drug_type");
+		$query = $this->db->get();
+		return $query->result();
+	}
+	function get_edit_drug_type_id($record_id) 
+	{
+		$this->db->select('drug_type,description,created_by,updated_by,created_date_time,updated_date_time,drug_type_id');
+        $query = $this->db->get_where('drug_type', array('drug_type_id' => $record_id));
+        return $query->row_array();
+    }
+
+	function update_drug_type($record_id, $data) {
+        $this->db->where('drug_type_id', $record_id);
+        $this->db->update('drug_type', $data);
+    }			
+}				

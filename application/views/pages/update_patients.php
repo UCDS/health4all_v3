@@ -2286,7 +2286,7 @@ function initDistrictSelectize(){
 							<input type="date" name="outcome_date" class="form-control" />
 							<input type="time" name="outcome_time" class="form-control" />
 							<?php } else { ?>
-								<p><?php echo date("d-M-Y",strtotime($patient->outcome_date)).' '.date("g:iA",strtotime($patient->outcome_time)); ?></p>
+								<p><?php echo date("d-M-Y",strtotime($patient->outcome_date)).' '.date("g:i A",strtotime($patient->outcome_time)); ?></p>
 							<?php } ?>
 						</div>
 					</div>
@@ -2349,8 +2349,17 @@ function initDistrictSelectize(){
 					<label class="control-label">Advise</label>
 					</div>
 					<div class="col-md-8">
-					<textarea name="advise" class="form-control" cols="40" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->advise) echo $patient->advise;?></textarea>
+					<textarea name="advise" class="form-control" cols="40" id="advise" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->advise) echo $patient->advise;?></textarea>
 					</div>
+					<script>
+						ClassicEditor
+							.create( document.querySelector( '#advise' ), {
+								toolbar: [ 'bold', 'italic', 'bulletedList', 'numberedList' ]
+							} )
+							.catch( error => {
+									console.error( error );
+							} );
+					</script>
 				</div>
 			</div>
 			<div class="row">

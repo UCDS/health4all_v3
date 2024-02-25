@@ -311,7 +311,7 @@ class patient_model extends CI_Model {
         
         $this->db->select('patient_visit.patient_id,patient_visit.visit_type,patient.age_years,patient.age_months,patient.age_days,patient.gender,patient.phone,
         patient.address,patient.first_name,patient_visit.hosp_file_no as op_ip_no,patient_visit.admit_date,hospital.hospital as hospital_name,department.department as dept_name,
-        visit_name.visit_name,patient_visit.appointment_time,patient_visit.visit_id')
+        visit_name.visit_name,patient_visit.appointment_time,patient_visit.visit_id,patient.last_name')
                 ->from('patient_visit')
                 ->join('patient','patient.patient_id=patient_visit.patient_id','left')
                 ->join('hospital','hospital.hospital_id=patient_visit.hospital_id','left')

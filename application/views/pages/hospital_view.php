@@ -234,13 +234,13 @@
 								 <select class="form-control" name="logo" id="logo" onchange="previewLogo()" >
 								 <option value="">Select</option>
 								 <?php
-								// $path = base_url().'assets/logos/*';
-								$path = __DIR__.'assets/logos/*';	
-								 foreach(glob($path) as $filename){
-								$filename = basename($filename);
-								 echo "<option value='" . $filename . "'>".$filename."</option>";
-
-								 }
+									$extensions = ['jpg', 'jpeg', 'png'];
+									$path = 'assets/logos/*.{'.implode(',', $extensions).'}';	
+									foreach (glob($path, GLOB_BRACE) as $filename) 
+									{ 
+										$filename = basename($filename);
+										echo "<option value='" . $filename . "'>".$filename."</option>";
+									}
 								 ?>
 								 </select>
 
