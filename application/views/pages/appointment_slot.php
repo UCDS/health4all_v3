@@ -240,12 +240,9 @@ function addModalSubmit() {
 	
 	var departmentSelect = document.getElementById("department");
 	var departmentSelectValue = departmentSelect.options[departmentSelect.selectedIndex].value;				
-				
-	var visitNameSelect = document.getElementById("visit_name");
-	var visitNameSelectValue = visitNameSelect.options[visitNameSelect.selectedIndex].value;
 	
 	var triggerRelod = false;
-	if (departmentSelectValue === department_modal || visitNameSelectValue === visit_modal){
+	if (departmentSelectValue === department_modal){
 		triggerRelod = true;
 	}
 	
@@ -304,14 +301,9 @@ $(function() {
 			document.getElementById("submit-appointment-slot").addEventListener("click", function () {
 				    var departmentSelect = document.getElementById("department");
 					var departmentSelectValue = departmentSelect.options[departmentSelect.selectedIndex].value;
-				
-					
-				
-					var visitNameSelect = document.getElementById("visit_name");
-					var visitNameSelectValue = visitNameSelect.options[visitNameSelect.selectedIndex].value;
 		
-					if (departmentSelectValue === "" && visitNameSelectValue === ""){
-						bootbox.alert("Please select either department or visit name");
+					if (departmentSelectValue === ""){
+						bootbox.alert("Please select department");
 						return;
 					}
 					var form = document.getElementById("appointment");	

@@ -377,9 +377,13 @@ class Hospital_model extends CI_Model {
                 return true;
         } 
     }
-	function get_department($fromallhospital=0){   //This for evaluation.
-		if($this->input->post('hospital') && $fromallhospital !=1){
+	function get_department(){
+		if($this->input->post('hospital')){
 			$this->db->where('department.hospital_id',$this->input->post('hospital'));
+		}
+		else{
+			$this->db->join('user_hospital_link','department.hospital_id = user_hospital_link.hospital_id');
+			$this->db->where('user_hospital_link.user_id',$this->session->userdata('logged_in')['user_id']);
 		}
 		if($this->input->post('department_id') && $fromallhospital !=1){
 			$this->db->where('department.department_id',$this->input->post('department_id'));
@@ -428,7 +432,21 @@ class Hospital_model extends CI_Model {
          if($this->input->post('sat')){
 			 $this->db->where('sat',$this->input->post('sat'));
         }  
-       $this->db->select('department.*,hospital')
+       $this->db->select('department.department_id,department.department,department.description,
+	   department.lab_report_staff_id,
+	   department.department_email,
+	   department.number_of_units,
+	   department.op_room_no,
+	   department.clinical,
+	   department.floor,
+	   department.mon,
+	   department.tue,
+	   department.wed,
+	   department.thr,
+	   department.fri,
+	   department.sat,
+	   department.temp_department_id,
+	   ,hospital.hospital')
           ->from('department')
 		  ->join('hospital','department.hospital_id = hospital.hospital_id')
 		  ->order_by('department');                             

@@ -683,7 +683,7 @@ class Reports extends CI_Controller {
 					break;
 				}
 			}
-			if($this->input->post('visit_name') || $this->input->post('department')){
+			if($this->input->post('department')){
 				$this->data['report_count']=$this->reports_model->get_appointment_slot_count();
 				$this->data['report']=$this->reports_model->get_appointment_slot($this->data['rowsperpage']);
 				$this->data['no_report'] = 0;
