@@ -1603,7 +1603,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
 		 ->join('staff','aps.appointment_update_by=staff.staff_id','left')
 		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left')
-		 ->join('patient_visit as pv',"aps.department_id=pv.department_id and pv.hospital_id = hospital.hospital_id and pv.visit_name_id = aps.visit_name_id and ifnull(date(pv.appointment_time),'')  = aps.date and ifnull(time(pv.appointment_time),'')  between aps.from_time and aps.to_time",'left');
+		 ->join('patient_visit as pv',"aps.department_id=pv.department_id and pv.hospital_id = hospital.hospital_id and pv.visit_name_id = aps.visit_name_id and date(pv.appointment_time)  = aps.date and time(pv.appointment_time)  between aps.from_time and aps.to_time",'left');
 		 $this->db->order_by('aps.department_id','ASC');
 		 $this->db->order_by('aps.visit_name_id','ASC');
 		 $this->db->order_by('aps.date','ASC');
