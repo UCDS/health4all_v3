@@ -2,6 +2,14 @@
 	#sortable .control-label{
 		font-size:0.8em;
 	}
+	#footer
+	{
+		margin-top:31.7%!important;
+	}
+	.text-muted
+	{
+		margin-top:25px!important;
+	}
 	</style>
 	<!-- Include scripts for jQuery Sortable -->
 	<script src="<?php echo base_url(); ?>assets/js/jquery.ui.core.min.js"></script>
@@ -23,7 +31,7 @@
 	}
 	
   </script>
-
+		<div class="row col-md-offset-2">
 			<div class="col-md-10" >
 				<h4>Rename Print Layout Name</h4>
 				<div class="panel panel-default">
@@ -61,5 +69,6 @@
 				<div id="print_preview"  style="width:80%;height:40%;margin-left:50px;" ></div>
 				</div>
 			</div>
+		</div>
 
 

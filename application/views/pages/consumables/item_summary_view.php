@@ -456,6 +456,7 @@ $('#to_id').change(function(){
 							<th>Narration</th>
 							<th>Outward Quantity</th>
 							<th>Inward Quantity</th>
+							<th>Balance</th>
 							<th>Cost</th>
 							<th>Batch</th>
 							<th>Manufacturing date</th>
@@ -532,6 +533,7 @@ $('#to_id').change(function(){
 						<td><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td>
 						<td><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): '0';?></td>
 						<td><?= ($inventory_item->inward_outward === "inward") ? ($inventory_item->total_quantity): '0';?></td>
+						<td><?= ($inward_total_quantity - $outward_total_quantity); ?></td>
 						<td><?= (float)$inventory_item->cost; ?></td>
 						<td><?= $batch == '0' ? "NO BATCH": $batch; ?></td>
 						<td><?= $manufacture_date == ""? "": date("d-M-Y", strtotime($manufacture_date)); ?></td>
@@ -553,6 +555,7 @@ $('#to_id').change(function(){
 						<th></th>
 						<th><?= $outward_total_quantity; ?></th>
 						<th><?= $inward_total_quantity; ?></th>
+						<th><?= $inward_total_quantity-$outward_total_quantity; ?></th>
 						<th><?= $total_cost; ?></th>
 
 

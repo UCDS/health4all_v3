@@ -247,7 +247,7 @@ function onchange_page_dropdown(dropdownobj){
 
 
 <?php $page_no = 1; ?>
-<div class="col-md-12">
+<div class="col-md-12 col-md-offset-2">
 	<div class="panel panel-default">
 		<div class="panel-heading">
 		<h4>Search Hospital</h4>	

@@ -163,8 +163,9 @@ display: inline-grid;
 	$page_no = 1;	
 	
 	?>
-	<h2><?php echo $title; ?></h2>	
-<div class="row">
+		
+	<div class="row col-md-offset-2">
+	<h2><?php echo $title; ?></h2>
 		<?php if(!empty($edit_counseling_text)) { ?>
 			<?php echo form_open('user_panel/update_counseling_text',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
@@ -447,7 +448,10 @@ echo "</select></li>";
 			{
 		?>
 		<td style="text-align:center">
-		<a class="btn btn-success" href="<?php echo base_url('user_panel/counseling_text/'.$act->counseling_text_id); ?>" style="color:white!important;">Edit</a></td>
+		<a class="btn btn-success" href="<?php echo base_url('user_panel/counseling_text/'.$act->counseling_text_id); ?>" 
+		style="color:white!important;">Edit</a>
+		</td>
+		
 		<?php } ?>
 	</tr>
 	<?php $sno++;}	?>

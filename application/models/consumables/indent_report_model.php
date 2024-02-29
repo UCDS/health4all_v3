@@ -453,6 +453,7 @@ class Indent_report_model extends CI_Model
 			->join("staff staff_updated_by", "staff_updated_by.staff_id = indent.update_user_id");
 			
 		$this->db->where("indent.hospital_id", $hospital['hospital_id']);
+		$this->db->order_by("indent.indent_date","DESC");
 		$rows_per_page = $this->input->post('rows_per_page');
 		$res_offset = $rows_per_page * ($this->input->post('page_no') - 1);
 		$this->db->limit($rows_per_page, $res_offset);

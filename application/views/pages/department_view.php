@@ -6,9 +6,10 @@ if (isset($msg)){ ?>
 		<?php echo $msg;?>
 	</div>
 	<?php } ?>
-				<h2 align="center">Hospital Departments</h2></br></br>
+				
 				<?php echo form_open('departments/add_department',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
-					<div class="container">
+					<div class="container col-md-offset-2">
+					<h2 align="center">Hospital Departments</h2></br></br>
 						<div class="row">
 							<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-4">
 									<div class="form-group">
@@ -69,11 +70,12 @@ if (isset($msg)){ ?>
 									</dIv></dd>
 								</dl>
 							</div>
+							<!-- Modified on Jan23-01-2024 -->
 							<div class="container">
 								<div class="row">
 									<div class = "col-xs-12 col-sm-12 col-md-6 col-lg-4">
 										<div class="form-group">
-										<label for = "inputClinical"  name="clinical">Clinical</label>
+											<label for = "inputClinical"  name="clinical">Clinical</label>
 											    <div class="radio">																
 												<label><input type="radio" name="optradioyes" value="1">yes</label>
 												</div>
@@ -84,7 +86,7 @@ if (isset($msg)){ ?>
 									</div>
 								</div>
 							</div>
-																						
+							<!-- Till here	-->
 																				
 							<div class="container">
 								<div class="row">
@@ -117,7 +119,7 @@ if (isset($msg)){ ?>
 				           <div class="container">
 					            <div class="row">
 									<div class="col-md-12">
-										<center><button class="btn btn-default" type="submit" name="Submit" id="btn">Submit</button></center>
+										<center><button class="btn btn-primary" type="submit" name="Submit" id="btn">Submit</button></center>
 									</div>
 								</div>
 							</div>

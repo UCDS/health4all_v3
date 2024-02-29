@@ -168,8 +168,11 @@ $(function(){
 	}
 	</style>
 
+<?php 
+	
+$page_no = 1;	
 
-
+?>
 
 
 <script>
@@ -202,7 +205,28 @@ function doPost(page_no) {
 		doPost(dropdownobj.value);
 	}
 </script>
+<script>
+function fnExcelReport() {
+      //created a variable named tab_text where 
+    var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+    //row and columns arrangements
+    tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+    tab_text = tab_text + '<x:Name>Excel Sheet</x:Name>';
 
+    tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+    tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+    tab_text = tab_text + "<table border='100px'>";
+    //id is given which calls the html table
+    tab_text = tab_text + $('#table-sort').html();
+    tab_text = tab_text + '</table></body></html>';
+    var data_type = 'data:application/vnd.ms-excel';
+    $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+    //downloaded excel sheet name is given here
+    $('#test').attr('download', 'generic_items_list.xls');
+
+}
+</script>
 <div class="col-md-8 col-md-offset-1">
 	<?php
 	// echo "<h1>Sairam world</h1>";
@@ -291,12 +315,7 @@ function doPost(page_no) {
 							
 						</div>
 						<div class = "col-sm-2 ">
-						Rows per page : 
-								<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
-								echo $this->input->post('rows_per_page');
-							} else {
-								echo $rowsperpage;
-							}  ?> />
+						&nbsp;Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 							
 						</div>		
 					</div>

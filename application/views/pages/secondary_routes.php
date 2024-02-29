@@ -165,8 +165,9 @@ display: inline-grid;
 	$page_no = 1;	
 	
 	?>
+	
+	<div class="row col-md-offset-2">
 	<h2><?php echo $title; ?></h2>	
-<div class="row">
 		<?php if(!empty($edit_secondary_route)) { ?>
 			<?php echo form_open('user_panel/update_secondary_route',array('class'=>'form-group','role'=>'form','id'=>'secondary_route')); ?>
 		<?php } else { ?>
