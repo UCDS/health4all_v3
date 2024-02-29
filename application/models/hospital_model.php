@@ -385,10 +385,10 @@ class Hospital_model extends CI_Model {
 			$this->db->join('user_hospital_link','department.hospital_id = user_hospital_link.hospital_id');
 			$this->db->where('user_hospital_link.user_id',$this->session->userdata('logged_in')['user_id']);
 		}
-		if($this->input->post('department_id') && $fromallhospital !=1){
+		if($this->input->post('department_id')){
 			$this->db->where('department.department_id',$this->input->post('department_id'));
 		}
-        if($this->input->post('department') && $fromallhospital !=1){
+        if($this->input->post('department')){
 			$this->db->where('department',$this->input->post('department'));
          
         }
@@ -446,6 +446,7 @@ class Hospital_model extends CI_Model {
 	   department.fri,
 	   department.sat,
 	   department.temp_department_id,
+	   department.hospital_id,	
 	   ,hospital.hospital')
           ->from('department')
 		  ->join('hospital','department.hospital_id = hospital.hospital_id')
