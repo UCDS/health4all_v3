@@ -221,6 +221,7 @@ function addModalSubmit() {
 	var from_time = new Date(date_modal+' '+from_time_modal);
 	var to_time = new Date(date_modal+' '+to_time_modal);
 
+
 	
 	if (department_modal.length === 0 || visit_modal.length === 0 || from_time_modal.length === 0 || to_time_modal.length === 0 || date_modal.length === 0 || no_of_appointments.length === 0 ) {
 		bootbox.alert("Please fill all the values");
@@ -237,6 +238,17 @@ function addModalSubmit() {
 		return;
 	}
 	
+	var departmentSelect = document.getElementById("department");
+	var departmentSelectValue = departmentSelect.options[departmentSelect.selectedIndex].value;
+	
+	var from_date = document.getElementById("from_date").value;
+	var to_date = document.getElementById("to_date").value;
+	
+	var triggerRelod = false;
+	if (departmentSelectValue === department_modal && from_date <= date_modal && date_modal <= to_date ){
+		triggerRelod = true;
+	}
+	
 	$('#modalSubmit').prop("disabled", true);
 	var addModalForm = document.getElementById("addModalForm");
 	var data = new FormData(addModalForm);
@@ -250,7 +262,7 @@ function addModalSubmit() {
 			cache: false,
 			success: function (data) {
 				bootbox.alert(data.Message);
-				is_updated = true;
+				is_updated = triggerRelod;
 				$('#modalSubmit').prop("disabled", false);
 			},
 			error: function (error) {
@@ -289,6 +301,17 @@ $(function() {
 </script>
 <script type="text/javascript">
         $(document).ready(function(){
+			document.getElementById("submit-appointment-slot").addEventListener("click", function () {
+				    var departmentSelect = document.getElementById("department");
+					var departmentSelectValue = departmentSelect.options[departmentSelect.selectedIndex].value;
+		
+					if (departmentSelectValue === ""){
+						bootbox.alert("Please select department");
+						return;
+					}
+					var form = document.getElementById("appointment");	
+					form.submit();
+});
 	// find the input fields and apply the time select to them.
 	$('#editModal').on('show.bs.modal', function(e) {
         	var slot_id = $(e.relatedTarget).data('id');
@@ -368,7 +391,7 @@ $(function() {
 				?>
 			</select>
 			 Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+			<input class="btn btn-sm btn-primary" id="submit-appointment-slot" value="Submit" />
 		</form>
 		<?php if ($add_appointment_access == 1) { ?>
 		<br />
@@ -811,8 +834,10 @@ echo "</select></li>";
 } ?>
 </ul>
 	<?php  } else { ?>
+	<?php if(isset($no_report) && $no_report == 0) { ?> 
 	
 	No Appointment slot found.
-<?php }  ?>
+	
+	<?php } }  ?>
 </div>	
   
