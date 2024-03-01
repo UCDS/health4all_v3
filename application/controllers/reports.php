@@ -652,55 +652,63 @@ class Reports extends CI_Controller {
                             if ($function->add==1) $add_appointment_access=1;
                             if ($function->remove==1) $remove_appointment_access=1;
                             if ($function->edit==1) $edit_appointment_access=1;
+							break;
                     }
                 }
                 if($access==1){
-                $this->load->model('helpline_model');
-                $this->data['weekdays']=$this->helpline_model->get_weekdays_array();
-		$this->data['title']="Appointment Slot";
-		if($this->input->post('slot_id')){ 
-			if($this->input->post('appointment_slot_operation')=="Edit"){
-				$this->reports_model->update_appointment_slot();
+					
+					$this->load->model('helpline_model');
+					$this->data['weekdays']=$this->helpline_model->get_weekdays_array();
+					$this->data['title']="Appointment Slot";
+					if($this->input->post('slot_id')){ 
+						if($this->input->post('appointment_slot_operation')=="Edit"){
+							$this->reports_model->update_appointment_slot();
+					}
+					else if($this->input->post('appointment_slot_operation')=="Delete"){
+						$this->reports_model->delete_appointment_slot();
+					}
 			}
-			else if($this->input->post('appointment_slot_operation')=="Delete"){
-				$this->reports_model->delete_appointment_slot();
-			}
-		}
-		$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
-		$this->data['all_departments']=$this->staff_model->get_department();
-		$this->data['add_appointment_access']=$add_appointment_access;
-		$this->data['remove_appointment_access']=$remove_appointment_access;
-		$this->data['edit_appointment_access']=$edit_appointment_access;
-		$this->data['visit_names']=$this->staff_model->get_visit_name();
-		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-		foreach($this->data['defaultsConfigs'] as $default){		 
-		 	if($default->default_id=='pagination'){
+			$this->data['all_appointment_status']=$this->staff_model->get_appointment_status();
+			$this->data['all_departments']=$this->staff_model->get_department();
+			$this->data['add_appointment_access']=$add_appointment_access;
+			$this->data['remove_appointment_access']=$remove_appointment_access;
+			$this->data['edit_appointment_access']=$edit_appointment_access;
+			$this->data['visit_names']=$this->staff_model->get_visit_name();
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
-
-		 		}
+		 			$this->data['lower_rowsperpage']= $default->lower_range;	
+					break;
+				}
 			}
-		$this->data['report_count']=$this->reports_model->get_appointment_slot_count();
-		$this->data['report']=$this->reports_model->get_appointment_slot($this->data['rowsperpage']);		
-		$this->load->view('templates/header',$this->data);
-		$this->load->helper('form');
-		$this->load->library('form_validation');	
+			if($this->input->post('department')){
+				$this->data['report_count']=$this->reports_model->get_appointment_slot_count();
+				$this->data['report']=$this->reports_model->get_appointment_slot($this->data['rowsperpage']);
+				$this->data['no_report'] = 0;
+			}
+			else{
+				$this->data['no_report'] = 1; 
+			}
+			$this->load->view('templates/header',$this->data);
+			$this->load->helper('form');
+			$this->load->library('form_validation');	
 			
-		if ($this->form_validation->run() === FALSE)
-		{	
-			$this->load->view('pages/appointment_slot',$this->data);
-		}
-		else{
-			$this->load->view('pages/appointment_slot',$this->data);
-		}
-		$this->load->view('templates/footer',$this->data);
-		}
-                }
-                else{
-                    show_404();
-                }
-        }    
+			if ($this->form_validation->run() === FALSE)
+			{	
+				$this->load->view('pages/appointment_slot',$this->data);
+			}
+			else{
+				$this->load->view('pages/appointment_slot',$this->data);
+			}
+				$this->load->view('templates/footer',$this->data);
+			}
+        }
+        else{
+            show_404();
+        }
+    }    
 	public function appointment($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
 	       if($this->session->userdata('logged_in')){
