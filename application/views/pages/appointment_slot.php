@@ -239,10 +239,13 @@ function addModalSubmit() {
 	}
 	
 	var departmentSelect = document.getElementById("department");
-	var departmentSelectValue = departmentSelect.options[departmentSelect.selectedIndex].value;				
+	var departmentSelectValue = departmentSelect.options[departmentSelect.selectedIndex].value;
+	
+	var from_date = document.getElementById("from_date").value;
+	var to_date = document.getElementById("to_date").value;
 	
 	var triggerRelod = false;
-	if (departmentSelectValue === department_modal){
+	if (departmentSelectValue === department_modal && from_date <= date_modal && date_modal <= to_date ){
 		triggerRelod = true;
 	}
 	
