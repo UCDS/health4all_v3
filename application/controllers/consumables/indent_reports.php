@@ -604,4 +604,27 @@ class Indent_reports extends CI_Controller
 		$this->load->view('pages/consumables/print_indent_detailed_view', $this->data);
         $this->load->view('templates/footer');
 	}
+
+	function save_data() 
+	{
+		$fieldId = $this->input->post('fieldId');
+		$newValue = $this->input->post('newValue');
+		$indentId = $this->input->post('indentId');
+		$this->load->model('consumables/indent_issue_model');
+		$this->indent_issue_model->update_data($fieldId, $newValue, $indentId);
+		echo "Data saved successfully!";
+	}
+
+	function save_item_data() 
+	{
+		$fieldId = $this->input->post('fieldId');
+		$newValue = $this->input->post('newValue');
+		$indentId = $this->input->post('indentId');
+		$itemId = $this->input->post('itemId');
+		$this->load->model('consumables/indent_issue_model');
+		$this->indent_issue_model->update_item_data($fieldId, $newValue, $indentId, $itemId);
+		print_r($this->db->last_query());
+		echo "Data saved successfully!";
+	}
+	
 }

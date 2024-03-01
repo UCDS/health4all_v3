@@ -52,6 +52,233 @@
 		window.location.assign('<?php echo base_url()."consumables/indent_reports/indents_list"?>');
 	}
 </script>
+<script type="text/javascript">
+	function enableDateTimeEdit(fieldId, indentId) {
+		
+		var dateTimeField = document.getElementById(fieldId);
+		var currentDateTime = dateTimeField.innerText;
+
+		// Store the previous value
+		dateTimeField.dataset.previousValue = currentDateTime;
+		dateTimeField.dataset.indentId = indentId;
+		// Hide the edit icon for the corresponding field
+		var editIcon = document.querySelector(`.${fieldId}-edit-icon`);
+		if (editIcon) {
+			editIcon.style.display = 'none';
+		}
+
+		// Replace the content with an input field for editing
+		dateTimeField.innerHTML = `<input type="datetime-local" id="${fieldId}-editDateTime" value="${currentDateTime}">&nbsp;
+									<button class="btn btn-primary save-button" onclick="saveDateTime('${fieldId}')">Save</button>
+									<button class="btn btn-secondary cancel-button" onclick="cancelDateTimeEdit('${fieldId}')">Cancel</button>`;
+		document.getElementById(`${fieldId}-editDateTime`).focus();
+	}
+
+	function saveDateTime(fieldId) 
+	{
+		var editedDateTime = document.getElementById(`${fieldId}-editDateTime`).value;
+		// Parse the input date
+		var parsedDate = new Date(editedDateTime);
+
+		// Format the date to "yyyy-MM-dd hh:mm:ss"
+		var formattedDateTime = parsedDate.getFullYear() + '-' +
+			('0' + (parsedDate.getMonth() + 1)).slice(-2) + '-' +
+			('0' + parsedDate.getDate()).slice(-2) + ' ' +
+			('0' + parsedDate.getHours()).slice(-2) + ':' +
+			('0' + parsedDate.getMinutes()).slice(-2) + ':00';
+
+		var indentId = document.getElementById(fieldId).dataset.indentId;
+
+		// Update the displayed Date Time for the corresponding field
+		var dateTimeField = document.getElementById(fieldId);
+		dateTimeField.innerText = formattedDateTime;
+
+		// Remove the input field and Save/Cancel buttons for the corresponding field
+		cleanUpDateTimeEdit(fieldId);
+
+		// Call the updatedb function with the formatted date
+		updatedb(fieldId, formattedDateTime, indentId);
+	}
+
+	function cancelDateTimeEdit(fieldId) {
+		// Restore the previous value for the corresponding field
+		var dateTimeField = document.getElementById(fieldId);
+		var previousValue = dateTimeField.dataset.previousValue;
+		dateTimeField.innerText = previousValue;
+
+		// Remove the input field and Save/Cancel buttons for the corresponding field
+		cleanUpDateTimeEdit(fieldId);
+	}
+
+	function cleanUpDateTimeEdit(fieldId) {
+		// Show the edit icon for the corresponding field
+		var editIcon = document.querySelector(`.${fieldId}-edit-icon`);
+		if (editIcon) {
+			editIcon.style.display = 'inline';
+		}
+
+		// Remove the input field and Save/Cancel buttons for the corresponding field
+		var inputField = document.getElementById(`${fieldId}-editDateTime`);
+		if (inputField) {
+			inputField.parentNode.removeChild(inputField);
+		}
+
+		var saveButton = document.querySelector(`.${fieldId}-save-button`);
+		if (saveButton) {
+			saveButton.parentNode.removeChild(saveButton);
+		}
+
+		var cancelButton = document.querySelector(`.${fieldId}-cancel-button`);
+		if (cancelButton) {
+			cancelButton.parentNode.removeChild(cancelButton);
+		}
+	}
+
+	function enableDateEdit(fieldId, indentId, itemId) 
+	{
+		var dateField = document.getElementById(`${fieldId}_${indentId}_${itemId}`);
+		var currentDate = dateField.innerText;
+		dateField.dataset.previousValue = currentDate;
+		dateField.dataset.indentId = indentId;
+		var editIcon = document.querySelector(`.${fieldId}_${indentId}_${itemId}-edit-icon`);
+		if (editIcon) {
+			editIcon.style.display = 'none';
+		}
+		dateField.innerHTML = `<input type="date" id="${fieldId}_${indentId}_${itemId}-editDate" value="${currentDate}">
+								<button class="btn btn-primary save-button" onclick="savedate('${fieldId}','${indentId}','${itemId}')">Save</button>
+								<button class="btn btn-secondary cancel-button" onclick="canceldateedit('${fieldId}','${indentId}','${itemId}')">Cancel</button>`;
+		document.getElementById(`${fieldId}_${indentId}_${itemId}-editInput`).focus();
+	}
+	function savedate(fieldId, indentId, itemId) 
+	{
+		var editedDate = document.getElementById(`${fieldId}_${indentId}_${itemId}-editDate`).value;
+		var indentId = document.getElementById(`${fieldId}_${indentId}_${itemId}`).dataset.indentId;
+		var dateField = document.getElementById(`${fieldId}_${indentId}_${itemId}`);
+		dateField.innerText = editedDate;
+		cleanupdateedit(fieldId, indentId, itemId);
+		updatedbitemid(fieldId, editedDate, indentId,itemId);
+	}
+	function canceldateedit(fieldId, indentId, itemId) 
+	{
+		var dateField = document.getElementById(`${fieldId}_${indentId}_${itemId}`);
+		var previousValue = dateField.dataset.previousValue;
+		dateField.innerText = previousValue;
+		cleanupdateedit(fieldId, indentId, itemId);
+	}
+	function cleanupdateedit(fieldId, indentId, itemId)
+	{
+		var editIcon = document.querySelector(`.${fieldId}_${indentId}_${itemId}-edit-icon`);
+		if (editIcon) {
+			editIcon.style.display = 'inline';
+		}
+		var inputField = document.getElementById(`${fieldId}_${indentId}_${itemId}-editDate`);
+		if (inputField) {
+			inputField.parentNode.removeChild(inputField);
+		}
+
+		var saveButton = document.querySelector(`.${fieldId}_${indentId}_${itemId}-save-button`);
+		if (saveButton) {
+			saveButton.parentNode.removeChild(saveButton);
+		}
+
+		var cancelButton = document.querySelector(`.${fieldId}_${indentId}_${itemId}-cancel-button`);
+		if (cancelButton) {
+			cancelButton.parentNode.removeChild(cancelButton);
+		}
+	}
+	function enableEdit(fieldId, indentId, itemId) 
+	{
+        var field = document.getElementById(`${fieldId}_${indentId}_${itemId}`);
+		var currentText = field.innerText;
+        field.dataset.previousValue = currentText;
+        field.dataset.indentId = indentId;
+        field.dataset.itemId = itemId;
+        var editIcon = document.querySelector(`.${fieldId}_${indentId}_${itemId}-edit-icon`);
+        if (editIcon) {
+            editIcon.style.display = 'none';
+        }
+        field.innerHTML = `<input type="text" id="${fieldId}_${indentId}_${itemId}-editInput" value="${currentText}">
+                            <button class="btn btn-primary save-button" onclick="saveedit('${fieldId}', '${indentId}', '${itemId}')">Save</button>
+                            <button class="btn btn-secondary cancel-button" onclick="canceledit('${fieldId}', '${indentId}' ,'${itemId}')">Cancel</button>`;
+        document.getElementById(`${fieldId}_${indentId}_${itemId}-editInput`).focus();
+    }
+    function saveedit(fieldId, indentId, itemId) 
+	{
+        var editedText = document.getElementById(`${fieldId}_${indentId}_${itemId}-editInput`).value;
+        var indentId = document.getElementById(`${fieldId}_${indentId}_${itemId}`).dataset.indentId;
+        var field = document.getElementById(`${fieldId}_${indentId}_${itemId}`);
+        field.innerText = editedText;
+        cleanupedit(fieldId, indentId, itemId);
+        updatedbitemid(fieldId, editedText, indentId, itemId);
+    }
+    function canceledit(fieldId, indentId, itemId) 
+	{
+        var field = document.getElementById(`${fieldId}_${indentId}_${itemId}`);
+        var previousValue = field.dataset.previousValue;
+        field.innerText = previousValue;
+        cleanupedit(fieldId, indentId, itemId);
+    }
+    function cleanupedit(fieldId, indentId, itemId) 
+	{
+        var editIcon = document.querySelector(`.${fieldId}_${indentId}_${itemId}-edit-icon`);
+        if (editIcon) {
+            editIcon.style.display = 'inline';
+        }
+        var inputField = document.getElementById(`${fieldId}_${indentId}_${itemId}-editInput`);
+        if (inputField) {
+            inputField.parentNode.removeChild(inputField);
+        }
+        var saveButton = document.querySelector('.save-button');
+        if (saveButton) {
+            saveButton.parentNode.removeChild(saveButton);
+        }
+        var cancelButton = document.querySelector('.cancel-button');
+        if (cancelButton) {
+            cancelButton.parentNode.removeChild(cancelButton);
+        }
+    }
+</script>
+<script type="text/javascript">
+    function updatedb(fieldId, newValue, indentId) 
+	{
+        $.ajax({
+            url: '<?php echo base_url("consumables/indent_reports/save_data"); ?>',
+            type: 'POST',
+            data: {
+                fieldId: fieldId,
+                newValue: newValue,
+                indentId: indentId
+            },
+            success: function(response) {
+                //console.log(response);
+				location.reload();
+            },
+            error: function(error) {
+                console.error(error);
+            }
+        });
+    }
+	function updatedbitemid(fieldId, newValue, indentId, itemId) 
+	{
+        $.ajax({
+            url: '<?php echo base_url("consumables/indent_reports/save_item_data"); ?>',
+            type: 'POST',
+            data: {
+                fieldId: fieldId,
+                newValue: newValue,
+                indentId: indentId,
+                itemId: itemId
+            },
+            success: function(response) {
+                //console.log(response);
+				location.reload();
+            },
+            error: function(error) {
+                console.error(error);
+            }
+        });
+    }
+</script>
 <style type="text/css">
 	#details_container {
 		max-width: 900px;
@@ -139,33 +366,42 @@
 					<b class="<?php echo $status_color; ?>"><?php echo " ". $single_issue->indent_status; ?></b>
 				</div><!-- End of date time label-->
 			</div>
-
+			
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Indent Date Time : </b>
-					<?php echo " " . date("d-M-Y g:i A", strtotime($single_issue->indent_date)); ?>
+					<span id="indentDateTime">
+						<?php echo " " . date("d-M-Y g:i A", strtotime($single_issue->indent_date)); ?>
+					</span>&nbsp;&nbsp;
+					<i class="fa fa-pencil indentDateTime-edit-icon" onclick="enableDateTimeEdit('indentDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
 				</div><!-- End of date time label-->
 			</div>
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Approval Date Time : </b>
+					<span id="approvalDateTime">
 					<?php 
 						if ($single_issue->indent_status == "Approved" || $single_issue->indent_status == "Issued") {
 							echo " " . date("d-M-Y g:i A", strtotime($single_issue->approve_date_time));}
 						else { 
 							echo " NA";
 						} ?>
+					</span>&nbsp;&nbsp;
+					<i class="fa fa-pencil approvalDateTime-edit-icon" onclick="enableDateTimeEdit('approvalDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
 				</div><!-- End of date time label-->
 			</div>
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Issue Date Time : </b>
+					<span id="issueDateTime">
 					<?php 
 						if ($single_issue->indent_status == "Issued") {
 							echo " " . date("d-M-Y g:i A", strtotime($single_issue->issue_date_time));}
 						else { 
 							echo " NA";
 						} ?>
+					</span>&nbsp;&nbsp;
+					<i class="fa fa-pencil issueDateTime-edit-icon" onclick="enableDateTimeEdit('issueDateTime', '<?php echo $single_issue->indent_id; ?>')"></i>
 				</div><!-- End of date time label-->
 			</div>
 		</div>
@@ -235,6 +471,19 @@
 					
 					?>
 				<div class="issue_invoice">
+					<?php
+						$f = $functions;
+						$access = 0;
+						foreach($f as $function)
+						{
+							if($function->user_function=='Consumables')
+							{
+								$access = $function->edit;
+        						break;
+							} 
+						}
+					?>
+					    
 						<table id="issue_invoice_table" class="table" style="border: 2px solid #ccc;">
 							<thead>
 								
@@ -293,10 +542,46 @@
 										<td></td>
 										<td></td>
 										<td><?= $all_int->quantity; ?></td>
-										<td><?= $all_int->batch; ?></td>
-										<td><?= strtotime($all_int->manufacture_date) ? date("d-M-Y", strtotime($all_int->manufacture_date)): "NA"; ?></td>
-										<td><?= strtotime($all_int->expiry_date) ? date("d-M-Y", strtotime($all_int->expiry_date)): "NA"; ?></td>
-										<td><?= $all_int->cost;?></td>
+										<td>
+											<span id="batch_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= $all_int->batch; ?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil batch_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableEdit('batch','<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
+										<td>
+											<span id="mfgDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= strtotime($all_int->manufacture_date) ? date("d-M-Y", strtotime($all_int->manufacture_date)): "NA"; ?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil mfgDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableDateEdit('mfgDate', '<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
+										<td>
+											<span id="expiryDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= strtotime($all_int->expiry_date) ? date("d-M-Y", strtotime($all_int->expiry_date)): "NA"; ?>
+											</span>
+											<?php if($access==1)
+											{
+											?>	
+    										<i class="fa fa-pencil expiryDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableDateEdit('expiryDate', '<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
+										<td>
+											<span id="cost_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= $all_int->cost;?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil cost_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableEdit('cost', '<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
 
 										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
 										<td><?= $all_int->note; ?></td>
@@ -317,10 +602,46 @@
 										<td></td>
 										<td></td>
 										<td><?= $all_int->quantity; ?></td>
-										<td><?= $all_int->batch; ?></td>
-										<td><?=  strtotime($all_int->manufacture_date)? date("d-M-Y", strtotime($all_int->manufacture_date)): "NA"; ?></td>
-										<td><?=  strtotime($all_int->expiry_date)? date("d-M-Y", strtotime($all_int->expiry_date)): "NA"; ?></td>
-										<td><?= $all_int->cost;?></td>
+										<td>
+											<span id="batch_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= $all_int->batch; ?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil batch_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableEdit('batch', '<?php echo $single_issue->indent_id; ?>', '<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
+										<td>
+											<span id="mfgDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= strtotime($all_int->manufacture_date) ? date("d-M-Y", strtotime($all_int->manufacture_date)): "NA"; ?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil mfgDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableDateEdit('mfgDate', '<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
+										<td>
+											<span id="expiryDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= strtotime($all_int->expiry_date) ? date("d-M-Y", strtotime($all_int->expiry_date)): "NA"; ?>
+												</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil expiryDate_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableDateEdit('expiryDate', '<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
+										<td>
+											<span id="cost_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?= $all_int->cost;?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil cost_<?php echo $single_issue->indent_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableEdit('cost', '<?php echo $single_issue->indent_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+										</td>
 
 										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
 										<td><?= $all_int->note; ?></td>
