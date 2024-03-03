@@ -29,6 +29,15 @@ class Item extends CI_Controller {
 	function items_list(){
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+   
+					}
+			   }
 		}	
         else{
             show_404(); 													
@@ -72,33 +81,15 @@ class Item extends CI_Controller {
 		if($this->form_validation->run()===FALSE) 							
 		{
 			$this->data['message']="validation failed";	
-			$this->data['search_items'] = $this->item_model->get_items();
+			$this->data['search_items'] = $this->item_model->get_items($this->data['rowsperpage']);
 			$this->data['items_count'] = $this->item_model->list_items_count();
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-			foreach($this->data['defaultsConfigs'] as $default){		 
-				if($default->default_id=='pagination'){
-						$this->data['rowsperpage'] = $default->value;
-						$this->data['upper_rowsperpage']= $default->upper_range;
-						$this->data['lower_rowsperpage']= $default->lower_range;	 
-   
-					}
-			   }
 			log_message("INFO", "SAIRAM ".json_encode($this->data['items_count']));
 			$this->load->view('pages/consumables/items_list', $this->data);	
 		}		
 		else if($this->input->post('search'))
 		{
-			$this->data['search_items'] = $this->item_model->get_items();
-			$this->data['items_count'] = $this->item_model->list_items_count();
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-			foreach($this->data['defaultsConfigs'] as $default){		 
-				if($default->default_id=='pagination'){
-						$this->data['rowsperpage'] = $default->value;
-						$this->data['upper_rowsperpage']= $default->upper_range;
-						$this->data['lower_rowsperpage']= $default->lower_range;	 
-   
-					}
-			   }	
+			$this->data['search_items'] = $this->item_model->get_items($this->data['rowsperpage']);
+			$this->data['items_count'] = $this->item_model->list_items_count();	
 			log_message("INFO", "SAIRAM ".json_encode($this->data['items_count']));
 			
 			
@@ -109,7 +100,7 @@ class Item extends CI_Controller {
 		}
 									
 		$this->load->view('templates/footer');								
-    } 
+    }
 
 	function add_item(){
 		if($this->session->userdata('logged_in')){  						

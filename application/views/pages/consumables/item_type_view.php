@@ -161,8 +161,9 @@ display: inline-grid;
 	$page_no = 1;	
 	
 	?>
+	
+	<div class="row col-md-offset-2">
 	<h2><?php echo $title; ?></h2>	
-	<div class="row">
 		<?php if(!empty($edit_item_type)) { ?>
 			<?php echo form_open('consumables/item_type/update_item_type',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>

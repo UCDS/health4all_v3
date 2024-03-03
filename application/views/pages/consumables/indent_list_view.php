@@ -202,6 +202,28 @@ $('#to_id').change(function(){
 		doPost(dropdownobj.value);
 	}
 </script>
+<script>
+	function fnExcelReport() 
+	{
+		//created a variable named tab_text where 
+		var tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+		//row and columns arrangements
+		tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+		tab_text = tab_text + '<x:Name>Excel Sheet</x:Name>';
+
+		tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+		tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+		tab_text = tab_text + "<table border='100px'>";
+		//id is given which calls the html table
+		tab_text = tab_text + $('#table-sort').html();
+		tab_text = tab_text + '</table></body></html>';
+		var data_type = 'data:application/vnd.ms-excel';
+		$('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+		//downloaded excel sheet name is given here
+		$('#test').attr('download', 'indent_lists.xls');
+	}
+</script>
 <div class="col-md-12">
 	<?php
 	$from_date=0;
@@ -222,7 +244,7 @@ $('#to_id').change(function(){
 	if($item_name == 0) $item_name = $this->input->post('item_name');
 	if($indent_status == '0') $indent_status = $this->input->post('indent_status');
 	?>
-			   <div class="text-center">
+			   <div class="text-center col-md-offset-2">
 				<div class="row"><center><h2>Indent List</h2></center></div>
 				<?php echo form_open('consumables/indent_reports/indents_list',array('class'=>'form-group','role'=>'form','id'=>'indents_list_search')); ?>
 				<div class="container">

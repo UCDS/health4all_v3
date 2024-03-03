@@ -162,8 +162,9 @@ display: inline-grid;
 	$page_no = 1;	
 	
 	?>
-	<h2><?php echo $title; ?></h2>	
-	<div class="row">
+		
+	<div class="row col-md-offset-2">
+	<h2><?php echo $title; ?></h2>
 		<?php if(!empty($edit_drug_type)) { ?>
 			<?php echo form_open('consumables/drug_type/update_drug_type',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>

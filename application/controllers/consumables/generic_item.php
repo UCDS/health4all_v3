@@ -37,7 +37,15 @@ class Generic_item extends CI_Controller {
 	function generic_items_list(){
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  
-			
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+   
+					}
+			   }
 		}	//end of if
         else{
             show_404(); 													
@@ -82,37 +90,17 @@ class Generic_item extends CI_Controller {
 		{
 			// echo '<p>'.json_encode($this->generic_model->get_generic_items()).'</p>';
 			log_message("INFO", "SAIRAM FROM FORM VALIDATION");
-			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
+			$this->data['search_generic_items'] = $this->generic_model->get_generic_items($this->data['rowsperpage']);
 			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-			foreach($this->data['defaultsConfigs'] as $default){		 
-				if($default->default_id=='pagination'){
-						$this->data['rowsperpage'] = $default->value;
-						$this->data['upper_rowsperpage']= $default->upper_range;
-						$this->data['lower_rowsperpage']= $default->lower_range;	 
-   
-					}
-			   }
 			log_message("INFO", "SAIRAM ".json_encode($this->data['generic_items_count']));
 			$this->load->view('pages/consumables/generic_items_list', $this->data);						
 		}		
 		else if($this->input->post('search'))
 		{
 			
-			
-			$this->data['search_generic_items'] = $this->generic_model->get_generic_items();
+			$this->data['search_generic_items'] = $this->generic_model->get_generic_items($this->data['rowsperpage']);
 			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
-			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-			foreach($this->data['defaultsConfigs'] as $default){		 
-				if($default->default_id=='pagination'){
-						$this->data['rowsperpage'] = $default->value;
-						$this->data['upper_rowsperpage']= $default->upper_range;
-						$this->data['lower_rowsperpage']= $default->lower_range;	 
-   
-					}
-			   }
 			log_message("INFO", "SAIRAM ".json_encode($this->data['generic_items_count']));
-			
 			log_message("INFO", json_encode($this->data['search_generic_items']));
 			$this->load->view('pages/consumables/generic_items_list', $this->data);		
 		}else{
@@ -121,6 +109,7 @@ class Generic_item extends CI_Controller {
 			// $this->load->view('pages/consumables/add_generic_form',$this->data);	
 			$this->load->view('templates/footer');								
     }
+	
 	function add_generic(){
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  

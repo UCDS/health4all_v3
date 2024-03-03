@@ -61,8 +61,21 @@ class Item_model extends CI_Model {
            return true;
         }  
 	}		
-	function get_items()
+	function get_items($default_rowsperpage)
 	{
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
 
 		$this->db->select('generic_item.generic_name,  item_type.item_type, item_form.item_form,
 			item.item_id, item.item_name, item.model, item.description')
@@ -87,9 +100,12 @@ class Item_model extends CI_Model {
 			}
 			$this->db->order_by('item.item_id', 'ASC');
 		}		
-		$rows_per_page = $this->input->post('rows_per_page');
-		$res_offset = $rows_per_page * ($this->input->post('page_no') - 1);
-		$this->db->limit($rows_per_page, $res_offset);
+		
+		if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+		
 		$query = $this->db->get();
 		return $query->result();
 

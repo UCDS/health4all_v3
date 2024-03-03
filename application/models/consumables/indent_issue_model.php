@@ -91,7 +91,7 @@ class Indent_issue_model extends CI_Model{                                      
 		$this->db->select('indent.indent_id, quantity_indented, quantity_approved, quantity_issued, indent.approve_date_time,indent_item.indent_item_id,indent_item.quantity_approved, 
 		indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,from_party.supply_chain_party_id from_party_id,to_party.supply_chain_party_name to_party,to_party.supply_chain_party_id to_party_id,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name, 
 		indent_item.quantity_issued, indent_item.indent_item_id, indent_item.indent_status item_status, indent_item.note item_note, indent.indent_status, indent.indent_date, indent.note indent_note, 
-		inventory.inventory_id, inventory.quantity, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.cost, inventory.patient_id, inventory.note, inventory.gtin_code')
+		inventory.inventory_id, inventory.quantity, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.cost, inventory.patient_id, inventory.note, inventory.gtin_code,inventory.item_id')
 		->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('inventory', 'indent_item.item_id = inventory.item_id AND indent_item.indent_id = inventory.indent_id', 'left')
@@ -274,6 +274,61 @@ class Indent_issue_model extends CI_Model{                                      
             }//else			
 		}//end_if
 	}//issue_indent
+
+	function update_data($fieldId, $newValue, $indentId)
+	{
+		if($fieldId == 'indentDateTime')
+		{
+			$column='indent_date';
+			$table='indent';
+		}
+		if($fieldId == 'approvalDateTime')
+		{
+			$column='approve_date_time';
+			$table='indent';
+		}
+		if($fieldId == 'issueDateTime')
+		{
+			$column='issue_date_time';
+			$table='indent';
+		}
+		
+		$data = array(
+			$column => $newValue
+		);
+		$this->db->where('indent_id', $indentId);
+		$this->db->update($table, $data);
+	}
+
+	function update_item_data($fieldId, $newValue, $indentId, $itemId)
+	{
+		if($fieldId == 'mfgDate')
+		{
+			$column='manufacture_date';
+			$table='inventory';
+		}
+		if($fieldId == 'expiryDate')
+		{
+			$column='expiry_date';
+			$table='inventory';
+		}
+		if($fieldId == 'batch')
+		{
+			$column='batch';
+			$table='inventory';
+		}
+		if($fieldId == 'cost')
+		{
+			$column='cost';
+			$table='inventory';
+		}
+		$data = array(
+			$column => $newValue
+		);
+		$this->db->where('indent_id', $indentId);
+		$this->db->where('item_id', $itemId);
+		$this->db->update($table, $data);
+	}
 }//indent_issue_model
 
 

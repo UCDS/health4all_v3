@@ -161,8 +161,9 @@ display: inline-grid;
 	$page_no = 1;	
 	
 	?>
-	<h2><?php echo $title; ?></h2>	
-		<div class="row">
+	
+		<div class="row col-md-offset-2">
+		<h2><?php echo $title; ?></h2>	
 		<?php if(!empty($edit_primary_route)) { ?>
 			<?php echo form_open('user_panel/update_primary_routes',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
@@ -456,4 +457,6 @@ echo "</select></li>";
 	<?php } else { ?>
 	No data to display
 <?php }  ?>
-</div>
+</div>	
+
+  

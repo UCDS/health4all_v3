@@ -301,6 +301,7 @@ class User_panel extends CI_Controller {
 			$this->data['print_layouts']=$this->staff_model->get_print_layouts();
 		}
 		$this->load->view('templates/header',$this->data);
+		$this->load->view('templates/leftnav',$this->data);
 		$this->load->view('pages/print_layouts',$this->data);
 		$this->load->view('templates/footer');	
 		}
