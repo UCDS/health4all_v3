@@ -39,7 +39,8 @@ class Reports extends CI_Controller {
                 $access=0;
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="OP Summary"){
-                            $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){
@@ -81,6 +82,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="IP Summary"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -124,6 +126,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="IP Summary"){
 				$access=1;
+				break;
 			}
 		}
 		
@@ -159,6 +162,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -203,6 +207,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -217,7 +222,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -258,6 +264,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="patient_follow_up"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -277,7 +284,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -320,6 +328,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -338,7 +347,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -376,6 +386,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -394,7 +405,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -521,7 +533,8 @@ class Reports extends CI_Controller {
                 
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="create_appointment"){
-                            $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){
@@ -594,7 +607,8 @@ class Reports extends CI_Controller {
                 
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="appointment_slot"){
-                            $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){
@@ -717,9 +731,17 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="create_appointment"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
+		$this->data['updated']=false;	
+		if($this->input->post('visit_id')){ 
+			if($this->reports_model->update_appointment()){$this->data['updated']=true;}
+			if($this->input->post('customform')){
+				return;
+			}
+		}	
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
 		$this->data['title']="Registrations/Appointments";
 		$this->data['all_departments']=$this->staff_model->get_department();
@@ -731,16 +753,13 @@ class Reports extends CI_Controller {
 		$this->load->view('templates/header',$this->data);
 		$this->load->helper('form');
 		$this->load->library('form_validation');
-		$this->data['updated']=false;
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
-		if($this->input->post('visit_id')){ 
-			if($this->reports_model->update_appointment()){$this->data['updated']=true;}
-		}
 		foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;
+			                break;		
 
 		 		}
 			}
@@ -821,6 +840,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="referral"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -876,6 +896,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="referral"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -886,7 +907,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 		$this->data['rowsperpage'] = $default->value;
 		 		$this->data['upper_rowsperpage']= $default->upper_range;
-		 		$this->data['lower_rowsperpage']= $default->lower_range;
+				$this->data['lower_rowsperpage']= $default->lower_range;
+				break;
 		 	}
 		}
 		$this->data['all_districts']=$this->staff_model->get_district();   
@@ -935,6 +957,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="referral"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -984,6 +1007,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="referral"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -994,7 +1018,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 		$this->data['rowsperpage'] = $default->value;
 		 		$this->data['upper_rowsperpage']= $default->upper_range;
-		 		$this->data['lower_rowsperpage']= $default->lower_range;
+				$this->data['lower_rowsperpage']= $default->lower_range;
+				break;
 		 	}
 		}
 		$this->data['all_districts']=$this->staff_model->get_district();   
@@ -1061,6 +1086,7 @@ class Reports extends CI_Controller {
 					$this->data['appointment_status_edit']=0;
 					
 				}
+				break;
 			}
 		}
 		if($access==1){
@@ -1121,6 +1147,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="doctor_patient_list"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1166,6 +1193,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="IP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1187,6 +1215,7 @@ class Reports extends CI_Controller {
 				$this->data['rowsperpage'] = $default->value;
 				$this->data['upper_rowsperpage'] = $default->upper_range;
 				$this->data['lower_rowsperpage'] = $default->lower_range;
+				break;
 			}
 		}
 		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name);
@@ -1222,6 +1251,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="IP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1242,6 +1272,7 @@ class Reports extends CI_Controller {
 				$this->data['rowsperpage'] = $default->value;
 				$this->data['upper_rowsperpage'] = $default->upper_range;
 				$this->data['lower_rowsperpage'] = $default->lower_range;
+				break;
 			}
 		}
 		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome);
@@ -1277,6 +1308,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="IP Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1297,6 +1329,7 @@ class Reports extends CI_Controller {
 				$this->data['rowsperpage'] = $default->value;
 				$this->data['upper_rowsperpage'] = $default->upper_range;
 				$this->data['lower_rowsperpage'] = $default->lower_range;
+				break;
 			}
 		}
 		$this->data['report_count'] = $this->reports_model->get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$visit_type,$outcome);
@@ -1354,6 +1387,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Diagnostics - Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1413,6 +1447,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Diagnostics - Detail"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1472,6 +1507,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Diagnostics - Summary"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1519,6 +1555,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="IP Summary"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1560,6 +1597,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Diagnostics - Summary"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1604,6 +1642,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Audiology Reports"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1643,6 +1682,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Audiology Reports"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1682,7 +1722,8 @@ class Reports extends CI_Controller {
                 $access=0;
                 foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
                     if($function->user_function=="IP Summary"){
-                        $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){                                      
@@ -1717,7 +1758,8 @@ class Reports extends CI_Controller {
                 $access=0;
                 foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
                     if($function->user_function=="IP Summary"){
-                        $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){               
@@ -1757,7 +1799,8 @@ class Reports extends CI_Controller {
                 $access=0;
                 foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
                     if($function->user_function=="login_report"){
-                        $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){                                      
@@ -1767,7 +1810,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -1803,6 +1847,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="login_report"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1847,7 +1892,8 @@ class Reports extends CI_Controller {
                 $access=0;
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="Outcome Summary"){
-                            $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){
@@ -1893,6 +1939,7 @@ class Reports extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Patient Transport Report"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1933,7 +1980,8 @@ class Reports extends CI_Controller {
                 $access=0;
                 foreach($this->data['functions'] as $function){
                     if($function->user_function=="Patient Transport Report"){
-                            $access=1;
+			    $access=1;
+			    break;
                     }
                 }
                 if($access==1){
@@ -1977,7 +2025,8 @@ class Reports extends CI_Controller {
             $access=0;
             foreach($this->data['functions'] as $function){
                 if($function->user_function=="Update Patients"){
-					$access=1;
+			$access=1;
+			break;
 				}
             }
             if($access==1){
@@ -2076,7 +2125,8 @@ class Reports extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}

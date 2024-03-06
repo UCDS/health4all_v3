@@ -237,6 +237,7 @@ class Register extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="View Patients"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -294,6 +295,7 @@ class Register extends CI_Controller {
 			foreach($this->data['functions'] as $function){
 				if($function->user_function=="Update Patients"){
 					$access=1;
+					break;
 				}
 			}
 			if($access==1){
@@ -336,6 +338,7 @@ class Register extends CI_Controller {
 			foreach($this->data['functions'] as $function){
 				if($function->user_function=="Update Patients"){
 					$access=1;
+					break;
 				}
 			}
 			if($access==1){
@@ -968,6 +971,7 @@ class Register extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Patient Transport"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -1040,8 +1044,10 @@ class Register extends CI_Controller {
                 if($function->user_function=="Update Patients"){
                     $access=1;
                     if ($function->add==1) $add_access=1;
-                    if ($function->edit==1) $edit_access=1;
-                    }
+		    if ($function->edit==1) $edit_access=1;
+		    break;
+		}
+
                 
                 }
 
@@ -1086,6 +1092,7 @@ class Register extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="patient_follow_up"){
 				$access=1;
+				break;
 			}
 		}
 		if($access==1){

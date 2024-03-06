@@ -1712,6 +1712,7 @@ function initAppointmentDoctorSelectize(modal_id){
 
 			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
 			<input type="hidden" name="appointment" value="true">
+			<input type="hidden" name="customform" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $registered->visit_id1;?>">
 			<input type="hidden" name="visit_name_id" value="<?php echo $registered->visit_name_id;?>">				
 			<div class="form-group">
