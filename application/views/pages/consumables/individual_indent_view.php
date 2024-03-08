@@ -366,14 +366,29 @@
 					<b class="<?php echo $status_color; ?>"><?php echo " ". $single_issue->indent_status; ?></b>
 				</div><!-- End of date time label-->
 			</div>
-			
+			<?php
+				$f = $functions;
+				$access = 0;
+				foreach($f as $function)
+				{
+					if($function->user_function=='Consumables')
+					{
+						$access = $function->edit;
+						break;
+					} 
+				}
+			?>
 			<div class="row">
 				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
 					<b>Indent Date Time : </b>
 					<span id="indentDateTime">
 						<?php echo " " . date("d-M-Y g:i A", strtotime($single_issue->indent_date)); ?>
 					</span>&nbsp;&nbsp;
+					<?php if($access==1)
+						{
+					?>
 					<i class="fa fa-pencil indentDateTime-edit-icon" onclick="enableDateTimeEdit('indentDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
+					<?php } ?>
 				</div><!-- End of date time label-->
 			</div>
 			<div class="row">
@@ -387,7 +402,11 @@
 							echo " NA";
 						} ?>
 					</span>&nbsp;&nbsp;
+					<?php if($access==1)
+						{
+					?>
 					<i class="fa fa-pencil approvalDateTime-edit-icon" onclick="enableDateTimeEdit('approvalDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
+					<?php } ?>
 				</div><!-- End of date time label-->
 			</div>
 			<div class="row">
@@ -401,7 +420,11 @@
 							echo " NA";
 						} ?>
 					</span>&nbsp;&nbsp;
+					<?php if($access==1)
+						{
+					?>
 					<i class="fa fa-pencil issueDateTime-edit-icon" onclick="enableDateTimeEdit('issueDateTime', '<?php echo $single_issue->indent_id; ?>')"></i>
+					<?php } ?>
 				</div><!-- End of date time label-->
 			</div>
 		</div>

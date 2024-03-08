@@ -705,7 +705,7 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view">Edit Hospital</a>
 			</li>
-			<li <?php if (preg_match("^add_department/department_view^", current_url()))
+			<li <?php if (preg_match("^add_department/department_view^", current_url()) || preg_match("^add_department^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>departments/add_department/department_view">Add Departments</a>
 			</li>

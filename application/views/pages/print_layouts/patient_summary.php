@@ -1,6 +1,10 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
 		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
+		
+		
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+
 		<?php $patient=$patients[0];?>
 		<style>
 			@media all{
@@ -29,8 +33,8 @@
 				border:1px solid black;
 				padding:3px;
 			}
-
-			}
+		}
+		
 		</style>
 		<script type="text/javascript">
 			$(function(){
@@ -47,31 +51,37 @@
 		</script>
 		<table style="width:98%;padding:5px;">
 				<tbody>
-				<tr>
-				<td colspan="3"><?php $hospital=$this->session->userdata('hospital');?>
-				<div style="float:left;text-align:left;left:auto;">
-				<?php if ($hospital['telehealth'] == "0") {?>
-				<font size="4"><?php echo $hospital['hospital'];?></font><br />
-					<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
-					<?php echo $hospital['place']; ?>, 
-					<?php echo $hospital['district']; ?>
-				<br />
-				<?php } else {?>
-				<?php if(!!$patient->doctor_name) {?> 
-				<font size="4">Teleconsultation with <?php echo $patient->doctor_name; ?></font><br />
-				<?php } else {?>
-				<font size="4">Teleconsultation with Doctor</font><br />
-				<?php } ?>
-				
-				        <?php echo "Facilitated by  ".$hospital['hospital']."<br />";?>
-					<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
-				<?php } ?>
-				</div>			
-				<div style="float:right;margin-right:10;">			
-				<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
-				</div>
-				</td>
-				</tr>
+					<tr>
+						<td style="width:75%;"> 
+						<div class="row">
+							<div class="col-md-12">
+								<div class="col-md-10" >
+									<?php if ($hospital['telehealth'] == "0") {?>
+									<font size="4"><?php echo $hospital['hospital'];?></font><br />
+										<?php if(!empty($hospital['description'])) echo $hospital['description']."<br/>";?>
+										<!--<?php if(!empty($hospital['place'])) { echo $hospital['place'].''.','; } ?>
+										<?php if(!empty($hospital['district'])) { echo $hospital['district']; } ?>-->
+									<br />
+									<?php } else {?>
+									<?php if(!!$patient->doctor_name) {?> 
+									<font size="4">Teleconsultation with <?php echo $patient->doctor_name; ?></font><br />
+									<?php } else {?>
+									<font size="4">Teleconsultation with Doctor</font><br />
+									<?php } ?>
+									
+											<?php echo "Facilitated by  ".$hospital['hospital']."<br />";?>
+										<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
+									<?php } ?>
+								</div>
+							</td>
+							<td style="width:15%;">
+								<div class="col-md-2" style="margin-left:40px!important;">
+									<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
+								</div>
+							</td>
+							</div>
+						</div>
+					</tr>
 				<tr>
 				<td colspan="3">
 				<div style="float:middle;text-align:center">
@@ -160,8 +170,12 @@
 				</tr>
 				</tbody>
 				<tbody>
-				<tr><td colspan="3"></td></tr>
-				<tr data-patient-clinical-details data-source="patient" data-print-mode="true" data-skip-if-no-value="true"></tr>
+				<?php if($patient->visit_type != "OP") { ?>
+					<tr><td colspan="3" ><h4><b><u>Initial Assesment</u></b></h4></td></tr>
+				<?php } ?>
+				<tr><td colspan="3" ></td></tr>
+				<tr data-patient-clinical-details data-source="patient" data-print-mode="true" data-skip-if-no-value="true" 
+				></tr>
 
 				<?php if(!!$patient->presenting_complaints) { ?>
 				<tr class="print-element">
@@ -215,15 +229,16 @@
 					</table>
 					</td>
 				</tr>
-				<?php } ?>
-				</tbody>
 				<?php if(!!$patient->clinical_findings) { ?>
 				<tr class="print-element" width="95%">
-					<td colspan="3"  style="padding-top:20px">
+					<td colspan="3"  style="padding-top:5px">
 					<b>Clinical Findings</b>: <?php echo $patient->clinical_findings;?>
 					</td>
 				</tr>
 				<?php } ?>
+				<?php } ?>
+				</tbody>
+				
 				<?php if(isset($visit_notes) &&  !!$visit_notes) { ?>
 				<tr class="print-element" width="95%" >				
 					<td colspan="3"><b><u>Clinical Notes</u></b></td>
@@ -233,9 +248,9 @@
 							<table border=1 cellpadding="5" style="border-collapse:collapse;width:100%;">
 							<thead>
 								<tr>
-									<th>#</th>
-									<th width="150px">Date</th>
-									<th>Note</th>
+									<!-- <th>#</th>
+									<th width="150px">Date</th>-->
+									<th>Note</th> 
 								</tr>
 							</thead>
 							<tbody>
@@ -243,8 +258,9 @@
 							$i=1;
 							 foreach($visit_notes as $note){ ?>
 								<tr>
-									<td><?php echo $i++; ?></td>
-									<td width="150px"><?php if($note->note_time!=0) echo date("d-M-Y g:iA",strtotime($note->note_time)); ?></td>
+									<!-- <td><?php echo $i++; ?></td>
+									<td width="150px"><?php if($note->note_time!=0) echo date("d-M-Y g:iA",strtotime($note->note_time)); ?>
+									</td> -->
 									<td><?php echo $note->clinical_note;?></td>
 								</tr>
 								<?php  } ?>

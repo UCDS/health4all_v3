@@ -1,17 +1,17 @@
+<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/metallic.css">
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/theme.default.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <!--<script type="text/javascript" src="<//?php echo base_url();?>assets/js/zebra_datepicker.js"></script>-->
-	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript"
- src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
-<script type="text/javascript"
- src="<?php echo base_url();?>assets/js/jquery.mousewheel.js"></script>
-	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
-	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
-	<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
-	<script type="text/javascript">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript"  src="<?php echo base_url();?>assets/js/jquery.timeentry.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
+<script type="text/javascript">
 $(function(){
 		var options = {
 			widthFixed : true,
@@ -68,26 +68,98 @@ $(function(){
 </script>
 	<style>
 	.btn-circle {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 12px;
-  line-height: 1.42;
-  border-radius: 15px;
-}
+		width: 30px;
+		height: 30px;
+		text-align: center;
+		padding: 6px 0;
+		font-size: 12px;
+		line-height: 1.42;
+		border-radius: 15px;
+	}
 	</style>
-	<script>
-function printDiv(i)
-{
-var content = document.getElementById(i);
-var pri = document.getElementById("ifmcontentstoprint").contentWindow;
-pri.document.open();
-pri.document.write(content.innerHTML);
-pri.document.close();
-pri.focus();
-pri.print();
+<style type="text/css">
+.selectize-control.items .selectize-dropdown>div {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
+
+.selectize-control.items .selectize-dropdown .by {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.selectize-control.items .selectize-dropdown .by::before {
+	content: 'by ';
+}
+
+.selectize-control.items .selectize-dropdown .name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.selectize-control.items .selectize-dropdown .title {
+	display: block;
+}
+
+.selectize-control.items .selectize-dropdown .description {
+	font-size: 12px;
+	display: block;
+	color: #a0a0a0;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.selectize-control.items .selectize-dropdown .meta {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	margin-right: 10px;
+}
+
+.selectize-control.items .selectize-dropdown .meta li span {
+	font-weight: bold;
+}
+
+.selectize-control.items::before {
+	-moz-transition: opacity 0.2s;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	content: ' ';
+	z-index: 2;
+	position: absolute;
+	display: block;
+	top: 12px;
+	right: 34px;
+	width: 16px;
+	height: 16px;
+	background: url(<?php echo base_url(); ?>assets/images/spinner.gif);
+	background-size: 16px 16px;
+	opacity: 0;
+}
+
+.selectize-control.items.loading::before {
+	opacity: 0.4;
+}
+</style>
+<script>
+	function printDiv(i)
+	{
+	var content = document.getElementById(i);
+	var pri = document.getElementById("ifmcontentstoprint").contentWindow;
+	pri.document.open();
+	pri.document.write(content.innerHTML);
+	pri.document.close();
+	pri.focus();
+	pri.print();
+	}
 </script>
 <script>
 $(function(){
@@ -119,7 +191,115 @@ $('#to_id').change(function(){
 </script>
 <script>
 	$(function(){
-	$("#from_date,#to_date").Zebra_DatePicker({
+		// if($('#item_type').val === ''){
+		// 	return;
+		// }
+
+		let options = <?= json_encode($all_item); ?>;
+		options = options.map(opt => {
+			let ans = `${opt.item_name}-${opt.item_form}-`;
+			if(opt.dosage){
+				ans += opt.dosage;
+			}
+			if(opt.dosage_unit){
+				ans += opt.dosage_unit;
+			}
+			return {
+				...opt, 
+				item_name: ans
+			};
+		});
+		console.log(options);
+		// let temp = [];
+		$selectize = $("#item").selectize({
+			labelField: "item_name", 
+			searchField: "item_name", 
+			valueField: "item_id", 
+			options: options, 
+			// allowEmptyOption: true, 
+			// showEmptyOptionInDropdown: true, 
+			maxOptions: 10,
+			load: function(query, callback) {
+				if(!query.length) return callback();
+				console.log('loading', $('.selectize-control.items'));
+				$('.selectize-control.items').addClass('loading');
+				$.ajax({
+					url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
+					type: 'POST',
+					dataType: 'JSON', 
+					data: {query: query, item_type: $('#item_type').val()},
+					error: function(res) {
+						
+						callback();
+						$('.selectize-control.items').addClass('loading');
+						setTimeout(() => {
+
+							$('.selectize-control.items').removeClass('loading');
+						}, 500);
+					},
+					success: function(res) {
+						
+						callback(res.items);
+						$('.selectize-control.items').addClass('loading');
+						setTimeout(() => {
+							console.log('delayed loading');
+							$('.selectize-control.items').removeClass('loading');
+						}, 500);
+					}
+				});
+			}
+		});
+		let sel = $selectize[0].selectize;
+		sel.setValue(<?= $this->input->post("item") ? $this->input->post("item"): ""; ?>);
+		$('#item_type').change(function(){
+			let optionval = this.value;
+			console.log("Optionval", optionval);
+			console.log("changed item_type");
+			// $('#item').val('');
+			sel.setValue('');
+			sel.clearOptions();
+			$('.selectize-control.items').addClass('loading');
+			
+			$.ajax({
+				url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
+				type: 'POST',
+				dataType: 'JSON', 
+				data: {query: null, item_type: $('#item_type').val()},
+				error: function(res) {
+					
+					setTimeout(() => {
+						$('.selectize-control.items').removeClass('loading');
+					}, 500);
+				},
+				success: function(res) {
+					let options = res.items.map(opt => {
+						let ans = `${opt.item_name}-${opt.item_form}-`;
+						if (opt.dosage) {
+							ans += opt.dosage;
+						}
+						if (opt.dosage_unit) {
+							ans += opt.dosage_unit;
+						}
+						return {
+							...opt,
+							item_name: ans
+						};
+					});
+					sel.addOption(options);
+					setTimeout(() => {
+						$('.selectize-control.items').removeClass('loading');
+					}, 500);
+					// $('.selectize-control.items').removeClass('loading');
+				}
+			});
+			
+		});
+
+	})
+</script>
+<script>
+	$(function(){
+	$("#from_date,#to_date, #expiry_date").Zebra_DatePicker({
 		direction:false
 	});
 	});
@@ -132,90 +312,68 @@ $('#to_id').change(function(){
 </script>
 	<?php
 	$from_date=0;$to_date=0;
-	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
-	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
-        $from_time=0;$to_time=0;
-	if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
-	if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
-	if($this->input->post('from_id')){
-		$from_party = $this->input->post('from_id');
+	
+	if($this->input->post('to_date')) $to_date=date("d-M-Y",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+    //     $from_time=0;$to_time=0;
+	// if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
+	// if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
+	if($this->input->post('scp_id')){
+		$selected_party = $this->input->post('scp_id');
 	}
 	else{
-		$from_party = "0";
+		$selected_party = "0";
 	}
-	if($this->input->post('to_id')){
-		$to_party = $this->input->post('to_id');
-	}
-	else{
-		$to_party = "0";
-	}
+	
 	?>
 			   <div class="text-center">
-				<h2>Indent Summary</h2>
-				<?php echo form_open('consumables/indent_reports/get_indent_summary',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
+				<h2>Item Summary</h2>
+				<?php echo form_open('consumables/indent_reports/get_item_summary',array('class'=>'form-group','role'=>'form','id'=>'evaluate_applicant')); ?>
 				<div class="container">
 					<div class="row">
+						<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
+							<div class="form-group">
+							
+									From Date<input class="form-control" type="text" value="<?php //echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+							</div>
+						</div> -->
+						<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
+							<div class="form-group">
+								To Date<input class="form-control" type="text" value="<?php // echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+							</div>
+						</div> -->
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
-							<!--input field from date-->
-							<label for="from_date">From Date </label>
-							<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
-							</div>
-						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
-							<!--input field to date-->
-							<label for="to_date">To Date</label>
-							<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-							</div>
-						</div>
-						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
-							<div class="form-group">
 							<!--input field from party-->
-								<label for="from_id">Indent From Party</label>
-									<select name="from_id" id="from_id" class="form-control">
+								<label for="scp_id">Supply Chain Party<font style="color:red">*</font></label>
+									<select name="scp_id" id="scp_id" class="form-control" required>
 									<option value="">Select</option>
 										<?php
-											foreach($parties as $fro)
+											foreach($parties as $scp)
 											{
-												echo "<option value='".$fro->supply_chain_party_id."'";
-												if($this->input->post('from_id') && $this->input->post('from_id') == $fro->supply_chain_party_id) echo " selected ";
-												echo ">".$fro->supply_chain_party_name."</option>";
+												echo "<option value='".$scp->supply_chain_party_id."'";
+												if($this->input->post('scp_id') && $this->input->post('scp_id') == $scp->supply_chain_party_id) echo " selected ";
+												echo ">".$scp->supply_chain_party_name."</option>";
 
 											}
 										?>
 									</select>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
-							<div class="form-group">
-							<!--input field to party-->
-									<label for="to_id">Indent To Party</label>
-									<select name="to_id" id="to_id" class="form-control">
-										<option value="">Select</option>
-										<?php
-											foreach($parties as $t)
-											{
-												echo "<option value='".$t->supply_chain_party_id."'";
-												if($this->input->post('to_id') && $this->input->post('to_id') == $t->supply_chain_party_id) echo " selected ";
-												echo ">".$t->supply_chain_party_name."</option>";
-											}
-										?>
-									</select>
-							</div>
-					</div>
+											
+						
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
-							<!--input field item type-->
-								<label for="inputitem_type" >Item Type</label>
+							<!--input field item-->
+								<label for="item_type" >Item Type</label>
 									<select name="item_type" id="item_type" class="form-control">
-									<option value="" selected>Select</option>
+									<option value="">Select</option>
 										<?php
-											foreach($all_item_type as $it)
+											foreach($all_item_type as $i)
 												{
-													echo "<option value='".$it->item_type_id."'";
-												if($this->input->post('item_type') && $this->input->post('item_type') == $it->item_type_id) echo " selected ";
-												echo ">".$it->item_type."</option>";
+													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
+													echo "<option value='".$i->item_type_id."'";
+													if($this->input->post('item_type') && $this->input->post('item_type') == $i->item_type_id) echo " selected ";
+													echo ">".$i->item_type."-"."</option>";
 												}
 										?>
 									</select>
@@ -224,27 +382,38 @@ $('#to_id').change(function(){
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
 							<div class="form-group">
 							<!--input field item-->
-								<label for="inputitem" >Item</label>
-									<select name="item" id="item" class="form-control">
+								<label for="item" >Item<font style="color:red">*</font></label>
+									<select name="item" id="item" class="items" required>
 									<option value="">Select</option>
-										<?php
-											foreach($all_item as $i)
-												{
-													//echo"<option class='".$i->item_type_id."' value='".$i->item_id."'>".$i->item_name."-".$i->item_form."-".$i->dosage.$i->dosage_unit."</option>";
-													echo "<option class='".$i->item_type_id."' value='".$i->item_id."'";
-													if($this->input->post('item') && $this->input->post('item') == $i->item_id) echo " selected ";
-													echo ">".$i->item_name."-".$i->item_form."-".$i->item_type."-".$i->dosage.$i->dosage_unit."</option>";
-												}
-										?>
+										
 									</select>
 							</div>
 						</div>
+						<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
+							<div class="form-group">
+								Expiry Date<input class="form-control" type="text" value="<?php echo date("d-M-Y"); ?>" name="expiry_date" id="expiry_date" size="15" />
+							</div>
+						</div> -->
+						<!-- 
+                        <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+							<div class="form-group">
+							
+								<label for="inputitem" >Inward/Outward</label>
+									<select name="item_inward_outward" id="item_inward_outward" class="form-control">
+									<option value="inward">Select</option>	
+									<option value="inward">Inward</option>
+                                    <option value="outward">Outward</option>
+										
+									</select>
+							</div>
+						</div>
+											-->
 
 				</div>
 		</div>
 			<div class="container">
 			   <div class="row">
-			   <div class="col-md-offset-1">
+			   <div class="col">
 				   <button class="btn btn-primary" type="submit" name="search" value="search" id="btn">Search</button>
 				   	<?php echo form_close(); ?>
 			   </div>
@@ -252,16 +421,16 @@ $('#to_id').change(function(){
 		   </div>
 		   <!--calling isset method-->
 		   <?php if(isset($mode)&& ($mode)=="search"){ ?>
-		  <?php echo form_open('consumables/indent_reports/get_indent_summary',array('role'=>'form'))   ?>
+		  <?php echo form_open('consumables/indent_reports/get_item_summary',array('role'=>'form'))   ?>
 			<div class="container">
 				<div class="row">
-					<div class="col-md-3 col-md-offset-2">
-					<button type="button" class="btn btn-default btn-md print  ">
+					<div class="col-md-3 col-md-offset-3">
+					<button type="button" class="btn btn-primary btn-md print  ">
 						<span class="glyphicon glyphicon-print"></span> Print
 					</button>
 
 					 <a href="#" id="test" onClick="javascript:fnExcelReport();">
-            <button type="button" class="btn btn-default btn-md excel">
+            <button type="button" class="btn btn-primary btn-md excel">
                 <i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel</button></a></br>
 				</div>
 			</div>
@@ -270,58 +439,127 @@ $('#to_id').change(function(){
 		<!--filters for Add Service Issues view form --->
 		<!--when filter is clicked this form will load --->
 		 <div class="container">
+			<?php if(count($search_inventory_summary) > 0) { 
+
+				?>
+			<h2>Item Details - <span class="text text-primary"><?= $search_inventory_summary[0]->item_name; ?></span></h2>
+			<h3>Type: <i><?php echo $search_inventory_summary[0]->item_type;?></i></h3>
+			<?php } ?>
 		 <div class="col-md-offset-2">
 					<table class="table table-bordered table-striped" id="table-sort">
 						<thead>
-							<th> #</th>
-							<th>Item Type</th>
-							<th>Item Name</th>
-							<th>Quantity Indented</th>
-							<th>Quantity Approved</th>
-							<th>Quantity Issued</th>
-							<th>Item type id</th>
+
+							<!-- <th>Supply Chain Party</th> -->
+							<th>#</th>
+							<th>Indent ID</th>
+							<th>Issue Date</th>
+							<th>Narration</th>
+							<th>Outward Quantity</th>
+							<th>Inward Quantity</th>
+							<th>Balance</th>
+							<th>Cost</th>
+							<th>Batch</th>
+							<th>Manufacturing date</th>
+							<th>Expiry date</th>
+							<th>GTIN code</th>
+							<th>Patient ID</th>
+							<th>Note</th>
+							<!-- <th></th> -->
+							<!-- <th>Quantity Inward</th>
+							<th>Quantity Outward</th>
+							<th>Difference</th> -->
+							<!-- <th>Item id</th> -->
 						</thead>
 						<tbody>
-							<?php
-							$total_quantity=0;
-							$approved=0;
-							$issued=0;
-				$i=1;
-				foreach($search_indent_summary as $indent){?>
+			<?php
+				
+							
+				$i = 1;
+				$inward_total_quantity = 0;
+				$outward_total_quantity = 0;
+				$total_cost = 0.0;
+				
+				// $outward = $search
+				log_message("info", "SAIRAM VERSION ".$CI_VERSION);
+				log_message("info", "SAIRAM WARNING ".json_encode($search_inventory_summary));
+				foreach($search_inventory_summary as $inventory_item){?>
 
 					<tr>
-					<td><?php echo $i++; $sub_url="consumables/indent_reports/get_indent_detailed/";
-					$item_type_id = '0';
-					if ($indent->item_type_id) {
-						$item_type_id = $indent->item_type_id;
-					}?></td>
+						
+					<?php
+					 
+					
+						// $sub_url="consumables/indent_reports/get_item_inventory";
+						if(!isset($inventory_item))
+							continue;
 
+						$sub_url="consumables/indent_reports/";
+						$item_type_id = '0';
+						if ($inventory_item->item_id) {
+							$item_id = $inventory_item->item_id;
 
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_type;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/0/$item_type_id/$indent->item_id";?>"><?php echo $indent->item_name;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Indented/$item_type_id/$indent->item_id";?>"><?php echo $indent->total_quantity;?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Approved/$item_type_id/$indent->item_id";?>"><?php echo $indent->approved;	?></td>
-						<td><a href="<?php echo base_url().$sub_url."$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id";?>"><?php echo $indent->issued;?></td>
-						<td><a href="<?php echo base_url() . $sub_url . "$from_date/$to_date/$from_party/$to_party/Issued/$item_type_id/$indent->item_id"; ?>"><?php if ($item_type_id == '0')
-							  echo "NA"; 
-							  else echo $item_type_id;?></td>
+						}
+						$manufacture_date = $inventory_item->manufacture_date;
+						$expiry_date = $inventory_item->expiry_date;
+						// echo strtotime("01-Jan-1970 00:00:00");
+						// echo strtotime(date("Y-m-d", strtotime($manufacture_date)));
+						log_message("info", "SAIRAM ===> ".$inventory_item->batch);
+						$issue_date = date("d-M-Y", strtotime($inventory_item->issue_date_time));
+						if(strtotime($issue_date) <= 0){
+							$issue_date = "";
+						}
+						if(strtotime(date("d-M-Y", strtotime($manufacture_date))) <= 0){
+							$manufacture_date = "";
+						}
+						if(strtotime(date("d-M-Y", strtotime($expiry_date))) <= 0){
+							$expiry_date = "";
+						}
+						$scp_id = $inventory_item->supply_chain_party_id;
+						
+						if($inventory_item->inward_outward != "inward"){
+							$outward_total_quantity += $inventory_item->total_quantity;
+						}else if($inventory_item->inward_outward === "inward"){
+							$inward_total_quantity += $inventory_item->total_quantity;
+						}
+						$total_cost += ((float)$inventory_item->cost);
+						// $item_i = $inventory
+						$batch = $inventory_item->batch;
+					?>
+
+						<td><? $i++; ?></td>
+						
+						<td><a href="<?= base_url().$sub_url."indents_list_detailed/$inventory_item->indent_id"; ?>"><?= $inventory_item->indent_id;?></a></td>
+						<td><?= $issue_date; ?></td>
+						<td ><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td>
+						<td style="text-align:right;"><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): ' ';?></td>
+						<td style="text-align:right;"><?= ($inventory_item->inward_outward === "inward") ? ($inventory_item->total_quantity): ' ';?></td>
+						<td style="text-align:right;"><?= ($inward_total_quantity - $outward_total_quantity); ?></td>
+						<td style="text-align:right;"><?= (float)$inventory_item->cost; ?></td>
+						<td><?= $batch == '0' ? "NO BATCH": $batch; ?></td>
+						<td><?= $manufacture_date == ""? "": date("d-M-Y", strtotime($manufacture_date)); ?></td>
+						<td><?= $expiry_date == ""? "": date("d-M-Y", strtotime($expiry_date)); ?></td>
+						<td><?= $inventory_item->gtin_code; ?></td>
+						<td><?= $inventory_item->patient_id ? $inventory_item->patient_id: ""; ?></td>
+						<td><?= $inventory_item->note;?></td>
+						
 					</tr>
 					<?php
-	                $total_quantity+=$indent->total_quantity;
-					$approved+=$indent->approved;
-					$issued+=$indent->issued;
+					
+	               
 					}
 					?>
 					<tfoot>
-					<th>Total </th>
-					<th> </th>
-					<th> </th>
+						<th></th>
+						<th>Total </th>
+						<th></th>
+						<th></th>
+						<th style="text-align:right;"><?php  if($outward_total_quantity){ echo $outward_total_quantity; }?></th>
+						<th style="text-align:right;"><?php if($inward_total_quantity){ echo $inward_total_quantity; }?></th>
+						<th style="text-align:right;"><?= $inward_total_quantity-$outward_total_quantity; ?></th>
+						<th style="text-align:right;"><?= $total_cost; ?></th>
 
 
-					<th class="text-left" ><?php echo $total_quantity;?></th>
-					<th class="text-left" ><?php echo $approved;?></th>
-					<th class="text-left" ><?php echo $issued;?></th>
-
+					
 					</tfoot>
 					<?php echo form_close(); ?>
 				<!--ending of isset method-->

@@ -146,7 +146,6 @@ class Hospital_model extends CI_Model {
                 $data[$field] = $this->input->post($field);
             }
         }	 
-
         $this->db->trans_start();
         if($this->input->post('hospital_id')){
             $user_data=$this->session->userdata('logged_in');
@@ -238,7 +237,7 @@ class Hospital_model extends CI_Model {
     
     
     function get_hospital($hospital_id){  //Function that returns all the details of the hospitals.
-        $this->db->select("hospital.hospital_id,hospital.logo,hospital,hospital_short_name,description, hospital.helpline_id,auto_ip_number, print_layout_id, a6_print_layout_id, place,district.district, district.district_id,type1,type2,type3,type4,type5,type6",false)
+        $this->db->select("hospital.hospital_id,hospital.logo,hospital,hospital_short_name,hospital.description, hospital.helpline_id,auto_ip_number, print_layout_id, a6_print_layout_id, place,district.district, district.district_id,type1,type2,type3,type4,type5,type6",false)
         ->from('hospital')
         ->join('helpline','hospital.helpline_id=helpline.helpline_id','left')
         ->join('district','hospital.district_id=district.district_id','left')
@@ -249,76 +248,7 @@ class Hospital_model extends CI_Model {
         if($result) return $result[0];       
         return false; 
     }
-	
-	function add_department(){
-        $department_info = array();
-        if($this->input->post('hospital_id')){
-            $department_info['hospital_id'] = $this->input->post('hospital_id');
-        }
-        if($this->input->post('department')){
-            $department_info['department'] = $this->input->post('department');
-        }
-        if($this->input->post('description')){
-            $department_info['description'] = $this->input->post('description');
-        }
-         if($this->input->post('lab_report_staff_id')){
-            $department_info['lab_report_staff_id'] = $this->input->post('lab_report_staff_id');
-        }
-         if($this->input->post('department_email')){
-            $department_info['department_email'] = $this->input->post('department_email');
-        }
-        if($this->input->post('number_of_units')){
-			$department_info['number_of_units'] = $this->input->post('number_of_units');			    
-        }
-         if($this->input->post('op_room_no')){
-            $department_info['op_room_no'] = $this->input->post('op_room_no');
-        }
-        // Commented on 23-01-2024 clinical not inserting
-        //  if($this->input->post('clinical')){
-        //     $department_info['clinical'] = $this->input->post('clinical');
-        // }
 
-        /* Newly added Jan 23-01-2024 */
-        if($this->input->post('optradioyes')){
-            $department_info['clinical'] = $this->input->post('optradioyes');
-        }
-
-        if($this->input->post('optradiono')){
-            $department_info['clinical'] = $this->input->post('optradiono');
-        }
-        /* Till here */
-         if($this->input->post('floor')){
-            $department_info['floor'] = $this->input->post('floor');
-        }
-         if($this->input->post('mon')){
-            $department_info['mon'] = $this->input->post('mon');
-        }
-         if($this->input->post('tue')){
-            $department_info['tue'] = $this->input->post('tue');
-        }
-         if($this->input->post('wed')){
-            $department_info['wed'] = $this->input->post('wed');
-        }
-         if($this->input->post('thr')){
-            $department_info['thr'] = $this->input->post('thr');
-        }
-         if($this->input->post('fri')){
-            $department_info['fri'] = $this->input->post('fri');
-        }
-         if($this->input->post('sat')){
-            $department_info['sat'] = $this->input->post('sat');
-        }
-        $this->db->trans_start();
-        $this->db->insert('department', $department_info);
-        echo "inserted successfully.";
-        $this->db->trans_complete();
-        if($this->db->trans_status()==FALSE){
-                return false;
-        }
-        else{
-                return true;
-        }
-    }
 	function update_department(){
         $department_info = array();
         if($this->input->post('hospital')){
@@ -377,18 +307,14 @@ class Hospital_model extends CI_Model {
                 return true;
         } 
     }
-	function get_department(){
-		if($this->input->post('hospital')){
+	function get_department($fromallhospital=0){   //This for evaluation.
+		if($this->input->post('hospital') && $fromallhospital !=1){
 			$this->db->where('department.hospital_id',$this->input->post('hospital'));
 		}
-		else{
-			$this->db->join('user_hospital_link','department.hospital_id = user_hospital_link.hospital_id');
-			$this->db->where('user_hospital_link.user_id',$this->session->userdata('logged_in')['user_id']);
-		}
-		if($this->input->post('department_id')){
+		if($this->input->post('department_id') && $fromallhospital !=1){
 			$this->db->where('department.department_id',$this->input->post('department_id'));
 		}
-        if($this->input->post('department')){
+        if($this->input->post('department') && $fromallhospital !=1){
 			$this->db->where('department',$this->input->post('department'));
          
         }
@@ -432,22 +358,7 @@ class Hospital_model extends CI_Model {
          if($this->input->post('sat')){
 			 $this->db->where('sat',$this->input->post('sat'));
         }  
-       $this->db->select('department.department_id,department.department,department.description,
-	   department.lab_report_staff_id,
-	   department.department_email,
-	   department.number_of_units,
-	   department.op_room_no,
-	   department.clinical,
-	   department.floor,
-	   department.mon,
-	   department.tue,
-	   department.wed,
-	   department.thr,
-	   department.fri,
-	   department.sat,
-	   department.temp_department_id,
-	   department.hospital_id,	
-	   ,hospital.hospital')
+       $this->db->select('department.*,hospital')
           ->from('department')
 		  ->join('hospital','department.hospital_id = hospital.hospital_id')
 		  ->order_by('department');                             
@@ -522,4 +433,79 @@ class Hospital_model extends CI_Model {
         
         return $result;
     }
+
+    function check_department($department,$hospital_id) 
+    {
+        $this->db->where('department', $department);
+        $this->db->where('hospital_id', $hospital_id);
+        $query = $this->db->get('department');
+        return $query->num_rows() > 0;
+    }
+
+    function insert_department($data) 
+    {
+        $this->db->insert('department', $data);
+    }
+
+    function get_all_departments($default_rowsperpage)
+    {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+        $hospital_id = $this->session->userdata('hospital')['hospital_id'];
+        $this->db->select('department,description,lab_report_staff_id,department_email,number_of_units,op_room_no,clinical,floor,mon,
+        tue,wed,thr,fri,sat,department_id')
+            ->from('department')
+            ->where('hospital_id',$hospital_id)
+            ->order_by('department_id',"DESC");
+
+        if ($default_rowsperpage !=0)
+        {
+            $this->db->limit($rows_per_page,$start);
+        }
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+	function get_all_departments_count()
+	{
+		$hospital=$this->session->userdata('hospital')['hospital_id'];
+		$this->db->select("count(*) as count",false)
+		    ->from('department')
+            ->where('hospital_id',$hospital);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+	}
+
+	function get_edit_departments_by_id($record_id) 
+	{
+		$this->db->select('department,description,lab_report_staff_id,department_email,number_of_units,op_room_no,clinical,floor,mon,
+        tue,wed,thr,fri,sat,department_id,hospital_id');
+        $query = $this->db->get_where('department', array('department_id' => $record_id));
+        return $query->row_array();
+    }
+
+    function update_selected_department($record_id, $data) {
+        $this->db->where('department_id', $record_id);
+        $this->db->update('department', $data);
+    }
+
+
+    
+
+    
 }

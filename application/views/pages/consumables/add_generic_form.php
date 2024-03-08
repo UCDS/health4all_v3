@@ -18,7 +18,7 @@ $(function(){
 		<h3>Add Generic Details</h3></center><br>
 	<center>
 	<?php echo form_open('consumables/generic_item/add_generic',array('class'=>'form-group','role'=>'form','id'=>'add_generic')); ?></center>
-		<div class="col-md-12">
+		<div class="col-md-12 col-md-offset-2">
 			<div class="row">
 				<div class="col-md-4">			<!--Generic name-->
 					<div class="form-group">

@@ -802,7 +802,7 @@ function initDistrictSelectize(){
 				<input type="text" name="first_name" class="form-control" placeholder="First" value="<?php if($patient) echo $patient->first_name;?>" <?php if($f->edit==1 && empty($patient->first_name)) echo ' required'; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
 				</label>
 			</div>
-                        <div class="col-md-4 col-xs-12 col-lg-4">
+            <div class="col-md-4 col-xs-12 col-lg-4">
 				<label class="control-label">Middle Name
 				<input type="text" name="middle_name" class="form-control" placeholder="Middle" value="<?php if($patient) echo $patient->middle_name;?>" <?php if($f->edit==1 && empty($patient->middle_name)) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;" />
 				</label>
@@ -812,46 +812,43 @@ function initDistrictSelectize(){
 				<input type="text" name="last_name" class="form-control" placeholder="Last" value="<?php  if($patient) echo $patient->last_name;?>" <?php if($f->edit==1 && empty($patient->last_name)) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;"/>
 				</label>
 			</div>
-			
-			</div>
-                        <div class="row alt">
-			<div class="col-md-4 col-xs-4" style="background: #ADFF2F; font-weight: bold;" >
+			<div class="col-md-4 col-xs-12 col-lg-4" >
 				<?php if(!empty($patient->gender)) { ?> 
-					<label>
-					<?php 
+					<label class="control-label" > Gender </label>
+					<input type="text" name="gender" class="form-control" placeholder="gender" value="<?php 
 						if($patient->gender == 'M')
 							echo "Male";
 						else if($patient->gender == 'F')
 							echo "Female";
 						else 
 							echo "Other";
-					?>
-					</label>
+					?>" style="background: #ADFF2F; font-weight: bold;" readonly> 
+					
 				<?php } else { ?>
-				<label class="control-label"><input type="radio" class="gender" value="M" name="gender" />Male</label>
-				<label class="control-label"><input type="radio" class="gender" value="F" name="gender" />Female</label>
-				<label class="control-label"><input type="radio" class="gender" value="O" name="gender" />Others</label>
+				<label class="control-label" > Gender </label><br/>
+				<label class="control-label"><input type="radio" class="gender" value="M" name="gender" />&nbsp;Male</label>&nbsp;
+				<label class="control-label"><input type="radio" class="gender" value="F" name="gender" />&nbsp;Female</label>&nbsp;
+				<label class="control-label"><input type="radio" class="gender" value="O" name="gender" />&nbsp;Others</label>&nbsp;
 				<?php } ?>
-			</div>		
-			
-			<div class="col-md-6 col-xs-12">
-				<label class="control-label">Age</label>
-				<input type="text" name="age_years" class="form-control" maxlength="3" size="3"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($f->edit==1 && empty($patient->age_years)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>Y
-				<input type="text" name="age_months" class="form-control" maxlength="2" size="2" value="<?php if($patient)  echo $patient->age_months;?>" <?php if($f->edit==1 && empty($patient->age_moths)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>M
-				<input type="text" name="age_days" class="form-control" maxlength="2" size="2"  value="<?php if($patient)  echo $patient->age_days;?>" <?php if($f->edit==1 && empty($patient->age_days)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>D
-			</div>			
 			</div>
-                    <div class ="row alt">                       
-						<div>
-						<?php if(empty($patient->dob)) { ?> 
-							 <input type="date" name="dob" class="form-control" value="<?php if($patient)  echo $patient->dob;?><?php echo date("Y-m-d"); ?>" max="<?php echo date("Y-m-d"); ?>" <?php if($f->edit==1 && empty($patient->dob)) echo '';  ?>/>
-							<?php } else { ?>
-							 <input type="text" name="dob" class="form-control" value="<?php if($patient) echo date('d/m/Y',strtotime($patient->dob));?>" <?php if($f->edit==1 && empty($patient->dob)) echo ''; else echo ' readonly'; ?>/>
-						<?php } ?>
-					</div>
-						
-                    </div>
-                 </div>
+			</div>
+        	<div class="row alt">
+				<div class="col-md-6 col-xs-12">
+					<label class="control-label">Age</label>
+					<input type="text" name="age_years" class="form-control" maxlength="3" size="3"  value="<?php if($patient)  echo $patient->age_years;?>" <?php if($f->edit==1 && empty($patient->age_years)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>Y
+					<input type="text" name="age_months" class="form-control" maxlength="2" size="2" value="<?php if($patient)  echo $patient->age_months;?>" <?php if($f->edit==1 && empty($patient->age_moths)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>M
+					<input type="text" name="age_days" class="form-control" maxlength="2" size="2"  value="<?php if($patient)  echo $patient->age_days;?>" <?php if($f->edit==1 && empty($patient->age_days)) echo ''; else echo ' readonly'; ?>  style="background: #ADFF2F; font-weight: bold;"/>D
+				</div>	
+				<div class="col-md-6 col-xs-12"> 
+				<label class="control-label">DOB</label>
+					<?php if(empty($patient->dob) || $patient->dob=='0000-00-00') { ?> 
+							<input type="date" name="dob" class="form-control" value="" max="" <?php if($f->edit==1 && empty($patient->dob)) echo '';  ?> />
+						<?php } else { ?>
+							<input type="text" name="dob" class="form-control" value="<?php if($patient->dob!="0000-00-00"){ echo date('d/m/Y',strtotime($patient->dob)); }?>" <?php if($f->edit==1 && empty($patient->dob)) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;"/>
+					<?php } ?>
+				</div>		
+			</div>
+            </div>
                <div class="col-md-12">
 			
                         <div class="row alt">
@@ -2349,7 +2346,9 @@ function initDistrictSelectize(){
 					<label class="control-label">Advise</label>
 					</div>
 					<div class="col-md-8">
-					<textarea name="advise" class="form-control" cols="40" id="advise" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> ><?php if(!!$patient->advise) echo $patient->advise;?></textarea>
+					<textarea name="advise" class="form-control" id="advise" cols="40" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> >
+						<?php if(!!$patient->advise) echo $patient->advise;?>
+					</textarea>
 					</div>
 					<script>
 						ClassicEditor
@@ -2429,7 +2428,7 @@ function initDistrictSelectize(){
 				</tbody>
 			</table>
 			<div class="container-fluid" >
-				<h3>Counseling</h3>
+				<h3>Counseling </h3>
 				<table class="table table-striped table-bordered" id="" >
 						<thead>
 							<tr>
@@ -2460,6 +2459,7 @@ function initDistrictSelectize(){
 							data: { get_visit_id:get_visit_id },
 							dataType: 'json',
 							success: function(response) {
+								
 								$('#tableBodys').empty();
 								i=1;
 								$.each(response, function(index, item) {
