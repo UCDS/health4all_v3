@@ -50,7 +50,8 @@ class Helpline extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -97,7 +98,8 @@ class Helpline extends CI_Controller {
 		$add_sms_access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="completed_calls_report"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		
@@ -114,7 +116,8 @@ class Helpline extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -135,7 +138,8 @@ class Helpline extends CI_Controller {
 		$add_sms_access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="missed_calls_report"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		
@@ -151,7 +155,8 @@ class Helpline extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;
+			                break;		
 
 		 		}
 			}
@@ -172,7 +177,8 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="sms"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -186,7 +192,8 @@ class Helpline extends CI_Controller {
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
-		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
 
 		 		}
 			}
@@ -211,7 +218,8 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Helpline Reports"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -241,7 +249,8 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Helpline Reports"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -272,7 +281,8 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Helpline Update"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -296,7 +306,8 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Helpline Update"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -363,7 +374,8 @@ class Helpline extends CI_Controller {
 		$access=0;
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="Helpline Update"){
-					$access=1;
+				$access=1;
+				break;
 			}
 		}
 		if($access==1){
@@ -471,7 +483,8 @@ class Helpline extends CI_Controller {
 			 	if($default->default_id=='pagination'){
 			 			$this->data['rowsperpage'] = $default->value;
 			 			$this->data['upper_rowsperpage']= $default->upper_range;
-			 			$this->data['lower_rowsperpage']= $default->lower_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;
+						break;
 			 		}
 				}
 				$this->data['helpline']=$this->helpline_model->get_helpline("report");
@@ -728,6 +741,7 @@ class Helpline extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="helpline_session_plan"){
 				$access=1;
+				break;
 			}
 		}
 
@@ -752,6 +766,7 @@ class Helpline extends CI_Controller {
 					$this->data['rowsperpage'] = $default->value;
 					$this->data['upper_rowsperpage']= $default->upper_range;
 					$this->data['lower_rowsperpage']= $default->lower_range;
+					break;
 				}
 			}
 			if ($this->input->post('receiver_id')) {
@@ -800,6 +815,7 @@ class Helpline extends CI_Controller {
 		foreach($this->data['functions'] as $function){
 			if($function->user_function=="helpline_session_plan"){
 				$access=1;
+				break;
 			}
 		}
 		if ($access==1) {
@@ -822,6 +838,7 @@ class Helpline extends CI_Controller {
 					$this->data['rowsperpage'] = $default->value;
 					$this->data['upper_rowsperpage']= $default->upper_range;
 					$this->data['lower_rowsperpage']= $default->lower_range;
+					break;
 				}
 			}
 			$this->data['report'] = $this->helpline_model->get_helpline_receiver_report($helpline_session_id,$this->data['rowsperpage'] );
@@ -885,6 +902,7 @@ class Helpline extends CI_Controller {
 				if($function->user_function=="Helpline Reports"){
 						$access=1;
 						// echo("<script>console.log('PHP: access=1');</script>");
+						break;
 				}
 			}
 			
@@ -902,6 +920,7 @@ class Helpline extends CI_Controller {
 						 $this->data['rowsperpage'] = $default->value;
 						 $this->data['upper_rowsperpage']= $default->upper_range;
 						 $this->data['lower_rowsperpage']= $default->lower_range;	 
+						 break;
 	
 					 }
 				}
