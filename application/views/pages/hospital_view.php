@@ -1,4 +1,5 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
 <style>
 	.mandatory{
@@ -72,7 +73,7 @@
 	function previewLogo(){
 		$("#preview_logo_img").show();
 		 var logo_preview = $('select[name=logo]').val();
-		 var path = 'http://localhost<?php echo base_url('assets/logos');?>'+"/"+logo_preview;
+		 var path = '<?php echo base_url('assets/logos');?>'+"/"+logo_preview;
 		  $("#preview_logo_img").attr("src",path);
 		
 	}
@@ -99,9 +100,20 @@
 						<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 							<div class="form-group">
 								<label for="Inputdescription">Description</label>
-								<textarea class="form-control" name="description" rows="2" cols="6" ></textarea>
+								<textarea class="form-control" name="description" id="description" rows="2" cols="6" >
+									<?php echo $filter_values->description; ?>
+								</textarea>
 							</div>
 						</div>
+						<script>
+							ClassicEditor
+								.create( document.querySelector( '#description' ), {
+									toolbar: [ 'bold', 'italic', 'bulletedList', 'numberedList' ]
+								} )
+								.catch( error => {
+										console.error( error );
+								} );
+						</script>
 					</div>
 
 				<div class="row">

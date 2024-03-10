@@ -366,7 +366,7 @@ function fnExcelReport() {
 			</div>
 			<!--set method for hidden the table-->
 			
-			
+			<h5 style="margin-left:-60%!important;">Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-3 ">
@@ -407,7 +407,7 @@ function fnExcelReport() {
 				?>
 				<div class="container-fluid" >
 					<div class="row">
-					<ul class="pagination" style="margin:0;margin-left:-30%;">
+					<ul class="pagination" style="margin:0;margin-left:-20%;">
 					<?php if ($page_no > 1) {
 						echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
 					} ?>
@@ -495,7 +495,10 @@ function fnExcelReport() {
 					</div>
 				</div>
 			<?php } ?>	
-				
+
+		<div style='margin-left:-57%!important;'>
+			<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
+		</div>	
 		
 		 <div class="container">
 					<table class="table table-bordered table-striped" id="table-sort">
@@ -558,7 +561,120 @@ function fnExcelReport() {
 			</table>
 
 			</div>
+		<div style='margin-left:-57%!important;'>
+			<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
+		</div>
+		<?php if(count($search_items) > 0) { ?>
+				<?php
+					if ($this->input->post('rows_per_page')) {
+						$total_records_per_page = $this->input->post('rows_per_page');
+					} else {
+						$total_records_per_page = $rowsperpage;
+					}
+					if ($this->input->post('page_no')) {
+						$page_no = $this->input->post('page_no');
+					} else {
+						$page_no = 1;
+					}
+					$total_records = $items_count[0]->count;
+					$total_no_of_pages = ceil($total_records / $total_records_per_page);
+					if ($total_no_of_pages == 0)
+						$total_no_of_pages = 1;
+					$second_last = $total_no_of_pages - 1;
+					$offset = ($page_no - 1) * $total_records_per_page;
+					$previous_page = $page_no - 1;
+					$next_page = $page_no + 1;
+					$adjacents = "2";
+				?>
+				<div class="container-fluid" >
+					<div class="row">
+					<ul class="pagination" style="margin:0;margin-left:-20%;">
+					<?php if ($page_no > 1) {
+						echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
+					} ?>
 
+					<li <?php if ($page_no <= 1) {
+						echo "class='disabled'";
+					} ?>>
+					<a <?php if ($page_no > 1) {
+							echo "href=# onclick=doPost($previous_page)";
+						} ?>>Previous</a>
+					</li>
+		<?php
+			if ($total_no_of_pages <= 10) {
+				for ($counter = 1; $counter <= $total_no_of_pages; $counter++) {
+					if ($counter == $page_no) {
+						echo "<li class='active'><a>$counter</a></li>";
+					} else {
+						echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+					}
+				}
+			} else if ($total_no_of_pages > 10) {
+				if ($page_no <= 4) {
+					for ($counter = 1; $counter < 8; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+							} else {
+								echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
 
+					echo "<li><a>...</a></li>";
+					echo "<li><a href=# onclick=doPost($second_last)>$second_last</a></li>";
+					echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+				} elseif ($page_no > 4 && $page_no < $total_no_of_pages - 4) {
+					echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+					echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+					echo "<li><a>...</a></li>";
+					for ($counter = $page_no - $adjacents; $counter <= $page_no + $adjacents; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+						} else {
+							echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+					echo "<li><a>...</a></li>";
+					echo "<li><a href=# onclick=doPost($counter) >$counter</a></li>";
+					echo "<li><a href=# onclick=doPost($total_no_of_pages)>$total_no_of_pages</a></li>";
+				} else {
+					echo "<li><a href=# onclick=doPost(1)>1</a></li>";
+					echo "<li><a href=# onclick=doPost(2)>2</a></li>";
+					echo "<li><a>...</a></li>";
+					for ($counter = $total_no_of_pages - 6; $counter <= $total_no_of_pages; $counter++) {
+						if ($counter == $page_no) {
+							echo "<li class='active'><a>$counter</a></li>";
+						} else {
+							echo "<li><a href=# onclick=doPost($counter)>$counter</a></li>";
+						}
+					}
+				}
+			}
+		?>
+		<li <?php if ($page_no >= $total_no_of_pages) {
+			echo "class='disabled'";
+		} ?>>
+		<a <?php if ($page_no < $total_no_of_pages) {
+				echo "href=# onclick=doPost($next_page)";
+			} ?>>Next</a>
+		</li>
+
+		<?php if ($page_no < $total_no_of_pages) {
+			echo "<li><a href=# onclick=doPost($total_no_of_pages)>Last Page</a></li>";
+		} ?>
+		<?php if ($total_no_of_pages > 0) {
+			echo "<li><select class='page_dropdown' onchange='onchange_page_dropdown(this)'>";
+			for ($counter = 1; $counter <= $total_no_of_pages; $counter++) {
+				echo "<option value=$counter ";
+				if ($page_no == $counter) {
+					echo "selected";
+				}
+				echo ">$counter</option>";
+			}
+			echo "</select></li>";
+		} ?>
+	</ul>
+					</div>
+				</div>
+			<?php } ?> <br/>
 	</div>
 </div>

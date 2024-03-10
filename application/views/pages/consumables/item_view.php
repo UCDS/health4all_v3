@@ -30,7 +30,7 @@ $(function(){
 	<?php 
 	echo form_open('consumables/item/add_item',array('class'=>'form-group','role'=>'form','id'=>'add_item')); ?></center>
 	
-	<div class="col-xs-12 ">
+	<div class="col-xs-12 col-md-offset-2">
 		<div class="container">
 			<div class="row">
 				<div class="col-md-4">		<!--Item name-->

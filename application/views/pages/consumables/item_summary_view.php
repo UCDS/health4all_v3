@@ -504,7 +504,7 @@ $('#to_id').change(function(){
 						// echo strtotime("01-Jan-1970 00:00:00");
 						// echo strtotime(date("Y-m-d", strtotime($manufacture_date)));
 						log_message("info", "SAIRAM ===> ".$inventory_item->batch);
-						$issue_date = date("d-M-Y", strtotime($inventory_item->date_time));
+						$issue_date = date("d-M-Y", strtotime($inventory_item->issue_date_time));
 						if(strtotime($issue_date) <= 0){
 							$issue_date = "";
 						}
@@ -530,11 +530,11 @@ $('#to_id').change(function(){
 						
 						<td><a href="<?= base_url().$sub_url."indents_list_detailed/$inventory_item->indent_id"; ?>"><?= $inventory_item->indent_id;?></a></td>
 						<td><?= $issue_date; ?></td>
-						<td><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td>
-						<td><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): '0';?></td>
-						<td><?= ($inventory_item->inward_outward === "inward") ? ($inventory_item->total_quantity): '0';?></td>
-						<td><?= ($inward_total_quantity - $outward_total_quantity); ?></td>
-						<td><?= (float)$inventory_item->cost; ?></td>
+						<td ><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td>
+						<td style="text-align:right;"><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): ' ';?></td>
+						<td style="text-align:right;"><?= ($inventory_item->inward_outward === "inward") ? ($inventory_item->total_quantity): ' ';?></td>
+						<td style="text-align:right;"><?= ($inward_total_quantity - $outward_total_quantity); ?></td>
+						<td style="text-align:right;"><?= (float)$inventory_item->cost; ?></td>
 						<td><?= $batch == '0' ? "NO BATCH": $batch; ?></td>
 						<td><?= $manufacture_date == ""? "": date("d-M-Y", strtotime($manufacture_date)); ?></td>
 						<td><?= $expiry_date == ""? "": date("d-M-Y", strtotime($expiry_date)); ?></td>
@@ -553,10 +553,10 @@ $('#to_id').change(function(){
 						<th>Total </th>
 						<th></th>
 						<th></th>
-						<th><?= $outward_total_quantity; ?></th>
-						<th><?= $inward_total_quantity; ?></th>
-						<th><?= $inward_total_quantity-$outward_total_quantity; ?></th>
-						<th><?= $total_cost; ?></th>
+						<th style="text-align:right;"><?php  if($outward_total_quantity){ echo $outward_total_quantity; }?></th>
+						<th style="text-align:right;"><?php if($inward_total_quantity){ echo $inward_total_quantity; }?></th>
+						<th style="text-align:right;"><?= $inward_total_quantity-$outward_total_quantity; ?></th>
+						<th style="text-align:right;"><?= $total_cost; ?></th>
 
 
 					

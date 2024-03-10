@@ -462,8 +462,7 @@ echo "</select></li>";
 		<td><?php if($s->outcome_date!="0000-00-00"){ echo date("j M Y", strtotime("$s->outcome_date")).", ".date("h:i A.", strtotime("$s->outcome_time")); }?></td>
 		<td><?php echo $s->decision_note;?></td>
 		<td><?php echo $s->insertedusername;?></td>
-		<!-- <td><?php echo $s->updatedby;?></td> -->
-		<td></td>
+		<td><?php if($s->update_datetime!="0000-00-00 00:00:00"){ echo date("j M Y", strtotime("$s->update_datetime")).'<br/><br/> '.$s->updatedby; }?></td>
 		<?php if($access=='1'){ ?> 
 			<td><button type="button" class="btn btn-success" onclick="$('#patient_visit_<?php echo $s->visit_id;?>').submit()" autofocus>Update</button>
 				<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'patient_visit_'.$s->visit_id)); ?>
