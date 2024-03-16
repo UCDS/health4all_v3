@@ -444,4 +444,72 @@ function update_patient(){
             show_404();
             }
     }
+
+    function delete_patient_followup()
+    {
+        if($this->session->userdata('logged_in'))
+        {
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                if($function->user_function=="delete_patient_followup"){
+                    $access=1;
+                    break;
+                }
+            }
+            if($access==1)
+            {
+                $this->data['title']="Delete Patient Followup";
+                $this->load->model('masters_model');
+                $this->load->model('patient_model');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                $this->data['departments'] = $this->staff_model->get_department();
+                $this->data['units'] = $this->staff_model->get_unit();
+                $this->data['areas'] = $this->staff_model->get_area();
+                $this->data['visit_types'] = $this->staff_model->get_visit_name();
+                $this->load->view('templates/header',$this->data);
+                $this->load->helper('form');
+                if($this->input->post('patient_id'))
+                {
+                    $this->data['patient_followup_history'] = $this->patient_model->get_patient_followup_history();
+                }
+                $this->load->view('pages/delete_patient_followup',$this->data);	
+                $this->load->view('templates/footer');
+            }else{
+                show_404();
+            }
+        }
+        else
+        {
+            show_404();
+        }
+    }
+
+    function delete_followup_patient_id() 
+    {
+        if($this->session->userdata('logged_in'))
+        {
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                if($function->user_function=="delete_patient_followup"){
+                    $access=1;
+                    break;
+                }
+            }
+            if($access==1)
+            {
+                $patient_id = $this->input->post('patient_id');
+                $this->load->model('Patient_model');
+                $result = $this->Patient_model->delete_patient_followup($patient_id);
+                echo json_encode(['success' => $result]);
+            }else{
+                show_404();
+            }
+        }
+        else
+        {
+            show_404();
+        }
+    } 
 }

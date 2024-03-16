@@ -138,3 +138,5 @@ ALTER TABLE `item_form` ADD `created_by` INT NOT NULL AFTER `item_form`, ADD `up
 ALTER TABLE `dosage` ADD `created_by` INT NOT NULL AFTER `dosage`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
 
 ALTER TABLE `drug_type` ADD `created_by` INT NOT NULL AFTER `description`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'delete_patient_followup', 'delete_patient_followup', 'Delete Patient Followup');

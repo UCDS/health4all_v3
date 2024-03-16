@@ -85,7 +85,7 @@ function onchange_page_dropdown(dropdownobj){
     echo form_open('user_panel/user_hospital_link',array('role'=>'form','class'=>'',
         'id'=>'create_user')); 
 ?>
-<div class="form-group col-md-12">
+<div class="form-group col-md-12 col-md-offset-2">
     <table class="table table-bordered table-striped" id="table-sort">
         <thead>
             <th colspan="3">Select Hospitals User(<?php echo $user_hptls[0]->username; ?>) Can Access</th>

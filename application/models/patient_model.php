@@ -730,6 +730,33 @@ class patient_model extends CI_Model {
         $result = $query->result();
         return $result;
     }
+
+    // Followup Delete Functions
+    function get_patient_followup_history()
+    {
+        $patient_id = '';
+        if($this->input->post('patient_id')){
+            $patient_id = $this->input->post('patient_id');
+        }
+        $hospital_id = $this->session->userdata('hospital')['hospital_id'];
+        $this->db->select("patient_followup.patient_id,hospital.hospital as hname,patient_followup.life_status,patient_followup.add_time,
+        patient.age_years,patient.gender,patient.first_name,patient.last_name")
+                ->from('patient_followup')
+                ->join('patient','patient.patient_id=patient_followup.patient_id','left')
+                ->join('hospital','hospital.hospital_id=patient_followup.hospital_id','left')
+                ->where('patient_followup.hospital_id',$hospital_id)
+                ->where('patient_followup.patient_id',$patient_id);    
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function delete_patient_followup($patient_id) 
+    {
+        $this->db->where('patient_id', $patient_id);
+        $this->db->delete('patient_followup');
+        return $this->db->affected_rows() > 0;
+    }
 }
 
 ?>

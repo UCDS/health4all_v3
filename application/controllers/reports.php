@@ -279,7 +279,8 @@ class Reports extends CI_Controller {
 		$this->data['volunteer']=$this->register_model->get_volunteer();
 		$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');	//retrives the values from the function icd_chapter	 in master model
 		$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');      //retrives the values from the function icd_block  in master model
-
+		$this->data['all_districts']=$this->staff_model->get_district();   
+		$this->data['all_states']=$this->staff_model->get_states();
 		foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
@@ -807,7 +808,7 @@ class Reports extends CI_Controller {
 				$function->user_function=="edit_demographic" || $function->user_function=="issue_list" || $function->user_function=="issue_summary"
 				|| $function->user_function=="followup_summary" || $function->user_function=="followup_map" || $function->user_function=="delete_patient_visit_duplicate"
 				|| $function->user_function=="list_patient_visit_duplicate"|| $function->user_function=="list_patient_edits"|| $function->user_function=="edit_patient_visits"
-				|| $function->user_function=="list_edit_patient_visits"){
+				|| $function->user_function=="list_edit_patient_visits" || $function->user_function=="delete_patient_followup"){
 				$access=1;
 				break;
 			}

@@ -93,21 +93,6 @@
 	display: inline-grid;
 } 
 </style>
-<?php 
-	$pins = array();
-    foreach($report as $pin){
-			$visitsTotal[] = $pin->total;
-			$pins[] = (object) array(
-				'district_id' => $pin->district_id,
-				'district_name' => $pin->dname,
-				'latitude' => $pin->latitude,
-				'longitude' => $pin->longitude,
-				'Visits' => $pin->total
-			);
-    }
-	if(isset($visitsTotal))
-		$maxVisit = max($visitsTotal);
-?>
 <script>
 <?php
 $visit_type="OP & IP";
@@ -439,12 +424,6 @@ function onchange_page_dropdown(dropdownobj){
 								<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
 							<?php } ?>
 						</select>
-			
-						<select id="sort_by_age" name="sort_by_age"  class="form-control">
-							<option value="0">Sort by age</option>           	
-							<option value="1" <?php echo ($this->input->post('sort_by_age') == '1') ? 'selected' : ''; ?> >Ascending</option> 
-							<option value="2" <?php echo ($this->input->post('sort_by_age') == '2') ? 'selected' : ''; ?> >Descending</option>       
-						</select>
 
 						<select id="ndps" name="ndps"  class="form-control">
 							<option value="0" >NDPS Status</option>           	
@@ -487,31 +466,6 @@ function onchange_page_dropdown(dropdownobj){
 					}
 					
 					</script>
-					<div class="col-md-2">
-							<select name="department" id="department" class="form-control" style="width:100%">
-								<option value="">Department</option>
-								<?php 
-								foreach($departments as $dept){
-									echo "<option value='".$dept->department_id."'";
-									if($this->input->post('department') && $this->input->post('department') == $dept->department_id) echo " selected ";
-									echo ">".$dept->department."</option>";
-								}
-								?>
-							</select>
-						</div>
-						<!-- <div class="col-md-2">
-							<select name="visit_name" id="visit_name" class="form-control" style="width:100%" >
-								<option value="">Visit Type</option>
-								<?php 
-								foreach($visit_names as $v){
-									echo "<option value='".$v->visit_name_id."'";
-									if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id) echo " selected ";
-									echo ">".$v->visit_name."</option>";
-								}
-								?>
-							</select>
-						</div> -->
-					</div> 
 			</div>
 			
 			<div class="container" style="padding-top:20px;">
@@ -549,50 +503,48 @@ function onchange_page_dropdown(dropdownobj){
 				</div>
 			</div> -->
 		</div>
-            
 
+<script>
+    var map;
+    function initMap() {
+        var bounds = new google.maps.LatLngBounds();
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 18,
+            mapTypeId: 'terrain'
+        });
 
-<script> 
-	var map;
-	function initMap() {
-		var bounds = new google.maps.LatLngBounds();
-		map = new google.maps.Map(document.getElementById('map'), {
-			zoom: 18,
-			mapTypeId: 'terrain'
-			}
-		);
-		<?php 
-		if(isset($maxVisit)){
-			foreach($pins as $pin){  
-				if(!!$pin->latitude) { 
-		?>
-			
-				contentString_<?= $pin->district_id; ?> = "<b><?=$pin->dname?></b><b><?=$pin->first_name?></b><b><?=$pin->phone?></b><br/>Visits: <?=$pin->Visits;?>";
+        <?php 
+            foreach($report as $followup){  
+                if(!!$followup->latitude && !!$followup->longitude && !!$followup->district_id) { 
+        ?>
 
-				var infowindow_<?= $pin->district_id; ?> = new google.maps.InfoWindow({
-                	content: contentString_<?= $pin->district_id; ?>
-            	});
+                    var contentString_<?= $followup->patient_id; ?> = "<b><?= $followup->first_name ?></b><br><b><?= $followup->patient_id ?></b><br>Age: <?= $followup->age_years ?><br>Gender: <?php if($followup->gender){ echo "Male"; }else{ echo "Female"; } ?><br>Diagnosis: <?= $followup->diagnosis ?><br><a href='https://www.google.com/maps/search/?api=1&query=<?= $followup->latitude ?>,<?= $followup->longitude ?>' target='_blank' >Open in Maps</a>";
 
-				var location_<?= $pin->district_id; ?> = {lat: <?= $pin->latitude ?>, lng: <?= $pin->longitude ?>};
-				
-				var marker_<?=$pin->district_id?> = new google.maps.Marker({
-					position: location_<?= $pin->district_id; ?>,
-					map: map,
-					title: '<?=$pin->dname?>'
-				});
-				console.log(marker_<?=$pin->district_id?>);
-				bounds.extend(location_<?= $pin->district_id; ?>);
-            
-				map.fitBounds(bounds);
-				
-				marker_<?= $pin->district_id; ?>.addListener('click', function() {
-					infowindow_<?= $pin->district_id; ?>.open(map, marker_<?= $pin->district_id; ?>);
-				});
-		<?php 
-				}
-			}
-		} 
-		?>
-	}
+                    var infowindow_<?= $followup->patient_id; ?> = new google.maps.InfoWindow({
+                        content: contentString_<?= $followup->patient_id; ?>
+                    });
+
+                    var location_<?= $followup->patient_id; ?> = {lat: <?= $followup->latitude ?>, lng: <?= $followup->longitude ?>};
+
+                    var marker_<?= $followup->patient_id; ?> = new google.maps.Marker({
+                        position: location_<?= $followup->patient_id; ?>,
+                        map: map
+                    });
+
+                    bounds.extend(location_<?= $followup->patient_id; ?>);
+                    
+                    map.fitBounds(bounds);
+
+                    marker_<?= $followup->patient_id; ?>.addListener('click', function() {
+                        infowindow_<?= $followup->patient_id; ?>.setPosition(marker_<?= $followup->patient_id; ?>.getPosition());
+                        infowindow_<?= $followup->patient_id; ?>.open(map, marker_<?= $followup->patient_id; ?>);
+                    });
+
+                   
+        <?php 
+                }
+            }
+        ?>
+    }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-1GMntG8XK9s7m4uWyWjhQdTaX-xZxYs&callback=initMap" async defer></script>

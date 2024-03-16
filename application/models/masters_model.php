@@ -2145,5 +2145,150 @@ else if($type=="dosage"){
         $query = $this->db->get();
 		return $query->result();
 	}
+
+	//visit type function start here
+	function check_visit_type($visit_name) 
+    {
+        $this->db->where('visit_name', $visit_name);
+        $query = $this->db->get('visit_name');
+        return $query->num_rows() > 0;
+    }
+
+	function check_visit_type_inuse($visit_name,$inuse) 
+    {
+        $this->db->where('visit_name', $visit_name);
+        $this->db->where('inuse', $inuse);
+        $query = $this->db->get('visit_name');
+        return $query->num_rows() > 0;
+    }
+
+    function insert_visit_type($data) 
+    {
+        $this->db->insert('visit_name', $data);
+    }
+
+    function get_all_visit_type($default_rowsperpage)
+    {
+
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select(" visit_name.visit_name,visit_name.inuse,visit_name.visit_name_id,
+		staff.first_name, visit_name.created_date_time,visit_name.updated_date_time,updated_by.first_name as updated_by_name")
+		->from("visit_name")
+		->join('staff','staff.staff_id=visit_name.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=visit_name.updated_by','left');
+		$this->db->where('visit_name.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_visit_type_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("visit_name")
+		->join('staff','staff.staff_id=visit_name.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=visit_name.updated_by','left');
+		$this->db->where('visit_name.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_visit_type_by_id($record_id) 
+	{
+		$this->db->select('visit_name,inuse,created_by,updated_by,created_date_time,updated_date_time,visit_name_id');
+        $query = $this->db->get_where('visit_name', array('visit_name_id' => $record_id));
+        return $query->row_array();
+    }
+
+    function update_visit_type($record_id, $data) {
+        $this->db->where('visit_name_id', $record_id);
+        $this->db->update('visit_name', $data);
+    }
+	//visit type function end here
+	//priority type function start here
+	function check_priority_type($priority_type) 
+    {
+        $this->db->where('priority_type', $priority_type);
+        $query = $this->db->get('priority_type');
+        return $query->num_rows() > 0;
+	}
+
+    function insert_priority_type($data) 
+    {
+        $this->db->insert('priority_type', $data);
+    }
+
+    function get_all_priority_type($default_rowsperpage)
+    {
+
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select(" priority_type.priority_type,priority_type.priority_type_id,
+		staff.first_name, priority_type.created_date_time,priority_type.updated_date_time,updated_by.first_name as updated_by_name")
+		->from("priority_type")
+		->join('staff','staff.staff_id=priority_type.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=priority_type.updated_by','left');
+		$this->db->where('priority_type.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+	function get_all_priority_type_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("priority_type")
+		->join('staff','staff.staff_id=priority_type.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=priority_type.updated_by','left');
+		$this->db->where('priority_type.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_priority_type_by_id($record_id) 
+	{
+		$this->db->select('priority_type,created_by,updated_by,created_date_time,updated_date_time,priority_type_id');
+        $query = $this->db->get_where('priority_type', array('priority_type_id' => $record_id));
+        return $query->row_array();
+    }
+
+    function update_priority_type($record_id, $data) {
+        $this->db->where('priority_type_id', $record_id);
+        $this->db->update('priority_type', $data);
+    }
+	//priority type function end here
 }
 ?>

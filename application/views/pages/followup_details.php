@@ -457,7 +457,56 @@ function onchange_page_dropdown(dropdownobj){
 		</select>
 		<!-- till here -->
 
-                               
+        <!-- Newly Added march 13 2024 -->
+		<div class="col-md-3" style="margin-left:30px;">
+			<select name="state" id="state" style="width: 100%;" class="form-control" onchange='onchange_state_dropdown(this)'>
+				<option value="" >State</option>
+				<?php 
+				foreach($all_states as $state){
+					echo "<option value='".$state->state_id."'";
+					if($this->input->post('state') && $this->input->post('state') == $state	->state_id) echo " selected ";
+					echo ">".$state->state."</option>";
+				}
+				?>
+			</select>
+		</div>
+		<div class="col-md-3" style="margin-left:-30px;">
+			<select name="district" style="width: 100%;" id="district" class="form-control" >
+				<option value="" >District</option>
+			</select>
+		</div>
+        <script>
+			onchange_state_dropdown(document.getElementById("state"));
+			var district = "<?php echo $this->input->post('district')?>";
+			if(district != ""){
+				$("#district").val(district);
+			}
+			function onchange_state_dropdown(dropdownobj) {       	
+				const stateID = dropdownobj.value;
+				populateDistricts(stateID);		
+			}
+			
+			function populateDistricts(stateID) {
+				var optionsHtml = getDistrictOptionsState(stateID);
+				$("#district").html(optionsHtml);
+				
+			}
+			function getDistrictOptionsState(stateID) {
+				var all_districts = JSON.parse('<?php echo json_encode($all_districts); ?>'); 
+				var selected_districts = all_districts.filter(all_districts => all_districts.state_id == stateID);
+				let optionsHtml = buildEmptyOption("District");
+				if(selected_districts.length > 0) {
+					optionsHtml += selected_districts.map(selected_districts => {
+							return `	<option value="${selected_districts.district_id}">
+									${selected_districts.district}
+								</option>`;
+				});
+					
+				}
+				return optionsHtml;
+			}
+		</script>
+		<!-- till here -->                      
 					<br>
 					<label class="control-label" style="margin-left: 50px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 

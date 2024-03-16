@@ -2223,5 +2223,48 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		return $query->result();
 	}
 
+	function helpline_trend_unic()
+	{
+		if($this->input->post('from_date') && $this->input->post('to_date'))
+		{
+			$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+			$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+			$this->db->where('(summary_unique_callers.date BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->db->group_by('summary_unique_callers.date');
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date'))
+		{
+			$from_date;
+			$to_date;
+			if($this->input->post('from_date')){
+				$from_date = date("Y-m-d",strtotime($this->input->post("from_date")));
+				$to_date = $this->db->where('summary_unique_callers.date',date("Y-m-d"));
+			}
+			if($this->input->post('to_date')){
+				$to_date = date("Y-m-d",strtotime($this->input->post("to_date")));
+				$from_date = $this->db->where('date(start_time)',date("Y-m-d"));
+			}
+			$this->db->where('(summary_unique_callers.date BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->db->group_by('summary_unique_callers.date');
+		}
+		else{
+			$from_date = date("Y-m-d",strtotime("-1 months"));
+			$to_date = date("Y-m-d");
+			$this->db->where('(summary_unique_callers.date BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
+			$this->db->group_by('summary_unique_callers.date');
+		}
+
+		if($this->input->post('helpline'))
+		{
+			$this->db->where("helpline",$this->input->post('helpline'));
+		}
+		$this->db->select("date,sum(unique_callers) as calls")
+		->from('summary_unique_callers')
+		->order_by('summary_unique_callers.date','asc');
+
+		$query = $this->db->get();
+		return $query->result();
+	}
+
 }
 ?>
