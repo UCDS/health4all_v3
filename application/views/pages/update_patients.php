@@ -842,9 +842,12 @@ function initDistrictSelectize(){
 				<div class="col-md-6 col-xs-12"> 
 				<label class="control-label">DOB</label>
 					<?php if(empty($patient->dob) || $patient->dob=='0000-00-00') { ?> 
-							<input type="date" name="dob" class="form-control" value="" max="" <?php if($f->edit==1 && empty($patient->dob)) echo '';  ?> />
+							<input type="date" name="dob" class="form-control" value="" max="<?php echo date('Y-m-d'); ?>" <?php if($f->edit==1 && empty($patient->dob)) echo '';  ?> />
 						<?php } else { ?>
-							<input type="text" name="dob" class="form-control" value="<?php if($patient->dob!="0000-00-00"){ echo date('d/m/Y',strtotime($patient->dob)); }?>" <?php if($f->edit==1 && empty($patient->dob)) echo ''; else echo ' readonly'; ?> style="background: #ADFF2F; font-weight: bold;"/>
+							<input type="text" name="dob" class="form-control" 
+							value="<?php if($patient->dob!="0000-00-00"){ echo date('j M Y',strtotime($patient->dob)); }?>" 
+							<?php if($f->edit==1 && empty($patient->dob)) echo ''; else echo ' readonly'; ?> 
+							style="background: #ADFF2F; font-weight: bold;"/>
 					<?php } ?>
 				</div>		
 			</div>

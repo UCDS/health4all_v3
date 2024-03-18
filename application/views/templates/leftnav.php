@@ -4,6 +4,12 @@
 		background-color: blue;
 		color: white;
 	}
+	.nav > li > a:hover, .nav > li > a:focus 
+	{
+		text-decoration: none;
+		background-color: #428bca;
+		color: white;
+	}
 </style>
 
 <?php
@@ -689,11 +695,11 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/form_layout"; ?>">Add Custom Form</a>
 			</li>
-			<li <?php if (preg_match("user_panel/delete_custorm_forms", current_url()))
+			<li <?php if (preg_match("/user_panel\/delete_custorm_forms/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/delete_custorm_forms"; ?>"> Delete Custorm Forms </a>
 			</li>
-			<li <?php if (preg_match("^user_panel/print_layouts", current_url()))
+			<li <?php if (preg_match("/user_panel\/print_layouts/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/print_layouts"; ?>">Print Layouts</a>
 			</li>
@@ -705,9 +711,15 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view">Edit Hospital</a>
 			</li>
+			<li <?php if(preg_match("/user_panel\/priority_type/", current_url()) || preg_match("/user_panel\/priority_type\/1/", current_url())){ echo 'class="active"'; }?>>
+				<a href="<?php echo base_url() . "user_panel/priority_type"; ?>"> Add / Update Priority Type</a>
+			</li>
+			<li <?php if(preg_match("/user_panel\/visit_type/", current_url()) || preg_match("/user_panel\/visit_type\/1/", current_url())){ echo 'class="active"'; }?>>
+				<a href="<?php echo base_url() . "user_panel/visit_type"; ?>"> Add / Update Visit Type</a>
+			</li>
 			<li <?php if (preg_match("^add_department/department_view^", current_url()) || preg_match("^add_department^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>departments/add_department/department_view">Add Departments</a>
+				<a href="<?php echo base_url(); ?>departments/add_department/department_view">Add / Update Departments</a>
 			</li>
 			<li <?php if (preg_match("^hospital_areas/add_area^", current_url()))
 				echo 'class="active"'; ?>>
@@ -717,23 +729,23 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital_units/add_unit">Add Units</a>
 			</li>
-			<li <?php if (preg_match("user_panel/primary_routes", current_url()))
+			<li <?php if (preg_match("/user_panel\/primary_routes/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/primary_routes"; ?>"> Add / Update Primary Routes</a>
 			</li>
-			<li <?php if (preg_match("user_panel/secondary_routes", current_url()))
+			<li <?php if (preg_match("/user_panel\/secondary_routes/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/secondary_routes"; ?>"> Add / Update Secondary Routes</a>
 			</li>
-			<li <?php if (preg_match("user_panel/update_des_user_function", current_url()))
+			<li <?php if (preg_match("/user_panel\/update_des_user_function/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/update_des_user_function"; ?>"> Update User Function Description</a>
 			</li>
-			<li <?php if (preg_match("user_panel/counseling_type", current_url()))
+			<li <?php if (preg_match("/user_panel\/counseling_type/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/counseling_type"; ?>"> Add / Update Counseling Type</a>
 			</li>
-			<li <?php if (preg_match("user_panel/counseling_text", current_url()))
+			<li <?php if (preg_match("/user_panel\/counseling_text/", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/counseling_text"; ?>"> Add / Update Counseling Text</a>
 			</li>

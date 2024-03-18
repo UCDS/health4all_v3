@@ -145,9 +145,7 @@ function get_dist_summary(){
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
-		// if($this->input->post('last_visit_type')){
-		// 	$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-		// }
+		
 		if($this->input->post('ndps')!=0)
 		{
 			if($this->input->post('ndps')==1){
@@ -155,20 +153,6 @@ function get_dist_summary(){
 			}if($this->input->post('ndps')==2){
 				$this->db->where('patient_followup.ndps',0);
 			}
-		}
-
-		if($this->input->post('sort_by_age')==1){
-			$this->db->order_by('patient.age_years',ASC);
-		}else{
-			$this->db->order_by('patient.age_years',DESC);
-		}
-
-		// if($this->input->post('visit_name')){
-		// 	$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
-		// }
-		
-		if($this->input->post('department')){
-			$this->db->where('patient_visit.department_id',$this->input->post('department'));
 		}
 		
 		if($this->input->post('district')){
@@ -179,26 +163,12 @@ function get_dist_summary(){
 				$this->db->where('state.state_id',$this->input->post('state'));
 		}
 		
-		$this->db->select("patient_followup.patient_id,state.state,district.state_id as state_id,department 'department', district.district as dname,   district.district_id, 
+		$this->db->select("patient_followup.patient_id,state.state,district.state_id as state_id, district.district as dname,   district.district_id, 
 		patient_followup.latitude as latitude, patient_followup.longitude as longitude,patient.first_name,patient.phone,
-		SUM(CASE WHEN 1  THEN 1 ELSE 0 END) 'total',
-		SUM(CASE WHEN patient.gender = 'F'  THEN 1 ELSE 0 END) 'female',
-	    SUM(CASE WHEN patient.gender = 'M'  THEN 1 ELSE 0 END) 'male',	
-		SUM(CASE WHEN patient.age_years <= 14 THEN 1 ELSE 0 END) 'child',	
-		SUM(CASE WHEN patient.gender = 'F' AND patient.age_years <= 14 THEN 1 ELSE 0 END) 'fchild',
-		SUM(CASE WHEN patient.gender = 'M' AND patient.age_years <= 14 THEN 1 ELSE 0 END) 'mchild',
-		SUM(CASE WHEN patient.age_years > 14 AND patient.age_years <= 30 THEN 1 ELSE 0 END) 'p14to30',
-		SUM(CASE WHEN patient.gender = 'F' AND patient.age_years > 14 AND patient.age_years <= 30 THEN 1 ELSE 0 END) 'f14to30',
-		SUM(CASE WHEN patient.gender = 'M' AND patient.age_years > 14 AND patient.age_years <= 30 THEN 1 ELSE 0 END) 'm14to30', 
-		SUM(CASE WHEN patient.age_years > 30 AND patient.age_years < 60 THEN 1 ELSE 0 END) 'p30to60',
-		SUM(CASE WHEN patient.gender = 'F' AND patient.age_years > 30 AND patient.age_years < 60 THEN 1 ELSE 0 END) 'f30to60',
-		SUM(CASE WHEN patient.gender = 'M' AND patient.age_years > 30 AND patient.age_years < 60 THEN 1 ELSE 0 END) 'm30to60', 
-		SUM(CASE WHEN patient.age_years >= 60 THEN 1 ELSE 0 END) 'p60plus',
-		SUM(CASE WHEN patient.gender = 'F' AND patient.age_years >= 60 THEN 1 ELSE 0 END) 'f60plus',
-		  SUM(CASE WHEN patient.gender = 'M' AND patient.age_years > 60 THEN 1 ELSE 0 END) 'm60plus'");
+		patient.age_years,patient.gender,patient_followup.diagnosis");
+		
 		 $this->db->from('patient_followup')
-		 ->join('patient_visit','patient_followup.patient_id=patient_visit.patient_id','left')
-		 ->join('patient','patient_followup.patient_id=patient.patient_id')
+		 ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		 ->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		 ->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		 ->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
@@ -206,13 +176,10 @@ function get_dist_summary(){
 		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
 		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
-		 ->join('department','patient_visit.department_id=department.department_id')
-		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
-		 ->join('district','patient.district_id=district.district_id','left')
+		 ->join('district','patient.district_id=district.district_id')
 		 ->join('state','district.state_id=state.state_id','left')
-		 ->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		 ->where('patient_followup.hospital_id',$hospital['hospital_id']);
 		
-		$this->db->group_by('patient_followup.patient_id');
 		$resource=$this->db->get();
 		return $resource->result();
 	}

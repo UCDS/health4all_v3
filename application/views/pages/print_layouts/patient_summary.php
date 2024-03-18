@@ -52,35 +52,29 @@
 		<table style="width:98%;padding:5px;">
 				<tbody>
 					<tr>
-						<td style="width:75%;"> 
-						<div class="row">
-							<div class="col-md-12">
-								<div class="col-md-10" >
-									<?php if ($hospital['telehealth'] == "0") {?>
-									<font size="4"><?php echo $hospital['hospital'];?></font><br />
-										<?php if(!empty($hospital['description'])) echo $hospital['description']."<br/>";?>
-										<!--<?php if(!empty($hospital['place'])) { echo $hospital['place'].''.','; } ?>
-										<?php if(!empty($hospital['district'])) { echo $hospital['district']; } ?>-->
-									<br />
-									<?php } else {?>
-									<?php if(!!$patient->doctor_name) {?> 
-									<font size="4">Teleconsultation with <?php echo $patient->doctor_name; ?></font><br />
-									<?php } else {?>
-									<font size="4">Teleconsultation with Doctor</font><br />
-									<?php } ?>
-									
-											<?php echo "Facilitated by  ".$hospital['hospital']."<br />";?>
-										<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
-									<?php } ?>
-								</div>
-							</td>
-							<td style="width:15%;">
-								<div class="col-md-2" style="margin-left:40px!important;">
-									<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
-								</div>
-							</td>
-							</div>
+						<td colspan="3"> 
+						<div style="float:left;text-align:left;left:auto;width:75%;">
+							<?php if ($hospital['telehealth'] == "0") {?>
+							<font size="4"><?php echo $hospital['hospital'];?></font><br />
+								<?php if(!empty($hospital['description'])){ echo $hospital['description']."<br />"; }?>
+								<!--<?php echo $hospital['place']; ?>, 
+								<?php echo $hospital['district']; ?>-->
+							<br />
+							<?php } else {?>
+							<?php if(!!$patient->doctor_name) {?> 
+							<font size="4">Teleconsultation with <?php echo $patient->doctor_name; ?></font><br />
+							<?php } else {?>
+							<font size="4">Teleconsultation with Doctor</font><br />
+							<?php } ?>
+							
+									<?php echo "Facilitated by  ".$hospital['hospital']."<br />";?>
+								<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
+							<?php } ?>
+						</div>			
+						<div style="float:right;margin-right:10;margin-top:25px;">			
+							<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
 						</div>
+						</td>
 					</tr>
 				<tr>
 				<td colspan="3">
@@ -169,9 +163,9 @@
 						<td><b>Phone : </b><?php echo $patient->phone; ?></td>
 				</tr>
 				</tbody>
-				<tbody>
+				
 				<?php if($patient->visit_type != "OP") { ?>
-					<tr><td colspan="3" ><h4><b><u>Initial Assesment</u></b></h4></td></tr>
+					<tr><td colspan="3" ><h4 style="margin-bottom:-5px!important;"><b><u>Initial Assesment</u></b></h4></td></tr>
 				<?php } ?>
 				<tr><td colspan="3" ></td></tr>
 				<tr data-patient-clinical-details data-source="patient" data-print-mode="true" data-skip-if-no-value="true" 
@@ -179,7 +173,7 @@
 
 				<?php if(!!$patient->presenting_complaints) { ?>
 				<tr class="print-element">
-					<td  style="padding-top:20px" colspan="3">
+					<td colspan="3">
 					<b>Symptoms: </b><?php echo $patient->presenting_complaints;?> 
 					</td>
 				</tr>
@@ -239,7 +233,7 @@
 				<?php } ?>
 				</tbody>
 				
-				<?php if(isset($visit_notes) &&  !!$visit_notes) { ?>
+				<?php if(!empty($visit_notes)) { ?>
 				<tr class="print-element" width="95%" >				
 					<td colspan="3"><b><u>Clinical Notes</u></b></td>
 				</tr>
@@ -249,8 +243,8 @@
 							<thead>
 								<tr>
 									<!-- <th>#</th>
-									<th width="150px">Date</th>-->
-									<th>Note</th> 
+									<th width="150px">Date</th>
+									<th>Note</th> -->
 								</tr>
 							</thead>
 							<tbody>
@@ -445,7 +439,7 @@
 
 				<?php if(!!$patient->advise || !!$patient->decision) { ?>
 				<tr class="print-element" width="95%" >
-					<td  style="padding-top:20px" colspan="3">
+					<td  colspan="3">
 					<?php if(!!$patient->decision) { ?>
 					<b>Decision</b>: <?php echo $patient->decision;?><br />
 					<?php } ?>
@@ -462,9 +456,11 @@
 						foreach($print_summary_counseling as $psc)
 						{
 				?>
+				<tr>
+					<td><b><?php echo $psc->counseling_type; ?></b></td>
+				</tr>
 				<tr class="print-element" width="95%">
-					<td style="padding-top:20px" colspan="3">
-						<b><?php echo $psc->counseling_type; ?></b><br />
+					<td  colspan="3">
 						<?php echo $psc->counseling_text; ?>
 					</td>
 				</tr>

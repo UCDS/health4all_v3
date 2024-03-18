@@ -849,5 +849,222 @@ class User_panel extends CI_Controller {
             show_404();
         }
 	}
+
+	//visit type function starting
+	function visit_type($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Visit Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$visit_name = $this->input->post('visit_name');
+					$inuse = $this->input->post('inuse');
+					$added_by = $this->input->post('added_by');
+					$insert_datetime = $this->input->post('insert_datetime');
+					if($this->masters_model->check_visit_type($visit_name)) 
+					{
+					 	$this->data['error'] = 'Visit type already exists';
+					}
+					else
+					{
+					 	$data_to_insert = array(
+					 		'hospital_id' => $hospital['hospital_id'],
+					 		'visit_name' => $visit_name,
+					 		'inuse' => $inuse,
+					 		'created_by' => $added_by,
+					 		'created_date_time' => $insert_datetime,
+					 	);
+					 	$this->masters_model->insert_visit_type($data_to_insert);
+					 	$this->data['success'] = 'Visit type Added Successfully';
+					}
+				}
+				// Fetch all records from primary table
+				$this->data['all_visit_type'] = $this->masters_model->get_all_visit_type($this->data['rowsperpage']);
+				$this->data['all_visit_type_count'] = $this->masters_model->get_all_visit_type_count();
+
+				//Fetch record to edit
+				$this->data['edit_visit_type'] = $this->masters_model->get_edit_visit_type_by_id($record_id);
+			    
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/visit_types',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_visit_type() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Visit Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$visit_name = $this->input->post('visit_name');
+				$inuse = $this->input->post('inuse');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+				if($this->masters_model->check_visit_type_inuse($visit_name,$inuse)) 
+				{
+					$this->data['error'] = 'Visit Type Cannot Be Updated Combination Already Exists';
+				}else
+				{
+					$update_data = array(
+						'visit_name' => $visit_name,
+					 	'inuse' => $inuse,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+					);
+					$this->masters_model->update_visit_type($update_record_id, $update_data);
+					$this->data['success'] = 'Visit Type Updated Successfully';
+				}
+			// Fetch all records from primary table
+			$this->data['all_visit_type'] = $this->masters_model->get_all_visit_type($this->data['rowsperpage']);
+			$this->data['all_visit_type_count'] = $this->masters_model->get_all_visit_type_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/visit_types',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}	
+    }
+
+	//priority type function starting
+	function priority_type($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Priority Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$priority_type = $this->input->post('priority_type');
+					$added_by = $this->input->post('added_by');
+					$insert_datetime = $this->input->post('insert_datetime');
+					if($this->masters_model->check_priority_type($priority_type)) 
+					{
+					 	$this->data['error'] = 'Priority type already exists';
+					}
+					else
+					{
+					 	$data_to_insert = array(
+					 		'hospital_id' => $hospital['hospital_id'],
+					 		'priority_type' => $priority_type,
+					 		'created_by' => $added_by,
+					 		'created_date_time' => $insert_datetime,
+					 	);
+					 	$this->masters_model->insert_priority_type($data_to_insert);
+					 	$this->data['success'] = 'Priority type Added Successfully';
+					}
+				}
+				// Fetch all records from primary table
+				$this->data['all_priority_type'] = $this->masters_model->get_all_priority_type($this->data['rowsperpage']);
+				$this->data['all_priority_type_count'] = $this->masters_model->get_all_priority_type_count();
+
+				//Fetch record to edit
+				$this->data['edit_priority_type'] = $this->masters_model->get_edit_priority_type_by_id($record_id);
+			    
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/priority_type',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_priority_type() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Priority Type";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$priority_type = $this->input->post('priority_type');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+				if($this->masters_model->check_priority_type($priority_type)) 
+				{
+					$this->data['error'] = 'Priority Type Cannot Be Updated Combination Already Exists';
+				}else
+				{
+					$update_data = array(
+						'priority_type' => $priority_type,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+					);
+					$this->masters_model->update_priority_type($update_record_id, $update_data);
+					$this->data['success'] = 'Priority Type Updated Successfully';
+				}
+			// Fetch all records from primary table
+			$this->data['all_priority_type'] = $this->masters_model->get_all_priority_type($this->data['rowsperpage']);
+			$this->data['all_priority_type_count'] = $this->masters_model->get_all_priority_type_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/priority_type',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}	
+    }
+	//priority type ends here
 	
 }

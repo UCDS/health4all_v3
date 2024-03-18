@@ -315,4 +315,28 @@ public function helpline_voicemail(){
 			show_404();
 		}
 	}
+
+	function helpline_unique_callers()
+	{
+		if ($this->dashboard_access == 1) 
+		{
+			$this->load->helper('form');
+			$this->data['title']="Helpline Trend Unique Callers";
+			$this->load->model('helpline_model');
+			$this->load->model('staff_model');
+			
+			$this->data['all_hospitals']=$this->staff_model->get_hospital();
+			$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+			$this->data['report']=$this->helpline_model->helpline_trend_unic();
+			$this->data['helpline']=$this->helpline_model->get_helpline();
+			
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('pages/helpline/helpline_trend_unique_callers',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}
+	}
 }

@@ -550,8 +550,7 @@ echo "</select></li>";
    <td><?php echo $hospital->type4; ?></td>
    <td><?php echo $hospital->type5; ?></td>
    <td><?php echo $hospital->type6; ?></td>
-   <td><a class="btn btn-outline-success" href="<?php echo base_url() ?>hospital/add_hospital?hospital_id=<?php echo $hospital->hospital_id; ?>" style="color:#428bca;"> Edit</a></td>
-                    
+   <td><a class="btn btn-success" href="<?php echo base_url() ?>hospital/add_hospital?hospital_id=<?php echo $hospital->hospital_id; ?>" style="color:white;"> Edit</a></td>
   </tr>
   <?php $sno++;}?>
   </tbody>

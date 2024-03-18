@@ -106,13 +106,10 @@ if($function->user_function=="missed_calls_report"){ ?>
 
 
 if($function->user_function=="dashboard" ){ ?>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_trend";?>">Trend</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_trend";?>">Trend - Calls</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Receivers</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline";?>">Dashboard</a></button>
-				
-				
-
-
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_unique_callers";?>">Trend - Unique Callers</a></button>
 <?php		 }
 
 	}
@@ -128,7 +125,8 @@ foreach($this->data['functions'] as $function){
 			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" || $function->user_function=="edit_demographic"
 			|| $function->user_function=="delete_patient_visit_duplicate" 
 			 || $function->user_function=="list_patient_visit_duplicate" || $function->user_function=="list_patient_edits"
-			 || $function->user_function=="edit_patient_visits" || $function->user_function=="list_edit_patient_visits"){
+			 || $function->user_function=="edit_patient_visits" || $function->user_function=="list_edit_patient_visits"
+			 || $function->user_function=="delete_patient_followup"){
 				$admin=1;
 				?>
 				<button class="accordion">Admin</button>
@@ -172,6 +170,9 @@ if($function->user_function=="list_edit_patient_visits"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_edit_patient_visits";?>">List patient visit edits</a></button>
 <?php		 }
 
+if($function->user_function=="delete_patient_followup"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_followup";?>">Delete Patient Followup</a></button>
+<?php		 }
 		} ?>
 </div> <?php
 	}

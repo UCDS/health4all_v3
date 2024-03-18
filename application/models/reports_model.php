@@ -4863,6 +4863,17 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$this->db->order_by('patient.age_years',DESC);
 		}
 		//till here
+
+		if($this->input->post('district'))
+		{
+			$this->db->where('patient.district_id',$this->input->post('district'));
+		}
+		
+		if($this->input->post('state'))
+		{
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}
+
         $this->db->select("patient_followup.patient_id,
         patient.insert_datetime,
         patient.first_name,
@@ -4893,7 +4904,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		patient_followup.last_dispensed_date,
 		patient_followup.last_dispensed_quantity,
 		followup_update_by.first_name as updated_first_name,
-		followup_update_by.last_name as updated_last_name")
+		followup_update_by.last_name as updated_last_name,
+		state.state,district.state_id as state_id")
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
@@ -4904,6 +4916,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
+		->join('district','patient.district_id=district.district_id','left')
+		->join('state','district.state_id=state.state_id','left')
        // ->where($filters);
 	   ->where('patient_followup.hospital_id',$hospital['hospital_id']);
 

@@ -49,7 +49,8 @@ class Op_Ip_report extends CI_Controller {
 		else show_404();
     }
 
-	function followup_map(){
+	function followup_map()
+	{
 		if($this->session->userdata('logged_in')){
 			$this->data['userdata']=$this->session->userdata('logged_in');
 			$access=0;
@@ -77,6 +78,7 @@ class Op_Ip_report extends CI_Controller {
 				$this->data['title']="Followup Map";
 				$this->load->view('templates/header',$this->data);
 				$this->data['report']=$this->op_ip_model->get_followup_map();
+				
 				$this->load->view('pages/followup_map',$this->data);
 				$this->load->view('templates/footer');
 			}
