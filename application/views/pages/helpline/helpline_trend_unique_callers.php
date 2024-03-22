@@ -79,9 +79,12 @@
 
         Highcharts.chart('calls_chart', {
 
-                        title: {
-                            text: '# Total Unique Calls <?=$total_calls;?>'
-                        },
+                        // title: {
+                        //     text: '# Total Unique Calls <?=$total_calls;?>'
+                        // },
+                         title: {
+                             text: ' '
+                         },
                         xAxis: {
 								// plotBands: [{ // visualize the weekend
 								// 	from: 4.5,

@@ -2149,6 +2149,8 @@ else if($type=="dosage"){
 	//visit type function start here
 	function check_visit_type($visit_name) 
     {
+		$hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
         $this->db->where('visit_name', $visit_name);
         $query = $this->db->get('visit_name');
         return $query->num_rows() > 0;
@@ -2156,6 +2158,8 @@ else if($type=="dosage"){
 
 	function check_visit_type_inuse($visit_name,$inuse) 
     {
+		$hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
         $this->db->where('visit_name', $visit_name);
         $this->db->where('inuse', $inuse);
         $query = $this->db->get('visit_name');
@@ -2225,6 +2229,8 @@ else if($type=="dosage"){
 	//priority type function start here
 	function check_priority_type($priority_type) 
     {
+		$hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
         $this->db->where('priority_type', $priority_type);
         $query = $this->db->get('priority_type');
         return $query->num_rows() > 0;

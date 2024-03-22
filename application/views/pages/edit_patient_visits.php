@@ -668,10 +668,10 @@ bootbox.confirm({
         url: '<?php echo base_url();?>patient/update_patient_visit_details',
         contentType : "application/json; charset=UTF-8",
                 type : "POST",
-        success: function (data) {
+        success: function (data) {	
             var bracetoast = JSON.parse(data);
-            var plaintxt = bracetoast.Message;	
-            alert(plaintxt);
+            var message = bracetoast.Message;
+            alert(message);
             location.reload();
         },
         error: function(data){
@@ -703,6 +703,7 @@ bootbox.confirm({
       <thead>
         <th style="text-align:center;">SNo</th>
         <th style="text-align:center;">Patient id</th>
+        <th style="text-align:center;">OP / IP Trends</th>
         <th style="text-align:center;">Visit type</th>
         <th style="text-align:center;">Department</th>
         <th style="text-align:center;">Admit date</th>
@@ -716,6 +717,7 @@ bootbox.confirm({
         <td style="text-align:center;"><?php echo $sno;?></td>
         <td style="text-align:center;"><?php echo $avail->patient_id ?></td>
         <td style="text-align:center;"><?php echo $avail->visit_type." #".$avail->hosp_file_no;?></td>
+        <td style="text-align:center;"><?php echo $avail->vn ?></td>
         <td style="text-align:center;"><?php echo $avail->dname;?></td>
         <td style="text-align:center;"><?php echo date("j M Y", strtotime("$avail->admit_date")).", ".date("h:i A.", strtotime("$avail->admit_time"));?></td>
         <td style="text-align:center;">

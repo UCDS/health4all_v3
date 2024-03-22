@@ -20,13 +20,20 @@
 $appointments=0;
 $helpline=0;
 $admin=0;
+$followup=0;
+$diagnostic=0;
+$sanitation=0;
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral" || $function->user_function=="patient_follow_up"
-			|| $function->user_function=="issue_list" || $function->user_function=="issue_summary" || $function->user_function=="followup_summary" || $function->user_function=="followup_map"){
+			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral"  
+			|| $function->user_function=="issue_list" || $function->user_function=="issue_summary" || $function->user_function=="prescription_report"
+			||$function->user_function=="IP Detail" || $function->user_function=="Patient Transport Report" ||
+			$function->user_function=="IP Summary" || $function->user_function=="Outcome Summary" ||
+			$function->user_function=="Patient Transport Report"
+			){
 				$appointments=1;
 				
 				?>
-				<button class="accordion">Patients</button>
+				<button class="accordion">Visits</button>
 <?php			break;}
 		}
 		
@@ -40,42 +47,98 @@ foreach($this->data['functions'] as $function){
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/visit_type_summary";?>">Visit Type Summary</a></button>
 <?php		 }
 
-if($function->user_function=="patient_follow_up"){ ?>
-	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/followup_detail";?>">Followup List </a></button>
-<?php		 }
-
 if($function->user_function=="appointment_by_staff"){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/appointment_summary_by_staff";?>">Appointments by Team Member</a></button>
 <?php		 }
 
-if($function->user_function== "patient_location_report"){ ?>
-			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
+	if($function->user_function== "patient_location_report"){ ?>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/op_ip_summary_report";?>">Patient Location Report</a></button>
+	<?php		 }
+	
+	if($function->user_function== "referral"){ ?>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
 <?php		 }
 
-if($function->user_function== "referral"){ ?>
-			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals";?>">Referrals</a></button>
-			<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "reports/referrals_centers";?>">Referral Centers</a></button>
-<?php		 } 
-
-if($function->user_function== "followup_summary"){ ?>
-		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary";?>">Followup Summary</a></button>
-	
-<?php } if($function->user_function== "issue_list"){ ?>
+ if($function->user_function== "issue_list"){ ?>
 		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><a class="anchor_style" href="<?php echo base_url()."reports/issue_list";?>">Issue List</a></button>
 
 <?php } if($function->user_function== "issue_summary"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"><a class="anchor_style" href="<?php echo base_url()."reports/issue_summary";?>">Issue Summary</a></button>
 
-<?php } 
+<?php } if($function->user_function=="prescription_report"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		<a class="anchor_style" href="<?php echo base_url()."report/get/prescription_report";?>">Prescription Report</a>
+	</button>
+<?php } if($function->user_function=="IP Detail"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		<a class="anchor_style" href="<?php echo base_url()."reports/icd_detail";?>">ICD Code Detail</a>
+	</button>
+<?php } if($function->user_function=="Patient Transport Report"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		<a class="anchor_style" href="<?php echo base_url()."reports/transport_detail";?>">Transport Detailed</a>
+	</button>
+<?php	} if($function->user_function=="IP Summary"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 	
+		<a class="anchor_style" href="<?php echo base_url()."staff_report/get_doc_act_by_institute";?>">Doctor Activity By Institution </a>
+	</button>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+		<a class="anchor_style" href="<?php echo base_url()."patient/casesheet_mrd_status";?>">MRD Report</a>
+	</button>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+		<a class="anchor_style" href="<?php echo base_url()."reports/ip_op_trends";?>">IP/OP Trends</a>
+	</button>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+		<a class="anchor_style" href="<?php echo base_url()."reports/icd_summary";?>">ICD Code Summary</a>
+	</button>	
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+		<a class="anchor_style" href="<?php echo base_url()."reports/transfer_summary";?>">Transfers Summary</a>
+	</button>
+<?php	}  if($f->user_function=="Outcome Summary"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+		<a class="anchor_style" href="<?php echo base_url()."reports/outcome_summary";?>">Outcome Summary - IP</a>
+	</button>
+<?php } if($f->user_function=="Patient Transport Report"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		<a class="anchor_style" href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a>
+	</button>
+<?php }	} ?>
 
-if($function->user_function== "followup_map"){ ?>
-		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_map";?>">Followup Map</a></button>
-
-<?php } } ?>
 </div> <?php
 	}
 ?>
 
+<!--Followup tab -->
+<?php
+foreach($this->data['functions'] as $function){
+	if( $function->user_function=="patient_follow_up" || $function->user_function=="followup_map" ||
+	 $function->user_function=="followup_summary"){
+		$followup=1;
+		?>
+		<button class="accordion">Followup</button>
+<?php			break;}
+}
+
+if($followup==1) { ?>
+<div class="panel_accordion">
+<?php
+foreach($this->data['functions'] as $function){
+	if($function->user_function=="patient_follow_up"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/followup_detail";?>">Followup List </a></button>
+<?php		 }
+
+if($function->user_function== "followup_map"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_map";?>">Followup Map</a></button>
+
+<?php }	if($function->user_function== "followup_summary"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary";?>">Followup Summary</a></button>
+
+<?php }  } ?>
+
+</div> <?php
+}
+?>
+<!--followup tab ends-->
 <?php 
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="missed_calls_report"){
@@ -101,13 +164,11 @@ foreach($this->data['functions'] as $function){
 
 if($function->user_function=="missed_calls_report"){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>
-	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/receiver_call_activity_report";?>">Receiver Call Activity Report</a></button>
 <?php		 }
-
 
 if($function->user_function=="dashboard" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_trend";?>">Trend - Calls</a></button>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Receivers</a></button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Calls Attended - Receivers</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline";?>">Dashboard</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_unique_callers";?>">Trend - Unique Callers</a></button>
 <?php		 }
@@ -119,12 +180,86 @@ if($function->user_function=="dashboard" ){ ?>
 	}
 ?>
 
+<!--Diagnostic tab -->
+<?php
+foreach($this->data['functions'] as $function){
+	if( $function->user_function=="Diagnostics - Summary" || $function->user_function=="Bloodbank" ||
+	 $function->user_function=="IP Summary"){
+		$Diagnostic=1;
+		?>
+		<button class="accordion">Diagnostic</button>
+<?php			break;}
+}
+
+if($Diagnostic==1) { ?>
+<div class="panel_accordion">
+<?php
+foreach($this->data['functions'] as $function){
+	if($function->user_function=="Diagnostics - Summary"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+	<a class="anchor_style" href="<?php echo base_url()."staff_report/get_lab_records";?>">Diagnostics Staff Activity</a>
+</button>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+	<a class="anchor_style" href="<?php echo base_url()."reports/order_summary/department";?>">Orders Summary</a>
+</button>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+	<a class="anchor_style" href="<?php echo base_url()."reports/sensitivity_summary";?>">Sensitivity Report</a>
+</button>
+<?php		 }
+
+if($function->user_function== "Bloodbank"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+	<a class="anchor_style" href="<?php echo base_url()."reports/audiology_summary";?>">Diagnostics Audiology Report</a>
+</button>
+
+<?php }	if($function->user_function== "IP Summary"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+	<a class="anchor_style" href="<?php echo base_url()."diagnostics/lab_turnaround_time";?>">Diagnostics Turn Around Time</a>
+</button>
+
+<?php }  } ?>
+
+</div> <?php
+}
+?>
+<!--Diagnostic tab ends-->
+
+<!--Sanitation tab -->
+<?php
+foreach($this->data['functions'] as $function){
+	if( $function->user_function=="Sanitation Evaluation"  || $function->user_function=="Masters - Sanitation" 
+	|| $function->user_function=="Sanitation Summary"){
+		$sanitation=1;
+		?>
+		<button class="accordion">Sanitation</button>
+<?php			break;}
+}
+
+if($sanitation==1) { ?>
+<div class="panel_accordion">
+<?php
+foreach($this->data['functions'] as $function){
+	if($function->user_function=="Sanitation Evaluation"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+	<a class="anchor_style"href="<?php echo base_url()."sanitation/view_scores";?>">Sanitation Evaluation - Scores </a>
+</button>
+<?php } 
+	if($function->user_function=="Masters - Sanitation" || $function->user_function == "Sanitation Summary"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+	<a class="anchor_style" href="<?php echo base_url()."sanitation/view_summary";?>">Sanitation Evaluation - Summary</a>
+</button>
+<?php } } ?>
+
+</div> <?php
+}
+?>
+<!--sanitation tab ends-->
 
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" || $function->user_function=="edit_demographic"
-			|| $function->user_function=="delete_patient_visit_duplicate" 
-			 || $function->user_function=="list_patient_visit_duplicate" || $function->user_function=="list_patient_edits"
+			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" 
+			 || $function->user_function=="edit_demographic" || $function->user_function=="delete_patient_visit_duplicate" 
+			 || $function->user_function=="list_patient_visit_duplicate" || $function->user_function=="list_patient_edits" 
 			 || $function->user_function=="edit_patient_visits" || $function->user_function=="list_edit_patient_visits"
 			 || $function->user_function=="delete_patient_followup"){
 				$admin=1;
@@ -151,13 +286,16 @@ if($function->user_function=="helpline_receiver" ){ ?>
 
 if($function->user_function=="edit_demographic" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/edit_patient_demographic_details";?>">Edit patient details</a></button>
-<?php		 }
+<?php		 } 
+
 if($function->user_function=="delete_patient_visit_duplicate"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_visit_duplicate";?>">Delete patient visit duplicate</a></button>
 <?php		 }
+
 if($function->user_function=="list_patient_visit_duplicate"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_patient_visit_duplicate";?>">List patient visit duplicate</a></button>
 <?php		 }
+
 if($function->user_function=="list_patient_edits"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_patient_edits";?>">List patient edits</a></button>
 <?php		 }
@@ -173,6 +311,7 @@ if($function->user_function=="list_edit_patient_visits"){ ?>
 if($function->user_function=="delete_patient_followup"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_followup";?>">Delete Patient Followup</a></button>
 <?php		 }
+
 		} ?>
 </div> <?php
 	}

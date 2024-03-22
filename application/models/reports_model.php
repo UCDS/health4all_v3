@@ -4757,7 +4757,17 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}else{
 			$this->db->order_by('patient.age_years',DESC);
 		}
-      
+		
+		if($this->input->post('district'))
+		{
+			$this->db->where('patient.district_id',$this->input->post('district'));
+		}
+		
+		if($this->input->post('state'))
+		{
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}
+
         $this->db->select("count(*) as count",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
@@ -4767,7 +4777,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
 		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
 		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
-		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left');
+		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
+		->join('district','patient.district_id=district.district_id','left')
+		->join('state','district.state_id=state.state_id','left');
         //->where($filters);
         //$this->db->limit($rows_per_page,$start);
         $query = $this->db->get();

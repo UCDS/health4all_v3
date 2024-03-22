@@ -711,23 +711,23 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view">Edit Hospital</a>
 			</li>
-			<li <?php if(preg_match("/user_panel\/priority_type/", current_url()) || preg_match("/user_panel\/priority_type\/1/", current_url())){ echo 'class="active"'; }?>>
-				<a href="<?php echo base_url() . "user_panel/priority_type"; ?>"> Add / Update Priority Type</a>
-			</li>
-			<li <?php if(preg_match("/user_panel\/visit_type/", current_url()) || preg_match("/user_panel\/visit_type\/1/", current_url())){ echo 'class="active"'; }?>>
-				<a href="<?php echo base_url() . "user_panel/visit_type"; ?>"> Add / Update Visit Type</a>
-			</li>
 			<li <?php if (preg_match("^add_department/department_view^", current_url()) || preg_match("^add_department^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>departments/add_department/department_view">Add / Update Departments</a>
 			</li>
 			<li <?php if (preg_match("^hospital_areas/add_area^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>hospital_areas/add_area">Add Areas</a>
+				<a href="<?php echo base_url(); ?>hospital_areas/add_area">Add / Update Areas</a>
 			</li>
 			<li <?php if (preg_match("^add_unit^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>hospital_units/add_unit">Add Units</a>
+				<a href="<?php echo base_url(); ?>hospital_units/add_unit">Add / Update Units</a>
+			</li>
+			<li <?php if(preg_match("/user_panel\/priority_type/", current_url()) || preg_match("/user_panel\/priority_type\/1/", current_url())){ echo 'class="active"'; }?>>
+				<a href="<?php echo base_url() . "user_panel/priority_type"; ?>"> Add / Update Priority Type</a>
+			</li>
+			<li <?php if(preg_match("/user_panel\/visit_type/", current_url()) || preg_match("/user_panel\/visit_type\/1/", current_url())){ echo 'class="active"'; }?>>
+				<a href="<?php echo base_url() . "user_panel/visit_type"; ?>"> Add / Update Visit Type</a>
 			</li>
 			<li <?php if (preg_match("/user_panel\/primary_routes/", current_url()))
 				echo 'class="active"'; ?>>
