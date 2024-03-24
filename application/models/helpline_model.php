@@ -115,6 +115,10 @@ class Helpline_model extends CI_Model{
 				'resolution_date_time'=>$resolution_date_time,
 				'updated'=>1
 			);
+
+			$this->db->set('update_date_time', date('Y-m-d H:i:s'));
+			$this->db->set('updated_user_id',$user['staff_id']);
+
 			$this->db->trans_start();
 			$this->db->where('call_id', $call);
 			$this->db->update('helpline_call',$data);
@@ -538,10 +542,12 @@ class Helpline_model extends CI_Model{
 		}		
 		if($this->input->post('district')){
 			$this->db->where('helpline_call.district_id',$this->input->post('district'));
-		
 		}
 		$this->db->select("helpline_call.visit_id,helpline_call.to_number,helpline_call.recording_url,helpline_call.ip_op,helpline_call.direction,helpline_call.resolution_date_time,helpline_call.resolution_status_id,helpline_call.call_category_id,helpline_call.department_id,helpline_call.hospital_id,helpline_call.caller_type_id,helpline_call.language_id,helpline_call.dial_whom_number,helpline_call.from_number,helpline_call.call_type as call_type,helpline_call.dial_call_duration as dial_call_duration,helpline_call.start_time,helpline_receiver.short_name as short_name, helpline_call.call_id, helpline_call.call_group_id, helpline_call.note, helpline.note as line_note,helpline.helpline_id,IFNULL(hospital.hospital_short_name,'') as hospital_short_name ,IFNULL(helpline_caller_type.caller_type,'') as caller_type,IFNULL(helpline_call_category.call_category,'') as call_category,
-		IFNULL(helpline_resolution_status.resolution_status,'') as resolution_status,IFNULL(language.language,'') as language ,IFNULL(department.department,'') as department, IFNULL(district.district_id,'') as district_id,IFNULL(district.district,'') as district,IFNULL(state.state,'') as state",FALSE)
+		IFNULL(helpline_resolution_status.resolution_status,'') as resolution_status,IFNULL(language.language,'') as language ,
+		IFNULL(department.department,'') as department, IFNULL(district.district_id,'') as district_id,
+		IFNULL(district.district,'') as district,IFNULL(state.state,'') as state,helpline_call.update_date_time,
+		staff.first_name",FALSE)
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
@@ -555,6 +561,7 @@ class Helpline_model extends CI_Model{
 		->join('department', 'department.department_id = helpline_call.department_id','left')
 		->join('district', 'district.district_id = helpline_call.district_id','left')
 		->join('state', 'district.state_id= state.state_id','left')
+		->join('staff', 'staff.staff_id= helpline_call.updated_user_id','left')
 		->where('from_number NOT IN (SELECT number FROM helpline_numbers)')			
 		->where('user_helpline_link.user_id', $user['user_id'])
 		->where('reports_access',1)

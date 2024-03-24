@@ -71,7 +71,7 @@
 								<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
 							<?php } ?>
 						</div>			
-						<div style="float:right;margin-right:10;margin-top:25px;">			
+						<div style="float:right;margin-right:10;margin-top:5px;">			
 							<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
 						</div>
 						</td>
@@ -437,19 +437,26 @@
 				</tr>
 				<?php } ?>
 
-				<?php if(!!$patient->advise || !!$patient->decision) { ?>
+				<?php if(!!$patient->decision) { ?>
 				<tr class="print-element" width="95%" >
 					<td  colspan="3">
 					<?php if(!!$patient->decision) { ?>
 					<b>Decision</b>: <?php echo $patient->decision;?><br />
 					<?php } ?>
-					<?php if(!!$patient->advise) { ?>
-					<b>Advise</b>: <?php echo $patient->advise;?>
-					<?php } ?>
+					</td>
+				</tr>
+				<?php } ?><br/>
+				
+				<?php if(!!$patient->advise || !!$patient->decision) { ?>
+				<tr class="print-element" width="95%" >
+					<td  colspan="3">
+						<?php if(!!$patient->advise) { ?>
+						<b>Advise</b>: <?php echo $patient->advise;?>
+						<?php } ?>
 					</td>
 				</tr>
 				<?php } ?>
-				
+
 				<?php
 					if ($print_summary_counseling) 
 					{

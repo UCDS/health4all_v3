@@ -1,3 +1,4 @@
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 <!-- Modal -->
 <div class="modal fade" id="updateCallModal" tabindex="-1" role="dialog" aria-labelledby="updateCallModal">
     <div class="modal-dialog" role="document" style="width:40%">
@@ -28,9 +29,10 @@
                 <div class="row">
                     <div class="col-md-3">Note</div>
                     <div class="col-md-6">
-                        <textarea name="note_<?php echo $call->call_id;?>" class="notes form-control" rows="4" class="form-control" style="width:250px"><?php echo $call->note;?></textarea>
+                    <div id="container"></div>
                     </div>
                 </div>
+                
                 <div class="row">
                     <div class="col-md-3">Caller Type</div>
                     <div class="col-md-6">
@@ -153,6 +155,7 @@
 
 var modalData;
 var isupdatedOnce = false;
+var editor ;
 function initDistrictSelectize(){
         var districts = JSON.parse('<?php echo json_encode($districts); ?>');
 	var selectize = $('#district_id').selectize({
@@ -179,13 +182,32 @@ function initDistrictSelectize(){
 	
 	
 }
-
 function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,resolutionStatusSelect) {
-   
     const modal = $("#updateCallModal");
     modalData = callData;
     hideUpdateCallStatusMessage();
     modal.find(".callId").html(callData.call_id);
+
+    var callId = callData.call_id;
+    var textareaId = 'testCkeditor_' + callId;
+    var textarea = $('#' + textareaId);
+    var textareaHtml = '<textarea name="note_' + callId + '" class="notes form-control" rows="4" id="' + textareaId + '" style="width:250px">' + callData.note + '</textarea>';
+        $('#container').append(textareaHtml);
+        ClassicEditor
+            .create(document.getElementById(textareaId), {
+                toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+            })
+            .then(editor => {
+                editor.setData(callData.note);
+                editor.model.document.on('change:data', () => {
+                    $('#' + textareaId).val(editor.getData());
+                });
+                textarea.data('ckeditor', editor);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    
     modal.find(".fromnumber").html(callData.from_number);
     var recievedby = "";
     if(callData.short_name==null){
@@ -196,6 +218,7 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     }
     modal.find(".receivedby").html(recievedby);
     modal.find(".notes").val(callData.note);
+   
     if (callData.caller_type_id!=0){
     	modal.find(".caller_type").val(callData.caller_type_id);
     }else{
@@ -279,7 +302,7 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     var element = document.getElementById("submitmodal");
     element.classList.add("submitmodal"+callData.call_id);
     registerOnUpdateFormSubmitted(callData);
-   
+    
 }
 function dateNow(dateObject){
     const delimiter = "-";
@@ -346,7 +369,7 @@ function registerOnUpdateFormSubmitted(callData) {
 		postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
 		postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
 		postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
-		postData[`note_${callId}`] = modalData.note = modal.find(".notes").val();
+		postData[`note_${callId}`] =  modal.find(".notes").val();
 		postData[`group_${callId}`] = modal.find(".language").val();
 		postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
 		postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
@@ -478,9 +501,9 @@ function registerOnUpdateFormSubmitted(callData) {
     	 		window.location.reload();
     		}
     	}
-    	
-    	
+        window.location.reload();
     })
+   
 }
 
 function registerHospitalChangeListener() {

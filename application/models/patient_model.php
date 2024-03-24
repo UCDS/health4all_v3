@@ -555,9 +555,11 @@ class patient_model extends CI_Model {
         }
         $this->db->select('visit_id,patient_id,admit_date,admit_time,unit,area,visit_type,presenting_complaints,past_history,family_history,
         admit_weight,pulse_rate,respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,rs,pa,cns,cxr,
-        provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,hosp_file_no,department.department as dname')
+        provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,hosp_file_no,department.department as dname,
+        visit_name.visit_name as vn')
                 ->from('patient_visit')
                 ->join('department','department.department_id=patient_visit.department_id','left')
+                ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
                 ->where('patient_visit.patient_id',$patient_id);
         $this->db->order_by('patient_visit.admit_date','DESC');
         $query = $this->db->get();

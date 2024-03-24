@@ -1,4 +1,4 @@
-	<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css"></script>
+<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css"></script>
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/flaticon.css" >
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/flaticon2.css" >
 
@@ -27,12 +27,18 @@
 		$average = calculate_average($d_array);
 		$median = calculate_median($d_array);
 	?>
+<?php 
+	$total_calls = 0;
+	foreach($volunteer_report as $r) { 
+		$total_calls += $r->count;
+	}
+?>	
 	<script>
 	$(function(){
 		$(".date").datetimepicker({
 			format : "D-MMM-YYYY"
 		});
-
+    
 	Highcharts.chart('volunteerChart', {
 		chart : {type:'bar'},
 		title: false,
@@ -146,7 +152,12 @@
 		<div >
 			<div class="panel panel-default">
 			    <div class="panel panel-heading">
-				    <h4><i class="fa flaticon-call-center-worker-with-headset" aria-hidden="true"></i>&nbsp Receiver</h4>
+				    <h4>
+						<i class="fa flaticon-call-center-worker-with-headset" aria-hidden="true">
+						</i>&nbsp Receivers - <?php echo count($volunteer_report); ?> ,&nbsp;&nbsp;
+						<i class="fa fa-phone" aria-hidden="true">
+						</i>&nbsp Total Calls - <?php echo $total_calls; ?> 
+					</h4>
 			    </div>
 			    <div class="panel-body">
 			        <div id="volunteerChart" style="height:800px"></div>

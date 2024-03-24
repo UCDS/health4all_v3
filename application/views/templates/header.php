@@ -306,51 +306,27 @@ break;
 				foreach($functions as $f){
 					if($f->user_function=="IP Summary"){ ?>
 						  <li><a href="<?php echo base_url()."reports/ip_summary";?>">IP Summary</a></li>
-						  <li><a href="<?php echo base_url()."patient/casesheet_mrd_status";?>">MRD Report</a></li>
+						  
 						  <li><a href="<?php echo base_url()."staff_report/get_patient_records";?>">Staff Activity OP/IP</a></li>
 						  <li><a href="<?php echo base_url()."staff_report/get_doctor_activity";?>">Doctor Activity OP/IP</a></li>
-						  <li><a href="<?php echo base_url()."staff_report/get_doc_act_by_institute";?>">Doctor Activity By Institution </a></li>
-						  <li><a href="<?php echo base_url()."staff_report/get_lab_records";?>">Diagnostics Staff Activity</a></li>
-						  <li><a href="<?php echo base_url()."reports/ip_op_trends";?>">IP/OP Trends</a></li>
-						  <li><a href="<?php echo base_url()."reports/icd_summary";?>">ICD Code Summary</a></li>
-						  <li><a href="<?php echo base_url()."reports/transfer_summary";?>">Transfers Summary</a></li>
 
 				<?php	}
-                      if($f->user_function=="Outcome Summary"){ ?>
-						  <li><a href="<?php echo base_url()."reports/outcome_summary";?>">Outcome Summary - IP</a></li>
-				<?php                      }
-                      if($f->user_function=="Patient Transport Report"){ ?>
-						  <li><a href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a></li>
-				<?php                      }				
+                      			
 				}
 				foreach($functions as $f){
-					if($f->user_function=="Diagnostics - Summary"){ ?>
-						  <li><a href="<?php echo base_url()."reports/order_summary/department";?>">Orders Summary</a></li>
-						  <li><a href="<?php echo base_url()."reports/sensitivity_summary";?>">Sensitivity Report</a></li>
-                                                  <li><a href="<?php echo base_url()."diagnostics/lab_turnaround_time";?>">Diagnostics Turn Around Time</a></li>
-				<?php	}
 					if($f->user_function=="Bloodbank"){ ?>
 						  <li><a href="<?php echo base_url()."bloodbank/user_panel/donation_summary";?>">Bloodbank Reports</a></li>
 				<?php	}
-					if($f->user_function=="Bloodbank"){ ?>
-						  <li><a href="<?php echo base_url()."reports/audiology_summary";?>">Diagnostics Audiology Report</a></li>
-				<?php	}
-					if($f->user_function=="Masters - Sanitation" || $f->user_function == "Sanitation Summary"){ ?>
-						<li><a href="<?php echo base_url()."sanitation/view_summary";?>">Sanitation Evaluation</a></li>
-				<?php
-					}
+					
+					
 				?>
-				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report" ||  $f->user_function=="helpline_receiver" || $f->user_function=="referral"
-				|| $f->user_function=="issue_list" || $f->user_function=="issue_summary" || $f->user_function=="followup_summary" || $f->user_function=="followup_map"
+				<?php if($f->user_function=="OP Detail" || $f->user_function=="completed_calls_report" || $f->user_function=="missed_calls_report" ||  $f->user_function=="appointment_by_staff" ||  $f->user_function=="login_report" ||  $f->user_function=="patient_location_report" ||  $f->user_function=="helpline_receiver" || $f->user_function=="referral" || $f->user_function=="issue_list"
+				|| $f->user_function=="issue_summary" || $f->user_function=="followup_map" || $f->user_function=="followup_summary" 
 				|| $f->user_function=="delete_patient_visit_duplicate" || $f->user_function=="list_patient_visit_duplicate" || $f->user_function=="list_patient_edits" || $f->user_function=="edit_patient_visits" 
-				|| $f->user_function=="list_edit_patient_visits" || $f->user_function=="delete_patient_followup"){ $more_reports=1; ?>
+				|| $f->user_function=="list_edit_patient_visits" || $f->user_function=="delete_patient_followup" ){ $more_reports=1; ?>
 					
 				<?php } ?>
-				<?php
-					if($f->user_function=="prescription_report"){ ?>
-           <!--       		<li><a href="<?php echo base_url()."report/get/vitals_report";?>"><i class="glyphicon glyphicon-heart"></i> Vitals Report</a></li> -->
-						<li><a href="<?php echo base_url()."report/get/prescription_report";?>"><i class="glyphicon glyphicon-pencil"></i> Prescription Report</a></li>
-					<?php }?>
+				
 					
 			<?php	}	?>
 			<?php if ($more_reports == 1){ ?>
@@ -384,15 +360,7 @@ break;
 			<?php	}
 			if($f->user_function=="IP Detail"){ ?>
 						<li><a href="<?php echo base_url()."reports/ip_detail";?>">IP Detail</a></li>
-						<li><a href="<?php echo base_url()."reports/icd_detail";?>">ICD Code Detail</a></li>
 			<?php }
-			if($f->user_function=="Sanitation Evaluation"){ ?>
-								<li><a href="<?php echo base_url()."sanitation/view_scores";?>">Sanitation Evaluation</a></li>
-					<?php	}
-
-			if($f->user_function=="Patient Transport Report"){ ?>
-								<li><a href="<?php echo base_url()."reports/transport_detail";?>">Transport Detailed</a></li>
-					<?php	}
 
 			if($f->user_function=="Helpline Reports"){ ?>
 								<li><a href="<?php echo base_url()."helpline/detailed_report";?>">Helpline Calls</a></li>

@@ -501,13 +501,23 @@ echo "</select></li>";
 							<small><?php echo $call->from_number;?></small>
 							<p class="call_now_img call_button" onclick="openCallModalOnRowClick('<?php echo $call->from_number;?>', '<?php echo $call->to_number;?>', '<?php echo $call->line_note; ?>', '<?php echo $call->note;?>')" title="Click to Initiate Call" data-toggle="tooltip" style="display: none;"><i class="fa fa-phone fa-2x"></i></p>
 						</td>
-						<td><small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;@&nbsp;<?php echo $call->line_note; ?> - <?php echo $call->to_number;?>
+						<td>
+							<small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;@&nbsp;<?php echo $call->line_note; ?> - <?php echo $call->to_number;?>
 							<audio controls preload="none">
 								<source src="<?php echo $call->recording_url;?>" type="audio/mpeg">
 								Your browser does not support the audio element.
 							</audio>
 							</small>
-							<?php echo $call->note;?>
+							<?php echo $call->note;?><br/>
+							<div style="padding-left:60px;text-align:right!important;">
+								<?php 
+									if(!empty($call->first_name)) 
+									{ 
+								?> 
+								<b>Updated by : <?php echo $call->first_name.' , '.date("j M Y h:i a.", strtotime("$call->update_date_time")); } 
+								?></b><br/>
+
+							</div>
 						</td>						
 						<td>
 							<?php echo $call->caller_type;?>

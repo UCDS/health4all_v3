@@ -594,6 +594,7 @@ class Register_model extends CI_Model{
 		foreach($this->patient as $column){
 			if($this->input->post($column)){
 				$patient_data[$column] = $this->input->post($column);
+				$patient_data['alt_phone'] = $this->input->post('alt_phone');
 			}
 		}		
 		$mlc_duplicate = '';

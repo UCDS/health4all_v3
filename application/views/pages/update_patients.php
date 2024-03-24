@@ -905,9 +905,9 @@ function initDistrictSelectize(){
 				<label class="control-label">Phone</label>
 				<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($f->edit==1 && empty($patient->phone)) echo ''; else echo ' readonly'; ?>/>
 			</div>
-                        <div class="col-md-4 col-xs-6">
+            <div class="col-md-4 col-xs-6">
 				<label class="control-label">Alt Phone</label>
-				<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($f->edit==1 && empty($patient->phone)) echo ''; else echo ' readonly'; ?>/>
+				<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($f->edit==1 && empty($patient->alt_phone)) echo ''; else echo ' readonly'; ?>/>
 			</div>
                         </div>
 			<div class="row alt">
@@ -2300,7 +2300,7 @@ function initDistrictSelectize(){
 							<?php } ?>
 						</div>
 						<div class="col-md-6">
-							<label class="control-label">ICD Code</label>
+							<label class="control-label">ICD Code</label><br/>
 							<?php if(!empty($patient->icd_10)){?>
 								<label><?php echo $patient->icd_10." ".$patient->code_title;?></label>
 							<?php } else {?>
