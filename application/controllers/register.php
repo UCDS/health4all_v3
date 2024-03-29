@@ -732,55 +732,79 @@ class Register extends CI_Controller {
 		}
 		else{		
 			// Patient documents
-			if ( array_key_exists("upload_file", $_FILES)){
-                $dir_path = './assets/patient_documents/';
-                $config['upload_path'] = $dir_path;
-                $config['allowed_types'] = $allowed_types;
-                $config['max_size'] = $max_size;
-                $config['max_width'] = $max_width;
-                $config['max_height'] = $max_height;
-                $config['encrypt_name'] = FALSE;
-                $config['overwrite'] = $overwrite;
-                $config['remove_spaces'] = $remove_spaces;
- 
-                // Upload file and add document record
-                $msg = "Error: ";
-                $uploadOk = 1;
-                $target_file = $dir_path . basename($_FILES["upload_file"]["name"]);
-                $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
-                if ($_FILES['upload_file']['size'] <= 0 && $uploadOk == 1) {
-                    $msg = $msg . "Select at least one file.";
-                    $uploadOk = 0;
+			if (array_key_exists("upload_file", $_FILES)) 
+			{
+				$dir_path = './assets/patient_documents/';
+				$config['upload_path'] = $dir_path;
+				$config['allowed_types'] = $allowed_types;
+				$config['max_size'] = $max_size;
+				$config['max_width'] = $max_width;
+				$config['max_height'] = $max_height;
+				$config['encrypt_name'] = FALSE;
+				$config['overwrite'] = $overwrite;
+				$config['remove_spaces'] = $remove_spaces;
+			
+				// Upload file and add document record
+				$msg = "Error: ";
+				$uploadOk = 1;
+				$target_file = $dir_path . basename($_FILES["upload_file"]["name"]);
+				$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+			
+				if ($_FILES['upload_file']['size'] <= 0 && $uploadOk == 1) {
+					$msg = $msg . "Select at least one file.";
+					$uploadOk = 0;
 				}
-				
-				// Document type is manditory
-				if (!$this->input->post('document_type'))  {
-                    $uploadOk = 0;
+			
+				// Document type is mandatory
+				if (!$this->input->post('document_type')) {
+					$uploadOk = 0;
+				}
+			
+				// Check for upload errors
+				if ($uploadOk == 0) {
+					$this->data['msg'] = $msg . " Your file was not uploaded.";
+				} else {
+					// Rotate image
+					$rotation_angle = $this->input->post('rotation');
+					if ($rotation_angle) {
+						$rotation_angle = 360 - $rotation_angle;
+						$this->load->library('image_lib');
+						$config['rotation_angle'] = $rotation_angle;
+						$config['source_image'] = $_FILES["upload_file"]["tmp_name"];
+						$config['maintain_ratio'] = FAlSE;
+            			$config['width'] = 180;
+						$config['height'] = 180;
+						$this->image_lib->initialize($config);
+						if (!$this->image_lib->rotate()) {
+							$this->data['msg'] = "Error rotating image: " . $this->image_lib->display_errors();
+							$uploadOk = 0;
+						} else {
+							echo "Image rotated successfully."; // Debugging statement
+						}
+					} else {
+						echo "No rotation angle provided."; // Debugging statement
+					}
+			
+					// Try to upload file
+					if ($uploadOk == 1) {
+						$new_name = $patient_id . '_' . $_FILES["upload_file"]['name'];
+						$config['file_name'] = $new_name;
+						$this->load->library('upload', $config);
+						if (!$this->upload->do_upload('upload_file')) {
+							$msg = $msg . $this->upload->display_errors();
+							$uploadOk = 0;
+						} else {
+							$file = $this->upload->data();
+							$uploadOk = 1;
+						}
+					}
+				}
+			
+				// Add document record
+				if ($uploadOk == 1 && $this->patient_document_upload_model->add_document($patient_id, $file['file_name']) ) {
+					$this->data['msg'] = "Document Added Successfully";
 				}
 
-                // Check for upload errors
-                if ($uploadOk == 0) {
-                    $this->data['msg']= $msg . " Your file was not uploaded.";
-                }
-                else {
-				    // if everything is ok, try to upload file
-				    $new_name = $patient_id.'_'.$_FILES["upload_file"]['name'];
-                    $config['file_name'] = $new_name;
-                    $this->load->library('upload', $config);
-                    if (!$this->upload->do_upload('upload_file')) {
-                        $msg = $msg . $this->upload->display_errors();
-                        $uploadOk = 0;
-                    } else {
-                        $file = $this->upload->data();
-                        $uploadOk = 1;
-                    }
-                }
-
-                // Add document record
-		        if ($uploadOk ==1 && $this->patient_document_upload_model->add_document($patient_id, $file['file_name'])){							
-				    $this->data['msg']="Document Added Succesfully";		
-			    }
 			}
 
 			if ($document_link){
@@ -789,8 +813,54 @@ class Register extends CI_Controller {
 				}
 			}
 			
-			if ($this->input->post('edit_document_link')){
-				$this->patient_document_upload_model->update_document_metadata();			
+			if($this->input->post('edit_document_link'))
+			{
+				$edit_patient_id = $this->input->post('edit_patient_id');
+
+				$dir_path = './assets/patient_documents/';
+				$config['upload_path'] = $dir_path; // upload directory
+				$config['allowed_types'] = 'gif|jpg|png|jpeg'; // Allowed file types
+				$config['max_size'] = $max_size;
+				$config['max_width'] = $max_width;
+				$config['max_height'] = $max_height;
+				$config['encrypt_name'] = FALSE;
+				$config['overwrite'] = $overwrite;
+				$config['remove_spaces'] = $remove_spaces;
+				$config['file_ext_tolower'] = true; // Convert extensions to lowercase
+
+				$this->load->library('upload', $config);
+				if ($this->upload->do_upload('edit_upload_file')) 
+				{
+					$upload_data = $this->upload->data();
+					$new_name = $edit_patient_id . '_' . $upload_data['file_name'];
+
+					$old_path = $upload_data['full_path'];
+					$new_path = $upload_data['file_path'] . $new_name;
+					rename($old_path, $new_path);
+
+					$rotation_angle = $this->input->post('rotation');
+					if($rotation_angle) 
+					{
+						$rotation_angle = 360 - $rotation_angle;
+						$this->load->library('image_lib');
+						$config['rotation_angle'] = $rotation_angle;
+						$config['source_image'] = $new_path;
+						$config['maintain_ratio'] = FALSE;
+						$config['width'] = 180;
+						$config['height'] = 180;
+						$this->image_lib->initialize($config);
+						if (!$this->image_lib->rotate()) {
+							$this->data['msg'] = "Error rotating image: " . $this->image_lib->display_errors();
+						} else {
+							echo "Image rotated successfully."; // Debugging statement
+						}
+					} else {
+						echo "No rotation angle provided."; // Debugging statement
+					}
+					$this->patient_document_upload_model->update_document_metadata($new_name);
+				} else {
+					$error = array('error' => $this->upload->display_errors());
+				}
 			}
 					
 			$this->data['transporters'] = $this->staff_model->get_staff("Transport");

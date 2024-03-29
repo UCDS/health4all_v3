@@ -386,6 +386,7 @@ function initDistrictSelectize(){
 	 $('#myModalEdit_').on('show.bs.modal', function(e) {
 
 		//get data-id attribute of the clicked element
+		var edit_patient_id = $(this).find('#edit_patient_id').val();
 		var id = $(e.relatedTarget).data('id');
 		var note = $(e.relatedTarget).data('note');
 		var type = $(e.relatedTarget).data('type');
@@ -394,7 +395,7 @@ function initDistrictSelectize(){
 		var shortname = $(e.relatedTarget).data('shortname');
 		//populate the textbox
 		$(e.currentTarget).find('input[name="edit_document_link"]').val(id);
-		$(e.currentTarget).find('label[id="filelink"]').html(shortname);
+		$(e.currentTarget).find('label[id="filelink"]').html(shortname); // Image name
 		$(e.currentTarget).find('input[id="edit_note"]').val(note);
 		$(e.currentTarget).find('input[id="edit_record_id"]').val(record_id);
 		
@@ -409,7 +410,10 @@ function initDistrictSelectize(){
 		
 			$(e.currentTarget).find('input[id="edit_document_date"]').val(doc_date);
 		}
-	});
+
+		// var imgSrc = '<?php echo base_url().'register/display_document/'; ?>' + edit_patient_id + '_' + shortname;
+    	// $(e.currentTarget).find('#img-preview-1').attr('src', imgSrc);
+});
 
    $("#file_upload").click(function (event) {
 	    //stop submit the form, we will post it manually.
@@ -422,6 +426,9 @@ function initDistrictSelectize(){
         var data = new FormData(form);
         var id = $(this).attr('id')
         // disabled the submit button
+		var rotation = $('#rotation').val();
+    	data.append('rotation', rotation);
+
         $("#file_upload").prop("disabled", true);
 
         $.ajax({
@@ -433,14 +440,15 @@ function initDistrictSelectize(){
 	        contentType: false,
 	        cache: false,
 	        success: function (data) {
-		        // show success notification here...
-		        location.reload()
+		        //console.log("Success:", data);
+		        location.reload();
 	        },
     	    error: function (e) {
-	    	    // show error notification here...
+	    	    console.error("Error:", e);
 		        $("#file_upload").prop("disabled", false);
 	        }
 	     });
+		 alert("Rotation value: " + rotation);
    });
 
    $("#btdelete").click(function(){
@@ -474,16 +482,24 @@ function initDistrictSelectize(){
 	        }
 	     });
     });
- $("#btEdit").click(function(){
+
+ $("#btEdit").click(function(event){
 	    //stop submit the form, we will post it manually.
 		event.preventDefault();
-
+		
         // Get form
         var form = $(event.target).parents('form')[0];
 
         // Create an FormData object 
         var data = new FormData(form);
-
+		
+		var rotationValue = $("#edit_rotation_value").val();
+    	data.append('rotation', rotationValue);
+		
+		var fileInput = $('#edit_file')[0].files[0];
+		if (fileInput) {
+			data.append('edit_upload_file', fileInput);
+		}
         // disabled the submit button
         $("#btEdit").prop("disabled", true);
 
@@ -505,6 +521,7 @@ function initDistrictSelectize(){
 	        }
 	     });
     });
+
    $("input:radio[name=insurance_case]").click(function() {
       if($('input[name=insurance_case]:checked').val()==0){
           $("#insurance_id").prop("disabled", true);
@@ -849,7 +866,7 @@ function initDistrictSelectize(){
 							<?php if($f->edit==1 && empty($patient->dob)) echo ''; else echo ' readonly'; ?> 
 							style="background: #ADFF2F; font-weight: bold;"/>
 					<?php } ?>
-				</div>		
+				</div>
 			</div>
             </div>
                <div class="col-md-12">
@@ -905,7 +922,7 @@ function initDistrictSelectize(){
 				<label class="control-label">Phone</label>
 				<input type="text" name="phone" class="form-control" value="<?php if($patient) echo $patient->phone;?>" <?php if($f->edit==1 && empty($patient->phone)) echo ''; else echo ' readonly'; ?>/>
 			</div>
-            <div class="col-md-4 col-xs-6">
+                        <div class="col-md-4 col-xs-6">
 				<label class="control-label">Alt Phone</label>
 				<input type="text" name="alt_phone" class="form-control" value="<?php if($patient) echo $patient->alt_phone;?>" <?php if($f->edit==1 && empty($patient->alt_phone)) echo ''; else echo ' readonly'; ?>/>
 			</div>
@@ -1337,7 +1354,8 @@ function initDistrictSelectize(){
                                             </select>
                                          </td>
                                          <td>
-                                         <input type="datetime-local" name="transfer_date" class="form-control transfer_date" value="<?php echo date("Y-m-d\TH:i:s");?>" id="transfer_date" />
+                                         <input type="datetime-local" name="transfer_date" class="form-control transfer_date" 
+										 value="<?php echo date("Y-m-d\TH:i:s");?>" id="transfer_date" />
                                    
                                          </td>
                                          </tr>
@@ -2311,6 +2329,7 @@ function initDistrictSelectize(){
 								</select>
 							<?php } ?>
 						</div>
+						
 					</div>
 				</div>
 				<script>
@@ -2348,20 +2367,32 @@ function initDistrictSelectize(){
 					<div class="col-md-2">
 					<label class="control-label">Advise</label>
 					</div>
+
+					<?php 
+						if(!empty($patient->advise))
+						{
+					?>
+					   <div class="col-md-2"> <?php echo $patient->advise; ?> </div>
+					<?php	
+					    } else{
+					?>
 					<div class="col-md-8">
-					<textarea name="advise" class="form-control" id="advise" cols="40" <?php if($f->edit==1&& empty($patient->advise)) echo ''; else echo ' readonly'; ?> >
-						<?php if(!!$patient->advise) echo $patient->advise;?>
-					</textarea>
+						<textarea name="advise" class="form-control" id="advise" cols="40">
+							<?php if (!!$patient->advise) echo $patient->advise; ?>
+						</textarea>
 					</div>
-					<script>
-						ClassicEditor
-							.create( document.querySelector( '#advise' ), {
-								toolbar: [ 'bold', 'italic', 'bulletedList', 'numberedList' ]
-							} )
-							.catch( error => {
-									console.error( error );
-							} );
-					</script>
+						<script>
+							if (!document.getElementById('advise').hasAttribute('readonly')) {
+								ClassicEditor
+									.create( document.querySelector( '#advise' ), {
+										toolbar: [ 'bold', 'italic', 'bulletedList', 'numberedList' ]
+									} )
+									.catch( error => {
+											console.error( error );
+									} );
+							}
+						</script>
+					<?php } ?>
 				</div>
 			</div>
 			<div class="row">
@@ -2668,12 +2699,23 @@ function initDistrictSelectize(){
 						<td><?php echo $document->document_type; ?></td>
 						<td><?php echo $document->note; ?></td>
 						<td style="text-align:center;">
-						
 		                	<?php 
-		                    	// Display document icon with document hyper link only if document link is available in DB
-		                    	if(isset($document->document_link) && $document->document_link!="") {echo "<a href=" . base_url() . "register/display_document/".$document->document_link . 
-		                    	" target=\"_blank\"><i class=\"fa fa-file\" style=\"font-size:24px;color:rgb(236, 121, 121)\"></i></a>"; echo "<br/>".explode("_",$document->document_link,2)[1];}
-		                        else {echo "";}
+								if(isset($document->document_link) && $document->document_link != "") {
+									$imageUrl = base_url() . "register/display_document/" . $document->document_link;
+									$fileExtension = pathinfo($document->document_link, PATHINFO_EXTENSION);
+									if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+									 	//echo "<a href='#imagerotateModal' data-toggle='modal' data-image='$imageUrl'>"; //to open image in modal
+									 	echo "<a href='$imageUrl' target='_blank'>";
+									 	echo "<i class='fa fa-file' style='font-size:24px;color:rgb(236, 121, 121)'></i></a>";
+									 	echo "<br/>" . explode("_", $document->document_link, 2)[1];
+									} else {
+										echo "<a href='$imageUrl' target='_blank'>";
+										echo "<i class='fa fa-file' style='font-size:24px;color:rgb(236, 121, 121)'></i></a>";
+										echo "<br/>" . explode("_", $document->document_link, 2)[1];
+									}
+								} else {
+									echo "";
+								}
 			                ?>
 		                </td>
 					    <!--<td>
@@ -2693,8 +2735,103 @@ function initDistrictSelectize(){
 						<button type=\"button\" id=\"deleteButton\" class=\"btn btn-info\" data-target=\"#myModalDelete_\" data-toggle=\"modal\" data-id=$document->document_link >Delete </button>
 						</td>"
 						?>
-
 					</tr>
+					<div class="modal fade" id="imagerotateModal" tabindex="-1" role="dialog" aria-labelledby="imagerotateModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered" role="document" >
+							<div class="modal-content" > <!--style="height:450px!important;" -->
+								<div class="modal-header">
+									<h5 class="modal-title" id="imagerotateModalLabel">View Image</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<!-- <span aria-hidden="true">&times;</span> -->
+									</button>
+								</div>
+								<div class="modal-body text-center">
+									<img id="modalImage" src="" alt="Image" >
+								</div>
+								<div class="modal-footer" >
+									<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-primary" id="rotateLeft">Rotate</button>
+									<!-- <button type="button" class="btn btn-primary" id="rotateRight">Rotate Right</button> -->
+									<a href="#" class="btn btn-primary" id="zoomIn"><i class="fa fa-search-plus"></i></a>
+                					<a href="#" class="btn btn-primary" id="zoomOut"><i class="fa fa-search-minus"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<style>
+						.modal-dialog {
+							max-height: 80vh; /* Set the maximum height of the modal dialog */
+							overflow-y: auto; /* Enable vertical scroll if content exceeds the height */
+						}
+						#modalImage {
+							max-width: 100%; /* Ensure image doesn't exceed modal width */
+							max-height: 100%; /* Ensure image doesn't exceed modal height */
+							position: relative;
+						} 
+						
+					</style>
+
+					<script>
+						$(document).ready(function() {
+							$('#imagerotateModal').on('show.bs.modal', function(event) {
+								var image = $(event.relatedTarget).data('image');
+								$('#modalImage').attr('src', image);
+							});
+
+							var rotation = 0;
+							var scale = 1;
+							var posX = 0;
+							var posY = 0;
+							var isDragging = false;
+							var lastX = 0;
+							var lastY = 0;
+							$('#rotateLeft').click(function() {
+								rotation = (rotation - 90) % 360;
+								$('#modalImage').css('transform', 'rotate(' + rotation + 'deg) scale(' + scale + ')');
+							});
+
+							$('#rotateRight').click(function() {
+								rotation = (rotation + 90) % 360;
+								$('#modalImage').css('transform', 'rotate(' + rotation + 'deg) scale(' + scale + ')');
+							});
+
+							$('#zoomIn').click(function() {
+								scale += 0.1;
+								$('#modalImage').css('transform', 'rotate(' + rotation + 'deg) scale(' + scale + ')');
+							});
+
+							$('#zoomOut').click(function() {
+								scale -= 0.1;
+								$('#modalImage').css('transform', 'rotate(' + rotation + 'deg) scale(' + scale + ')');
+							});
+
+							$('#modalImage').on('mousedown', function(e) {
+								isDragging = true;
+								lastX = e.clientX;
+								lastY = e.clientY;
+								$(this).css('cursor', 'grabbing'); // Change cursor style to indicate dragging
+							});
+
+							$(document).on('mouseup', function() {
+								isDragging = false;
+								$('#modalImage').css('cursor', 'grab'); // Restore cursor style
+							});
+
+							$(document).on('mousemove', function(e) {
+								if (isDragging) {
+									var deltaX = e.clientX - lastX;
+									var deltaY = e.clientY - lastY;
+									posX += deltaX;
+									posY += deltaY;
+									$('#modalImage').css({'top': posY + 'px', 'left': posX + 'px'});
+									lastX = e.clientX;
+									lastY = e.clientY;
+								}
+							});
+
+						});
+					</script>
 					<?php $i++; } ?>
 				</tbody>
 				<tfoot><!-- tr td -->
@@ -2886,7 +3023,7 @@ function initDistrictSelectize(){
 				</div>
 			</div>
 			<!--<?php
-				echo("<script>console.log('PHP: " . json_encode($sms_templates) . "');</script>");
+				//echo("<script>console.log('PHP: " . json_encode($sms_templates) . "');</script>");
 			?>-->
 		</div>
 		<div class="row">
@@ -3128,13 +3265,14 @@ function initDistrictSelectize(){
 			<h4 class="modal-title">Edit Metadata</h4>
 		</div>
         <div class="modal-body">
-		<label><b>File Name: &nbsp </b></label><label id="filelink"></label>
+			<!-- <label><b>File Name: &nbsp </b></label><label id="filelink"></label> -->
 		  	<?php echo form_open("register/update_patients",array('class'=>'form-horizontal','role'=>'form','id'=>'select_patient_'.$patient->visit_id, 'method'=>'POST')); ?>
 		  	<input type="text" hidden name="edit_record_id" id="edit_record_id"  value=""/>	
 		    <input type="text" hidden name="edit_document_link" id="edit_document_link" value=""/>
 		    
 			<input type="text" class="sr-only" hidden value="<?php echo $patient->visit_id;?>" form="select_patient_<?php echo $patient->visit_id;?>" name="selected_patient" />
 			<input type="text" class="sr-only" hidden value="<?php echo $patient->patient_id;?>" id="edit_patient_id" name="edit_patient_id" />
+			
 			<div class="form-group">
                 <div class="col-md-3">
 		        	<label for="document_date" class="control-label">Document Date*</label>
@@ -3160,6 +3298,7 @@ function initDistrictSelectize(){
 				</select>
 				</div>
 			</div>
+			
 			<div class="form-group">
 		        <div class="col-md-3">
 	        		<label for="note" class="control-label">Note</label>
@@ -3167,10 +3306,69 @@ function initDistrictSelectize(){
 	        	<div class="col-md-6">
 	            	<input type="text" class="form-control" placeholder="note" id="edit_note" name="note"/>
 	        	</div>
+	        </div>
+			<div class="form-group">
+		        <div class="col-md-3">
+	        		<label for="file" class="control-label">Choose File</label>
+	        	</div>
+	        	<div class="col-md-6">
+	            	<input type="file" class="form-control" placeholder="file" id="edit_file" name="edit_upload_file"/>
+	        	</div>
 	        </div>	
-			<div class="form-group">						
-	    	   <div class="col-md-6">
+			<div class="form-group" style="margin-top:50px!important;height:30px!important;">
+				<div class="col-md-3" id="edit_image_preview_container">
+	        		<label for="note" class="control-label">Image Preview</label>
+	        	</div>
+				<div class="col-md-6">
+	            	<img src="" class="img-responsive" name="edit_image_preview" 
+					id="img-preview-1">
+					<input type="hidden" value="" name="rotation" id="edit_rotation_value" class="form-control" >
+					<script>
+						var supportedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+						document.getElementById('edit_file').addEventListener('change', function(event) {
+							var file = event.target.files[0];
+							var reader = new FileReader();
+							
+							reader.onload = function(event) {
+								var imgPreviewContainer = document.getElementById('edit_image_preview_container');
+								var imgPreview = document.getElementById('img-preview-1');
+								var fileExtension = file.name.split('.').pop().toLowerCase();
+								if (supportedExtensions.includes(fileExtension)) {
+									imgPreview.src = event.target.result; 
+									imgPreviewContainer.style.display = 'block';
+								} else {
+									imgPreview.src = ''; 
+									imgPreviewContainer.style.display = 'none';
+									//alert('Uploaded file is not a supported image format. Please upload a JPG, JPEG, PNG, or GIF file.');
+								}
+							};
+							if (file) {
+								reader.readAsDataURL(file);
+							}
+						});
+						function rotateImage() {
+							var img = document.getElementById('img-preview-1');
+							var rotationValue = document.getElementById('edit_rotation_value');
+							var currentRotation = parseFloat(rotationValue.value) || 0;
+							var newRotation = currentRotation + 90; // Rotate by 90 degrees clockwise
+							img.style.transform = 'rotate(' + newRotation + 'deg)';
+							rotationValue.value = newRotation;
+						}
+
+					</script>
+					<style>
+						#img-preview-1 {
+							max-width: 100%;
+							max-height: 100%;
+						}
+					</style>
+	        	</div>
+			</div>
+
+			<div class="form-group" >						
+	    	   <div class="col-md-6" style="margin-top:40px!important;">
 				   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				   <button type="button" class="btn btn-success" onclick="rotateImage()">Rotate</button>
 				   <button class="btn btn-danger"  type="button" name="btEdit" id="btEdit" >Update</button>
 		    	</div>
 		    </div>
@@ -3234,7 +3432,7 @@ function initDistrictSelectize(){
 			selectize = $("#icd_code")[0].selectize;
 			selectize.on('change',function(){
 				var test = selectize.getOption(selectize.getValue());
-				console.log(test);
+				//console.log(test);
 			});
 		}
 		$i=1;
@@ -3987,10 +4185,11 @@ function initDistrictSelectize(){
    	            <div class="col-md-3">
 			        <label for="note" class="control-label">Upload Document*</label>
 	        	</div>
-	    	<div class="col-md-6">
-	    		<input type="text" class="sr-only" hidden name="document_link"/>
-                <input type="file" name="upload_file" id="upload_file" readonly="true"/>
-            </div>
+				<div class="col-md-6">
+					<input type="text" class="sr-only" hidden name="document_link"/>
+					<input type="file" name="upload_file" id="upload_file" readonly="true"/>
+					<input type="hidden" name="rotation" id="rotation" value="0"/>
+				</div>
 	        <div class="col-md-6">
 		    <?php 
 		    // Add text Tip for defaults
@@ -4011,6 +4210,53 @@ function initDistrictSelectize(){
 			echo nl2br($max_size . " : " . $allowed_types . "\n(If image is allowed: " . $max_width . " : " . $max_height . ")");
 	        ?>
 	     	</div>
+			 <div class="img-preview col-md-12" style="display: none;">
+					<button type="button" id="rleft" class="btn btn-success btn-md">Rotate</button>
+					<!-- <button type="button" id="rright">Right</button> -->
+					<div id="imgPreview" class="img-fluid" style="padding-left:30%!important;">
+					</div>
+			 </div><br/><br/>
+			<script>
+				function filePreview(input) {
+					if (input.files && input.files[0]) {
+						var reader = new FileReader();
+						reader.onload = function (e) {
+							$('#imgPreview img').remove();
+							$('#imgPreview').html('<img src="'+e.target.result+'" class="pic-view" width="250" height="250"/>');
+						};
+						var fileName = input.files[0].name;
+						var fileExtension = fileName.split('.').pop().toLowerCase(); 
+						var supportedExtensions = ['jpg', 'jpeg', 'png', 'gif']; 
+						if (supportedExtensions.includes(fileExtension)) { 
+							reader.readAsDataURL(input.files[0]);
+							$('.img-preview').show();
+						} else {
+							$('.img-preview').hide();
+						}
+					} else {
+						$('#imgPreview img').remove();
+						$('.img-preview').hide();
+					}
+				}
+				$(function() {
+					var rotation = 0;
+					$("#rright").click(function() {
+						rotation = (rotation -90) % 360;
+						$(".pic-view").css({'transform': 'rotate('+rotation+'deg)'});
+						$('#rotation').val(rotation);
+					});
+
+					$("#rleft").click(function() {
+						rotation = (rotation + 90) % 360;
+						$(".pic-view").css({'transform': 'rotate('+rotation+'deg)'});
+						$('#rotation').val(rotation);
+					});
+				});
+
+				$('#upload_file').on('change', function() {
+					filePreview(this);
+				});
+			</script>
 	    	<div class="col-md-6">
                     <div id="moreImageUpload"></div>
                     <div style="clear:both;"></div><br>

@@ -94,11 +94,11 @@ if($function->user_function=="appointment_by_staff"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
 		<a class="anchor_style" href="<?php echo base_url()."reports/transfer_summary";?>">Transfers Summary</a>
 	</button>
-<?php	}  if($f->user_function=="Outcome Summary"){ ?>
+<?php	}  if($function->user_function=="Outcome Summary"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
 		<a class="anchor_style" href="<?php echo base_url()."reports/outcome_summary";?>">Outcome Summary - IP</a>
 	</button>
-<?php } if($f->user_function=="Patient Transport Report"){ ?>
+<?php } if($function->user_function=="Patient Transport Report"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
 		<a class="anchor_style" href="<?php echo base_url()."reports/transport_summary";?>">Transport Summary</a>
 	</button>
@@ -171,6 +171,27 @@ if($function->user_function=="dashboard" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/receiver";?>">Calls Attended - Receivers</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline";?>">Dashboard</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."dashboard/helpline_unique_callers";?>">Trend - Unique Callers</a></button>
+
+				<!-- Newly Added March 25 2024 -->
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+					<a class="anchor_style" href="<?php echo base_url()."dashboard/caller_type_report";?>">Caller Type Report</a>
+				</button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+					<a class="anchor_style" href="<?php echo base_url()."dashboard/call_category_report";?>">Caller Category Report</a>
+				</button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+					<a class="anchor_style" href="<?php echo base_url()."dashboard/hospital_report";?>">Hospital Report</a>
+				</button>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+					<a class="anchor_style" href="<?php echo base_url()."dashboard/to_number_report";?>">To Number Report</a>
+				</button>
+				<!-- <button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+					<a class="anchor_style" href="<?php echo base_url()."dashboard/op_ip_report";?>">OP / IP Report</a>
+				</button> -->
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+					<a class="anchor_style" href="<?php echo base_url()."dashboard/duration";?>">Duration Report</a>
+				</button>
+				<!-- Till here March 25 2024 -->
 <?php		 }
 
 	}

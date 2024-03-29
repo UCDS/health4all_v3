@@ -9,6 +9,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 <!-- <script type="text/javascript" src="<?php //echo base_url();?>assets/js/patient_followp_validations.js"></script> -->
 
 <style>
@@ -527,7 +528,15 @@ $patient = $patients[0];
 						</div> 
 						</div>
 						</div>
-
+						<script>
+							ClassicEditor
+								.create( document.querySelector( '#input_note' ), {
+									toolbar: [ 'bold', 'italic', 'bulletedList', 'numberedList' ]
+								} )
+								.catch( error => {
+										console.error( error );
+								} );
+						</script>
 						<!-- Newly added 12-01-2024 (am)-->
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">

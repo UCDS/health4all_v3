@@ -92,6 +92,7 @@ class Helpline_model extends CI_Model{
 	}
 
 	function update_call(){
+		$user = $this->session->userdata('logged_in');
 		$calls = $this->input->post('call');
 		$data=array();
 		foreach($calls as $call){
@@ -115,7 +116,6 @@ class Helpline_model extends CI_Model{
 				'resolution_date_time'=>$resolution_date_time,
 				'updated'=>1
 			);
-
 			$this->db->set('update_date_time', date('Y-m-d H:i:s'));
 			$this->db->set('updated_user_id',$user['staff_id']);
 
@@ -441,7 +441,7 @@ class Helpline_model extends CI_Model{
 		return $query->result();
 	}
 	function get_hospital_district(){
-		$this->db->select('DISTINCT district',false)->from('hospital')->order_by('district');
+		$this->db->select('DISTINCT district',false)->from('hospital')->where('district !=', '')->order_by('district');
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -2084,150 +2084,6 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		}
 
 		return true;	
-	}
-
-	function get_receiver_activity_report($default_rowsperpage){
-		if ($this->input->post('page_no')) {
-			$page_no = $this->input->post('page_no');
-		}
-		else{
-			$page_no = 1;
-		}
-		
-		if($this->input->post('rows_per_page')) {
-			$rows_per_page = $this->input->post('rows_per_page');
-		}
-		else{
-			$rows_per_page = $default_rowsperpage;
-		}
-		$start = ($page_no -1 )  * $rows_per_page;
-		
-		$user = $this->session->userdata('logged_in');
-
-
-		if($this->input->post('helpline_id')){
-			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
-		}
-
-		if($this->input->post('from_date') && $this->input->post('to_date')){
-			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
-			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
-		}
-		else if($this->input->post('from_date') || $this->input->post('to_date')){
-			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
-			$to_date=$from_date;
-		}
-		else{
-			$from_date=date("Y-m-d");
-			$to_date=$from_date;
-		}
-
-		$this->db->where('(start_time BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
-
-		if($this->input->post('helpline_id')){
-			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
-		}
-
-		if($this->input->post('from_number')){
-			$this->db->like('helpline_receiver.phone',$this->input->post('from_number'));
-		}
-		
-		if ($this->input->post('year_month_trend')) {
-		
-			$this->db->select("helpline_receiver.full_name as Receiver, helpline_receiver.phone as Phone,
-			COUNT(DISTINCT (DATE(helpline_call.start_time)) ) AS ActiveDays,
-			YEAR(helpline_call.start_time) as Year,
-			MONTH(helpline_call.start_time) as Month,
-			sum(case when helpline_call.direction='incoming' then 1 else 0 end) as IncomingCalls,
-			sum(case when helpline_call.direction='outbound-dial' then 1 else 0 end) as OutgoingCalls,
-			COUNT(*) as TotalCalls")
-			->from('helpline_call')
-			->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
-			->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
-			->where('helpline_call.call_type ="completed"')
-			->group_by('Receiver')
-			->group_by('Year')
-			->group_by('Month')
-			->order_by('Receiver, Year, Month');
-
-		}
-		else {
-			$this->db->select("helpline_receiver.full_name as Receiver, helpline_receiver.phone as Phone,
-		COUNT(DISTINCT (DATE(helpline_call.start_time)) ) AS ActiveDays,
-		sum(case when helpline_call.direction='incoming' then 1 else 0 end) as IncomingCalls,
-			sum(case when helpline_call.direction='outbound-dial' then 1 else 0 end) as OutgoingCalls,
-			COUNT(*) as TotalCalls")
-		->from('helpline_call')
-		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
-		->where('helpline_call.call_type ="completed" AND helpline_call.direction = "incoming"')
-		->group_by('Receiver')
-		->order_by('Receiver');
-		}
-	
-		$this->db->limit($rows_per_page,$start);	
-		$query = $this->db->get();
-		//echo("<script>console.log('PHP: weekday " . json_encode($query->result()) . "');</script>");
-
-		return $query->result();
-	}
-
-	function get_receiver_call_activity_report_count(){
-		$user = $this->session->userdata('logged_in');
-
-		if($this->input->post('helpline_id')){
-			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
-		}
-
-		if($this->input->post('from_date') && $this->input->post('to_date')){
-			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
-			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
-		}
-		else if($this->input->post('from_date') || $this->input->post('to_date')){
-			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
-			$to_date=$from_date;
-		}
-		else{
-			$from_date=date("Y-m-d");
-			$to_date=$from_date;
-		}
-
-		$this->db->where('(start_time BETWEEN "'.$from_date.'" AND "'.$to_date.'")');
-
-		if($this->input->post('helpline_id')){
-			$this->db->where('helpline.helpline_id',$this->input->post('helpline_id'));
-		}
-
-		if($this->input->post('phone')){
-			$this->db->like('helpline_receiver.phone',$this->input->post('phone'));
-		}
-
-		if ($this->input->post('year_month_trend')) {
-		
-			$this->db->select('count(DISTINCT helpline_receiver.full_name, YEAR(helpline_call.start_time), MONTH(helpline_call.start_time)) as count')
-			->from('helpline_call')
-			->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
-			->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
-			->where('helpline_call.call_type ="completed"');
-		}
-		else {
-			$this->db->select('count(DISTINCT helpline_receiver.full_name) as count')
-			->from('helpline_call')
-			->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
-			->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
-			->where('helpline_call.call_type ="completed"');
-		}
-
-		/*$this->db->select("count(DISTINCT DATE(helpline_call.start_time),helpline_receiver.full_name) as count",FALSE)
-		->from('helpline_call')
-		->join('helpline', 'helpline_call.to_number=helpline.helpline')
-		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone')
-		->where('helpline_call.call_type','completed')			
-		->where('user_helpline_link.user_id', $user['user_id']);*/
-		
-		$query = $this->db->get();
-		return $query->result();
 	}
 
 	function helpline_trend_unic()

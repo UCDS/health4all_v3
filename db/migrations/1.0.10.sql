@@ -146,3 +146,5 @@ ALTER TABLE `helpline_call` ADD `updated_user_id` INT NOT NULL AFTER `update_dat
 ALTER TABLE `priority_type` ADD `created_by` INT NOT NULL AFTER `priority_type`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
 
 ALTER TABLE `visit_name` ADD `created_by` INT NOT NULL AFTER `inuse`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+
+ALTER TABLE `patient_followup` CHANGE `note` `note` VARCHAR(1500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
