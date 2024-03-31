@@ -176,6 +176,15 @@ class Generic_item extends CI_Controller {
 	function edit(){
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+   
+					}
+			   }
 			
 		}	//end of if
         else{
@@ -251,10 +260,11 @@ class Generic_item extends CI_Controller {
 			$generic_item_id = $this->input->post('generic_item_id');
 			if($this->generic_model->edit_generic($generic_item_id)){							
 				$this->data['msg']="Generic Item Edited Succesfully";					
-					
 			}else{
 				$this->data['msg']="Failure while editing generic";
 			}
+			$this->data['search_generic_items'] = $this->generic_model->get_generic_items($this->data['rowsperpage']);
+			$this->data['generic_items_count'] = $this->generic_model->list_generic_items_count();
 			$this->load->view('pages/consumables/generic_items_list',$this->data);
 		}
 		$this->load->view('templates/footer');								

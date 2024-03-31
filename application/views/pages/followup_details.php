@@ -671,7 +671,6 @@ echo "</select></li>";
 		<th>Registered Date</th>
 		<th>Patient Details</th>		
 		<th>Phone</th>
-		<th>Map link</th>
 		<!-- <th>Latitude</th>
 		<th>Longitude</th> -->
 		<th>ICD Code</th>
@@ -680,9 +679,10 @@ echo "</select></li>";
 		<th>Last Visit Type</th>
 		<th>Last Visit Date</th>		 -->
 		<th>Priority</th>
+		<th>Note</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
-		<th>Note</th>
+		<th>Map link</th>
 		<th>NDPS</th>
 		<th>Volunteer</th>
 		<th>Last update by & Time</th>					
@@ -708,12 +708,6 @@ echo "</select></li>";
 		
 		<br> Address: <?php echo $followup->address;?></td>
 		<td><?php echo $followup->phone;?></td>
-		<td>
-		<?php 
-		if($followup->map_link) { ?>
-			<a href="<?php echo $followup->map_link; ?>" target="_blank" > View</a> <?php echo $followup->latitude." ,".$followup->longitude ?>
-		<?php } else { echo "No map link <br>"." ,".$followup->latitude." ,".$followup->longitude; } ?>
-		</td>
 		<!-- <td><?php echo $followup->latitude;?></td>
 		<td><?php echo $followup->longitude;?></td> -->
 		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
@@ -722,9 +716,15 @@ echo "</select></li>";
 		<td><?php echo $followup->last_visit_type?></td>
 		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	 -->
 		<td><?php echo $followup->priority_type; ?></td>
+		<td><?php echo $followup->note;?></td>
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
-		<td><?php echo $followup->note;?></td>
+		<td>
+		<?php 
+		if($followup->map_link) { ?>
+			<a href="<?php echo $followup->map_link; ?>" target="_blank" > View</a> <?php echo $followup->latitude." ,".$followup->longitude ?>
+		<?php } else { echo "No map link <br>"." ,".$followup->latitude." ,".$followup->longitude; } ?>
+		</td>
 		<?php if($followup->ndps==1) { ?>
 		<td><?php echo $followup->drug." / ".$followup->dose." / ".date('j M Y',strtotime($followup->last_dispensed_date)).' / '.$followup->last_dispensed_quantity; ?></td>  <!--Newly added 12-01-2024 (am) -->
 		<?php } else { ?> <td></td> <?php } ?>

@@ -70,24 +70,19 @@ class Dashboard extends CI_Controller {
 			show_404();
 		}
 }
-public function helpline(){
+public function helpline()
+{
 	if ($this->dashboard_access == 1) {
 		$this->load->helper('form');
 		$this->data['title']="Helpline Dashboard";
 		$this->load->model('helpline_model');
 		$this->load->model('staff_model');
-		$this->data['caller_type_report']=$this->helpline_model->dashboard('caller_type');
-		$this->data['call_category_report']=$this->helpline_model->dashboard('call_category');
-		$this->data['hospital_report']=$this->helpline_model->dashboard('hospital');
 		$this->data['district_report']=$this->helpline_model->dashboard('district');
 		$this->data['volunteer_report']=$this->helpline_model->dashboard('volunteer');
 		$this->data['call_type_report']=$this->helpline_model->dashboard('call_type');
 		$this->data['customer_distinct_report']=$this->helpline_model->dashboard('customer_distinct');
 		$this->data['call_type_in_report']=$this->helpline_model->dashboard('call_type_in');
 		$this->data['call_type_out_report']=$this->helpline_model->dashboard('call_type_out');
-		$this->data['to_number_report']=$this->helpline_model->dashboard('to_number');
-		$this->data['op_ip_report']=$this->helpline_model->dashboard('op_ip');
-		$this->data['duration']=$this->helpline_model->dashboard('duration');
 		$this->data['caller_type']=$this->helpline_model->get_caller_type();
 		$this->data['call_category']=$this->helpline_model->get_call_category();
 		$this->data['all_hospitals']=$this->staff_model->get_hospital();
@@ -95,6 +90,146 @@ public function helpline(){
 		$this->data['helpline']=$this->helpline_model->get_helpline();
 		$this->load->view('templates/header',$this->data);
 		$this->load->view('pages/helpline/helpline_dashboard',$this->data);
+		$this->load->view('templates/footer');
+	}
+	else{
+		show_404();
+	}
+}
+
+//newly added on march-25-2024
+public function caller_type_report()
+{
+	if ($this->dashboard_access == 1) 
+	{
+		$this->load->helper('form');
+		$this->data['title']="Helpline Dashboard";
+		$this->load->model('helpline_model');
+		$this->load->model('staff_model');
+		$this->data['caller_type_report']=$this->helpline_model->dashboard('caller_type'); //this to move
+		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['call_category']=$this->helpline_model->get_call_category();
+		$this->data['all_hospitals']=$this->staff_model->get_hospital();
+		$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+		$this->data['helpline']=$this->helpline_model->get_helpline();
+		$this->load->view('templates/header',$this->data);
+		//$this->load->view('pages/helpline/helpline_dashboard',$this->data);
+		$this->load->view('pages/helpline/caller_type_report',$this->data);
+		$this->load->view('templates/footer');
+	}
+	else{
+		show_404();
+	}
+}
+
+public function call_category_report()
+{
+	if ($this->dashboard_access == 1) 
+	{
+		$this->load->helper('form');
+		$this->data['title']="Helpline Dashboard";
+		$this->load->model('helpline_model');
+		$this->load->model('staff_model');
+		$this->data['call_category_report']=$this->helpline_model->dashboard('call_category'); //this to move
+		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['call_category']=$this->helpline_model->get_call_category();
+		$this->data['all_hospitals']=$this->staff_model->get_hospital();
+		$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+		$this->data['helpline']=$this->helpline_model->get_helpline();
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/helpline/call_category_report',$this->data);
+		$this->load->view('templates/footer');
+	}
+	else{
+		show_404();
+	}
+}
+
+public function hospital_report()
+{
+	if ($this->dashboard_access == 1) 
+	{
+		$this->load->helper('form');
+		$this->data['title']="Helpline Dashboard";
+		$this->load->model('helpline_model');
+		$this->load->model('staff_model');
+		$this->data['hospital_report']=$this->helpline_model->dashboard('hospital'); //this to move
+		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['call_category']=$this->helpline_model->get_call_category();
+		$this->data['all_hospitals']=$this->staff_model->get_hospital();
+		$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+		$this->data['helpline']=$this->helpline_model->get_helpline();
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/helpline/hospital_report',$this->data);
+		$this->load->view('templates/footer');
+	}
+	else{
+		show_404();
+	}
+}
+
+public function to_number_report()
+{
+	if ($this->dashboard_access == 1) 
+	{
+		$this->load->helper('form');
+		$this->data['title']="Helpline Dashboard";
+		$this->load->model('helpline_model');
+		$this->load->model('staff_model');
+		$this->data['to_number_report']=$this->helpline_model->dashboard('to_number'); //this to move
+		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['call_category']=$this->helpline_model->get_call_category();
+		$this->data['all_hospitals']=$this->staff_model->get_hospital();
+		$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+		$this->data['helpline']=$this->helpline_model->get_helpline();
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/helpline/to_number_report',$this->data);
+		$this->load->view('templates/footer');
+	}
+	else{
+		show_404();
+	}
+}
+
+public function op_ip_report()
+{
+	if ($this->dashboard_access == 1) 
+	{
+		$this->load->helper('form');
+		$this->data['title']="Helpline Dashboard";
+		$this->load->model('helpline_model');
+		$this->load->model('staff_model');
+		$this->data['op_ip_report']=$this->helpline_model->dashboard('op_ip'); //this to move
+		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['call_category']=$this->helpline_model->get_call_category();
+		$this->data['all_hospitals']=$this->staff_model->get_hospital();
+		$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+		$this->data['helpline']=$this->helpline_model->get_helpline();
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/helpline/op_ip_report_helpline',$this->data);
+		$this->load->view('templates/footer');
+	}
+	else{
+		show_404();
+	}
+}
+
+public function duration()
+{
+	if ($this->dashboard_access == 1) 
+	{
+		$this->load->helper('form');
+		$this->data['title']="Helpline Dashboard";
+		$this->load->model('helpline_model');
+		$this->load->model('staff_model');
+		$this->data['duration']=$this->helpline_model->dashboard('duration'); //this to move
+		$this->data['caller_type']=$this->helpline_model->get_caller_type();
+		$this->data['call_category']=$this->helpline_model->get_call_category();
+		$this->data['all_hospitals']=$this->staff_model->get_hospital();
+		$this->data['hospital_districts']=$this->helpline_model->get_hospital_district();
+		$this->data['helpline']=$this->helpline_model->get_helpline();
+		$this->load->view('templates/header',$this->data);
+		$this->load->view('pages/helpline/duration',$this->data);
 		$this->load->view('templates/footer');
 	}
 	else{

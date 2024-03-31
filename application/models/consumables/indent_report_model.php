@@ -217,12 +217,23 @@ class Indent_report_model extends CI_Model
 	}
 	function get_item_summary($item_id, $scp_id)
 	{
+		// if ($this->input->post('from_date') && $this->input->post('to_date')) 
+		// {
+		// 	$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+		// 	$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+		// } 
+		// else if ($this->input->post('from_date') || $this->input->post('to_date')) 
+		// {
+		// 	$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+		// 	$to_date = $from_date;
+		// } 
+		// else if ($from_date == '0' && $to_date == '0') 
+		// {
+		// 	$from_date = date("Y-m-d");
+		// 	$to_date = $from_date;
+		// }
+
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
-
-
-
-		
-
 		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, 
 		scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
 		inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, 
@@ -238,10 +249,6 @@ class Indent_report_model extends CI_Model
 		->where('indent.hospital_id', $hospital['hospital_id'])
 		->where('item.item_id', $item_id)
 		->where('inventory.supply_chain_party_id', $scp_id);
-		// ->where('inventory.batch <> 0')
-		// ->group_by('inventory.item_id, inventory.supply_chain_party_id, inventory.inward_outward, inventory.batch');
-		
-
 
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();

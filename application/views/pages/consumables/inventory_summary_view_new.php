@@ -62,7 +62,32 @@
 		};
 		$("#table-sort").tablesorter(options);
 		$('.print').click(function () {
-			$('#table-sort').trigger('printTable');
+			//$('#table-sort').trigger('printTable');
+			var to_date = "<?php echo $this->input->post('to_date'); ?>";
+			var scp_name = "<?php echo $search_inventory_summary[0]['supply_chain_party_name']; ?>";
+			$('#table-sort').find('.tablesorter-filter-row').hide();
+				var printContent = '<!DOCTYPE html>';
+				printContent += '<html>';
+				printContent += '<head>';
+				printContent += '<title>Print</title>';
+				printContent += '<style>';
+				printContent += 'table { border-collapse: collapse; width: 95%; }';
+				printContent += 'th, td { border: 1px solid #ddd; padding: 8px; }';
+				printContent += 'th { background-color: #f2f2f2; }';
+				printContent += '</style>';
+				printContent += '</head>';
+				printContent += '<body>';
+				printContent += '<h3 style="text-align:center;">Showing balance as on ' + to_date + ' for SCP: <span style="color: green;">' + scp_name + '</span></h3>';				printContent += document.getElementById("table-sort").outerHTML;
+				printContent += '</body>';
+				printContent += '</html>';
+				var printWindow = window.open('', '_blank', 'width=800,height=600');
+				printWindow.document.write(printContent);
+				printWindow.document.close();
+				printWindow.print();
+				window.onbeforeunload = function() {
+					printWindow.close();
+				};
+				window.location.reload();
 		});
 	});
 </script>
@@ -438,13 +463,7 @@ if ($this->input->post('to_id')) {
 	<?php echo form_open('consumables/indent_reports/get_inventory_summary', array('class' => 'form-group', 'role' => 'form', 'id' => 'inventory_summary_search')); ?>
 	<div class="container">
 		<div class="row">
-			<!-- <div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
-							<div class="form-group">
-							
-									From Date<input class="form-control" type="text" value="<?php //echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
-							</div>
-						</div> -->
-
+			
 			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
 				<div class="form-group">
 
@@ -466,15 +485,12 @@ if ($this->input->post('to_id')) {
 							if ($this->input->post('scp_id') && $this->input->post('scp_id') == $scp->supply_chain_party_id)
 								echo " selected ";
 							echo ">" . $scp->supply_chain_party_name . "</option>";
-
 						}
 						?>
 					</select>
 				</div>
 			</div>
-
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
-
+			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
 				<div class="form-group">
 					<!--input field item-->
 					<label for="item_type">Item Type</label>
@@ -492,19 +508,46 @@ if ($this->input->post('to_id')) {
 					</select>
 				</div>
 			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
+			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3   col-md-offset-3">
 				<div class="form-group">
 					<!--input field item-->
 					<label for="item">Item</label>
 					<select name="item" id="item" class="items">
 						<option value="">Select</option>
-
 					</select>
 				</div>
 			</div>
-
-
-
+			<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+				<div class="form-group">
+					<label for="item_form" >Item Form</label>
+						<select name="item_form" id="item_form" class="form-control">
+						<option value="">Select</option>
+							<?php
+							foreach($item_form as $i)
+								{
+									echo "<option class='".$i->item_form_id."' value='".$i->item_form_id."'";
+									echo $item_form_selected == $i->item_form_id ? " selected": "";
+									echo ">".$i->item_form."</option>";
+								}
+							?>
+						</select>
+				</div>
+			</div>
+			<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+				<div class="form-group">
+				<label for="generic_item" >Generic Item</label>
+					<select name="generic_item" id="generic_item" class="form-control" placeholder="Select">
+						<option value="">Select</option>
+						<?php
+						foreach ($generic_item as $i) {
+							echo "<option class='" . $i->generic_item_id . "' value='" . $i->generic_item_id . "'";
+							echo $generic_item_selected == $i->generic_item_id ? " selected" : "";
+							echo ">" . $i->generic_name . "</option>";
+						}
+						?>
+					</select>
+				</div>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
@@ -575,11 +618,7 @@ if ($this->input->post('to_id')) {
 			$next_page = $page_no + 1;
 			$adjacents = "2";
 			?>
-		<h3>Showing balance as on <i>
-				<?= $to_date; ?>
-			</i> for SCP: <span style="color: green;">
-				<?= $search_inventory_summary[0]['supply_chain_party_name']; ?>
-			</span></h3>
+		
 		<div class="container" style="margin-left:14px;">
 			<div class="row">
 				<ul class="pagination" style="margin:0">
@@ -671,6 +710,15 @@ if ($this->input->post('to_id')) {
 		</div>
 		<?php } ?>
 		<div class="col-md-offset-2">
+			<div id="print-container">
+				<?php if(count($search_inventory_summary) > 0) { ?>
+					<h3>Showing balance as on 
+				<?= $to_date; ?>
+			 for SCP: <span style="color: green;">
+				<?= $search_inventory_summary[0]['supply_chain_party_name']; ?>
+			</span></h3>
+				<?php } ?>
+			</div>
 			<table class="table table-bordered table-striped" id="table-sort">
 				<thead>
 					<th>#</th>
@@ -684,6 +732,7 @@ if ($this->input->post('to_id')) {
 							<th>Quantity Outward</th>
 							<th>Difference</th> -->
 						<!-- <th>Item id</th> -->
+					<th></th>
 					</thead>
 					<tbody>
 						<?php

@@ -195,7 +195,9 @@ class Indent_reports extends CI_Controller
 		$this->data['all_item_type'] = $this->indent_report_model->get_data("item_type");
 		$this->data['all_item'] = $this->indent_report_model->get_data("item", 20);
 		$this->data['parties'] = $this->indent_report_model->get_data("party");
-
+		$this->load->model('consumables/item_model');
+		$this->data['generic_item']=$this->item_model->get_data("generic_name");
+		$this->data['item_form']=$this->item_model->get_data("item_form");
 		$validations = array(
 			array(
 				'field' => 'item',
@@ -244,6 +246,7 @@ class Indent_reports extends CI_Controller
 		}
 		$this->load->view('templates/footer');
 	} //ending of get indent summary method.
+
 	function search_selectize_items()
 	{
 		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
@@ -623,7 +626,7 @@ class Indent_reports extends CI_Controller
 		$itemId = $this->input->post('itemId');
 		$this->load->model('consumables/indent_issue_model');
 		$this->indent_issue_model->update_item_data($fieldId, $newValue, $indentId, $itemId);
-		print_r($this->db->last_query());
+		//print_r($this->db->last_query());
 		echo "Data saved successfully!";
 	}
 	

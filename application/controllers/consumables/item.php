@@ -175,10 +175,20 @@ class Item extends CI_Controller {
 			$this->load->view('templates/footer');								
     }   	//end of add_item method		
 	
-	function edit(){
+	function edit()
+	{
 		if($this->session->userdata('logged_in')){  						
             $this->data['userdata']=$this->session->userdata('logged_in');  
-			
+			$this->data['userdata']=$this->session->userdata('logged_in');  
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+	
+					}
+				}
 		}	
         else{
             show_404(); 													
@@ -249,12 +259,14 @@ class Item extends CI_Controller {
 		else
 		{
 			$item_id = $this->input->post('item_id');
-			if($this->item_model->edit_item($item_id)){							
+			if($this->item_model->edit_item($item_id)){						
 				$this->data['msg']="Item Edited Succesfully";					
 			}
+			$this->data['search_items'] = $this->item_model->get_items($this->data['rowsperpage']);
+			$this->data['items_count'] = $this->item_model->list_items_count();
 			$this->load->view("pages/consumables/items_list", $this->data);
 		}
 			// $this->load->view('pages/consumables/edit_item_view',$this->data);							
 			$this->load->view('templates/footer');								
-    }   	//end of add_item method	
+    }   	//end of add_item method
 }		//end of item controller

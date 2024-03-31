@@ -219,12 +219,12 @@
 	function add_inventory_item_element(selector, item_id, item_elements, current_items, index) {
 		let quantity_indented = $(`[name = 'quantity_indented[]']`);
 		let current_sum = sum_quantities($(`[name="quantity_${item_id}[]"]`), 'value');
-		console.log("SAIRAM FROM ADDINVITELEMENT", Number(quantity_indented[index].value), current_sum);
+		//console.log("SAIRAM FROM ADDINVITELEMENT", Number(quantity_indented[index].value), current_sum);
 		let balance = Number(quantity_indented[index].value) - current_sum;
 		current_items[index].quantity_added_inventory = Number(quantity_indented[index].value);
 		// console.log($(item_elements[index]).selectize()[0].selectize.getValue());
 		let sel = $(item_elements[index]).selectize()[0].selectize;
-		console.log(sel.options, Number(sel.getValue()));
+		//console.log(sel.options, Number(sel.getValue()));
 		let option_text = sel.options[Number(sel.getValue())].item_name;
 		$(selector).after(
 			`<tr name="inventory_item_${item_id}[]">\
@@ -277,7 +277,7 @@
 							</td>\
 				  
 			  </tr>`);
-		console.log($(`[name="quantity_${item_id}[]"]`));
+		//console.log($(`[name="quantity_${item_id}[]"]`));
 		$('.mfg_date_picker').Zebra_DatePicker({ direction: false, format: 'd-M-Y' });
 		$(".exp_date_picker").Zebra_DatePicker({ direction: true, format: 'd-M-Y' });
 	}
@@ -292,7 +292,7 @@
 
 			}
 		];
-		console.log(current_items);
+		//console.log(current_items);
 		$('#error-alerts').hide();
 
 
@@ -326,7 +326,7 @@
 			maxOptions: 10,
 			load: function(query, callback) {
 				if(!query.length) return callback();
-				console.log('loading', $('.selectize-control.items'));
+				//console.log('loading', $('.selectize-control.items'));
 				$($('.selectize-control.items')[curr_id]).addClass('loading');
 				$.ajax({
 					url: '<?php echo base_url(); ?>consumables/indent_reports/search_selectize_items',
@@ -347,7 +347,7 @@
 						callback(res.items);
 						$($('.selectize-control.items')[curr_id]).addClass('loading');
 						setTimeout(() => {
-							console.log('delayed loading');
+							//console.log('delayed loading');
 							$($('.selectize-control.items')[curr_id]).removeClass('loading');
 						}, 500);
 					}
@@ -358,46 +358,45 @@
 		let idx = current_items.length - 1;
 		$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 		let last_item_id = item_elements[idx].value;
-		console.log(last_item_id);
+		//console.log(last_item_id);
 		if (last_item_id) {
 			current_items[idx].item_id = last_item_id;
 			remove_inventory_item_buttons = $(`[name="remove_inventory_item_${last_item_id}[]"]`);
-			console.log(remove_inventory_item_buttons);
+			//console.log(remove_inventory_item_buttons);
 		}
 
 		$(item_elements[idx]).change(e => {
-			console.log(e.target);
+			//console.log(e.target);
 			$(`[name='inventory_item_${last_item_id}[]']`).remove();
-			console.log("Toooltop", $(item_elements[idx]));
+			//console.log("Toooltop", $(item_elements[idx]));
 			$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 			let selected = current_items.findIndex(item => item.array_id === curr_id);
 			let itemExists = current_items.findIndex(item => item.item_id == e.target.value);
 			if(itemExists != -1 && itemExists !== selected){
 				// e.target.value = "";
-				console.log("FIRST DUPLICATE")
+				//console.log("FIRST DUPLICATE")
 				$selectize[idx].selectize.setValue("");
 				return;
 			}
-			console.log(selected, current_items, curr_id);
+			//console.log(selected, current_items, curr_id);
 			current_items[selected].item_id = e.target.value;
 			current_items[selected].quantity_added_inventory = 0;
-			console.log(current_items);
+			//console.log(current_items);
 			last_item_id = current_items.find(item => item.array_id === curr_id).item_id;
 			remove_inventory_item_buttons = $(`[name='remove_inventory_item_${last_item_id}[]']`);
-			console.log(remove_inventory_item_buttons);
+			//console.log(remove_inventory_item_buttons);
 		});
 
 		$(add_inventory_item_buttons[idx]).click((e) => {
 			// e.target.style = "background-color: red";
-			console.log(current_items);
+			//console.log(current_items);
 			if (last_item_id === '' || last_item_id === null) {
-				console.log("No item selected");
+				//console.log("No item selected");
 				display_message("No item selected");
 				return;
 			}
-			console.log(item_elements[idx].value);
+			//console.log(item_elements[idx].value);
 			if (current_items[idx].quantity_added_inventory >= Number(quantity_elements[idx].value)) {
-				console.log("Quantity already satisfied.");
 				display_message("Quantity already satisfied.", 4000);
 				return;
 			}
@@ -407,7 +406,7 @@
 				selector = $(add_inventory_item_buttons[idx]).parents('tr')
 			} else {
 				let i = specific_inventory_items.length - 1;
-				console.log(i);
+				//console.log(i);
 				selector = specific_inventory_items[i];
 			}
 
@@ -419,7 +418,7 @@
 			// Handlers
 			// Remove item buttons
 			$(remove_inventory_item_buttons).click(e => {
-				console.log(e.target);
+				//console.log(e.target);
 				$(e.target).parents('tr').remove();
 				let proposed_sum = sum_quantities($(`[name="quantity_${last_item_id}[]"]`), 'value');
 				if (proposed_sum <= Number(quantity_elements[idx].value)) {
@@ -427,21 +426,21 @@
 
 				}
 				current_items[idx].quantity_added_inventory = Number(proposed_sum);
-				console.log(current_items);
+				//console.log(current_items);
 			});
 
 
-			console.log("SAIRAM", $(`[name="quantity_${last_item_id}[]"]`));
+			//console.log("SAIRAM", $(`[name="quantity_${last_item_id}[]"]`));
 
 
 			// Quantity field changed 
 			$(`[name="quantity_${last_item_id}[]"]`).change(e => {
-				console.log("onchange fired");
+				//console.log("onchange fired");
 				// console.log("SAIRAM", $(`[name="quantity_${last_item_id}[]"]`));
 				let idx = current_items.findIndex(item => item.item_id === last_item_id);
 				let proposed_sum = sum_quantities($(`[name="quantity_${last_item_id}[]"]`), 'value');
 				if (proposed_sum > Number(quantity_elements[idx].value)) {
-					console.log("Cannot add more quantity than specified");
+					//console.log("Cannot add more quantity than specified");
 					display_message("Cannot add more quantity than specified");
 					e.target.value = 0;
 
@@ -449,7 +448,7 @@
 					$('#error-alerts').hide();
 				}
 				current_items[idx].quantity_added_inventory = sum_quantities($(`[name="quantity_${last_item_id}[]"]`), 'value');
-				console.log(current_items);
+				//console.log(current_items);
 			});
 
 
@@ -459,7 +458,7 @@
 		$('#add_item').click((e) => {
 			let n = current_items.length;
 			let last_item_id = current_items[n - 1].item_id;
-			console.log("LID", last_item_id);
+			//console.log("LID", last_item_id);
 			let current_item_array_id = curr_id + 1;
 			let item_elements = $(`[name = 'item[]']`);
 			let specific_inventory_items = $(`[name="inventory_item_${last_item_id}[]"]`);
@@ -515,7 +514,7 @@
 
 		let current_item_id = null;
 		let idx = current_items.length - 1;
-		console.log("IEIDX", idx, $(item_elements[idx]));
+		//console.log("IEIDX", idx, $(item_elements[idx]));
 		// let $selectize = $('[name="item[]"]').selectize({
 		// 	maxOptions: 10
 		// });
@@ -533,7 +532,7 @@
 			item_name: ans
 		};
 		});
-		console.log(options);
+		//console.log(options);
 		// let temp = [];
 		
 		$selectize = $('[name="item[]"]').selectize({
@@ -546,7 +545,7 @@
 			maxOptions: 10,
 			load: function(query, callback) {
 				if(!query.length) return callback();
-				console.log('loading', $('.selectize-control.items'));
+				//console.log('loading', $('.selectize-control.items'));
 				$($('.selectize-control.items')[idx]).addClass('loading');
 				$.ajax({
 					url: '<?php echo base_url(); ?>consumables/indent/search_selectize_items',
@@ -567,7 +566,7 @@
 						callback(res.items);
 						$($('.selectize-control.items')[idx]).addClass('loading');
 						setTimeout(() => {
-							console.log('delayed loading');
+							//console.log('delayed loading');
 							$($('.selectize-control.items')[idx]).removeClass('loading');
 						}, 500);
 					}
@@ -576,34 +575,34 @@
 		});
 			$(item_elements[idx]).change(e => {
 				$(`[name="inventory_item_${current_item_id}[]"]`).remove();
-				console.log("Toooltop", $(item_elements[idx]));
+				//console.log("Toooltop", $(item_elements[idx]));
 				$(item_elements[idx]).prop('title', $(item_elements[idx]).find('[value="' + item_elements[idx].value + '"]').html());
 				let selected = current_items.findIndex(item => item.array_id === current_item_array_id);
 				let itemExists = current_items.findIndex(item => item.item_id == e.target.value);
 				if(itemExists != -1 && itemExists !== selected){
-					console.log("SAIRRRRRRRRRRAM item exists");
+					//console.log("SAIRRRRRRRRRRAM item exists");
 					// console.log(e);
 					// e.target.value = "";
-					console.log($selectize);
-					console.log("second duplicate");
+					//console.log($selectize);
+					//console.log("second duplicate");
 					$selectize[idx].selectize.setValue("");
 					return;
 				}
-				console.log(selected, current_items, current_item_array_id);
+				//console.log(selected, current_items, current_item_array_id);
 				current_items[selected].item_id = e.target.value;
 				current_items[selected].quantity_added_inventory = 0;
 				current_item_id = current_items[idx].item_id;
 				remove_inventory_item_buttons = $(`[name="remove_inventory_item_${current_item_id}[]"]`)
-				console.log(current_item_id);
+				//console.log(current_item_id);
 			});
-			console.log(current_items);
+			//console.log(current_items);
 
 			$(`[name="remove_item_${current_item_array_id}"]`).click((e) => {
-				console.log("FLAG", e);
+				//console.log("FLAG", e);
 				current_items = current_items.filter(item => item.array_id !== current_item_array_id);
 				$(`[name="remove_item_${current_item_array_id}"]`).parents('tr').remove();
 				$(`[name="inventory_item_${current_item_id}[]"]`).remove();
-				console.log(current_items);
+				//console.log(current_items);
 
 			});
 
@@ -614,24 +613,24 @@
 				// e.target.style = "background-color: red";
 
 				if (current_item_id === '' || current_item_id === null) {
-					console.log("No item selected");
+					//console.log("No item selected");
 					display_message("No item selected");
 					return;
 				}
 
 				if (current_items[idx].quantity_added_inventory >= Number(quantity_elements[idx].value)) {
-					console.log("Quantity already satisfied.");
+					//console.log("Quantity already satisfied.");
 					display_message("Quantity already satisfied.");
 					return;
 				}
-				console.log($(item_elements[idx]));
+				//console.log($(item_elements[idx]));
 				let specific_inventory_items = $(`[name="inventory_item_${current_item_id}[]"]`);
 				let selector = null;
 				if (specific_inventory_items.length === 0) {
 					selector = $(add_inventory_item_buttons[idx]).parents('tr')
 				} else {
 					let i = specific_inventory_items.length - 1;
-					console.log(i);
+					//console.log(i);
 					selector = specific_inventory_items[i];
 				}
 				add_inventory_item_element(selector, current_item_id, item_elements, current_items, idx);
@@ -647,18 +646,18 @@
 
 					}
 					current_items[idx].quantity_added_inventory = Number(proposed_sum);
-					console.log(current_items);
+					//console.log(current_items);
 
 				});
 
 				// Quantity integrity
 
 				$(`[name="quantity_${current_item_id}[]"]`).change(e => {
-					console.log("SAIRAM ")
+					//console.log("SAIRAM ")
 					let idx = current_items.findIndex(item => item.item_id === current_item_id);
 					let proposed_sum = sum_quantities($(`[name="quantity_${current_item_id}[]"]`), 'value');
 					if (proposed_sum > Number(quantity_elements[idx].value)) {
-						console.log("Requirement satisfied");
+						//console.log("Requirement satisfied");
 						display_message("Requirement satisfied");
 						e.target.value = 0;
 
@@ -666,7 +665,7 @@
 						$('#error-alerts').hide();
 					}
 					current_items[idx].quantity_added_inventory = proposed_sum;
-					console.log("SAIRAM QTIES", current_items);
+					//console.log("SAIRAM QTIES", current_items);
 				});
 
 			});
@@ -677,7 +676,7 @@
 
 
 		$('#auto_indent_form').submit(e => {
-			console.log("Trying to submit");
+			//console.log("Trying to submit");
 			let quantity_elements = $(`[name = 'quantity_indented[]']`);
 			console.log(current_items);
 			console.log();
@@ -691,13 +690,13 @@
 
 				let cost_elements = $(`[name = 'cost_${current_items[i].item_id}[]']`);
 				let qty_elements = $(`[name = 'quantity_${current_items[i].item_id}[]']`);
-				console.log(cost_elements);
-				console.log(`[name = 'quantity_${current_items[i].item_id}[]']`, qty_elements);
+				//console.log(cost_elements);
+				//console.log(`[name = 'quantity_${current_items[i].item_id}[]']`, qty_elements);
 				// alert();
 				// e.preventDefault();
 				// return;
 				for(let j = 0; j < qty_elements.length; j++){
-					console.log(qty_elements[j].value);
+					//console.log(qty_elements[j].value);
 					if(qty_elements[j].value == 0){
 						display_message("Quantity cannot be 0");
 						e.preventDefault();
@@ -705,7 +704,7 @@
 					}
 				}
 				for(let j = 0; j < cost_elements.length; j++){
-					console.log(cost_elements[j].value, isNaN(Number(cost_elements[j].value)));
+					//console.log(cost_elements[j].value, isNaN(Number(cost_elements[j].value)));
 					// alert("");
 					if(cost_elements[j].value.length == 0){
 						cost_elements[j].value = '0.0';
@@ -860,10 +859,9 @@
 										<th>GTIN Code</th>
 									</thead>
 
-									<tbody id="table-body">
+									<tbody id="table-body" style="height:160px!important;">
 										<!-- name="indent_item_$indent_item->id" -->
-										<tr name="indent_item"
-											class="warning indent_item indent_item_delimiter inventory_item_delimiter_">
+										<tr name="indent_item" class="warning indent_item indent_item_delimiter inventory_item_delimiter_">
 											<td id="change">
 												<center><button type='button' name="add_inventory_item[]"
 														class="btn item"><span
@@ -876,7 +874,7 @@
 												</select>
 											</td>
 											<td><input class="form-control narrow" type="number" min="0" value=""
-													name="quantity_indented[]" placeholder="Quantity" /></td>
+													name="quantity_indented[]" placeholder="Quantity"/></td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -919,7 +917,7 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-10">
+					<div class="col-md-8">
 						<div class="panel-heading">
 							<p class="panel-title">
 								<center>

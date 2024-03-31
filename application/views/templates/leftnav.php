@@ -358,7 +358,7 @@
 										<a class="<?php echo (activate_item("^get_inventory_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_summary">Inventory 
 										Summary </span></a>
 										<a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
-										Item Summary </span></a>
+										Detail </span></a>
 									</ul>
 								</div>
 

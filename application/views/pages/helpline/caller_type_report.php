@@ -69,76 +69,27 @@
 	};
 
 	
-	Highcharts.chart('callType', {
-		chart: {plotBackgroundColor: null,plotBorderWidth: 0,plotShadow: false},
+	Highcharts.chart('callerType', {
+		chart: pie_chart,
 		credits: pie_credits,
-		title: {text: '<?php echo $total_hospitals; ?> Calls/<br><?php echo $customer_distinct_report[0]->count; ?> Customers', align: 'center',     verticalAlign: 'middle', y: 60},
+		title: false,
 		tooltip: pie_tooltip,
-		plotOptions: {pie: {dataLabels: {enabled: true, distance: -50,
-                style: {fontWeight: 'bold', color: 'white'}},
-            startAngle: -90, endAngle: 90,center: ['50%', '75%'],size: '130%'}
-                    },
+		plotOptions: pie_plotOptions,
 		legend: pie_legend,
 		series: [{
-			type: 'pie',
 			name: 'Calls',
-			innerSize: '50%',
 			colorByPoint: true,
-			data: [<?php $i=1;foreach($call_type_report as $a) { echo "{ name: '$a->direction', y: $a->count }"; if($i<count($call_type_report)) echo " ,"; $i++; }?>]
+			data: [<?php $i=1;foreach($caller_type_report as $a) { echo "{ name: '$a->caller_type', y: $a->count }"; if($i<count($caller_type_report)) echo " ,"; $i++; }?>]
 		}]
 	});
 	
-	Highcharts.chart('callTypeIn', {
-		chart: {plotBackgroundColor: null,plotBorderWidth: 0,plotShadow: false},
-		credits: pie_credits,
-		title: {text: '<?php
-			$total_incoming=0;
-			foreach($call_type_in_report as $a){$total_incoming +=$a->count;}
-			echo $total_incoming;?><br>Calls', align: 'center',     verticalAlign: 'middle', y: 60},
-		tooltip: pie_tooltip,
-		plotOptions: {pie: {dataLabels: {enabled: true, distance: -50,
-                style: {fontWeight: 'bold', color: 'white'}},
-            startAngle: -90, endAngle: 90,center: ['50%', '75%'],size: '130%'}
-                    },
-		legend: pie_legend,
-		series: [{
-			type: 'pie',
-			name: 'Calls',
-			innerSize: '50%',
-			colorByPoint: true,
-			data: [<?php $i=1;foreach($call_type_in_report as $a) { echo "{ name: '$a->call_type', y: $a->count }"; if($i<count($call_type_in_report)) echo " ,"; $i++; }?>]
-		}]
-	});
-
-    Highcharts.chart('callTypeOut', {
-		chart: {plotBackgroundColor: null,plotBorderWidth: 0,plotShadow: false},
-		credits: pie_credits,
-		title: {text: '<?php
-			$total_outbound=0;
-			foreach($call_type_out_report as $a){$total_outbound +=$a->count;}
-			echo $total_outbound;?><br>Calls', align: 'center',     verticalAlign: 'middle', y: 60},
-		tooltip: pie_tooltip,
-		plotOptions: {pie: {dataLabels: {enabled: true, distance: -50,
-                style: {fontWeight: 'bold', color: 'white'}},
-            startAngle: -90, endAngle: 90,center: ['50%', '75%'],size: '130%'}
-                    },
-		legend: pie_legend,
-		series: [{
-			type: 'pie',
-			name: 'Calls',
-			innerSize: '50%',
-			colorByPoint: true,
-			data: [<?php $i=1;foreach($call_type_out_report as $a) { echo "{ name: '$a->call_type', y: $a->count }"; if($i<count($call_type_out_report)) echo " ,"; $i++; }?>]
-		}]
-	});
 	
-
-});
-</script>
-<div class="container row" style="position:relative;">
-<?php echo form_open('dashboard/helpline/',array('role'=>'form','class'=>'form-custom')); ?>
+	});
+	</script>
+<div class="row" style="position:relative;">
+<?php echo form_open('dashboard/caller_type_report/',array('role'=>'form','class'=>'form-custom')); ?>
 	<div class="col-md-12">
-			<span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline <br/>
+			<span style="font-size:24px;font-weight:bold"><span class="flaticon-telephone-line-24-hours-service"></span> Helpline - Caller Type <br/>
 			<div class="col-md-3">
 				<select name="helpline_id" class="form-control" style="width:100%">
 					<option value="">Helpline</option>
@@ -245,41 +196,18 @@
 		</div>
 	</div>	
     <br/>
+	
 	<div class="row"><!-- this section displays the dashboard panels -->
-		
-		<div class="col-md-6">
+	    <div class="col-md-12">
 			<div class="panel panel-default">
 			    <div class="panel panel-heading">
-				    <h4><i class="flaticon-old-telephone-ringing"  aria-hidden="true"></i>&nbsp Calls</h4>
-			    </div>
-			    <div class="panel-body" >
-			        <div id="callType" style="width:300px;height:250px;margin-left:20%"></div>
+				    <h4><i class="fa fa-user" aria-hidden="true"></i>&nbsp Caller</h4>
+    			</div>
+	    		<div class="panel-body" style="margin-left:3%;">
+		        	<div id="callerType" style=""></div>
 			    </div>
 			</div>
 		</div>
-		
-		<div class="col-md-6">
-			<div class="panel panel-default">
-			    <div class="panel panel-heading">
-				    <h4><i class="flaticon-old-telephone-ringing"  aria-hidden="true"></i>&nbsp Incoming</h4>
-			    </div>
-			    <div class="panel-body">
-			        <div id="callTypeIn" style="width:300px;height:250px;margin-left:20%"></div>
-			    </div>
-			</div>
-		</div>
-		
-		<div class="col-md-12">
-			<div class="panel panel-default">
-			    <div class="panel panel-heading">
-				    <h4><i class="flaticon-old-telephone-ringing"  aria-hidden="true"></i>&nbsp Outbound</h4>
-			    </div>
-			    <div class="panel-body">
-			        <div id="callTypeOut" style="width:300px;height:250px;margin-left:35%"></div>
-			    </div>
-			</div>
-		</div>
-		
 	</div>
 	
 </div>
