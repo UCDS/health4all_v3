@@ -82,7 +82,23 @@
 			data: [<?php $i=1;foreach($caller_type_report as $a) { echo "{ name: '$a->caller_type', y: $a->count }"; if($i<count($caller_type_report)) echo " ,"; $i++; }?>]
 		}]
 	});
-	
+
+	Highcharts.chart('callerTypeBargraph', {
+		chart : {type:'column'},
+		title: false,
+		xAxis: {
+			categories: ['Calls','New Patient','Attendant','Revisit Patient','General','Helpdesk','Doctor','Nurse'],
+		},
+		yAxis: {
+			min: 0, 
+		},
+		plotOptions: {bar: { dataLabels: { enabled: true } } },
+		legend: {enabled:false},
+		credits: {enabled:false},
+		series: [{ name: 'Count', colorByPoint: true,
+			data: [<?php $i=1;foreach($caller_type_report as $a) { echo "{ name: '$a->caller_type', y: $a->count }"; if($i<count($caller_type_report)) echo " ,"; $i++; }?>]
+		}]
+	});
 	
 	});
 	</script>
@@ -198,7 +214,7 @@
     <br/>
 	
 	<div class="row"><!-- this section displays the dashboard panels -->
-	    <div class="col-md-12">
+	    <div class="col-md-6">
 			<div class="panel panel-default">
 			    <div class="panel panel-heading">
 				    <h4><i class="fa fa-user" aria-hidden="true"></i>&nbsp Caller</h4>
@@ -208,7 +224,20 @@
 			    </div>
 			</div>
 		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel panel-heading">
+					<h4><i class="fa fa-user" aria-hidden="true"></i>&nbsp Caller</h4>
+				</div>
+				<div class="panel-body">
+					<div id="callerTypeBargraph" >
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
+
+	
 	
 </div>
 

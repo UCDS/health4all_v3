@@ -349,7 +349,7 @@ function onchange_page_dropdown(dropdownobj){
 				<div class="row">
 					<div class="col-md-4">
 					<label><b>Life Status:  </b></label>
-						<input type ="radio" name="life_status" class ="form-control" value="1" <?php if( empty($this->input->post('life_status')) || ($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label> Alive</label>
+						<input type ="radio" name="life_status" class ="form-control" value="1" <?php if(!empty($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label> Alive</label>
 						<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  > <label>Not Alive </label>
 						<input type="radio" name="life_status" class ="form-control" value="3" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 3) {echo "checked" ;} ?>  > <label>No Follow up</label>
 					</div>
@@ -457,6 +457,10 @@ function onchange_page_dropdown(dropdownobj){
 							<option value="" >District</option>
 						</select>
 					</div>
+
+					<div class="col-md-2">
+						
+					</div>
 					<script>
 					
 					onchange_state_dropdown(document.getElementById("state"));
@@ -503,7 +507,7 @@ function onchange_page_dropdown(dropdownobj){
 				</div>
 			</div> -->
 		</div>
-
+<?php if(!empty($report)) { ?>
 <script>
     var map;
     function initMap() {
@@ -517,8 +521,9 @@ function onchange_page_dropdown(dropdownobj){
             foreach($report as $followup){  
                 if(!!$followup->latitude && !!$followup->longitude && !!$followup->district_id) { 
         ?>
-
-                    var contentString_<?= $followup->patient_id; ?> = "<b><?= $followup->first_name ?></b><br><b><?= $followup->patient_id ?></b><br>Age: <?= $followup->age_years ?><br>Gender: <?php if($followup->gender){ echo "Male"; }else{ echo "Female"; } ?><br>Diagnosis: <?= $followup->diagnosis ?><br><a href='https://www.google.com/maps/search/?api=1&query=<?= $followup->latitude ?>,<?= $followup->longitude ?>' target='_blank' >Open in Maps</a>";
+					var markerColor = 'red';
+					
+                    var contentString_<?= $followup->patient_id; ?> = "<b><?= $followup->first_name.' / '.$followup->patient_id?></b><br><?= $followup->age_years.'/'.$followup->gender.'/'.$followup->diagnosis ?><br><b><?php if($followup->priority_type_id==1){ echo "High"; }elseif($followup->priority_type_id==2){ echo "Medium"; }else{ echo "Low"; }?></b><br><a href='https://www.google.com/maps/search/?api=1&query=<?= $followup->latitude ?>,<?= $followup->longitude ?>' target='_blank' >Open in Maps</a>";
 
                     var infowindow_<?= $followup->patient_id; ?> = new google.maps.InfoWindow({
                         content: contentString_<?= $followup->patient_id; ?>
@@ -528,7 +533,8 @@ function onchange_page_dropdown(dropdownobj){
 
                     var marker_<?= $followup->patient_id; ?> = new google.maps.Marker({
                         position: location_<?= $followup->patient_id; ?>,
-                        map: map
+                        map: map,
+						// icon: 'http://maps.google.com/mapfiles/ms/micons/' + markerColor + '-dot.png'
                     });
 
                     bounds.extend(location_<?= $followup->patient_id; ?>);
@@ -539,8 +545,6 @@ function onchange_page_dropdown(dropdownobj){
                         infowindow_<?= $followup->patient_id; ?>.setPosition(marker_<?= $followup->patient_id; ?>.getPosition());
                         infowindow_<?= $followup->patient_id; ?>.open(map, marker_<?= $followup->patient_id; ?>);
                     });
-
-                   
         <?php 
                 }
             }
@@ -548,3 +552,4 @@ function onchange_page_dropdown(dropdownobj){
     }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-1GMntG8XK9s7m4uWyWjhQdTaX-xZxYs&callback=initMap" async defer></script>
+<?php } ?>

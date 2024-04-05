@@ -508,8 +508,8 @@ echo "</select></li>";
 								Your browser does not support the audio element.
 							</audio>
 							</small>
-							<?php echo $call->note;?><br/>
-							<div style="padding-left:60px;text-align:right!important;">
+							<?php echo $call->note;?>
+							<div>
 								<?php 
 									if(!empty($call->first_name)) 
 									{ 

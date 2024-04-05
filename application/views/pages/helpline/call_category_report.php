@@ -1,4 +1,4 @@
-	<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css"></script>
+<link rel="stylesheet"  type="text/css" href="<?php echo base_url();?>assets/css/bootstrap_datetimepicker.css"></script>
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/flaticon.css" >
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/flaticon2.css" >
 
@@ -78,6 +78,25 @@
 		series: [{
 			name: 'Calls',
 			colorByPoint: true,
+			data: [<?php $i=1;foreach($call_category_report as $a) { echo "{ name: '$a->call_category', y: $a->count }"; if($i<count($call_category_report)) echo " ,"; $i++; }?>]
+		}]
+	});
+
+	Highcharts.chart('callCategoryBargraph', {
+		chart : {type:'column'},
+		title: false,
+		xAxis: {
+			categories: ['','Enquiry - Appointment','Enquiry - General','Enquiry - Ticket','TeleConsult Appointment','Enquiry Review Consultation',
+			'Missed Call','Tele Consultation','Enquiry - Surgery Date','Enquiry - Plastic Surgery','Enquiry - Test Reports','Enquiry - Medicine Clarification',
+			'Client Hangup','Enquiry - Gate Entry Issue','Complaint','Enquiry - General','Enquiry - General','Follow up','Post-op Symptoms Escalation'],
+		},
+		yAxis: {
+			min: 0, 
+		},
+		plotOptions: {bar: { dataLabels: { enabled: true } } },
+		legend: {enabled:false},
+		credits: {enabled:false},
+		series: [{ name: 'Count', colorByPoint: true,
 			data: [<?php $i=1;foreach($call_category_report as $a) { echo "{ name: '$a->call_category', y: $a->count }"; if($i<count($call_category_report)) echo " ,"; $i++; }?>]
 		}]
 	});
@@ -196,8 +215,7 @@
 	</div>	
     <br/>
 	<div class="row"><!-- this section displays the dashboard panels -->
-		
-		<div class="col-md-12">
+		<div class="col-md-6">
 			<div class="panel panel-default">
 			    <div class="panel panel-heading">
 				    <h4><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp Category</h4>
@@ -207,8 +225,16 @@
 			    </div>
 			</div>
 		</div>
-	    
-	    
+	    <div class="col-md-6">
+			<div class="panel panel-default">
+			    <div class="panel panel-heading">
+				    <h4><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp Category</h4>
+    			</div>
+			    <div class="panel-body" style="margin-left:3%;">
+	    		    <div id="callCategoryBargraph" ></div>
+			    </div>
+			</div>
+		</div>
 	</div>
 	
 </div>

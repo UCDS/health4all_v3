@@ -338,6 +338,11 @@ class Indent_reports extends CI_Controller
 		$this->data['all_item_type'] = $this->indent_report_model->get_data("item_type");
 		$this->data['all_item'] = $this->indent_report_model->get_data("item");
 		$this->data['parties'] = $this->indent_report_model->get_data("party");
+		
+		$this->load->model('consumables/item_model');
+		$this->data['generic_item']=$this->item_model->get_data("generic_name");
+		$this->data['item_form']=$this->item_model->get_data("item_form");
+
 		log_message('info', "SAIRAM FROM GET ITEM $scp_id $item_id");
 		$validations = array(
 			array(

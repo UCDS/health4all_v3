@@ -553,15 +553,52 @@ class patient_model extends CI_Model {
         else{
             return;
         }
-        $this->db->select('visit_id,patient_id,admit_date,admit_time,unit,area,visit_type,presenting_complaints,past_history,family_history,
+        $this->db->select('patient_visit.visit_id,patient_id,admit_date,admit_time,unit,area,visit_type,presenting_complaints,past_history,family_history,
         admit_weight,pulse_rate,respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,rs,pa,cns,cxr,
         provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,hosp_file_no,department.department as dname,
-        visit_name.visit_name as vn')
+        visit_name.visit_name as vn, counseling_text.counseling_text as counseling_txt')
                 ->from('patient_visit')
                 ->join('department','department.department_id=patient_visit.department_id','left')
                 ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
+                ->join('counseling','counseling.visit_id=patient_visit.visit_id','left')
+                ->join('counseling_text','counseling_text.counseling_text_id=counseling.counseling_text_id','left')
                 ->where('patient_visit.patient_id',$patient_id);
         $this->db->order_by('patient_visit.admit_date','DESC');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function deleteCounseling_visit_text($del_visits_counseling) 
+    {
+        $patient_id = $this->input->post('patient_id');
+        $this->db->where('visit_id', $del_visits_counseling);
+        $this->db->delete('counseling');
+        return $this->db->affected_rows() > 0;
+    }
+
+    function get_update_clinical_note_edits($edit_clinical_note, $edit_note_id)
+    {
+        $this->db->where('note_id', $edit_note_id);
+        $this->db->update('patient_clinical_notes', array('clinical_note' => $edit_clinical_note));
+    }
+
+    function get_counseling_text_to_edit()
+    {
+        $patient_id = $this->input->post('patient_id');
+        $this->db->select('pcn.note_id,pcn.visit_id,pcn.clinical_note');
+        $this->db->from('patient_clinical_notes as pcn');
+        $this->db->join('patient_visit','patient_visit.visit_id=pcn.visit_id','left');
+        $this->db->where('patient_visit.patient_id',$patient_id);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+    
+    function get_all_icd_codes_patient_visits()
+    {
+        $this->db->select('icd_code,icd_10,code_title');
+        $this->db->from('icd_code');
         $query = $this->db->get();
         $result = $query->result();
         return $result;
@@ -573,7 +610,7 @@ class patient_model extends CI_Model {
         patient_visit.visit_name_id,patient_visit.presenting_complaints,patient_visit.past_history,patient_visit.family_history,patient_visit.admit_weight,
         patient_visit.pulse_rate,patient_visit.respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,
         rs,pa,cns,cxr,provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,unit.unit_name,area.area_name,
-        visit_name.visit_name')
+        visit_name.visit_name,patient_visit.icd_10')
             ->from('patient_visit')
             ->join('department','department.department_id=patient_visit.department_id','left')
             ->join('unit','unit.unit_id=patient_visit.unit','left')
@@ -595,7 +632,7 @@ class patient_model extends CI_Model {
         $edit_visit_history = array();
         $patient = array();
         $elements = ['admit_date','admit_time','department_id','unit','area','visit_name_id','presenting_complaints','past_history','family_history','admit_weight','pulse_rate','respiratory_rate','temperature','sbp','dbp',
-                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time'];
+                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time','icd_10'];
         foreach ($elements as $column) {
         	if (array_key_exists($column,$input_data))
             { 

@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
-
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 <script type="text/javascript">
 $(function(){
         var options = {
@@ -642,6 +642,24 @@ function submitUpdations()
   		}	
   	}
 
+    if ($('#icdcode_update').is(':checked')){
+  		isUpdate = true;
+  		if($('#icdcode_update_new_value').val() == $('#icdcode_update_old_value').text())
+      {
+          bootbox.alert({
+              title: "<b>Icd Code</b>",	
+              message: "New value should be different than old value.",
+              onHidden: function(e) {
+                $('#icdcode_update_new_value').focus();
+              }
+              });
+              return;  			 
+  		}  else {  		
+  			postData["icd_10"] = {"old":$('#icdcode_update_old_value').text(),"new":$('#icdcode_update_new_value').val()};
+  			updateAlert = updateAlert + "<br> <b>Icd Code</b>: " + $('#icdcode_update_old_value').text() + " -> " + $('#icdcode_update_new_value').val();
+  		}	
+  	}
+
   	
 if (!isUpdate) {
   bootbox.alert("There are nothing to update!");
@@ -695,7 +713,8 @@ bootbox.confirm({
             <input type="submit" value="Get details" name="submitBtn" class="btn btn-primary btn-sm" />
   </form>
 
-  <div style="margin-top:11%!important;">
+<div class="row">
+  <div style="margin-top:4%!important;" class="col-md-12">
     <?php if(isset($patient_visits_to_edit) && count($patient_visits_to_edit)>0){ ?>
     
     <h4 style="margin-left:13px;">Available Visits</h4>
@@ -708,6 +727,7 @@ bootbox.confirm({
         <th style="text-align:center;">Department</th>
         <th style="text-align:center;">Admit date</th>
         <th style="text-align:center;">Actions</th>
+        <th style="text-align:center;">Counseling Text</th>
       </thead>
       <tbody>
       <?php 
@@ -724,7 +744,40 @@ bootbox.confirm({
           <a data-id="<?php echo $avail->visit_id;?>" class="btn btn-success" id="edit"
           style="color:white;text-decoration:none!important;">Edit</a>
         </td>	
+        <?php if($avail->counseling_txt!='') { ?>
+          <td style="text-align:center;">
+              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal_<?php echo $avail->visit_id;?>">
+                View Counseling Text
+              </button>
+          </td>
+        <?php } else { ?>	
+          <td style="text-align:center;">
+              <button type="button" class="btn btn-info" data-toggle="modal" data-target="#">
+                No Counseling Text
+              </button>
+          </td>
+          <?php } ?>
       </tr>
+      <!-- counseling text modal -->
+      <div class="modal fade" id="exampleModal_<?php echo $avail->visit_id;?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px!important;">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+               <span><?php echo $avail->counseling_txt; ?></span>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger" onclick="deleteCounseling(<?php echo $avail->visit_id;?>)">Delete</button>            </div>
+          </div>
+        </div>
+      </div>
+      
       <?php $sno++;} ?>
       </tbody>
     </table>
@@ -763,6 +816,7 @@ bootbox.confirm({
                   var outcome = response[i]['outcome'];
                   var outcome_date = response[i]['outcome_date'];
                   var outcome_time = response[i]['outcome_time'];
+                  var icd_10 = response[i]['icd_10'];
                 }
                 document.getElementById('visit_id_con').value = visit_id;
                 $('#admit_date_manual_update_old_value').append(admit_date);
@@ -796,6 +850,7 @@ bootbox.confirm({
                 $('#outcome_update_old_value').append(outcome);
                 $('#outcome_date_update_old_value').append(outcome_date);
                 $('#outcome_time_update_old_value').append(outcome_time);
+                $('#icdcode_update_old_value').append(icd_10);
               },
               error: function(error) {
                 console.error("Error:", error);
@@ -806,9 +861,129 @@ bootbox.confirm({
           return false;
         }
       })
+      function deleteCounseling(visitId) 
+      {
+        $.ajax({
+            type: "POST",
+            url: "<?php echo base_url().'patient/del_visits_counseling_text' ?>",
+            data: { visitId: visitId },
+            dataType: "json",
+            success: function(response) {
+                console.log('Delete request successful:', response);
+                if (response.success) {
+                    alert('Counseling text deleted successfully');
+                    location.reload();
+                } else {
+                    alert('No counseling text found for deletion');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error deleting counseling text:', error);
+                alert('An error occurred while deleting counseling text');
+            }
+        });
+      }
     </script>
     <?php } ?>
   </div>
+  <?php if(!empty($get_counseling_text)) { ?>
+<div style="margin-top:4%!important;" class="col-md-12">
+  <h4 style="margin-left:13px;">Available Clinical Notes</h4>
+    <table class="table table-bordered table-striped" id="table-sort" style="margin-left:13px;">
+      <thead>
+          <tr>
+            <th style="text-align:center;">S.no</th>
+            <th style="text-align:center;">Visit id</th>
+            <th style="text-align:center;">Clinical Notes</th>
+            <th style="text-align:center;">Actions</th>
+          <tr>
+      </thead>
+      <tbody>
+        <?php $sno_1=1; foreach($get_counseling_text as $gct) { ?>
+          <tr>
+            <td style="text-align:right;"><?php echo $sno_1 ?></td>
+            <td style="text-align:center;"><?php echo $gct->visit_id ?></td>
+            <td style="text-align:center;"><?php echo $gct->clinical_note ?></td>
+            <td style="text-align:center;">
+                <a data-id="<?php echo $gct->note_id;?>" class="btn btn-success edit-btn"
+                  style="color:white;text-decoration:none!important;">Edit Clinical Note</a>
+            </td>
+          <tr>
+          <div class="modal fade" id="editClinicalNoteModal" tabindex="-1" role="dialog" aria-labelledby="editClinicalNoteModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editClinicalNoteModalLabel">Edit Clinical Note</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px!important;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateClinicalNoteForm">
+                            <div class="form-group">
+                                <textarea class="form-control" id="clinical_note" name="clinical_note">
+                                  <?php echo $gct->clinical_note ?>
+                                </textarea>
+                            </div>
+                            <input type="hidden" id="noteIdInput" name="note_id" value="<?php echo $gct->note_id; ?>">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="updateBtn_one" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php $sno_1++; } ?>
+      </tbody>
+    </table>
+    <script>
+        $(document).ready(function() {
+              var modal = $('#editClinicalNoteModal');
+              var editBtn = $('.edit-btn');
+              var closeBtn = $('.close');
+
+              editBtn.click(function() {
+                  var noteId = $(this).data('id');
+                  modal.modal('show');
+                  $('#noteIdInput').val(noteId);
+              });
+
+              closeBtn.click(function() {
+                  modal.modal('hide');
+              });
+            // form here 
+            $('#updateBtn_one').click(function(){
+                var clinicalNote = $('#clinical_note').val();
+                var noteId = $('#noteIdInput').val();
+                $.ajax({
+                    url: '<?php echo base_url()."patient/update_clinical_note_visits" ?>', 
+                    method: 'POST',
+                    data: { clinicalNote:clinicalNote,noteId:noteId },
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response) {
+                            alert('Clinical note updated successfully');
+                        } else {
+                            console.log('Failed to update clinical note');
+                        }
+                        $('#editClinicalNoteModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) 
+                    {
+                        console.error('Error updating clinical note:', error);
+                        alert('An error occurred while updating clinical note');
+                    }
+                });
+            }); //till here
+        
+        });
+    </script>
+  </div>
+</div>
+  <?php } ?>
 
 
 <div class="container">
@@ -1089,6 +1264,20 @@ bootbox.confirm({
         <td class="old-value-container" id="outcome_time_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="outcome_time_update" name="outcome_time_update" value="outcome_time_update"></td>
         <td><input type="time" class="form-control" id="outcome_time_update_new_value" name="outcome_time_update_new_value" placeholder="" value="<?php echo $time ?>"  disabled></td>
+      </tr>
+     
+      <tr>
+        <td>Icd code</td>
+        <td class="old-value-container" id="icdcode_update_old_value"></td>
+        <td><input type="checkbox" class="form-check-input"  id="icdcode_update" name="icdcode_update" value="icdcode_update"></td>
+        <td>
+          <select name="icdcode_update_new_value" id="icdcode_update_new_value" class="form-control"  style="width:200px!important;" disabled>
+              <option value=""> Choose Icd Code </option>
+              <?php foreach($icd_codes as $icd) { ?>
+                <option value="<?php echo $icd->icd_code ?>"><?php echo $icd->code_title ?></option>
+              <?php } ?>
+          </select>
+        </td>
       </tr>
       
     </tbody>

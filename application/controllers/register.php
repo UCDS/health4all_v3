@@ -815,6 +815,7 @@ class Register extends CI_Controller {
 			
 			if($this->input->post('edit_document_link'))
 			{
+				$edit_note = $this->input->post('note');
 				$edit_patient_id = $this->input->post('edit_patient_id');
 
 				$dir_path = './assets/patient_documents/';
@@ -857,9 +858,11 @@ class Register extends CI_Controller {
 					} else {
 						echo "No rotation angle provided."; // Debugging statement
 					}
-					$this->patient_document_upload_model->update_document_metadata($new_name);
+					$this->patient_document_upload_model->update_document_metadata($new_name, $edit_note);
 				} else {
 					$error = array('error' => $this->upload->display_errors());
+					$edit_document_link = $this->input->post('edit_document_link');
+					$this->patient_document_upload_model->update_document_metadata($edit_document_link, $edit_note);
 				}
 			}
 					
@@ -1154,67 +1157,70 @@ class Register extends CI_Controller {
 	
 	public function patient_follow_up()
 	{
-	if($this->session->userdata('logged_in')){
-		$this->data['userdata']=$this->session->userdata('logged_in');
-		$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
+		if($this->session->userdata('logged_in'))
+		{
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['hospital'] = $hospital = $this->session->userdata('hospital');
 
-		$access=0;
-		foreach($this->data['functions'] as $function){
-			if($function->user_function=="patient_follow_up"){
-				$access=1;
-				break;
+			$access=0;
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="patient_follow_up"){
+					$access=1;
+				}
 			}
-		}
-		if($access==1){
-			$transaction = $this->transaction_condition();
-        	$this->data['title']="Patients Followup";
-		$this->load->view('templates/header',$this->data);
-		$this->load->helper('form');
-		$this->load->library('form_validation');
-		
-		
-		
-		if ($this->form_validation->run() === FALSE)
-		{	
+			if($access==1){
+				$transaction = $this->transaction_condition();
+				$this->data['title']="Patients Followup";
+			$this->load->view('templates/header',$this->data);
+			$this->load->helper('form');
+			$this->load->library('form_validation');
 			
-			$c_patient = $this->input->post('healthforall_id');
-			$this->data['patient_followup']=$this->register_model->select_patient_followup_id($c_patient);
-			$this->data['hospital_id'] = $this->data['hospital']['hospital_id'];
 			
-			$this->data['patients']=$this->register_model->get_patient_followup();
-			$patient_id = $this->data['patients']['0']->patient_id;
-			$this->data['priority_types']=$this->register_model->get_priority_type();
-			$this->data['route_primary']=$this->register_model->get_primary_route();
-			$this->data['route_secondary']=$this->register_model->get_secondary_route();
-			$this->data['volunteer']=$this->register_model->get_volunteer();
+			
+			if ($this->form_validation->run() === FALSE)
+			{	
+				$c_patient = $this->input->post('healthforall_id');
+				$this->data['patient_followup']=$this->register_model->select_patient_followup_id($c_patient);
+				
+				$this->data['hospital_id'] = $this->data['hospital']['hospital_id'];
+				
+				$this->data['patients']=$this->register_model->get_patient_followup();
+				$patient_id = $this->data['patients']['0']->patient_id;
+				$this->data['priority_types']=$this->register_model->get_priority_type();
+				$this->data['route_primary']=$this->register_model->get_primary_route();
+				$this->data['route_secondary']=$this->register_model->get_secondary_route();
+				$this->data['volunteer']=$this->register_model->get_volunteer();
 
-			
-           	 	$district_id = $this->data['patients']['0']->district_id;
-			$this->data['districts'] = $this->register_model->get_districts($district_id);
-			$this->data['codes'] = $this->register_model->search_icd_codes();
+				//selecting primary route with secondary route_id
+				$this->data['routeprim_secondrouteid']=$this->register_model->primary_route_with_secroute($this->data['patient_followup']->route_secondary_id);
+				
 
-			
+				$district_id = $this->data['patients']['0']->district_id;
+				$this->data['districts'] = $this->register_model->get_districts($district_id);
+				$this->data['codes'] = $this->register_model->search_icd_codes();
+
+				
+				
+				if($this->input->post('search_add')){
+				
+				
+					$insert_id = $this->register_model->addfor_followup();
+					if($insert_id)
+					$this->data['msg'] = '<b style="color:#5bff33;">Followup Added Successfully</b>';
+				else
+					$this->data['msg'] = '<b style="color:#ff4633;">Something went wrong try again</b>';
+				//	$this->load->view('pages/patient_followup',$this->data);
+			}
 			 
-			 if($this->input->post('search_add')){
-			
-			
-				$insert_id = $this->register_model->addfor_followup();
-				if($insert_id)
-				$this->data['msg'] = '<b style="color:#5bff33;">Followup Added Successfully</b>';
-			else
-				$this->data['msg'] = '<b style="color:#ff4633;">Something went wrong try again</b>';
-			//	$this->load->view('pages/patient_followup',$this->data);
-		}
-			 
-			  if($this->input->post('search_update_btn'))
-			 {
+			if($this->input->post('search_update_btn'))
+			{
 	
 				$update = $this->register_model->updatefor_followup();
 				if($update == true)
 					$this->data['msg'] = '<b style="color:#5bff33;">Updated Successfully</b>';
 					else
 					$this->data['msg'] = '<b style="color:#ff4633;">Something went wrong try again</b>';
-			 }
+			}
 			// $response = $this->input->post();
 			// $update_patients = array();
 			// $update_patients['patient_id'] = $response['patient_id']; 
@@ -1236,20 +1242,13 @@ class Register extends CI_Controller {
 			//$this->data['msg'] = "No patient record found. Register Patient and add for Followup";
 			//}
 			$this->load->view('pages/patient_followup',$this->data);
-			if($this->input->post('search_followup')){
+			if($this->input->post('search_followup') || $this->input->post('healthforall_id')){
 				//priority_types$this->data['patients']=$this->register_model->get_patient_followup();
 
 				$this->load->view('pages/detail_followup',$this->data);
 
 			}
-
 		}	
-	
-	
-		
-
-	
-	
 		//$this->load->view('pages/patient_followup',$this->data);
 	
 		$this->load->view('templates/footer');
@@ -1261,8 +1260,9 @@ class Register extends CI_Controller {
 		else{
 		show_404();
 		}
-	
-}
+	}
+
+
 	function delete_document($document_link)
 	{
 		unlink('assets/patient_documents/'.$document_link);
