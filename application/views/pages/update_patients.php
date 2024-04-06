@@ -428,7 +428,7 @@ function initDistrictSelectize(){
         // disabled the submit button
 		var rotation = $('#rotation').val();
     	data.append('rotation', rotation);
-
+		
         $("#file_upload").prop("disabled", true);
 
         $.ajax({
@@ -448,7 +448,7 @@ function initDistrictSelectize(){
 		        $("#file_upload").prop("disabled", false);
 	        }
 	     });
-		 alert("Rotation value: " + rotation);
+		// alert("Rotation value: " + rotation);
    });
 
    $("#btdelete").click(function(){
@@ -496,6 +496,10 @@ function initDistrictSelectize(){
 		var rotationValue = $("#edit_rotation_value").val();
     	data.append('rotation', rotationValue);
 		
+		var editNoteValue = $("#edit_note").val();
+    	data.append('note', editNoteValue);
+		//alert(editNoteValue);
+
 		var fileInput = $('#edit_file')[0].files[0];
 		if (fileInput) {
 			data.append('edit_upload_file', fileInput);
@@ -3317,7 +3321,7 @@ function initDistrictSelectize(){
 	        </div>	
 			<div class="form-group" style="margin-top:50px!important;height:30px!important;">
 				<div class="col-md-3" id="edit_image_preview_container">
-	        		<label for="note" class="control-label">Image Preview</label>
+	        		<label for="img" class="control-label">Image Preview</label>
 	        	</div>
 				<div class="col-md-6">
 	            	<img src="" class="img-responsive" name="edit_image_preview" 

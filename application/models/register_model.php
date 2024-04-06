@@ -1171,7 +1171,8 @@ class Register_model extends CI_Model{
 		}
 
 	}
-	function select_patient_followup_id($c){
+	function select_patient_followup_id($c)
+	{
 		$hospital=$this->session->userdata('hospital');
 		if($this->input->post('healthforall_id')){
 			$this->db->where('patient_followup.patient_id',$this->input->post('healthforall_id'));
@@ -1187,7 +1188,6 @@ class Register_model extends CI_Model{
 		icd_code.code_title,
 		diagnosis,
 		priority_type_id,
-		route_primary_id,
 		route_secondary_id,
 		volunteer_id,
 		note,
@@ -1202,6 +1202,16 @@ class Register_model extends CI_Model{
 		return $resource->row();
 	}
 
+	function primary_route_with_secroute($sec_route_id)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("route_primary_id")->from("route_secondary");
+		$this->db->where('hospital_id',$hospital['hospital_id']);
+		$this->db->where('id',$sec_route_id);
+		$result=$this->db->get();
+		return $result->row();
+	}
+	
 	function get_priority_type()
 	{
 		$hospital=$this->session->userdata('hospital');
@@ -1264,6 +1274,9 @@ class Register_model extends CI_Model{
 		if($hospital_id){
             $followup_info['hospital_id'] = $hospital_id;
         }
+        if($this->input->post('status_date')){
+            $followup_info['status_date'] = $this->input->post('status_date');
+        }
         if($this->input->post('input_map_link')){
             $followup_info['map_link'] = $this->input->post('input_map_link');
         }
@@ -1276,12 +1289,18 @@ class Register_model extends CI_Model{
          if($this->input->post('diagnosis')){
             $followup_info['diagnosis'] = $this->input->post('diagnosis');
         }
-        if($this->input->post('priority_type')){
+         if($this->input->post('last_visit_type')){
+            $followup_info['last_visit_type'] = $this->input->post('last_visit_type');
+        }
+        if($this->input->post('last_visit_date')){
+			$followup_info['last_visit_date'] = $this->input->post('last_visit_date');			    
+        }
+         if($this->input->post('priority_type')){
             $followup_info['priority_type_id'] = $this->input->post('priority_type');
         }
-         if($this->input->post('route_primary')){
-            $followup_info['route_primary_id'] = $this->input->post('route_primary');
-        }
+        // if($this->input->post('route_primary')){
+        //     $followup_info['route_primary_id'] = $this->input->post('route_primary');
+        // }
          if($this->input->post('route_secondary')){
             $followup_info['route_secondary_id'] = $this->input->post('route_secondary');
         }
@@ -1313,7 +1332,7 @@ class Register_model extends CI_Model{
 		$followup_info['add_time'] = $followup_info['update_time'] = date("Y-m-d H:i:s");
 	
 	
-      //  $this->db->trans_start();
+      	//$this->db->trans_start();
 		//print_r($this->input->post('status_date'));die;
         $this->db->insert('patient_followup', $followup_info);
 		$insert_id = $this->db->insert_id();
@@ -1327,50 +1346,48 @@ class Register_model extends CI_Model{
         // }
     }
 
+	function updatefor_followup()
+	{
+		$this->db->set('life_status', $this->input->post('life_status'));	
+		$this->db->set('icd_code', $this->input->post('icd_code'));
+		$this->db->set('diagnosis', $this->input->post('diagnosis'));
+		$this->db->set('priority_type_id', $this->input->post('priority_type'));
+		//$this->db->set('route_primary_id', $this->input->post('route_primary'));
+		$this->db->set('route_secondary_id', $this->input->post('route_secondary'));
+		$this->db->set('volunteer_id', $this->input->post('volunteer'));
+		$this->db->set('note', $this->input->post('input_note'));
+		$this->db->set('map_link', $this->input->post('input_map_link'));
+		$this->db->set('update_by', $this->session->userdata('logged_in')['staff_id']);
+		$this->db->set('update_time', date("Y-m-d H:i:s"));
+		$this->db->set('latitude', $this->input->post('input_latitude'));
+		$this->db->set('longitude', $this->input->post('input_longitude'));
+		
+		//Newly added on 12-01-2024
+		$this->db->set('ndps', $this->input->post('ndps_status'));
+		if($this->input->post('ndps_status')=='1')
+		{
+			$this->db->set('drug', $this->input->post('drug'));
+			$this->db->set('dose', $this->input->post('dose'));
+			$this->db->set('last_dispensed_date', $this->input->post('last_dispensed_date'));
+			$this->db->set('last_dispensed_quantity', $this->input->post('last_dispensed_quantity'));  
+		}else
+		{
+			$this->db->set('drug', '');
+			$this->db->set('dose', '');
+			$this->db->set('last_dispensed_date', NULL);
+			$this->db->set('last_dispensed_quantity', '');
+		}
+		
+		//till here
 
-	function updatefor_followup(){
-			$this->db->set('life_status', $this->input->post('life_status'));	
-			$this->db->set('icd_code', $this->input->post('icd_code'));
-			$this->db->set('diagnosis', $this->input->post('diagnosis'));
-			$this->db->set('priority_type_id', $this->input->post('priority_type'));
-			$this->db->set('route_primary_id', $this->input->post('route_primary'));
-			$this->db->set('route_secondary_id', $this->input->post('route_secondary'));
-			$this->db->set('volunteer_id', $this->input->post('volunteer'));
-			$this->db->set('note', $this->input->post('input_note'));
-			$this->db->set('map_link', $this->input->post('input_map_link'));
-			$this->db->set('update_by', $this->session->userdata('logged_in')['staff_id']);
-			$this->db->set('update_time', date("Y-m-d H:i:s"));
-			$this->db->set('latitude', $this->input->post('input_latitude'));
-			$this->db->set('longitude', $this->input->post('input_longitude'));
-			
-			//Newly added on 12-01-2024
-			$this->db->set('ndps', $this->input->post('ndps_status'));
-			if($this->input->post('ndps_status')=='1')
-			{
-				$this->db->set('drug', $this->input->post('drug'));
-				$this->db->set('dose', $this->input->post('dose'));
-				$this->db->set('last_dispensed_date', $this->input->post('last_dispensed_date'));
-				$this->db->set('last_dispensed_quantity', $this->input->post('last_dispensed_quantity'));  
-			}else
-			{
-				$this->db->set('drug', '');
-				$this->db->set('dose', '');
-				$this->db->set('last_dispensed_date', NULL);
-				$this->db->set('last_dispensed_quantity', '');
-			}
-			
-			//till here
-
-			$this->db->where('patient_id', $this->input->post('patient_id'));
-			if($this->db->update('patient_followup'))
-			
-				return true;
-			
-			else
-				return false;
-			
-			
-         	}
+		$this->db->where('patient_id', $this->input->post('patient_id'));
+		if($this->db->update('patient_followup'))
+		
+			return true;
+		
+		else
+			return false;
+    }
 
          function get_districts($district_id){
 			$this->db->select("district_id,district,district_alias,latitude,

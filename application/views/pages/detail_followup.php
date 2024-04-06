@@ -280,7 +280,7 @@ $patient = $patients[0];
 						<div class="form-group">
 						<label class="control-label">Gender: </label>
 					
-								<div class="col-md-12 col-xs-12" style="background: #ADFF2F; font-weight: bold;" >
+								<div class="col-md-12 col-xs-12" style="font-weight: bold;" >
 
 								<?php if(!empty($patient->gender)) { ?> 
 												
@@ -296,9 +296,9 @@ $patient = $patients[0];
 												</label> 
 												<?php } else { ?>
 													
-												<label class="control-label"><input type="radio" class="gender" value="M" name="gender" />Male</label>
-												<label class="control-label"><input type="radio" class="gender" value="F" name="gender" />Female</label>
-												<label class="control-label"><input type="radio" class="gender" value="O" name="gender" />Others</label>
+												<label class="control-label"><input type="radio" class="gender" value="M" name="gender" /> Male</label>&nbsp;
+												<label class="control-label"><input type="radio" class="gender" value="F" name="gender" /> Female</label>&nbsp;
+												<label class="control-label"><input type="radio" class="gender" value="O" name="gender" /> Others</label>&nbsp;
 												<?php } ?>
 								</div>
 						    </div>
@@ -327,7 +327,7 @@ $patient = $patients[0];
 					</div>	
 
 				<div class="col-md-3">
-					<label class="control-label">District</label>
+					<label class="control-label">District</label><br>
 					<input type="text" name="district_patient" class="form-control" placeholder="" value="<?php echo $districts->district; ?>"  style="background: #ADFF2F;" readonly/>		
 				</div>
 			</div>
@@ -456,13 +456,12 @@ $patient = $patients[0];
 								<label class="control-label">Primary Route</label>
 								<select class="form-control" id="route_primary" onchange='onchange_primary_route_dropdown(this)' name="route_primary" >
 									<option value="Select">Select</option>
-									
-									<?php foreach($route_primary as $primary){
-									 echo "<option value='".$primary->route_primary_id."'";
-									 if($patient_followup->route_primary_id && $patient_followup->route_primary_id == $primary->route_primary_id) echo " selected ";
-				echo ">".$primary->route_primary."</option>";
-				}
-									?>
+									<?php foreach($route_primary as $primary) { ?>
+									 	<option <?php if($routeprim_secondrouteid->route_primary_id ==$primary->route_primary_id) { echo "selected"; } ?>
+										 value="<?php echo $primary->route_primary_id ?>">
+											<?php echo $primary->route_primary ?>
+										</option>
+									<?php } ?>
 								</select>
 							</div>
 						</div>

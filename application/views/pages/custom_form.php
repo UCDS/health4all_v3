@@ -319,7 +319,22 @@ function initAppointmentDoctorSelectize(modal_id){
                                         <?php }?>
                                 <?php        foreach($functions as $f){ 
 				if($f->user_function == "Update Patients"  || $f->user_function == "Clinical" || $f->user_function == "Diagnostics" || $f->user_function == "Procedures" || $f->user_function == "Prescription" || $f->user_function == "Discharge") { ?>
-                                            <button type="button" class="btn btn-warning" onclick="$('#select_patient_<?php echo $registered->visit_id1;?>').submit()" autofocus>Update Info</button>
+                                            <button type="button" class="btn btn-warning" onclick="$('#select_patient_<?php echo $registered->visit_id1;?>').submit()" autofocus>Update Visits</button>
+            	
+				<?php 
+				foreach($this->data['functions'] as $function)
+				{
+					if($function->user_function=="patient_follow_up"){
+						$access=1;break;
+					}
+				}
+				if($access==1){ 
+				?>
+				<button type="button"  class="btn btn-primary col-md-offset-4" onclick="$('#followup_patient<?php echo $registered->patient_id;?>').submit()" autofocus style="margin-top:1%;">Update Followup</button>
+					<?php echo form_open('register/patient_follow_up',array('role'=>'form','id'=>'followup_patient'.$registered->patient_id)); ?>
+						<input type="text" class="sr-only" hidden value="<?php echo $registered->patient_id;?>" name="healthforall_id" />
+					</form>
+				<?php } ?>
                                             <div style="display: none;"> 
                                                <?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$registered->visit_id1));?>
                                             <input type="text" class="sr-only" hidden value="<?php echo $registered->visit_id1;?>" form="select_patient_<?php echo $registered->visit_id1;?>" name="selected_patient" />
@@ -1712,7 +1727,6 @@ function initAppointmentDoctorSelectize(modal_id){
 
 			<?php echo form_open("reports/appointment",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
 			<input type="hidden" name="appointment" value="true">
-			<input type="hidden" name="customform" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $registered->visit_id1;?>">
 			<input type="hidden" name="visit_name_id" value="<?php echo $registered->visit_name_id;?>">				
 			<div class="form-group">

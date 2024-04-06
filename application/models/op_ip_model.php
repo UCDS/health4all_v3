@@ -112,25 +112,38 @@ function get_dist_summary(){
 		
 		$hospital=$this->session->userdata('hospital');
 		
-		if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
-			$this->db->where('patient_followup.life_status',1);
+		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
+		{
+			$secondary=array();
+			$this->db->select('id');
+			$this->db->from('route_secondary');
+			$this->db->where('route_primary_id',$this->input->post('route_primary'));
+			$query = $this->db->get();
+			$res = $query->result_array();
+			foreach ($res as $row){ $secondary[] = $row['id']; }
+			if(!empty($secondary))
+			{
+				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
+			}
+		}
+		if($this->input->post('life_status')== 3 || empty($this->input->post('life_status'))){
+			$this->db->where('patient_followup.life_status',2);
         }
 		else if($this->input->post('life_status')== 2){
 			$this->db->where('patient_followup.life_status',0);
 		}
-		else if($this->input->post('life_status')== 3){
-			$this->db->where('patient_followup.life_status',2);
+		else if($this->input->post('life_status') == 1){
+			$this->db->where('patient_followup.life_status',1);
 		}	
-
+	
 		if($this->input->post('priority_type')){
 			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
 		}
 		if($this->input->post('volunteer')){
 			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
 		}
-		if($this->input->post('route_primary')){
-			$this->db->where('patient_followup.route_primary_id',$this->input->post('route_primary'));
-		}		
+
+				
 							
 		if($this->input->post('route_secondary')){
 			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
@@ -162,7 +175,7 @@ function get_dist_summary(){
 		if($this->input->post('state')){
 				$this->db->where('state.state_id',$this->input->post('state'));
 		}
-		
+
 		$this->db->select("patient_followup.patient_id,state.state,district.state_id as state_id, district.district as dname,   district.district_id, 
 		patient_followup.latitude as latitude, patient_followup.longitude as longitude,patient.first_name,patient.phone,
 		patient.age_years,patient.gender,patient_followup.diagnosis");
@@ -171,11 +184,11 @@ function get_dist_summary(){
 		 ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		 ->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		 ->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
-		 ->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
 		 ->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
 		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
 		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
+		 //->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
 		 ->join('district','patient.district_id=district.district_id')
 		 ->join('state','district.state_id=state.state_id','left')
 		 ->where('patient_followup.hospital_id',$hospital['hospital_id']);

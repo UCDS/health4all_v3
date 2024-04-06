@@ -75,7 +75,8 @@ $(function(){
 				printContent += '</style>';
 				printContent += '</head>';
 				printContent += '<body>';
-				printContent += '<h3 style="text-align:center;">Item Details - <span class="text text-primary"><?= $search_inventory_summary[0]->item_name; ?></span></h3>';
+				//printContent += '<h3 style="text-align:center;">Item - <span class="text text-primary"><?= $search_inventory_summary[0]->item_name; ?></span></h3>';
+				printContent += document.getElementById("print-container").innerHTML;
 				printContent += document.getElementById("table-sort").outerHTML;
 				printContent += '</body>';
 				printContent += '</html>';
@@ -402,6 +403,22 @@ $('#to_id').change(function(){
 									</select>
 							</div>
 						</div>
+						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+							<div class="form-group">
+								<label for="item_form" >Item Form</label>
+									<select name="item_form" id="item_form" class="form-control">
+									<option value="">Select</option>
+										<?php
+										foreach($item_form as $i)
+											{
+												echo "<option class='".$i->item_form_id."' value='".$i->item_form_id."'";
+												echo $item_form_selected == $i->item_form_id ? " selected": "";
+												echo ">".$i->item_form."</option>";
+											}
+										?>
+									</select>
+							</div>
+						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
 								<label for="item" >Item<font style="color:red">*</font></label>
@@ -411,10 +428,26 @@ $('#to_id').change(function(){
 									</select>
 							</div>
 						</div>
-						<div class="col-md-2" >
-							<button class="btn btn-primary" style="margin-top:15%;" type="submit" name="search" value="search" id="btn">Search</button>
-									<?php echo form_close(); ?>
+						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+							<div class="form-group">
+							<label for="generic_item" >Generic Item</label>
+								<select name="generic_item" id="generic_item" class="form-control" placeholder="Select">
+									<option value="">Select</option>
+									<?php
+									foreach ($generic_item as $i) {
+										echo "<option class='" . $i->generic_item_id . "' value='" . $i->generic_item_id . "'";
+										echo $generic_item_selected == $i->generic_item_id ? " selected" : "";
+										echo ">" . $i->generic_name . "</option>";
+									}
+									?>
+								</select>
+							</div>
 						</div>
+						
+					</div>
+					<div class="col-md-2 col-md-offset-2" >
+						<button class="btn btn-primary" style="margin-top:15%;" type="submit" name="search" value="search" id="btn">Search</button>
+								<?php echo form_close(); ?>
 					</div>
 				</div>
 			
@@ -441,13 +474,13 @@ $('#to_id').change(function(){
 		<div class="col-md-offset-2" >
 			<div id="print-container">
 				<?php if(count($search_inventory_summary) > 0) { ?>
-					<h3>Item Details - <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name; ?></span></h3>
+					<h3 style="text-align:center;">Item - <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name; ?></span></h3>
 					<!-- <h3>Type: <i><?php echo $search_inventory_summary[0]->item_type;?></i></h3> -->
 					<?php
 						foreach($parties as $scp)
 						{
 							if($this->input->post('scp_id') && $this->input->post('scp_id') == $scp->supply_chain_party_id) 
-							echo '<h3><span>Supply Chain party - </span>'.'<span style="color:#4e88c7;">'.$scp->supply_chain_party_name.'</span>'.'</h3>';
+							echo '<h3 style="text-align:center;"><span > Supply Chain Party - </span>'.'<span class="text text-primary headerprint">'.$scp->supply_chain_party_name.'</span>'.'</h3>';
 						}
 					?>
 				<?php } ?>
@@ -539,7 +572,7 @@ $('#to_id').change(function(){
 							<td style="text-align:right;"><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): ' ';?></td>
 							<td style="text-align:right;"><?= ($inward_total_quantity - $outward_total_quantity); ?></td>
 							<td style="text-align:right;"><?= (float)$inventory_item->cost; ?></td>
-							<td><?php if($batch!==0 || $batch!=''){ echo $batch; } ?> | <?php if($manufacture_date!='') { echo date("d-M-Y", strtotime($manufacture_date)); } ?> to <?php if($expiry_date!='') { echo date("d-M-Y", strtotime($expiry_date)); } ?> </td>
+							<td><?php if($batch!==0 || $batch!=''){ echo $batch; ?> | <?php } if($manufacture_date!='') { echo date("d-M-Y", strtotime($manufacture_date)); ?> to <?php } if($expiry_date!='') { echo date("d-M-Y", strtotime($expiry_date)); } ?> </td>
 							<!-- <td><?= $manufacture_date == ""? "": date("d-M-Y", strtotime($manufacture_date)); ?></td>
 							<td><?= $expiry_date == ""? "": date("d-M-Y", strtotime($expiry_date)); ?></td> -->
 							<!-- <td><?= $inventory_item->gtin_code; ?></td> -->

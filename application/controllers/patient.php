@@ -355,9 +355,11 @@ function update_patient(){
             $this->data['units'] = $this->staff_model->get_unit();
             $this->data['areas'] = $this->staff_model->get_area();
             $this->data['visit_types'] = $this->staff_model->get_visit_name();
+            $this->data['icd_codes'] = $this->patient_model->get_all_icd_codes_patient_visits();
             $this->load->view('templates/header',$this->data);
             $this->load->helper('form');
             $this->data['patient_visits_to_edit'] = $this->patient_model->get_patient_visits_to_edit();
+            $this->data['get_counseling_text'] = $this->patient_model->get_counseling_text_to_edit();
             if($this->input->post('patient_id'))
             {
                 $this->data['patient_visits_edit_history'] = $this->patient_model->get_patient_visits_edit_history();
@@ -372,6 +374,13 @@ function update_patient(){
         }
     }
 
+    function del_visits_counseling_text() {
+        $this->load->model('patient_model');
+        $del_visits_counseling = $this->input->post('visitId');
+        $deleted = $this->patient_model->deleteCounseling_visit_text($del_visits_counseling);
+        echo json_encode(array("success" => $deleted));
+    }
+
     function get_visits_for_edit()
     {
         $this->load->model('patient_model');
@@ -380,6 +389,15 @@ function update_patient(){
         echo json_encode($this->data['patient_visit_details']);
     }
 
+    function update_clinical_note_visits()
+    {
+        $this->load->model('patient_model');
+        $clinical_note = $this->input->post('clinicalNote');
+        $note_id = $this->input->post('noteId');
+        $this->patient_model->get_update_clinical_note_edits($clinical_note, $note_id);
+        echo json_encode("success");
+    }
+    
     function update_patient_visit_details()
     {
     	$input_data = json_decode(trim(file_get_contents('php://input')), true);

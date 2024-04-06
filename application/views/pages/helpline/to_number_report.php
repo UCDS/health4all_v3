@@ -82,7 +82,23 @@
 		}]
 	});
 	
-	
+	Highcharts.chart('to_numberBargraph', {
+		chart : {type:'column'},
+		title: false,
+		xAxis: {
+			categories: ['SSSIHMS-08047104600','SSSSO-India-08047179797','Aakar Asha-04048215050','SSSSO-Telangana old-04048215151',
+			'SSS Palliative Care-08047103700'],
+		},
+		yAxis: {
+			min: 0, 
+		},
+		plotOptions: {bar: { dataLabels: { enabled: true } } },
+		legend: {enabled:false},
+		credits: {enabled:false},
+		series: [{ name: 'Calls', colorByPoint: true,
+			data: [<?php $i=1;foreach($to_number_report as $a) { echo "{ name: '$a->helpline_name', y: $a->count }"; if($i<count($to_number_report)) echo " ,"; $i++; }?>]
+		}]
+	});
 });
 </script>
 <div class="row" style="position:relative;">
@@ -196,8 +212,7 @@
 	</div>	
     <br/>
 	<div class="row"><!-- this section displays the dashboard panels -->
-		
-		<div class="col-md-12">
+		<div class="col-md-6">
 			<div class="panel panel-default">
 		    	<div class="panel panel-heading">
 			    	<h4><i class="fa flaticon-telephone-of-old-design" aria-hidden="true"></i>&nbsp Helpline</h4>
@@ -207,7 +222,16 @@
 			    </div>
 			</div>
 		</div>
-		
+		<div class="col-md-6">
+			<div class="panel panel-default">
+		    	<div class="panel panel-heading">
+			    	<h4><i class="fa flaticon-telephone-of-old-design" aria-hidden="true"></i>&nbsp Helpline</h4>
+    			</div>
+		    	<div class="panel-body">
+	    	    	<div id="to_numberBargraph" ></div>
+			    </div>
+			</div>
+		</div>
 	</div>
 	
 	

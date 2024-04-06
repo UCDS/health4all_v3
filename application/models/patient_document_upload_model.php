@@ -37,11 +37,11 @@ class patient_document_upload_model extends CI_Model{
 		return $resource->result();
 	}
 	// Method to update patient metadata
-	function update_document_metadata($file_name){
+	function update_document_metadata($file_name, $edit_note){
 		$multiClause = array('patient_id' => $this->input->post('edit_patient_id'), 'document_link' => $this->input->post('edit_document_link'), 'id' => $this->input->post('edit_record_id') );
 		$this->db->set('document_date', $this->input->post('document_date'));
 		$this->db->set('document_type_id', $this->input->post('document_type'));
-		$this->db->set('note', $this->input->post('note'));
+		$this->db->set('note', $edit_note);
 		$this->db->set('document_link', $file_name);
 		$this->db->set('update_by_staff_id', $this->session->userdata('logged_in')['staff_id']);
 		$this->db->set('update_datetime', date("Y-m-d H:i:s"));

@@ -244,11 +244,19 @@ class Indent_report_model extends CI_Model
 		->join('indent', 'indent.indent_id = inventory.indent_id') // remove left later for only relevant details
 		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent.from_id')
 		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent.to_id')
-		->join('generic_item', 'generic_item.generic_item_id = item.generic_item_id', 'left')
+		->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
+		->join('item_form', 'item_form.item_form_id = item.item_form_id')
 		->join('item_type', 'generic_item.item_type_id = item_type.item_type_id', 'left')
 		->where('indent.hospital_id', $hospital['hospital_id'])
 		->where('item.item_id', $item_id)
 		->where('inventory.supply_chain_party_id', $scp_id);
+		
+		if($this->input->post('generic_item')){
+            $this->db->where('item.generic_item_id', $this->input->post('generic_item'));
+        }
+        if($this->input->post('item_form')){
+            $this->db->where('item_form.item_form_id', $this->input->post('item_form'));
+        }
 
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();
