@@ -177,7 +177,7 @@ function get_dist_summary(){
 		}
 
 		$this->db->select("patient_followup.patient_id,state.state,district.state_id as state_id, district.district as dname,   district.district_id, 
-		patient_followup.latitude as latitude, patient_followup.longitude as longitude,patient.first_name,patient.phone,
+		patient_followup.latitude as latitude, patient_followup.longitude as longitude,patient.first_name,patient.last_name,patient.phone,
 		patient.age_years,patient.gender,patient_followup.diagnosis");
 		
 		 $this->db->from('patient_followup')
@@ -196,6 +196,7 @@ function get_dist_summary(){
 		$resource=$this->db->get();
 		return $resource->result();
 	}
+	
 
 	function get_followup_summary(){
 		

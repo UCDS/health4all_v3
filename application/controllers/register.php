@@ -1166,6 +1166,7 @@ class Register extends CI_Controller {
 			foreach($this->data['functions'] as $function){
 				if($function->user_function=="patient_follow_up"){
 					$access=1;
+					break;
 				}
 			}
 			if($access==1){

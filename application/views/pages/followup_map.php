@@ -349,7 +349,7 @@ function onchange_page_dropdown(dropdownobj){
 				<div class="row">
 					<div class="col-md-4">
 					<label><b>Life Status:  </b></label>
-						<input type ="radio" name="life_status" class ="form-control" value="1" <?php if(!empty($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label> Alive</label>
+						<input type ="radio" name="life_status" class ="form-control" value="1" checked  > <label> Alive</label>
 						<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  > <label>Not Alive </label>
 						<input type="radio" name="life_status" class ="form-control" value="3" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 3) {echo "checked" ;} ?>  > <label>No Follow up</label>
 					</div>
@@ -491,7 +491,7 @@ function onchange_page_dropdown(dropdownobj){
 				<div class="panel-primary col-md-12" >
 					<div class="panel-primary-inner-body">
 						<div class="panel-heading">
-							<h3 class="panel-title"><strong><center>Districts wise patients details</center></strong></h3>
+							<h3 class="panel-title"><strong><center>Patient map</center></strong></h3>
 						</div>
 						<div id="map" style="height:550px;">  </div>
 					</div>
@@ -507,7 +507,8 @@ function onchange_page_dropdown(dropdownobj){
 				</div>
 			</div> -->
 		</div>
-<?php if(!empty($report)) { ?>
+<?php if(!empty($report)) { 
+?>
 <script>
     var map;
     function initMap() {
@@ -519,11 +520,11 @@ function onchange_page_dropdown(dropdownobj){
 
         <?php 
             foreach($report as $followup){  
-                if(!!$followup->latitude && !!$followup->longitude && !!$followup->district_id) { 
+		    if(!!$followup->latitude && !!$followup->longitude && !!$followup->district_id) { 
         ?>
 					var markerColor = 'red';
 					
-                    var contentString_<?= $followup->patient_id; ?> = "<b><?= $followup->first_name.' / '.$followup->patient_id?></b><br><?= $followup->age_years.'/'.$followup->gender.'/'.$followup->diagnosis ?><br><b><?php if($followup->priority_type_id==1){ echo "High"; }elseif($followup->priority_type_id==2){ echo "Medium"; }else{ echo "Low"; }?></b><br><a href='https://www.google.com/maps/search/?api=1&query=<?= $followup->latitude ?>,<?= $followup->longitude ?>' target='_blank' >Open in Maps</a>";
+		    var contentString_<?= $followup->patient_id; ?> = "<?= $followup->patient_id?><br><?=$followup->first_name.' '.$followup->last_name.'/'.$followup->age_years.'/'.$followup->gender ?><br><?= $followup->diagnosis.' - ' ?><?php if($followup->priority_type_id==1){ echo "High"; }elseif($followup->priority_type_id==2){ echo "Medium"; }else{ echo "Low"; }?><br><a href='https://www.google.com/maps/search/?api=1&query=<?= $followup->latitude ?>,<?= $followup->longitude ?>' target='_blank' >Open in Maps</a>";
 
                     var infowindow_<?= $followup->patient_id; ?> = new google.maps.InfoWindow({
                         content: contentString_<?= $followup->patient_id; ?>
@@ -547,7 +548,7 @@ function onchange_page_dropdown(dropdownobj){
                     });
         <?php 
                 }
-            }
+	    }
         ?>
     }
 </script>

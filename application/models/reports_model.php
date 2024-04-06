@@ -4934,6 +4934,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         patient_followup.note,
         priority_type.priority_type,
         route_secondary.route_secondary,
+		route_primary.route_primary,
         staff.first_name as fname,
         staff.last_name as lname,
         patient_followup.update_time as followup_update_time,
@@ -4954,7 +4955,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
 		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
-		//->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
+		->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
 		->join('district','patient.district_id=district.district_id','left')
 		->join('state','district.state_id=state.state_id','left')
        // ->where($filters);
