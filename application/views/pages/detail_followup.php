@@ -375,20 +375,65 @@ $patient = $patients[0];
 						<!-- </div>
 				</div> -->
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
-							<div class="form-group">
-								<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
-								
-						
-								&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" <?php if($patient_followup->life_status == "1")  echo "checked" ; ?> required >
-								<label for="staus_alive">Alive</label>&nbsp;&nbsp;
-								<input type="radio" name="life_status" id="life_status_notlive" <?php if($patient_followup->life_status == "0")  echo "checked" ; ?> value="0" required >
-								<label for="status_dead">Not Alive</label>&nbsp;&nbsp;								
-								<input type="radio" name="life_status" id="life_status_nofollowup" <?php if($patient_followup->life_status == "2")  echo "checked" ; ?> value="2" required >
-								<label for="status_no_followup">No Followup</label><br>
-
-							</div>
+					<div class="form-group">
+						<label for="inputstatus ">Life Status <span class="mandatory" >*</span></label><br>
+						&nbsp;&nbsp;  <input type="radio" name="life_status" id="life_status_live"  value="1" <?php if($patient_followup->life_status == "1")  echo "checked" ; ?> required >
+						<label for="staus_alive">Alive</label>&nbsp;&nbsp;
+						<input type="radio" name="life_status" id="life_status_notlive" <?php if($patient_followup->life_status == "0")  echo "checked" ; ?> value="0" required >
+						<label for="status_dead">Not Alive</label>&nbsp;&nbsp;								
+						<input type="radio" name="life_status" id="life_status_nofollowup" <?php if($patient_followup->life_status == "2")  echo "checked" ; ?> value="2" required >
+						<label for="status_no_followup">No Followup</label><br>
+					</div>
 				</div>
-			
+
+				<!-- Death Date and Death Status Part Starts-->
+				<div id="death_status_div">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="inputstatus ">Death Date<span class="mandatory" >*</span></label><br>
+							<input type="date" class="form-control" name="death_date" id="death_date"  
+							value="<?php if($patient_followup->death_date != " "){ echo $patient_followup->death_date; } ?>"
+							 max="<?php echo date("Y-m-d"); ?>" >
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="inputstatus ">Death At<span class="mandatory" >*</span></label><br>
+							<select name="death_status" class="form-control">
+								<option value="">Choose Death Status</option>
+								<option <?php if($patient_followup->death_status == "1"){ echo "selected"; } ?> value="1">Centre</option>
+								<option <?php if($patient_followup->death_status == "2"){ echo "selected"; } ?> value="2">Other Centre</option>
+								<option <?php if($patient_followup->death_status == "3"){ echo "selected"; } ?> value="3">Home</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<script>
+					$(document).ready(function() {
+						if ($('input[type=radio][name=life_status]:checked').val() == '0') {
+							$("#death_status_div").show();
+							$("#death_date").attr("required", "required"); 
+        					$("select[name=death_status]").attr("required", "required"); 
+						} else {
+							$("#death_status_div").hide();
+							$("#death_date").removeAttr("required"); 
+        					$("select[name=death_status]").removeAttr("required");
+						}
+						$('input[type=radio][name=life_status]').change(function() {
+							if (this.value == '0') {
+								$("#death_status_div").show();
+								$("#death_date").attr("required", "required");
+            					$("select[name=death_status]").attr("required", "required");
+							} else {
+								$("#death_status_div").hide();
+								$("#death_date").removeAttr("required"); 
+            					$("select[name=death_status]").removeAttr("required");	
+							}
+						});
+					});
+				</script>
+				<!-- Death Date and Death Status Part Ends -->
+
 				<div class="col-xs-12 col-sm-12 col-md-6  col-lg-4">
 				<div class="form-group">
 							<label class="Inputdistrict">  ICD Code    </label>
@@ -413,8 +458,9 @@ $patient = $patients[0];
 
 			</div>
 
+			<!-- Commenting for Improvement Jan 22 2024
 			<div class="row">
-						<!-- Commenting for Improvement Jan 22 2024
+						
 							<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Last Visit Type <span class="mandatory">*</span> </label>
@@ -432,8 +478,8 @@ $patient = $patients[0];
 								<input class="form-control"  type="date"  name="last_visit_date" id="last_visit_date" value=<?php if($patient_followup) echo $patient_followup->last_visit_date;  ?>  required />
 
 							</div>
-						</div> -->
-			</div>	
+						</div>
+			</div>	 -->
 			
 			<div class="row">		
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">

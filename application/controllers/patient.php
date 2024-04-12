@@ -359,7 +359,6 @@ function update_patient(){
             $this->load->view('templates/header',$this->data);
             $this->load->helper('form');
             $this->data['patient_visits_to_edit'] = $this->patient_model->get_patient_visits_to_edit();
-            $this->data['get_counseling_text'] = $this->patient_model->get_counseling_text_to_edit();
             if($this->input->post('patient_id'))
             {
                 $this->data['patient_visits_edit_history'] = $this->patient_model->get_patient_visits_edit_history();
@@ -374,9 +373,17 @@ function update_patient(){
         }
     }
 
+    function get_clinical_text_to_edit()
+    {
+        $this->load->model('patient_model');
+        $edit_visit_id = $this->input->post('visit_id');
+        $this->data['get_clinical_text'] = $this->patient_model->get_clinical_text_to_edit($edit_visit_id);
+        echo json_encode($this->data['get_clinical_text']);
+    }
+
     function del_visits_counseling_text() {
         $this->load->model('patient_model');
-        $del_visits_counseling = $this->input->post('visitId');
+        $del_visits_counseling = $this->input->post('counselingId');
         $deleted = $this->patient_model->deleteCounseling_visit_text($del_visits_counseling);
         echo json_encode(array("success" => $deleted));
     }

@@ -567,12 +567,12 @@ $('#to_id').change(function(){
 							<td><a href="<?= base_url().$sub_url."indents_list_detailed/$inventory_item->indent_id"; ?>"><?= $inventory_item->indent_id;?></a></td>
 							<td><?= $issue_date; ?></td>
 							<!-- <td ><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td> -->
-							<td ><?= $inventory_item->to_party; ?></td>
+							<td ><?= ($inventory_item->inward_outward === "inward")? $inventory_item->to_party : $inventory_item->from_party; ?></td>
 							<td style="text-align:right;"><?= ($inventory_item->inward_outward === "inward") ? ($inventory_item->total_quantity): ' ';?></td>
 							<td style="text-align:right;"><?= ($inventory_item->inward_outward != "inward") ? ($inventory_item->total_quantity): ' ';?></td>
 							<td style="text-align:right;"><?= ($inward_total_quantity - $outward_total_quantity); ?></td>
 							<td style="text-align:right;"><?= (float)$inventory_item->cost; ?></td>
-							<td><?php if($batch!==0 || $batch!=''){ echo $batch; ?> | <?php } if($manufacture_date!='') { echo date("d-M-Y", strtotime($manufacture_date)); ?> to <?php } if($expiry_date!='') { echo date("d-M-Y", strtotime($expiry_date)); } ?> </td>
+							<td><?php if($batch!=''){ echo $batch;}?><?php if($batch!='' && $manufacture_date!=''){ echo " | "; }?><?php if($manufacture_date!='') { echo date("d-M-Y", strtotime($manufacture_date)); ?> to <?php } if($expiry_date!='') { echo date("d-M-Y", strtotime($expiry_date)); } ?> </td>
 							<!-- <td><?= $manufacture_date == ""? "": date("d-M-Y", strtotime($manufacture_date)); ?></td>
 							<td><?= $expiry_date == ""? "": date("d-M-Y", strtotime($expiry_date)); ?></td> -->
 							<!-- <td><?= $inventory_item->gtin_code; ?></td> -->

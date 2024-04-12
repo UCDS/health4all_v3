@@ -397,13 +397,6 @@ function onchange_page_dropdown(dropdownobj){
 							}
 							?>
 						</select>
-
-						<!-- <select name="last_visit_type" id="last_visit_type" class="form-control"> 
-							<option value="">Last Visit Type</option>           	
-                        	<option value="IP" <?php echo ($this->input->post('last_visit_type') == 'IP') ? 'selected' : ''; ?> >IP</option> 
-							<option value="OP" <?php echo ($this->input->post('last_visit_type') == 'OP') ? 'selected' : ''; ?> >OP</option>          
-                        </select> -->
-
 						<select name="volunteer" id="volunteer" class="form-control" >
 							<option value="">Volunteer</option>
 							<?php foreach($volunteer as $volunteer){
@@ -442,13 +435,7 @@ function onchange_page_dropdown(dropdownobj){
 								<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
 							<?php } ?>
 						</select>
-			
-						<!-- <select id="sort_by_age" name="sort_by_age"  class="form-control">
-							<option value="0">Sort by age</option>           	
-							<option value="1" <?php echo ($this->input->post('sort_by_age') == '1') ? 'selected' : ''; ?> >Ascending</option> 
-							<option value="2" <?php echo ($this->input->post('sort_by_age') == '2') ? 'selected' : ''; ?> >Descending</option>       
-						</select> -->
-
+	
 						<select id="ndps" name="ndps"  class="form-control">
 							<option value="0" >NDPS Status</option>           	
 							<option value="1" <?php echo ($this->input->post('ndps') == '1') ? 'selected' : ''; ?> >Yes</option> 
@@ -461,7 +448,6 @@ function onchange_page_dropdown(dropdownobj){
 			
 			<div class="container" style="padding-top:20px;">
 				<div class="row">
-				
 					<div class="col-md-2">
 						<select name="state" id="state" style="width: 100%;" class="form-control" onchange='onchange_state_dropdown(this)'>
 							<option value="" >State</option>
@@ -475,46 +461,19 @@ function onchange_page_dropdown(dropdownobj){
 							
 						</select>
 					</div>
-					
 					<div class="col-md-2">
 						<select name="district" style="width: 100%;" id="district" class="form-control" >
 							<option value="" >District</option>
 						</select>
 					</div>
 					<script>
-					
 					onchange_state_dropdown(document.getElementById("state"));
 					var district = "<?php echo $this->input->post('district')?>";
 					if(district != ""){
 						$("#district").val(district);
 					}
-					
 					</script>
-						<!-- <div class="col-md-2">
-							<select name="department" id="department" class="form-control" style="width:100%">
-								<option value="">Department</option>
-								<?php 
-								foreach($departments as $dept){
-									echo "<option value='".$dept->department_id."'";
-									if($this->input->post('department') && $this->input->post('department') == $dept->department_id) echo " selected ";
-									echo ">".$dept->department."</option>";
-								}
-								?>
-							</select>
-						</div>
-						<div class="col-md-2">
-							<select name="visit_name" id="visit_name" class="form-control" style="width:100%" >
-								<option value="">Visit Type</option>
-								<?php 
-								foreach($visit_names as $v){
-									echo "<option value='".$v->visit_name_id."'";
-									if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id) echo " selected ";
-									echo ">".$v->visit_name."</option>";
-								}
-								?>
-							</select>
-						</div> -->
-					</div> 
+				</div> 
 			</div>
 			<div class="container" style="padding-top:20px;">
 				<div class="row">
@@ -561,12 +520,29 @@ function onchange_page_dropdown(dropdownobj){
 					<?php } if($header->priority_type_id==3){  ?>
 						<th style="text-align:center;">Low</th>
 					<?php } } ?>
+					<th style="text-align:center;">Unupdated Priority</th>
 					<th style="text-align:center;">Total Count</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php 
-				$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
+				$sno=(($page_no - 1) * $total_records_per_page)+3 ; 
+			    ?>
+					<tr>
+						<td style="text-align:right;">1</td>
+						<td></td>
+						<td></td>
+						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_high; ?></td>
+						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_medium; ?></td>
+						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_low; ?></td>
+						<!-- <td><?php echo $report[0]->icdcode_empty_high || $report[0]->icdcode_empty_medium || $report[0]->icdcode_empty_low ? 'ICD Code Unupdated' : ''; ?></td> -->
+						<td style="text-align:right;"><?php echo $tot = $report[0]->unupdated_both; ?></td>
+						<td style="text-align:center;">
+							<?php echo $tot = $report[0]->icdcode_empty_high+$report[0]->icdcode_empty_medium+$report[0]->icdcode_empty_low+$report[0]->unupdated_both; ?>
+						</td>
+					</tr>
+					
+				<?php
 				foreach($report as $s)
 				{
 					$total_highcount+=$s->highcount;
@@ -574,7 +550,7 @@ function onchange_page_dropdown(dropdownobj){
 					$total_lowcount+=$s->lowcount;
 				?>
 				<tr>
-					<td><?php echo $sno;?></td>
+					<td style="text-align:right;" ><?php echo $sno;?></td>
 					<td><?php echo $s->chapter_title;?></td>
 					<td><?php echo $s->block_title;?></td>
 					<?php 
@@ -590,17 +566,27 @@ function onchange_page_dropdown(dropdownobj){
 						{  ?>
 					<td style="text-align:right;"><?php echo $s->lowcount;?></td>
 					<?php } } ?>
-
+					<?php if($s->highcount==0 && $s->mediumcount==0 && $s->lowcount==0) { ?>
+					<td style="text-align:right;"><?php echo $s->unupdated_priority ?></td>
+					<?php } else { ?>
+						<td style="text-align:right;">0</td>
+					<?php } ?>
 					<td style="text-align: center">
-						<?php echo $tot = $s->highcount+$s->mediumcount+$s->lowcount; ?>
+						<?php echo $tot = $s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority; ?>
 					</td>
 				</tr>
-				<?php $sno++;}	?>
+				<?php $sno++;} 	?>
 			</tbody>
 			<tfoot>
 				<tr>
+					<?php
+						$rtotal = $report[0]->updatedone+$report[0]->updatedtwo+$report[0]->updatedthree;
+						foreach($report as $sum_unupdated_priority)
+						{
+							$tot_unupdated_priority+=$sum_unupdated_priority->unupdated_priority;
+						}
+					?>
 					<th></th>
-					
 					<th style="text-align:right;">Total</th>
 					<th></th>
 					<?php 
@@ -608,16 +594,19 @@ function onchange_page_dropdown(dropdownobj){
 						if($pt->priority_type_id==1)
 						{
 					?>
-					<th style="text-align:right;"><?php echo $total_highcount;?></th>
+					<th style="text-align:right;"><?php echo $total_highcount+$report[0]->icdcode_empty_high;?></th>
 					<?php } if($pt->priority_type_id==2)
 						{ ?> 
-					<th style="text-align:right;"><?php echo $total_mediumcount;?></th>
+					<th style="text-align:right;"><?php echo $total_mediumcount+$report[0]->icdcode_empty_medium;?></th>
 					<?php } if($pt->priority_type_id==3)
 						{  ?>
-					<th style="text-align:right;"><?php echo $total_lowcount;?></th>
+					<th style="text-align:right;"><?php echo $total_lowcount+$report[0]->icdcode_empty_low;?></th>
 					<?php } } ?>
+					<th style="text-align:right;"><?php echo $tot_unupdated_priority+$report[0]->unupdated_both ?></th>
 					<th style="text-align:center;">
-						<?php echo $tot = $total_highcount+$total_mediumcount+$total_lowcount; ?>
+						<?php echo 
+						$tot = $total_highcount+$total_mediumcount+$total_lowcount+$rtotal+$report[0]->icdcode_empty_high+$report[0]->icdcode_empty_medium+
+						$report[0]->icdcode_empty_low+$report[0]->unupdated_both+$tot_unupdated_priority; ?>
 					</th>
 				</tr>
 			</tfoot>
@@ -625,5 +614,3 @@ function onchange_page_dropdown(dropdownobj){
 	<?php } else { ?>
 	No patient registrations on the given date.
 	<?php } ?>
-
-  

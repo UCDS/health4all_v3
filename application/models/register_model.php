@@ -1195,7 +1195,8 @@ class Register_model extends CI_Model{
 		drug,
 		dose,
 		last_dispensed_date,
-		last_dispensed_quantity")->from("patient_followup");
+		last_dispensed_quantity,
+		death_status,death_date")->from("patient_followup");
 		$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$resource=$this->db->get();
@@ -1283,6 +1284,17 @@ class Register_model extends CI_Model{
         if($this->input->post('life_status')){
             $followup_info['life_status'] = $this->input->post('life_status');
         }
+
+		if($this->input->post('life_status')=="0")
+		{
+			if($this->input->post('death_date')){
+				$followup_info['death_date'] = $this->input->post('death_date');
+			}
+			if($this->input->post('death_status')){
+				$followup_info['death_status'] = $this->input->post('death_status');
+			}
+		}
+
         if($this->input->post('icd_code')){
             $followup_info['icd_code'] = $this->input->post('icd_code');
         }
@@ -1349,6 +1361,17 @@ class Register_model extends CI_Model{
 	function updatefor_followup()
 	{
 		$this->db->set('life_status', $this->input->post('life_status'));	
+
+		if($this->input->post('life_status')=='0')
+		{
+			$this->db->set('death_date', $this->input->post('death_date'));	
+			$this->db->set('death_status', $this->input->post('death_status'));	
+		}else
+		{
+			$this->db->set('death_date', '');	
+			$this->db->set('death_status', '');
+		}
+
 		$this->db->set('icd_code', $this->input->post('icd_code'));
 		$this->db->set('diagnosis', $this->input->post('diagnosis'));
 		$this->db->set('priority_type_id', $this->input->post('priority_type'));

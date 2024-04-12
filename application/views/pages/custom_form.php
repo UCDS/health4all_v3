@@ -312,14 +312,14 @@ function initAppointmentDoctorSelectize(modal_id){
 				</div>
 <!--here in the panel-footer print button is displayed -->				
 				<div class="panel-footer">
-                                    <button type="button" class="btn btn-primary col-md-offset-<?php echo $offset;?>" onclick="printDiv('print-div')" autofocus>Print</button>
+                                    <button type="button" class="btn btn-primary col-md-offset-2" onclick="printDiv('print-div')" autofocus>Print</button>
 																		<button type="button" class="btn btn-info" onclick="printDiv('a6-label')" autofocus>Print Label</button>
                                         <?php if($registered->mlc==1){?>
                                             <button type="button" class="btn btn-warning" onclick="printDiv('print-MLC-div')" autofocus>Print MLC</button>
                                         <?php }?>
                                 <?php        foreach($functions as $f){ 
 				if($f->user_function == "Update Patients"  || $f->user_function == "Clinical" || $f->user_function == "Diagnostics" || $f->user_function == "Procedures" || $f->user_function == "Prescription" || $f->user_function == "Discharge") { ?>
-                                            <button type="button" class="btn btn-warning" onclick="$('#select_patient_<?php echo $registered->visit_id1;?>').submit()" autofocus>Update Visits</button>
+                                            <button type="button" class="btn btn-warning" onclick="$('#select_patient_<?php echo $registered->visit_id1;?>').submit()" autofocus>Update Visit</button>
             	
 				<?php 
 				foreach($this->data['functions'] as $function)
@@ -330,7 +330,7 @@ function initAppointmentDoctorSelectize(modal_id){
 				}
 				if($access==1){ 
 				?>
-				<button type="button"  class="btn btn-primary col-md-offset-4" onclick="$('#followup_patient<?php echo $registered->patient_id;?>').submit()" autofocus style="margin-top:1%;">Update Followup</button>
+				<button type="button"  class="btn btn-primary" onclick="$('#followup_patient<?php echo $registered->patient_id;?>').submit()" autofocus >Update Followup</button>
 					<?php echo form_open('register/patient_follow_up',array('role'=>'form','id'=>'followup_patient'.$registered->patient_id)); ?>
 						<input type="text" class="sr-only" hidden value="<?php echo $registered->patient_id;?>" name="healthforall_id" />
 					</form>
@@ -342,8 +342,8 @@ function initAppointmentDoctorSelectize(modal_id){
                                 </form>      
                                 </div>                                  
                                 <?php break; }} ?>
-                                <br/>
-                                <div class="col-md-offset-<?php echo $offset;?>">
+                                
+                                <div class="col-md-offset-2" style="margin-top:2%;">
                                 <?php  
                                 foreach($functions as $f){ 
                                 if($f->user_function=="create_appointment"){ ?> 

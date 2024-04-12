@@ -240,7 +240,7 @@
 								</div>\
 							<td>\
 								<div class="col">\
-									<input type="text"  class="form-control narrow" placeholder="Batch ID" name="batch_${item_id}[]"  maxlength="10" pattern="[0-9a-zA-Z]*" />\
+									<input type="text"  class="form-control narrow" placeholder="Batch ID" name="batch_${item_id}[]"  maxlength="10" pattern="[0-9a-zA-Z-]*" />\
 								</div>\
 							</td>\
 							<td>\
