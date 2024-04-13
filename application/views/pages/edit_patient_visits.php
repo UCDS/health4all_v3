@@ -727,7 +727,6 @@ bootbox.confirm({
         <th style="text-align:center;">Department</th>
         <th style="text-align:center;">Admit date</th>
         <th style="text-align:center;">Actions</th>
-        <th style="text-align:center;">Counseling Text</th>
       </thead>
       <tbody>
       <?php 
@@ -743,40 +742,8 @@ bootbox.confirm({
         <td style="text-align:center;">
           <a data-id="<?php echo $avail->visit_id;?>" class="btn btn-success" id="edit"
           style="color:white;text-decoration:none!important;">Edit</a>
-        </td>	
-        <?php if($avail->counseling_txt!='') { ?>
-          <td style="text-align:center;">
-              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal_<?php echo $avail->visit_id;?>">
-                View Counseling Text
-              </button>
-          </td>
-        <?php } else { ?>	
-          <td style="text-align:center;">
-              <button type="button" class="btn btn-info" data-toggle="modal" data-target="#">
-                No Counseling Text
-              </button>
-          </td>
-          <?php } ?>
+        </td>
       </tr>
-      <!-- counseling text modal -->
-      <div class="modal fade" id="exampleModal_<?php echo $avail->visit_id;?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px!important;">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-               <span><?php echo $avail->counseling_txt; ?></span>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger" onclick="deleteCounseling(<?php echo $avail->visit_id;?>)">Delete</button>            </div>
-          </div>
-        </div>
-      </div>
       
       <?php $sno++;} ?>
       </tbody>
@@ -851,6 +818,23 @@ bootbox.confirm({
                 $('#outcome_date_update_old_value').append(outcome_date);
                 $('#outcome_time_update_old_value').append(outcome_time);
                 $('#icdcode_update_old_value').append(icd_10);
+
+                var tbody = $('#counseling-table-body');
+                tbody.empty();
+                for (var i = 0; i < response.length; i++) {
+                    var c_txt = response[i]['c_txt'];
+                    var counselingId = response[i]['counseling_id'];
+                    if (c_txt != null && c_txt !== undefined) {
+                        var row = '<tr>' +
+                                  '<td style="text-align:right;">' + (i + 1) + '</td>' +
+                                  '<td>' + c_txt + '</td>' +
+                                  '<td style="text-align:center;">' +
+                                  '<button type="button" class="btn btn-danger" onclick="deleteCounseling(' + counselingId + ')">Delete Counseling Text</button>' +
+                                  '</td>' +
+                                  '</tr>';
+                        tbody.append(row);
+                    }
+                }
               },
               error: function(error) {
                 console.error("Error:", error);
@@ -861,12 +845,12 @@ bootbox.confirm({
           return false;
         }
       })
-      function deleteCounseling(visitId) 
+      function deleteCounseling(counselingId) 
       {
         $.ajax({
             type: "POST",
             url: "<?php echo base_url().'patient/del_visits_counseling_text' ?>",
-            data: { visitId: visitId },
+            data: { counselingId: counselingId },
             dataType: "json",
             success: function(response) {
                 console.log('Delete request successful:', response);
@@ -883,109 +867,9 @@ bootbox.confirm({
             }
         });
       }
-    </script>
+  </script>
     <?php } ?>
   </div>
-  <?php if(!empty($get_counseling_text)) { ?>
-<div style="margin-top:4%!important;" class="col-md-12">
-  <h4 style="margin-left:13px;">Available Clinical Notes</h4>
-    <table class="table table-bordered table-striped" id="table-sort" style="margin-left:13px;">
-      <thead>
-          <tr>
-            <th style="text-align:center;">S.no</th>
-            <th style="text-align:center;">Visit id</th>
-            <th style="text-align:center;">Clinical Notes</th>
-            <th style="text-align:center;">Actions</th>
-          <tr>
-      </thead>
-      <tbody>
-        <?php $sno_1=1; foreach($get_counseling_text as $gct) { ?>
-          <tr>
-            <td style="text-align:right;"><?php echo $sno_1 ?></td>
-            <td style="text-align:center;"><?php echo $gct->visit_id ?></td>
-            <td style="text-align:center;"><?php echo $gct->clinical_note ?></td>
-            <td style="text-align:center;">
-                <a data-id="<?php echo $gct->note_id;?>" class="btn btn-success edit-btn"
-                  style="color:white;text-decoration:none!important;">Edit Clinical Note</a>
-            </td>
-          <tr>
-          <div class="modal fade" id="editClinicalNoteModal" tabindex="-1" role="dialog" aria-labelledby="editClinicalNoteModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editClinicalNoteModalLabel">Edit Clinical Note</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px!important;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="updateClinicalNoteForm">
-                            <div class="form-group">
-                                <textarea class="form-control" id="clinical_note" name="clinical_note">
-                                  <?php echo $gct->clinical_note ?>
-                                </textarea>
-                            </div>
-                            <input type="hidden" id="noteIdInput" name="note_id" value="<?php echo $gct->note_id; ?>">
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" id="updateBtn_one" class="btn btn-primary">Update</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php $sno_1++; } ?>
-      </tbody>
-    </table>
-    <script>
-        $(document).ready(function() {
-              var modal = $('#editClinicalNoteModal');
-              var editBtn = $('.edit-btn');
-              var closeBtn = $('.close');
-
-              editBtn.click(function() {
-                  var noteId = $(this).data('id');
-                  modal.modal('show');
-                  $('#noteIdInput').val(noteId);
-              });
-
-              closeBtn.click(function() {
-                  modal.modal('hide');
-              });
-            // form here 
-            $('#updateBtn_one').click(function(){
-                var clinicalNote = $('#clinical_note').val();
-                var noteId = $('#noteIdInput').val();
-                $.ajax({
-                    url: '<?php echo base_url()."patient/update_clinical_note_visits" ?>', 
-                    method: 'POST',
-                    data: { clinicalNote:clinicalNote,noteId:noteId },
-                    dataType: 'json',
-                    success: function(response) {
-                        if(response) {
-                            alert('Clinical note updated successfully');
-                        } else {
-                            console.log('Failed to update clinical note');
-                        }
-                        $('#editClinicalNoteModal').modal('hide');
-                        location.reload();
-                    },
-                    error: function(xhr, status, error) 
-                    {
-                        console.error('Error updating clinical note:', error);
-                        alert('An error occurred while updating clinical note');
-                    }
-                });
-            }); //till here
-        
-        });
-    </script>
-  </div>
-</div>
-  <?php } ?>
-
-
 <div class="container">
       <input type="hidden" name="visit_id" value="" id="visit_id_con">
       <input type="hidden" name="post_patient_id" value="<?php echo $this->input->post('patient_id'); ?>" id="post_patient_id">
@@ -1284,6 +1168,136 @@ bootbox.confirm({
   </table>
 </div>
 <center><button class="btn btn-primary btn-sm" id="submitUpdations" onclick="submitUpdations()">Update</button></center>
+
+<!--Counseling Text Part -->
+<div style="margin-top:4%!important;" class="col-md-12">
+  <h4 style="margin-left:13px;">Available Counseling Text</h4>
+  <table class="table table-bordered table-striped" id="ounseling-table-sort" style="margin-left:13px;">
+      <thead>
+        <tr>
+          <th style="text-align:center;">S.no</th>
+          <th style="text-align:center;">Counsleing Text</th>
+          <th style="text-align:center;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="counseling-table-body">
+        
+      </tbody>
+  </table>
+</div>
+
+<!--Clinical Notes Part -->
+<div style="margin-top:4%!important;" class="col-md-12">
+  <h4 style="margin-left:13px;">Available Clinical Notes</h4>
+    <table class="table table-bordered table-striped" id="clinical-note-table-sort" style="margin-left:13px;">
+      <thead>
+          <tr>
+            <th style="text-align:center;">S.no</th>
+            <th style="text-align:center;">Clinical Notes</th>
+            <th style="text-align:center;">Actions</th>
+          <tr>
+      </thead>
+      <tbody id="clinical-note-table-sort tbody">
+          <tr>
+          <tr>
+      </tbody>
+          <div class="modal fade" id="editClinicalNoteModal" tabindex="-1" role="dialog" aria-labelledby="editClinicalNoteModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editClinicalNoteModalLabel">Edit Clinical Note</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px!important;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateClinicalNoteForm">
+                            <div class="form-group">
+                                <textarea class="form-control" id="clinical_note" name="clinical_note"></textarea>
+                            </div>
+                            <input type="hidden" id="noteIdInput" name="note_id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="updateBtn_one" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </table>
+    <script>
+      $(document).on("click",'#edit',function(){
+        var visit_id = $(this).attr("data-id");
+          if (visit_id !== '') {
+              $.ajax({
+                  type: "POST",
+                  url: "<?php echo base_url('patient/get_clinical_text_to_edit'); ?>",
+                  data: {visit_id: visit_id},
+                  dataType: 'json',
+                  success: function(response) {
+                    console.log(response);
+                      var tbody = $('#clinical-note-table-sort tbody');
+                      tbody.empty();
+                      for (var i = 0; i < response.length; i++) {
+                          var cNote = response[i]['c_note'];
+                          var row = '<tr>' +
+                                    '<td style="text-align:right;">' + (i + 1) + '</td>' +
+                                    '<td class="clinical-note-text">' + cNote + '</td>' +
+                                    '<td style="text-align:center;">' +
+                                    '<button type="button" class="btn btn-success edit-btn" data-id="' + response[i]['note_id'] + '">Edit</button>' +
+                                    '</td>' +
+                                    '</tr>';
+                          tbody.append(row);
+                      }
+                  },
+                  error: function(error) {
+                      console.error("Error fetching clinical notes:", error);
+                  }
+              });
+          }
+      });
+    </script>
+    <script>
+        $(document).ready(function() {
+              $(document).on("click", ".edit-btn", function() {
+                var clinicalNote = $(this).closest("tr").find(".clinical-note-text").text().trim();
+                var noteId = $(this).data("id");
+                $("#clinical_note").val(clinicalNote);
+                $("#noteIdInput").val(noteId);
+                $("#editClinicalNoteModal").modal("show");
+            });
+            // form here 
+            $('#updateBtn_one').click(function(){
+                var clinicalNote = $('#clinical_note').val();
+                var noteId = $('#noteIdInput').val();
+                $.ajax({
+                    url: '<?php echo base_url()."patient/update_clinical_note_visits" ?>', 
+                    method: 'POST',
+                    data: { clinicalNote:clinicalNote,noteId:noteId },
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response) {
+                            alert('Clinical note updated successfully');
+                        } else {
+                            console.log('Failed to update clinical note');
+                        }
+                        $('#editClinicalNoteModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) 
+                    {
+                        console.error('Error updating clinical note:', error);
+                        alert('An error occurred while updating clinical note');
+                    }
+                });
+            }); //till here
+        
+        });
+    </script>
+  </div>
+</div>
+
 
 <?php if(isset($patient_visits_edit_history) && count($patient_visits_edit_history)>0){ ?>
 <h2>Patient Visit Edit History</h2>

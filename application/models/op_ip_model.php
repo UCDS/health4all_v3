@@ -198,10 +198,25 @@ function get_dist_summary(){
 	}
 	
 
-	function get_followup_summary(){
-		
+	function get_followup_summary()
+	{
 		$hospital=$this->session->userdata('hospital');
-		
+
+		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
+		{
+			$secondary=array();
+			$this->db->select('id');
+			$this->db->from('route_secondary');
+			$this->db->where('route_primary_id',$this->input->post('route_primary'));
+			$query = $this->db->get();
+			$res = $query->result_array();
+			foreach ($res as $row){ $secondary[] = $row['id']; }
+			if(!empty($secondary))
+			{
+				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
+			}
+		}
+
 		if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
 			$this->db->where('patient_followup.life_status',1);
         }
@@ -210,18 +225,16 @@ function get_dist_summary(){
 		}
 		else if($this->input->post('life_status')== 3){
 			$this->db->where('patient_followup.life_status',2);
-		}	
+		}
+
+		if($this->input->post('route_secondary')){
+			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
+		}
 		if($this->input->post('priority_type')){
 			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
 		}
 		if($this->input->post('volunteer')){
 			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
-		}
-		if($this->input->post('route_primary')){
-			$this->db->where('patient_followup.route_primary_id',$this->input->post('route_primary'));
-		}		
-		if($this->input->post('route_secondary')){
-			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 		}
 		if($this->input->post('icd_chapter')){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
@@ -233,7 +246,6 @@ function get_dist_summary(){
 			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
 			$this->db->where('icd_code.icd_code',$icd_code);
 		}
-		
 		if($this->input->post('ndps')!=0)
 		{
 			if($this->input->post('ndps')==1){
@@ -249,30 +261,41 @@ function get_dist_summary(){
 			$this->db->where('patient.district_id',$this->input->post('district'));
 		}
 		
-		$this->db->select("icd_block.block_title,icd_chapter.chapter_title,patient_followup.icd_code,priority_type,
-		(SELECT COUNT(patient_followup.priority_type_id) FROM patient_followup
-		WHERE patient_followup.icd_code = icd_code.icd_code &&  patient_followup.priority_type_id=1 ) AS highcount,
-		(SELECT COUNT(patient_followup.priority_type_id) FROM patient_followup
-		WHERE patient_followup.icd_code = icd_code.icd_code &&  patient_followup.priority_type_id=2 ) AS mediumcount,
-		(SELECT COUNT(patient_followup.priority_type_id) FROM patient_followup
-		WHERE patient_followup.icd_code = icd_code.icd_code &&  patient_followup.priority_type_id=3 ) AS lowcount");
+		$this->db->select("icd_block.block_title,icd_chapter.chapter_title,patient_followup.icd_code,patient_followup.priority_type_id,
+		SUM(CASE WHEN patient_followup.priority_type_id=1 THEN 1 ELSE 0 END) AS highcount,
+        SUM(CASE WHEN patient_followup.priority_type_id=2 THEN 1 ELSE 0 END) AS mediumcount,
+        SUM(CASE WHEN patient_followup.priority_type_id=3 THEN 1 ELSE 0 END) AS lowcount,
+		SUM(CASE WHEN patient_followup.priority_type_id = 0 AND patient_followup.icd_code!= '' THEN 1 ELSE 0 END) AS unupdated_priority,
+
+		(SELECT COUNT(*) FROM patient_followup pf
+		JOIN patient p ON pf.patient_id = p.patient_id
+		WHERE pf.priority_type_id = 1 AND pf.icd_code = '' AND p.patient_id = p.patient_id) AS icdcode_empty_high,
+
+		(SELECT COUNT(*) FROM patient_followup pf 
+		JOIN patient p ON pf.patient_id = p.patient_id
+		WHERE pf.priority_type_id = 2 AND pf.icd_code = '' AND p.patient_id = p.patient_id) AS icdcode_empty_medium,
+		
+		(SELECT COUNT(*) FROM patient_followup pf 
+		JOIN patient p ON pf.patient_id = p.patient_id
+		WHERE pf.priority_type_id = 3 AND pf.icd_code = '' AND p.patient_id = p.patient_id) AS icdcode_empty_low,
+		
+		(SELECT COUNT(*) FROM patient_followup pf 
+		JOIN patient p ON pf.patient_id = p.patient_id
+		WHERE pf.priority_type_id = 0 AND pf.icd_code = '' AND p.patient_id = p.patient_id) AS unupdated_both");
 
 		$this->db->from('patient_followup')
-     	 ->join('patient','patient_followup.patient_id=patient.patient_id','left')
-		 ->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
-		 ->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
-		 ->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
-		 ->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
-		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
-		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
-		 ->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
-		 ->join('district','patient.district_id=district.district_id','left')
-		 ->join('state','district.state_id=state.state_id','left')
-		 ->where('patient_followup.hospital_id',$hospital['hospital_id']);
-
-		$this->db->group_by('icd_code.block_id');
-		$this->db->group_by('icd_block.chapter_id');
-
+		->join('patient','patient_followup.patient_id=patient.patient_id','left')
+		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
+		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
+		->join('icd_code','patient_followup.icd_code=icd_code.icd_code')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
+		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
+		//->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
+		->join('district','district.district_id=patient.district_id','left')
+		->join('state','state.state_id=district.state_id','left')
+		->where('patient_followup.hospital_id',$hospital['hospital_id']);
+		$this->db->group_by('patient_followup.icd_code');
 		$resource = $this->db->get();
 		return $resource->result();
 

@@ -150,3 +150,5 @@ ALTER TABLE `visit_name` ADD `created_by` INT NOT NULL AFTER `inuse`, ADD `updat
 ALTER TABLE `patient_followup` CHANGE `note` `note` VARCHAR(1500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL;
 
 ALTER TABLE patient_followup DROP COLUMN `route_primary_id`;
+
+ALTER TABLE `patient_followup` ADD `death_date` DATE NULL DEFAULT NULL AFTER `update_time`, ADD `death_status` INT NOT NULL AFTER `death_date`;
