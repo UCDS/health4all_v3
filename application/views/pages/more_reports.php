@@ -141,7 +141,7 @@ if($function->user_function== "followup_map"){ ?>
 <!--followup tab ends-->
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="missed_calls_report"){
+			if($function->user_function=="missed_calls_report" || $function->user_function=="completed_calls_report"){
 				$helpline=1;
 				?>
 				
@@ -158,9 +158,10 @@ if($helpline==1) { ?>
 <div class="panel_accordion">
 <?php
 foreach($this->data['functions'] as $function){
-		//	if($function->user_function=="completed_calls_report"){ ?>
-		<!--		<button class="panel_button"> <a class="anchor_style" href="<?php echo base_url()."helpline/completed_calls_report";?>">Completed Calls</a></button> !-->
-<?php //		 }
+			if($function->user_function=="completed_calls_report"){ ?>
+		<!--		<button class="panel_button"> <a class="anchor_style" href="<?php //echo base_url()."helpline/completed_calls_report";?>">Completed Calls - old </a></button> !-->
+		<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/receiver_call_activity_report";?>">Completed calls by receiver</a></button>
+<?php 		 }
 
 if($function->user_function=="missed_calls_report"){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/missed_calls_report";?>">Missed Calls</a></button>
