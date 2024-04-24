@@ -152,3 +152,5 @@ ALTER TABLE `patient_followup` CHANGE `note` `note` VARCHAR(1500) CHARACTER SET 
 ALTER TABLE patient_followup DROP COLUMN `route_primary_id`;
 
 ALTER TABLE `patient_followup` ADD `death_date` DATE NULL DEFAULT NULL AFTER `update_time`, ADD `death_status` INT NOT NULL AFTER `death_date`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'followup_summary_route', 'followup_summary_route', '');

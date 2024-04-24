@@ -599,4 +599,85 @@ class Indent_report_model extends CI_Model
 		$resource = $this->db->get();
 		return $resource->result();
 	} //ending of get data method.
+
+	function get_item_inventory_detail($item_id=NULL,$scp_id=NULL)
+	{
+	    $hospital=$this->session->userdata('hospital');                                             
+		if ($this->input->post('from_date') && $this->input->post('to_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+
+		} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+			$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
+			$to_date = $from_date;
+
+		} else {
+			$from_date = date("Y-m-d");
+			$to_date = $from_date;
+		}
+		if ($this->input->post('item_type')) {
+			$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
+		}
+		if($this->input->post('item_form')){
+            $this->db->where('item_form.item_form_id', $this->input->post('item_form'));
+        }
+		if ($this->input->post('item')) {
+			$this->db->where('item.item_id', $this->input->post('item'));
+		}
+		if($this->input->post('generic_item')){
+            $this->db->where('item.generic_item_id', $this->input->post('generic_item'));
+        }
+
+		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
+		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, 
+		scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
+		inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, 
+		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time")
+		->from('inventory')
+		->join('item', 'item.item_id = inventory.item_id') //remove left later
+		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
+		->join('indent', 'indent.indent_id = inventory.indent_id') // remove left later for only relevant details
+		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent.from_id')
+		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent.to_id')
+		->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
+		->join('item_form', 'item_form.item_form_id = item.item_form_id')
+		->join('item_type', 'generic_item.item_type_id = item_type.item_type_id', 'left')
+		->where('indent.hospital_id', $hospital['hospital_id'])
+		->where('item.item_id', $item_id)
+		->where('inventory.supply_chain_party_id', $scp_id)
+		->where('inventory.date_time >=', $from_date)
+		->where('inventory.date_time <=', $to_date);
+
+		$query = $this->db->get();
+		$query_string = $this->db->last_query();
+		//echo $query_string;
+		$records = $query->result();
+		$final_result = $this->get_inward_outward_summary($records, "item");
+		return $records;
+		
+	}
+
+	function get_item_closing_balance()
+	{
+		if ($this->input->post('from_date') ) 
+		{
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+		}else {
+			$from_date = date("Y-m-d");
+		}
+
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("inventory_summary.closing_balance")
+		->from('inventory_summary')
+		->where('supply_chain_party_id', $this->input->post('scp_id'))
+		->where('item_id', $this->input->post('item'))
+		->where('transaction_date <=', $from_date)
+		->order_by('transaction_date', 'DESC')
+		->limit(1);
+		$query = $this->db->get();
+		//echo $this->db->last_query();
+		$records = $query->result();
+		return $records;
+
+	}
 }

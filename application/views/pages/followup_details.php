@@ -686,6 +686,10 @@ echo "</select></li>";
 		<th>NDPS</th>
 		<th>Volunteer</th>
 		<th>Last update by & Time</th>					
+		<?php if($this->input->post('life_status') == 2) { ?>
+			<th>Death Date</th>
+			<th>Death Place</th>
+		<?php } ?>
 	</thead>
 	<tbody>
 	<?php
@@ -731,6 +735,11 @@ echo "</select></li>";
 		
 		<td><?php echo $followup->fname." ".$followup->lname;?></td>
 		<td><?php echo $followup->updated_first_name.' '.$followup->updated_last_name." & ".date("j M Y", strtotime("$followup->followup_update_time")).", ".date("h:i A.", strtotime("$followup->followup_update_time")); ?></td>
+		
+		<?php if($this->input->post('life_status') == 2) { ?>
+			<td><?php echo date('j M Y',strtotime($followup->death_date));?></td>
+			<td><?php if($followup->death_status==1){ echo 'At Center'; }else if($followup->death_status==2){ echo 'Other Centre'; }else{ echo 'Home'; }?></td>
+		<?php } ?>
 		
 		<?php $sno++;} ?>
 		

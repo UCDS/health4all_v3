@@ -463,9 +463,9 @@
 						foreach($print_summary_counseling as $psc)
 						{
 				?>
-				<tr>
+				<!-- <tr>
 					<td><b><?php echo $psc->counseling_type; ?></b></td>
-				</tr>
+				</tr> -->
 				<tr class="print-element" width="95%">
 					<td  colspan="3">
 						<?php echo $psc->counseling_text; ?>

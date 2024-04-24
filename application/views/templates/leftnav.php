@@ -29,7 +29,8 @@
 			return preg_match("^get_indent_summary^", current_url()) 
 			|| preg_match("^indents_list^", current_url()) 
 			|| preg_match("^get_inventory_summary^", current_url())
-			|| preg_match("^get_item_summary^", current_url());
+			|| preg_match("^get_item_summary^", current_url())
+			|| preg_match("^get_item_inventory_detail^", current_url());
 		}
 	}
 	function activate_item($item_regexp)
@@ -359,6 +360,8 @@
 										Summary </span></a>
 										<a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
 										Detail </span></a>
+										<a class="<?php echo (activate_item("^get_item_inventory_detail^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_inventory_detail">Inventory 
+										Item Detail </span></a>
 									</ul>
 								</div>
 

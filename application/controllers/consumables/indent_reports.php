@@ -635,4 +635,61 @@ class Indent_reports extends CI_Controller
 		echo "Data saved successfully!";
 	}
 	
+	function get_item_inventory_detail()
+	{
+		if($this->session->userdata('logged_in')){                                                
+            $this->data['userdata']=$this->session->userdata('logged_in');                                        
+        }	
+        else{
+            show_404();                                                                          
+        }
+		$this->data['userdata'] = $this->session->userdata('logged_in');
+		$user_id = $this->data['userdata']['user_id'];
+		$this->load->model('staff_model');
+		$this->data['functions'] = $this->staff_model->user_function($user_id);
+		$access = -1;
+		foreach ($this->data['functions'] as $function) {
+			if ($function->user_function == "Consumables") {
+				$access = 1;
+				break;
+			}
+		}
+		if ($access != 1) {
+			show_404();
+		}
+
+		$this->data['userdata'] = $this->session->userdata('indent');
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('item', 'required');
+		$user = $this->session->userdata('logged_in');
+		$this->data['title'] = "Item Detail Report";
+		$this->load->view('templates/header', $this->data);
+		$this->load->view('templates/leftnav', $this->data);
+		$this->load->model('consumables/indent_report_model');
+		$this->data['all_item_type'] = $this->indent_report_model->get_data("item_type");
+		$this->data['all_item'] = $this->indent_report_model->get_data("item");
+		$this->data['parties'] = $this->indent_report_model->get_data("party");
+		$this->load->model('consumables/item_model');
+		$this->data['generic_item']=$this->item_model->get_data("generic_name");
+		$this->data['item_form']=$this->item_model->get_data("item_form");
+		$item_id = $this->input->post('item');
+		$scp_id = $this->input->post('scp_id');
+		if(isset($scp_id) && isset($item_id)){
+			$this->data['mode'] = 'search';
+			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_inventory_detail($item_id, $scp_id);
+			$this->data['closing_balance'] = $this->indent_report_model->get_item_closing_balance();
+			$this->load->view('pages/consumables/inventory_item_detail', $this->data);
+		} else if ($this->input->post('search')) {
+			$this->data['mode'] = "search";
+			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_inventory_detail();
+			$this->data['closing_balance'] = $this->indent_report_model->get_item_closing_balance();
+			$this->load->view('pages/consumables/inventory_item_detail', $this->data);
+		} else {
+			show_404();
+		}
+		$this->load->view('templates/footer');
+	}
+
+	
 }
