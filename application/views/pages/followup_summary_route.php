@@ -230,7 +230,7 @@ $(function(){
     var data_type = 'data:application/vnd.ms-excel';
     $('#test').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
     //downloaded excel sheet name is given here
-    $('#test').attr('download', 'followup_summary.xls');
+    $('#test').attr('download', 'followup_summary_primary_route.xls');
 
   }
 
@@ -316,7 +316,7 @@ $(document).ready(function() {
 			$("#route_secondary").val(route_secondary);
 	}
 });
-function onchange_primary_route_dropdown(dropdownobj) {       	
+function onchange_primary_route_dropdown(dropdownobj) {
 	const primaryRouteID = dropdownobj.value;
 	populatePrimaryRouteID(primaryRouteID);		
 }
@@ -360,9 +360,9 @@ function onchange_page_dropdown(dropdownobj){
 
     <h3>
 	<CENTER>
-		Followup Summary - ICD Codes
+		Followup Summary - Routes
 	  </CENTER></h3><br>
-		<?php echo form_open("op_ip_report/followup_summary",array('role'=>'form','class'=>'form-custom')); ?>
+		<?php echo form_open("op_ip_report/followup_summary_route",array('role'=>'form','class'=>'form-custom')); ?>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-4">
@@ -374,7 +374,7 @@ function onchange_page_dropdown(dropdownobj){
 
 					<div class="col-md-12">
 					Search by : 
-						<select name="route_primary" id="route_primary" class="form-control" onchange='onchange_primary_route_dropdown(this)'>
+						<select name="route_primary" id="route_primary" class="form-control" onchange='onchange_primary_route_dropdown(this)' style="width:200px;">
 							<option value="">Primary Route</option>
 							<?php foreach($route_primary as $primary){
 								echo "<option value='".$primary->route_primary_id."'";
@@ -384,7 +384,7 @@ function onchange_page_dropdown(dropdownobj){
 						?>
 						</select>
 
-						<select name="route_secondary" id="route_secondary" class="form-control" >
+						<select name="route_secondary" id="route_secondary" class="form-control" style="width:200px;">
 							<option value="">Secondary Route</option>
 						</select>
                 
@@ -406,7 +406,6 @@ function onchange_page_dropdown(dropdownobj){
 							}
 							?>
 						</select>
-						<input type="hidden" id="1" name="postback" value="1">
 						<select name="icd_chapter" id="icd_chapter" class="form-control" style="width:330px;" >
 							<option value="">ICD Chapter</option>
 							<?php 
@@ -417,17 +416,31 @@ function onchange_page_dropdown(dropdownobj){
 								}
 							?>
 						</select>
-						<div class="col-md-4"></div>
-						<div class="col-md-3"></div>
-						<div class="col-md-4">
-							<?php if(!$this->input->post('postback')) { ?>				  
-							<input type="checkbox" id="groupbyicdchapter" name="groupbyicdchapter" value="1" checked onclick="handleClick();">
-							<?php } else { ?>
-							<input type="checkbox" id="groupbyicdchapter" name="groupbyicdchapter" value="1" <?php if($this->input->post('groupbyicdchapter')) echo "checked"; ?> onclick="handleClick();">
-							<?php } ?>
-							<label for="groupbyicdchapter"> Group by ICD Chapter</label><br>
-						</div>
+						<input type="hidden" id="1" name="postback" value="1">
 					</div>
+					
+					<div class="col-md-3" style="padding-left:8%;">
+					<?php if(!$this->input->post('postback')) { ?>				  
+					  <input type="checkbox" id="groupbyprimary" name="groupbyprimary" value="1" checked onclick="handleClick();">
+					<?php } else { ?>
+					  <input type="checkbox" id="groupbyprimary" name="groupbyprimary" value="1" <?php if($this->input->post('groupbyprimary')) echo "checked"; ?> onclick="handleClick();">
+  					<?php } ?>	
+					  <label for="groupbyprimary"> Group by primary route</label><br>
+					</div>
+					<div class="col-md-4">
+					  <input type="checkbox" id="groupbysecondary" name="groupbysecondary" value="1" <?php if($this->input->post('groupbysecondary')) echo "checked"; ?> onclick="handleClick();">
+  						<label for="groupbysecondary"> Group by secondary route</label><br>
+					</div>
+					<script>
+						function handleClick() {
+							var groupbyprimary = document.getElementById("groupbyprimary");
+							var groupbysecondary = document.getElementById("groupbysecondary");
+							if ( !groupbyprimary.checked && !groupbysecondary.checked ){
+								groupbyprimary.checked = true;
+							}
+						}
+					</script>
+					
 					
 					<div class="col-md-12" style="padding-top:15px;">
 						<select name="icd_block" id="icd_block" class="form-control" style="width:345px;" >
@@ -452,25 +465,6 @@ function onchange_page_dropdown(dropdownobj){
 							<option value="2" <?php echo ($this->input->post('ndps') == '2') ? 'selected' : ''; ?> >No</option>       
 						</select>
 					</div>
-
-					<div class="col-md-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<input type="checkbox" id="groupbyicdblock" name="groupbyicdblock" value="1" <?php if($this->input->post('groupbyicdblock')) echo "checked"; ?> onclick="handleClick();">
-						<label for="groupbyicdblock"> Group by ICD Block</label><br>
-					</div>
-					<div class="col-md-4">
-					  	<input type="checkbox" id="groupbyicdcode" name="groupbyicdcode" value="1" <?php if($this->input->post('groupbyicdcode')) echo "checked"; ?> onclick="handleClick();">
-						<label for="groupbyicdcode"> Group by ICD Code</label><br>
-					</div>
-					<script>
-						function handleClick() {
-							var groupbyicdchapter = document.getElementById("groupbyicdchapter");
-							var groupbyicdblock = document.getElementById("groupbyicdblock");
-							var groupbyicdcode = document.getElementById("groupbyicdcode");
-							if ( !groupbyicdchapter.checked && !groupbyicdblock.checked && !groupbyicdcode.checked ){
-								groupbyicdchapter.checked = true;
-							}
-						}
-					</script>
 				</div>
 			</div>
 			
@@ -536,12 +530,11 @@ function onchange_page_dropdown(dropdownobj){
 			<thead>
 				<tr>
 					<th style="text-align:center;">S.no</th>
-					<th style="text-align:center;">ICD Chapter</th>
-					<?php if(!empty($this->input->post('groupbyicdblock')) ) {?>
-					<th style="text-align:center;">ICD Block</th>
-					<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
-						<th style="text-align:center;">ICD Code</th>
-					<?php }
+					<th style="text-align:center;">Primary Route</th>
+					<?php if(!empty($this->input->post('groupbysecondary'))) { ?>
+					<th style="text-align:center;">Secondary Route</th>
+					<?php } ?>
+					<?php 
 						foreach ($priority_types as $header){
 						if($header->priority_type_id==1){ 
 					?>
@@ -557,54 +550,33 @@ function onchange_page_dropdown(dropdownobj){
 			</thead>
 			<tbody>
 				<?php 
-				$sno=(($page_no - 1) * $total_records_per_page)+2 ; 
-			    ?>
-					<tr>
-						<td style="text-align:right;">1</td>
-						<td></td>
-						<?php if(!empty($this->input->post('groupbyicdblock')) ) {?>
-						<td></td>
-						<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
-						<td ></td>
-						<?php } ?>
-						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_high; ?></td>
-						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_medium; ?></td>
-						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_low; ?></td>
-						<!-- <td><?php echo $report[0]->icdcode_empty_high || $report[0]->icdcode_empty_medium || $report[0]->icdcode_empty_low ? 'ICD Code Unupdated' : ''; ?></td> -->
-						<td style="text-align:right;"><?php echo $tot = $report[0]->unupdated_both; ?></td>
-						<td style="text-align:center;">
-							<?php echo $tot = $report[0]->icdcode_empty_high+$report[0]->icdcode_empty_medium+$report[0]->icdcode_empty_low+$report[0]->unupdated_both; ?>
-						</td>
-					</tr>
-					
-				<?php
+				$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 				foreach($report as $s)
 				{
 					$total_highcount+=$s->highcount;
 					$total_mediumcount+=$s->mediumcount;
 					$total_lowcount+=$s->lowcount;
 					$total_unupdated_priority+=$s->unupdated_priority;
+				
 				?>
 				<tr>
 					<td style="text-align:right;" ><?php echo $sno;?></td>
-						<td><?php echo $s->chapter_title;?></td>
-					<?php if(!empty($this->input->post('groupbyicdblock')) ) {?>
-						<td><?php echo $s->block_title;?></td>
-					<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
-						<td><?php echo $s->code_title;?></td>
+					<td><?php echo $s->primary_rname;?></td>
+					<?php if(!empty($this->input->post('groupbysecondary'))) { ?>
+					<td><?php echo $s->secondary_rname;?></td>
 					<?php } ?>
 					<?php 
 					 	foreach($priority_types as $pt){
 						if($pt->priority_type_id==1)
 						{
 					?>
-					<td style="text-align:right;"><?php echo $s->highcount;?></td>
+					<td style="text-align:right;"><?php if($s->secondary_rname=='' && $s->primary_rname==''){ echo  $s->route_secondary_empty_high+$s->highcount; }else{ echo $s->highcount;} ?></td>
 					<?php } if($pt->priority_type_id==2)
 						{ ?> 
-					<td style="text-align:right;"><?php echo $s->mediumcount;?></td>
+					<td style="text-align:right;"><?php if($s->secondary_rname=='' && $s->primary_rname==''){ echo  $s->route_secondary_empty_medium+$s->mediumcount; }else{ echo $s->mediumcount;} ?></td>
 					<?php } if($pt->priority_type_id==3)
 						{  ?>
-					<td style="text-align:right;"><?php echo $s->lowcount;?></td>
+					<td style="text-align:right;"><?php if($s->secondary_rname=='' && $s->primary_rname==''){ echo  $s->route_secondary_empty_low+$s->lowcount; }else{ echo $s->lowcount;} ?></td>
 					<?php } } ?>
 					<?php if($s->highcount==0 && $s->mediumcount==0 && $s->lowcount==0 ) { ?>
 					<td style="text-align:right;"><?php echo $s->unupdated_priority ?></td>
@@ -614,6 +586,9 @@ function onchange_page_dropdown(dropdownobj){
 							if($s->unupdated_priority!=0)
 							{
 								echo $total_unupdated_priority;
+							}else if($s->unupdated_priority=='0' && $s->secondary_rname=='' && $s->primary_rname=='')
+							{
+								echo $s->unupdated_route_priority;
 							}else{
 								echo '0';
 							}
@@ -621,7 +596,14 @@ function onchange_page_dropdown(dropdownobj){
 						</td>
 					<?php } ?>
 					<td style="text-align: center">
-						<?php echo $tot = $s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority; ?>
+						<?php 
+						if($s->secondary_rname=='' && $s->primary_rname=='')
+						{ 
+							echo $tot = $s->unupdated_route_priority+$s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority+$s->route_secondary_empty_high+$s->route_secondary_empty_medium+$s->route_secondary_empty_low;
+						}else {
+							echo $tot = $s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority;
+						} 
+						?>
 					</td>
 				</tr>
 				<?php $sno++;} 	?>
@@ -629,39 +611,51 @@ function onchange_page_dropdown(dropdownobj){
 			<tfoot>
 				<tr>
 					<?php
-						$rtotal = $report[0]->updatedone+$report[0]->updatedtwo+$report[0]->updatedthree;
 						foreach($report as $sum_unupdated_priority)
 						{
 							$tot_unupdated_priority+=$sum_unupdated_priority->unupdated_priority;
 						}
 					?>
 					<th></th>
-					<?php if(!empty($this->input->post('groupbyicdblock')) ) {?>
-					<th></th>
-					<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
-					<td ></td>
-					<?php } ?>
 					<th style="text-align:right;">Total</th>
+					<?php if(!empty($this->input->post('groupbysecondary'))) { ?>
+					<th></th>
+					<?php } ?>
 					<?php 
 					 	foreach($priority_types as $pt){
 						if($pt->priority_type_id==1)
 						{
 					?>
-					<th style="text-align:right;"><?php echo $total_highcount+$report[0]->icdcode_empty_high;?></th>
+					<th style="text-align:right;"><?php if($report[0]->secondary_rname=='' && $report[0]->primary_rname==''){ echo  $report[0]->route_secondary_empty_high+$total_highcount; }else{ echo $total_highcount;} ?></th>
 					<?php } if($pt->priority_type_id==2)
 						{ ?> 
-					<th style="text-align:right;"><?php echo $total_mediumcount+$report[0]->icdcode_empty_medium;?></th>
+					<th style="text-align:right;"><?php if($report[0]->secondary_rname=='' && $report[0]->primary_rname==''){ echo  $report[0]->route_secondary_empty_medium+$total_mediumcount; }else{ echo $total_mediumcount;} ?></th>
 					<?php } if($pt->priority_type_id==3)
 						{  ?>
-					<th style="text-align:right;"><?php echo $total_lowcount+$report[0]->icdcode_empty_low;?></th>
+					<th style="text-align:right;"><?php if($report[0]->secondary_rname=='' && $report[0]->primary_rname==''){ echo  $report[0]->route_secondary_empty_low+$total_lowcount; }else{ echo $total_lowcount;} ?></th>
 					<?php } } ?>
 					<th style="text-align:right;">
-						<?php echo $tot_unupdated_priority+$report[0]->unupdated_both ?>
+					<?php 
+						if($report[0]->secondary_rname=='' && $report[0]->primary_rname=='')
+						{ 
+							echo  $report[0]->unupdated_route_priority+$tot_unupdated_priority; 
+						}
+						else
+						{ 
+							echo $tot_unupdated_priority;
+						} 
+						?>
+						
 					</th>
 					<th style="text-align:center;">
-						<?php echo 
-						$tot = $total_highcount+$total_mediumcount+$total_lowcount+$rtotal+$report[0]->icdcode_empty_high+$report[0]->icdcode_empty_medium+
-						$report[0]->icdcode_empty_low+$report[0]->unupdated_both+$tot_unupdated_priority; ?>
+						<?php 
+						if($report[0]->secondary_rname=='' && $report[0]->primary_rname=='')
+						{
+							echo $tot = $report[0]->route_secondary_empty_high+$report[0]->route_secondary_empty_medium+$report[0]->route_secondary_empty_low+
+							$report[0]->unupdated_route_priority+$total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority;
+						}else{
+							echo $tot = $total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority; 
+						}?>
 					</th>
 				</tr>
 			</tfoot>
