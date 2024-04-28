@@ -385,39 +385,22 @@ function get_dist_summary(){
 			$this->db->where('patient.district_id',$this->input->post('district'));
 		}
 		
-		$this->db->select("patient_followup.priority_type_id,
-		route_secondary.route_secondary as secondary_rname,route_primary.route_primary as primary_rname,patient.patient_id,
+		$this->db->select("route_secondary.route_secondary as secondary_rname,route_primary.route_primary as primary_rname,
 		SUM(CASE WHEN patient_followup.priority_type_id=1 THEN 1 ELSE 0 END) AS highcount,
         SUM(CASE WHEN patient_followup.priority_type_id=2 THEN 1 ELSE 0 END) AS mediumcount,
         SUM(CASE WHEN patient_followup.priority_type_id=3 THEN 1 ELSE 0 END) AS lowcount,
-		SUM(CASE WHEN patient_followup.priority_type_id = 0 AND patient_followup.route_secondary_id != 0 THEN 1 ELSE 0 END) AS unupdated_priority,
-		
-		(SELECT COUNT(*) FROM patient_followup pf
-		JOIN patient p ON pf.patient_id = p.patient_id
-		WHERE pf.priority_type_id = 1 AND pf.route_secondary_id=0 AND p.patient_id = p.patient_id) AS route_secondary_empty_high,
-
-		(SELECT COUNT(*) FROM patient_followup pf 
-		JOIN patient p ON pf.patient_id = p.patient_id
-		WHERE pf.priority_type_id = 2 AND pf.route_secondary_id=0 AND p.patient_id = p.patient_id) AS route_secondary_empty_medium,
-		
-		(SELECT COUNT(*) FROM patient_followup pf 
-		JOIN patient p ON pf.patient_id = p.patient_id
-		WHERE pf.priority_type_id = 3 AND pf.route_secondary_id=0 AND p.patient_id = p.patient_id) AS route_secondary_empty_low,
-		
-		(SELECT COUNT(*) FROM patient_followup pf 
-		JOIN patient p ON pf.patient_id = p.patient_id
-		WHERE pf.priority_type_id=0 AND pf.route_secondary_id=0 AND p.patient_id = p.patient_id) AS unupdated_route_priority");
+		SUM(CASE WHEN patient_followup.priority_type_id = 0  THEN 1 ELSE 0 END) AS unupdated_priority");
 
 		$this->db->from('patient_followup')
-		->join('patient','patient_followup.patient_id=patient.patient_id','left')
+		->join('patient','patient_followup.patient_id=patient.patient_id','left')	
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
-		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
-		->join('icd_code','patient_followup.icd_code=icd_code.icd_code')
-		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
-		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
 		->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
-		->join('district','district.district_id=patient.district_id','left')
+	        ->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
+		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')	
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
+	        ->join('district','district.district_id=patient.district_id','left')
 		->join('state','state.state_id=district.state_id','left')
 		->where('patient_followup.hospital_id',$hospital['hospital_id']);
 
