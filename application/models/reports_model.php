@@ -4706,7 +4706,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                 $filters[$filter_name_query] = $this->input->post($filter_name);
             }
         }*/
-        
+                $hospital=$this->session->userdata('hospital');  
 		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
 		{
 			$secondary=array();
@@ -4765,11 +4765,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where('patient_followup.ndps',0);
 			}
 		}
-		if($this->input->post('sort_by_age')==1){
+		/*if($this->input->post('sort_by_age')==1){
 			$this->db->order_by('patient.age_years',ASC);
 		}else{
 			$this->db->order_by('patient.age_years',DESC);
-		}
+		}*/
 		
 		if($this->input->post('district'))
 		{
@@ -4792,7 +4792,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
 		->join('district','patient.district_id=district.district_id','left')
-		->join('state','district.state_id=state.state_id','left');
+		->join('state','district.state_id=state.state_id','left')
+	        ->where('patient_followup.hospital_id',$hospital['hospital_id']);  
         //->where($filters);
         //$this->db->limit($rows_per_page,$start);
         $query = $this->db->get();

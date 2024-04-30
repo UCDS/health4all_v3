@@ -565,44 +565,18 @@ function onchange_page_dropdown(dropdownobj){
 					<?php if(!empty($this->input->post('groupbysecondary'))) { ?>
 					<td><?php echo $s->secondary_rname;?></td>
 					<?php } ?>
-					<?php 
-					 	foreach($priority_types as $pt){
-						if($pt->priority_type_id==1)
-						{
-					?>
-					<td style="text-align:right;"><?php if($s->secondary_rname=='' && $s->primary_rname==''){ echo  $s->route_secondary_empty_high+$s->highcount; }else{ echo $s->highcount;} ?></td>
-					<?php } if($pt->priority_type_id==2)
-						{ ?> 
-					<td style="text-align:right;"><?php if($s->secondary_rname=='' && $s->primary_rname==''){ echo  $s->route_secondary_empty_medium+$s->mediumcount; }else{ echo $s->mediumcount;} ?></td>
-					<?php } if($pt->priority_type_id==3)
-						{  ?>
-					<td style="text-align:right;"><?php if($s->secondary_rname=='' && $s->primary_rname==''){ echo  $s->route_secondary_empty_low+$s->lowcount; }else{ echo $s->lowcount;} ?></td>
-					<?php } } ?>
-					<?php if($s->highcount==0 && $s->mediumcount==0 && $s->lowcount==0 ) { ?>
+					
+					<td style="text-align:right;"><?php echo $s->highcount; ?></td>
+					 
+					<td style="text-align:right;"><?php echo $s->mediumcount; ?></td>
+					
+					<td style="text-align:right;"><?php echo $s->lowcount; ?></td>
+					
 					<td style="text-align:right;"><?php echo $s->unupdated_priority ?></td>
-					<?php } else { ?>
-						<td style="text-align:right;">
-							<?php 
-							if($s->unupdated_priority!=0)
-							{
-								echo $total_unupdated_priority;
-							}else if($s->unupdated_priority=='0' && $s->secondary_rname=='' && $s->primary_rname=='')
-							{
-								echo $s->unupdated_route_priority;
-							}else{
-								echo '0';
-							}
-							?>
-						</td>
-					<?php } ?>
+					
 					<td style="text-align: center">
 						<?php 
-						if($s->secondary_rname=='' && $s->primary_rname=='')
-						{ 
-							echo $tot = $s->unupdated_route_priority+$s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority+$s->route_secondary_empty_high+$s->route_secondary_empty_medium+$s->route_secondary_empty_low;
-						}else {
 							echo $tot = $s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority;
-						} 
 						?>
 					</td>
 				</tr>
