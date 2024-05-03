@@ -541,41 +541,18 @@ function onchange_page_dropdown(dropdownobj){
 					<th style="text-align:center;">ICD Block</th>
 					<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
 						<th style="text-align:center;">ICD Code</th>
-					<?php }
-						foreach ($priority_types as $header){
-						if($header->priority_type_id==1){ 
-					?>
+						<?php } ?>
 					<th style="text-align:center;">High</th>
-					<?php } if($header->priority_type_id==2){  ?>
 					<th style="text-align:center;">Medium</th>
-					<?php } if($header->priority_type_id==3){  ?>
-						<th style="text-align:center;">Low</th>
-					<?php } } ?>
+					<th style="text-align:center;">Low</th>
 					<th style="text-align:center;">Unupdated Priority</th>
 					<th style="text-align:center;">Total Count</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php 
-				$sno=(($page_no - 1) * $total_records_per_page)+2 ; 
+				$sno=1 ; 
 			    ?>
-					<tr>
-						<td style="text-align:right;">1</td>
-						<td></td>
-						<?php if(!empty($this->input->post('groupbyicdblock')) ) {?>
-						<td></td>
-						<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
-						<td ></td>
-						<?php } ?>
-						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_high; ?></td>
-						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_medium; ?></td>
-						<td style="text-align:right;"><?php echo $report[0]->icdcode_empty_low; ?></td>
-						<!-- <td><?php echo $report[0]->icdcode_empty_high || $report[0]->icdcode_empty_medium || $report[0]->icdcode_empty_low ? 'ICD Code Unupdated' : ''; ?></td> -->
-						<td style="text-align:right;"><?php echo $tot = $report[0]->unupdated_both; ?></td>
-						<td style="text-align:center;">
-							<?php echo $tot = $report[0]->icdcode_empty_high+$report[0]->icdcode_empty_medium+$report[0]->icdcode_empty_low+$report[0]->unupdated_both; ?>
-						</td>
-					</tr>
 					
 				<?php
 				foreach($report as $s)
@@ -593,33 +570,10 @@ function onchange_page_dropdown(dropdownobj){
 					<?php } if(!empty($this->input->post('groupbyicdcode'))) {?>
 						<td><?php echo $s->code_title;?></td>
 					<?php } ?>
-					<?php 
-					 	foreach($priority_types as $pt){
-						if($pt->priority_type_id==1)
-						{
-					?>
 					<td style="text-align:right;"><?php echo $s->highcount;?></td>
-					<?php } if($pt->priority_type_id==2)
-						{ ?> 
 					<td style="text-align:right;"><?php echo $s->mediumcount;?></td>
-					<?php } if($pt->priority_type_id==3)
-						{  ?>
 					<td style="text-align:right;"><?php echo $s->lowcount;?></td>
-					<?php } } ?>
-					<?php if($s->highcount==0 && $s->mediumcount==0 && $s->lowcount==0 ) { ?>
 					<td style="text-align:right;"><?php echo $s->unupdated_priority ?></td>
-					<?php } else { ?>
-						<td style="text-align:right;">
-							<?php 
-							if($s->unupdated_priority!=0)
-							{
-								echo $total_unupdated_priority;
-							}else{
-								echo '0';
-							}
-							?>
-						</td>
-					<?php } ?>
 					<td style="text-align: center">
 						<?php echo $tot = $s->highcount+$s->mediumcount+$s->lowcount+$s->unupdated_priority; ?>
 					</td>
@@ -628,13 +582,6 @@ function onchange_page_dropdown(dropdownobj){
 			</tbody>
 			<tfoot>
 				<tr>
-					<?php
-						$rtotal = $report[0]->updatedone+$report[0]->updatedtwo+$report[0]->updatedthree;
-						foreach($report as $sum_unupdated_priority)
-						{
-							$tot_unupdated_priority+=$sum_unupdated_priority->unupdated_priority;
-						}
-					?>
 					<th></th>
 					<?php if(!empty($this->input->post('groupbyicdblock')) ) {?>
 					<th></th>
@@ -642,26 +589,15 @@ function onchange_page_dropdown(dropdownobj){
 					<td ></td>
 					<?php } ?>
 					<th style="text-align:right;">Total</th>
-					<?php 
-					 	foreach($priority_types as $pt){
-						if($pt->priority_type_id==1)
-						{
-					?>
-					<th style="text-align:right;"><?php echo $total_highcount+$report[0]->icdcode_empty_high;?></th>
-					<?php } if($pt->priority_type_id==2)
-						{ ?> 
-					<th style="text-align:right;"><?php echo $total_mediumcount+$report[0]->icdcode_empty_medium;?></th>
-					<?php } if($pt->priority_type_id==3)
-						{  ?>
-					<th style="text-align:right;"><?php echo $total_lowcount+$report[0]->icdcode_empty_low;?></th>
-					<?php } } ?>
+					<th style="text-align:right;"><?php echo $total_highcount;?></th>
+					<th style="text-align:right;"><?php echo $total_mediumcount;?></th>
+					<th style="text-align:right;"><?php echo $total_lowcount;?></th>
 					<th style="text-align:right;">
-						<?php echo $tot_unupdated_priority+$report[0]->unupdated_both ?>
+						<?php echo $tot_unupdated_priority; ?>
 					</th>
 					<th style="text-align:center;">
 						<?php echo 
-						$tot = $total_highcount+$total_mediumcount+$total_lowcount+$rtotal+$report[0]->icdcode_empty_high+$report[0]->icdcode_empty_medium+
-						$report[0]->icdcode_empty_low+$report[0]->unupdated_both+$tot_unupdated_priority; ?>
+						$tot = $total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority; ?>
 					</th>
 				</tr>
 			</tfoot>

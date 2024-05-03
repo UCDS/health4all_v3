@@ -534,23 +534,16 @@ function onchange_page_dropdown(dropdownobj){
 					<?php if(!empty($this->input->post('groupbysecondary'))) { ?>
 					<th style="text-align:center;">Secondary Route</th>
 					<?php } ?>
-					<?php 
-						foreach ($priority_types as $header){
-						if($header->priority_type_id==1){ 
-					?>
 					<th style="text-align:center;">High</th>
-					<?php } if($header->priority_type_id==2){  ?>
 					<th style="text-align:center;">Medium</th>
-					<?php } if($header->priority_type_id==3){  ?>
-						<th style="text-align:center;">Low</th>
-					<?php } } ?>
+					<th style="text-align:center;">Low</th>
 					<th style="text-align:center;">Unupdated Priority</th>
 					<th style="text-align:center;">Total Count</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php 
-				$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
+				$sno=1 ; 
 				foreach($report as $s)
 				{
 					$total_highcount+=$s->highcount;
@@ -572,7 +565,7 @@ function onchange_page_dropdown(dropdownobj){
 					
 					<td style="text-align:right;"><?php echo $s->lowcount; ?></td>
 					
-					<td style="text-align:right;"><?php echo $s->unupdated_priority ?></td>
+					<td style="text-align:right;"><?php echo $s->unupdated_priority; ?></td>
 					
 					<td style="text-align: center">
 						<?php 
@@ -584,52 +577,19 @@ function onchange_page_dropdown(dropdownobj){
 			</tbody>
 			<tfoot>
 				<tr>
-					<?php
-						foreach($report as $sum_unupdated_priority)
-						{
-							$tot_unupdated_priority+=$sum_unupdated_priority->unupdated_priority;
-						}
-					?>
 					<th></th>
 					<th style="text-align:right;">Total</th>
 					<?php if(!empty($this->input->post('groupbysecondary'))) { ?>
 					<th></th>
 					<?php } ?>
-					<?php 
-					 	foreach($priority_types as $pt){
-						if($pt->priority_type_id==1)
-						{
-					?>
-					<th style="text-align:right;"><?php if($report[0]->secondary_rname=='' && $report[0]->primary_rname==''){ echo  $report[0]->route_secondary_empty_high+$total_highcount; }else{ echo $total_highcount;} ?></th>
-					<?php } if($pt->priority_type_id==2)
-						{ ?> 
-					<th style="text-align:right;"><?php if($report[0]->secondary_rname=='' && $report[0]->primary_rname==''){ echo  $report[0]->route_secondary_empty_medium+$total_mediumcount; }else{ echo $total_mediumcount;} ?></th>
-					<?php } if($pt->priority_type_id==3)
-						{  ?>
-					<th style="text-align:right;"><?php if($report[0]->secondary_rname=='' && $report[0]->primary_rname==''){ echo  $report[0]->route_secondary_empty_low+$total_lowcount; }else{ echo $total_lowcount;} ?></th>
-					<?php } } ?>
-					<th style="text-align:right;">
-					<?php 
-						if($report[0]->secondary_rname=='' && $report[0]->primary_rname=='')
-						{ 
-							echo  $report[0]->unupdated_route_priority+$tot_unupdated_priority; 
-						}
-						else
-						{ 
-							echo $tot_unupdated_priority;
-						} 
-						?>
-						
-					</th>
+					<th style="text-align:right;"><?php echo $total_highcount; ?></th>
+					<th style="text-align:right;"><?php echo $total_mediumcount; ?></th>
+					<th style="text-align:right;"><?php echo $total_lowcount; ?></th>
+					<th style="text-align:right;"><?php echo $tot_unupdated_priority?></th>
 					<th style="text-align:center;">
-						<?php 
-						if($report[0]->secondary_rname=='' && $report[0]->primary_rname=='')
-						{
-							echo $tot = $report[0]->route_secondary_empty_high+$report[0]->route_secondary_empty_medium+$report[0]->route_secondary_empty_low+
-							$report[0]->unupdated_route_priority+$total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority;
-						}else{
-							echo $tot = $total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority; 
-						}?>
+						<?php		
+							echo $tot =$total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority;
+						?>
 					</th>
 				</tr>
 			</tfoot>
