@@ -593,11 +593,11 @@ function onchange_page_dropdown(dropdownobj){
 					<th style="text-align:right;"><?php echo $total_mediumcount;?></th>
 					<th style="text-align:right;"><?php echo $total_lowcount;?></th>
 					<th style="text-align:right;">
-						<?php echo $tot_unupdated_priority; ?>
+						<?php echo $total_unupdated_priority; ?>
 					</th>
 					<th style="text-align:center;">
 						<?php echo 
-						$tot = $total_highcount+$total_mediumcount+$total_lowcount+$tot_unupdated_priority; ?>
+						$tot = $total_highcount+$total_mediumcount+$total_lowcount+$total_unupdated_priority; ?>
 					</th>
 				</tr>
 			</tfoot>
