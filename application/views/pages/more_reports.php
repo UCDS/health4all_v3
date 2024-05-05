@@ -112,7 +112,8 @@ if($function->user_function=="appointment_by_staff"){ ?>
 <?php
 foreach($this->data['functions'] as $function){
 	if( $function->user_function=="patient_follow_up" || $function->user_function=="followup_map" ||
-	 $function->user_function=="followup_summary" || $function->user_function=="followup_summary_route" ){
+	 $function->user_function=="followup_summary" || $function->user_function=="followup_summary_route" 
+	 || $function->user_function=="followup_summary_death_icdcode" || $function->user_function=="followup_summary_death_routes"){
 		$followup=1;
 		?>
 		<button class="accordion">Followup</button>
@@ -135,6 +136,12 @@ if($function->user_function== "followup_map"){ ?>
 
 <?php } if($function->user_function== "followup_summary_route"){ ?>
 <button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary_route";?>">Followup Summary - Route</a></button>
+
+<?php }  if($function->user_function== "followup_summary_death_icdcode"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary_death_icdcode";?>">Followup Summary Death - ICD Code</a></button>
+
+<?php } if($function->user_function== "followup_summary_death_routes"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary_death_routes";?>">Followup Summary Death - Routes </a></button>
 
 <?php }  } ?>
 

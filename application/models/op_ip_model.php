@@ -399,4 +399,175 @@ function get_dist_summary(){
 		//echo $this->db->last_query();
 		return $resource->result();
 	}
+
+	function get_followup_summary_death_icdcode()
+	{
+		$hospital=$this->session->userdata('hospital');
+
+		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
+		{
+			$secondary=array();
+			$this->db->select('id');
+			$this->db->from('route_secondary');
+			$this->db->where('route_primary_id',$this->input->post('route_primary'));
+			$query = $this->db->get();
+			$res = $query->result_array();
+			foreach ($res as $row){ $secondary[] = $row['id']; }
+			if(!empty($secondary))
+			{
+				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
+			}
+		}
+			
+		if($this->input->post('route_secondary')){
+			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
+		}
+		if($this->input->post('priority_type')){
+			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
+		}
+		if($this->input->post('volunteer')){
+			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('ndps')!=0)
+		{
+			if($this->input->post('ndps')==1){
+				$this->db->where('patient_followup.ndps',1);
+			}if($this->input->post('ndps')==2){
+				$this->db->where('patient_followup.ndps',0);
+			}
+		}
+		if($this->input->post('state')){
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}
+		if($this->input->post('district')){
+			$this->db->where('patient.district_id',$this->input->post('district'));
+		}
+		
+		$this->db->select("patient_followup.death_date,patient_followup.death_status,icd_block.block_title,icd_chapter.chapter_title,
+		patient_followup.icd_code,icd_code.code_title,
+		SUM(CASE WHEN patient_followup.death_status=1  THEN 1 ELSE 0 END) AS centre,
+		SUM(CASE WHEN patient_followup.death_status=2  THEN 1 ELSE 0 END) AS otherCentre,
+		SUM(CASE WHEN patient_followup.death_status=3  THEN 1 ELSE 0 END) AS home,
+		SUM(CASE WHEN patient_followup.death_status = 0 THEN 1 ELSE 0 END) AS unupdated_death_status");
+
+		$this->db->from('patient_followup')
+		->join('patient','patient_followup.patient_id=patient.patient_id','left')
+		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
+		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
+		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
+		//->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
+		->join('district','district.district_id=patient.district_id','left')
+		->join('state','state.state_id=district.state_id','left')
+		->where('patient_followup.hospital_id',$hospital['hospital_id'])
+		->where('patient_followup.life_status',0);
+		
+		if($this->input->post('groupbyicdcode')) {
+			$this->db->group_by('patient_followup.icd_code');
+		}
+		if($this->input->post('groupbyicdblock')) {
+			$this->db->group_by('icd_code.block_id');
+		}
+		if(!$this->input->post('postback') or $this->input->post('groupbyicdchapter')){
+			$this->db->group_by('icd_block.chapter_id');
+		}
+		
+		$resource = $this->db->get();
+		//echo $this->db->last_query();
+		return $resource->result();
+	}
+
+	function get_followup_summary_death_routes()
+	{
+		$hospital=$this->session->userdata('hospital');
+		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
+		{
+			$secondary=array();
+			$this->db->select('id');
+			$this->db->from('route_secondary');
+			$this->db->where('route_primary_id',$this->input->post('route_primary'));
+			$query = $this->db->get();
+			$res = $query->result_array();
+			foreach ($res as $row){ $secondary[] = $row['id']; }
+			if(!empty($secondary))
+			{
+				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
+			}
+		}
+
+		if($this->input->post('route_secondary')){
+			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
+		}
+		if($this->input->post('priority_type')){
+			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
+		}
+		if($this->input->post('volunteer')){
+			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('ndps')!=0)
+		{
+			if($this->input->post('ndps')==1){
+				$this->db->where('patient_followup.ndps',1);
+			}if($this->input->post('ndps')==2){
+				$this->db->where('patient_followup.ndps',0);
+			}
+		}
+		if($this->input->post('state')){
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}
+		if($this->input->post('district')){
+			$this->db->where('patient.district_id',$this->input->post('district'));
+		}
+		
+		$this->db->select("route_secondary.route_secondary as secondary_rname,route_primary.route_primary as primary_rname,
+		SUM(CASE WHEN patient_followup.death_status=1 THEN 1 ELSE 0 END) AS centre,
+        SUM(CASE WHEN patient_followup.death_status=2 THEN 1 ELSE 0 END) AS otherCentre,
+        SUM(CASE WHEN patient_followup.death_status=3 THEN 1 ELSE 0 END) AS home,
+		SUM(CASE WHEN patient_followup.death_status = 0  THEN 1 ELSE 0 END) AS unupdated_death");
+
+		$this->db->from('patient_followup')
+		->join('patient','patient_followup.patient_id=patient.patient_id','left')	
+		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
+		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
+		->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left')
+	        ->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
+		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')	
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
+	        ->join('district','district.district_id=patient.district_id','left')
+		->join('state','state.state_id=district.state_id','left')
+		->where('patient_followup.hospital_id',$hospital['hospital_id'])
+		->where('patient_followup.life_status',0);
+		if(!$this->input->post('postback') or $this->input->post('groupbyprimary')) {
+			$this->db->group_by('route_secondary.route_primary_id');
+		}
+		if($this->input->post('groupbysecondary')) {
+			$this->db->group_by('patient_followup.route_secondary_id');
+		}
+		
+		$resource = $this->db->get();
+		//echo $this->db->last_query();
+		return $resource->result();
+	}
 }	

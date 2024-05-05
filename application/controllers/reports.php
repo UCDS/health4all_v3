@@ -808,7 +808,10 @@ class Reports extends CI_Controller {
 				$function->user_function=="edit_demographic" || $function->user_function=="issue_list" || $function->user_function=="issue_summary"
 				|| $function->user_function=="followup_summary" || $function->user_function=="followup_map" || $function->user_function=="delete_patient_visit_duplicate"
 				|| $function->user_function=="list_patient_visit_duplicate"|| $function->user_function=="list_patient_edits"|| $function->user_function=="edit_patient_visits"
-				|| $function->user_function=="list_edit_patient_visits" || $function->user_function=="delete_patient_followup"){
+				|| $function->user_function=="list_edit_patient_visits" || $function->user_function=="delete_patient_followup"
+				|| $function->user_function=="followup_summary_route"
+				|| $function->user_function=="followup_summary_death_icdcode" 
+				|| $function->user_function=="followup_summary_death_routes"){
 				$access=1;
 				break;
 			}
