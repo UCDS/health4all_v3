@@ -714,15 +714,16 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital/search_hospital/search_hospital_view">Edit Hospital</a>
 			</li>
-			<li <?php if (preg_match("^add_department/department_view^", current_url()) || preg_match("^add_department^", current_url()))
+			<li <?php if (preg_match("^add_department/department_view^", current_url()) || preg_match("^add_department^", current_url()) || preg_match("^departments/get_all_department^", current_url())
+			|| preg_match("^departments/update_department^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>departments/add_department/department_view">Add / Update Departments</a>
 			</li>
-			<li <?php if (preg_match("^hospital_areas/add_area^", current_url()))
+			<li <?php if (preg_match("^hospital_areas/add_area^", current_url()) || preg_match("^hospital_areas/get_all_area^", current_url()) || preg_match("^hospital_areas/update_area^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital_areas/add_area">Add / Update Areas</a>
 			</li>
-			<li <?php if (preg_match("^add_unit^", current_url()))
+			<li <?php if (preg_match("^add_unit^", current_url()) || preg_match("^hospital_units/get_all_unit^", current_url()) || preg_match("^hospital_units/update_unit^", current_url()))
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital_units/add_unit">Add / Update Units</a>
 			</li>

@@ -178,7 +178,7 @@ function get_dist_summary(){
 
 		$this->db->select("patient_followup.patient_id,state.state,district.state_id as state_id, district.district as dname,   district.district_id, 
 		patient_followup.latitude as latitude, patient_followup.longitude as longitude,patient.first_name,patient.last_name,patient.phone,
-		patient.age_years,patient.gender,patient_followup.diagnosis");
+		patient.age_years,patient.gender,patient_followup.diagnosis,patient_followup.priority_type_id");
 		
 		 $this->db->from('patient_followup')
 		 ->join('patient','patient_followup.patient_id=patient.patient_id','left')
@@ -418,7 +418,32 @@ function get_dist_summary(){
 				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
 			}
 		}
+		
+		if($this->input->post('from_date') && $this->input->post('to_date') && $this->input->post('death_followup')==1)
+		{
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));   
+			$this->db->where("(patient_followup.death_date BETWEEN '$from_date' AND '$to_date')");         
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date') && $this->input->post('death_followup')==1)
+		{
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+			$this->db->where('patient_followup.death_date >=',$from_date); 
+		}
+		
+		if ($this->input->post('from_date_1') && $this->input->post('to_date_1') && $this->input->post('death_followup')==2) 
+		{
+			$from_date_1 = date("Y-m-d", strtotime($this->input->post('from_date_1')));
+			$to_date_1 = date("Y-m-d", strtotime($this->input->post('to_date_1')));
+			$from_time = '00:00';
+			$to_time = '23:59';
 			
+			$from_timestamp = $from_date_1.' '.$from_time;
+			$to_timestamp = $to_date_1.' '.$to_time;
+			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		}
+		
 		if($this->input->post('route_secondary')){
 			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 		}
@@ -491,6 +516,7 @@ function get_dist_summary(){
 	function get_followup_summary_death_routes()
 	{
 		$hospital=$this->session->userdata('hospital');
+
 		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
 		{
 			$secondary=array();
@@ -504,6 +530,31 @@ function get_dist_summary(){
 			{
 				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
 			}
+		}
+
+		if($this->input->post('from_date') && $this->input->post('to_date') && $this->input->post('death_followup')==1)
+		{
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));   
+			$this->db->where("(patient_followup.death_date BETWEEN '$from_date' AND '$to_date')");         
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date') && $this->input->post('death_followup')==1)
+		{
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+			$this->db->where('patient_followup.death_date >=',$from_date); 
+		}
+		
+		if ($this->input->post('from_date_1') && $this->input->post('to_date_1') && $this->input->post('death_followup')==2) 
+		{
+			$from_date_1 = date("Y-m-d", strtotime($this->input->post('from_date_1')));
+			$to_date_1 = date("Y-m-d", strtotime($this->input->post('to_date_1')));
+			$from_time = '00:00';
+			$to_time = '23:59';
+			
+			$from_timestamp = $from_date_1.' '.$from_time;
+			$to_timestamp = $to_date_1.' '.$to_time;
+			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
 		}
 
 		if($this->input->post('route_secondary')){

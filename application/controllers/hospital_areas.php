@@ -178,4 +178,52 @@ class hospital_areas extends CI_Controller{
 			show_404();
 		}	
     }
+
+    function get_all_area() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+            $access=0;
+			$userdata=$this->session->userdata('logged_in');
+			$user_id=$userdata['user_id'];
+			$this->data['functions']=$this->staff_model->user_function($user_id);
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="Admin"){
+					$access = 1;
+					break;
+				}
+			}
+			if($access==1)
+			{
+                $this->load->helper('form');
+                $this->data['title']="Add Area";
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                foreach($this->data['defaultsConfigs'] as $default){		 
+                    if($default->default_id=='pagination'){
+                            $this->data['rowsperpage'] = $default->value;
+                            $this->data['upper_rowsperpage']= $default->upper_range;
+                            $this->data['lower_rowsperpage']= $default->lower_range;	 
+
+                        }
+                    }
+                // Fetch all records from primary table
+                $this->data['all_areas'] = $this->hospital_areas_model->get_all_areas($this->data['rowsperpage']);
+                $this->data['all_areas_count'] = $this->hospital_areas_model->get_all_areas_count();
+
+                $this->load->view('templates/header',$this->data);
+                $this->load->view('templates/leftnav',$this->data);
+                $this->load->view('pages/hospital_area_view',$this->data);
+                $this->load->view('templates/footer');
+            }
+            else
+            {
+                show_404();
+            }
+		}
+		else
+		{
+			show_404();
+		}	
+    }
 }

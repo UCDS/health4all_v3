@@ -158,3 +158,5 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'followup_summary_death_icdcode', 'followup_summary_death_icdcode', 'followup_summary_death_icdcode');
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'followup_summary_death_routes', 'followup_summary_death_routes', 'followup_summary_death_routes');
+
+ALTER TABLE `visit_name` ADD `op_ip` TINYINT NULL DEFAULT NULL AFTER `inuse`;

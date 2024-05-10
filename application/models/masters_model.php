@@ -2156,12 +2156,13 @@ else if($type=="dosage"){
         return $query->num_rows() > 0;
     }
 
-	function check_visit_type_inuse($visit_name,$inuse) 
+	function check_visit_type_inuse($visit_name,$inuse,$op_ip) 
     {
 		$hospital=$this->session->userdata('hospital');
         $this->db->where('hospital_id', $hospital['hospital_id']);
         $this->db->where('visit_name', $visit_name);
         $this->db->where('inuse', $inuse);
+        $this->db->where('op_ip', $op_ip);
         $query = $this->db->get('visit_name');
         return $query->num_rows() > 0;
     }
@@ -2193,7 +2194,7 @@ else if($type=="dosage"){
 		}
 
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select(" visit_name.visit_name,visit_name.inuse,visit_name.visit_name_id,
+		$this->db->select(" visit_name.visit_name,visit_name.inuse,visit_name.visit_name_id,visit_name.op_ip,
 		staff.first_name, visit_name.created_date_time,visit_name.updated_date_time,updated_by.first_name as updated_by_name")
 		->from("visit_name")
 		->join('staff','staff.staff_id=visit_name.created_by','left')
@@ -2216,7 +2217,7 @@ else if($type=="dosage"){
 
 	function get_edit_visit_type_by_id($record_id) 
 	{
-		$this->db->select('visit_name,inuse,created_by,updated_by,created_date_time,updated_date_time,visit_name_id');
+		$this->db->select('visit_name,inuse,created_by,updated_by,created_date_time,updated_date_time,visit_name_id,op_ip');
         $query = $this->db->get_where('visit_name', array('visit_name_id' => $record_id));
         return $query->row_array();
     }

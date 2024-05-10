@@ -188,9 +188,14 @@ display: inline-grid;
 	
 	?>
 <div class="row">
-		<h4>Out Patient Detail - Followup</h4>	
+		<h4>Visit Type  - Detail Followup</h4>	
 		<?php echo form_open("reports/op_detail_followup",array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?> 
 			 <input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
+		 
+		 Choose OP / IP : &nbsp;&nbsp;
+		 <input type="radio" name="op_ip" class ="form-control" value="1" <?php if(empty($this->input->post('op_ip')) || $this->input->post('op_ip')==1){ echo "checked"; }  ?>> &nbsp;OP&nbsp;
+		 <input type="radio" name="op_ip" class ="form-control" value="2" <?php if(!empty($this->input->post('op_ip')) && $this->input->post('op_ip')==2 ){ echo "checked"; } ?>> &nbsp;IP&nbsp; </br>
+		 
                         Search by : <select name="dateby" id="dateby" class="form-control">   
                         <option value="Registration" <?php echo ($this->input->post('dateby') == 'Registration') ? 'selected' : ''; ?> >Registration</option> 
                         <option value="Appointment" <?php echo ($this->input->post('dateby') == 'Appointment') ? 'selected' : ''; ?> >Appointment</option>          
