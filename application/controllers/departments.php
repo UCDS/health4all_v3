@@ -48,7 +48,7 @@ class Departments extends CI_Controller {
 
 						}
 					}
-					if ($this->input->post()) 
+					if (!empty($this->input->post('department')))
 					{
 						$hospital_id = $this->session->userdata('hospital')['hospital_id'];
 						$hospital = $hospital_id;
@@ -187,6 +187,54 @@ class Departments extends CI_Controller {
 					}
 					
 					
+				// Fetch all records from primary table
+				$this->data['get_all_departments']=$this->hospital_model->get_all_departments($this->data['rowsperpage']);
+				$this->data['get_all_departments_count']=$this->hospital_model->get_all_departments_count();
+
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/department_view',$this->data);
+				$this->load->view('templates/footer');
+			}
+			else
+			{
+				show_404();
+			}
+		}
+		else
+		{
+			show_404();
+		}	
+    }
+
+	function get_all_department() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$access=0;
+			$userdata=$this->session->userdata('logged_in');
+			$user_id=$userdata['user_id'];
+			$this->data['functions']=$this->staff_model->user_function($user_id);
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="Admin"){
+					$access = 1;
+					break;
+				}
+			}
+			if($access==1)
+			{
+				$this->load->helper('form');
+				$this->data['title']="Add Department";
+				$this->data['userdata']=$this->session->userdata('logged_in');
+				$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+				foreach($this->data['defaultsConfigs'] as $default){		 
+					if($default->default_id=='pagination'){
+							$this->data['rowsperpage'] = $default->value;
+							$this->data['upper_rowsperpage']= $default->upper_range;
+							$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+						}
+					}
 				// Fetch all records from primary table
 				$this->data['get_all_departments']=$this->hospital_model->get_all_departments($this->data['rowsperpage']);
 				$this->data['get_all_departments_count']=$this->hospital_model->get_all_departments_count();

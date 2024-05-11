@@ -459,10 +459,16 @@ function onchange_page_dropdown(dropdownobj){
 					</div>
 
 					<div class="col-md-2">
-						
+						<input type="checkbox" name="highlight_priority" value="" onchange="updateCheckboxValue(this)" <?php if ($this->input->post('highlight_priority') == 1) echo 'checked'; ?>>  Highlight Priority	
 					</div>
 					<script>
-					
+					function updateCheckboxValue(checkbox) {
+						if (checkbox.checked) {
+							checkbox.value = "1";
+						} else {
+							checkbox.value = ""; // You may set it to another value if needed when unchecked
+						}
+					}
 					onchange_state_dropdown(document.getElementById("state"));
 					var district = "<?php echo $this->input->post('district')?>";
 					if(district != ""){
@@ -522,7 +528,22 @@ function onchange_page_dropdown(dropdownobj){
             foreach($report as $followup){  
 		    if(!!$followup->latitude && !!$followup->longitude && !!$followup->district_id) { 
         ?>
-					var markerColor = 'red';
+				<?php
+					$markerColor = 'red'; // Default color
+					if ($this->input->post('highlight_priority') == 1) {
+						switch ($followup->priority_type_id) {
+							case 1:
+								$markerColor = 'red';
+								break;
+							case 2:
+								$markerColor = 'orange';
+								break;
+							case 3:
+								$markerColor = 'blue';
+								break;
+						}
+					}
+				?>
 					
 		    var contentString_<?= $followup->patient_id; ?> = "<?= $followup->patient_id?><br><?=$followup->first_name.' '.$followup->last_name.'/'.$followup->age_years.'/'.$followup->gender ?><br><?= $followup->diagnosis.' - ' ?><?php if($followup->priority_type_id==1){ echo "High"; }elseif($followup->priority_type_id==2){ echo "Medium"; }else{ echo "Low"; }?><br><a href='https://www.google.com/maps/search/?api=1&query=<?= $followup->latitude ?>,<?= $followup->longitude ?>' target='_blank' >Open in Maps</a>";
 
@@ -535,7 +556,7 @@ function onchange_page_dropdown(dropdownobj){
                     var marker_<?= $followup->patient_id; ?> = new google.maps.Marker({
                         position: location_<?= $followup->patient_id; ?>,
                         map: map,
-						// icon: 'http://maps.google.com/mapfiles/ms/micons/' + markerColor + '-dot.png'
+						icon: 'http://maps.google.com/mapfiles/ms/micons/' + '<?= $markerColor ?>' + '-dot.png'
                     });
 
                     bounds.extend(location_<?= $followup->patient_id; ?>);

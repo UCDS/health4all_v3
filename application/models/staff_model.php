@@ -403,6 +403,49 @@ class Staff_model extends CI_Model{
 		$query=$this->db->get();
 		return $query->result();
 	}
+
+	function get_visit_name_op($all=0){
+		if($all==0){
+			$hospital = $this->session->userdata('hospital');
+			$this->db->where('hospital_id',$hospital['hospital_id']);
+		}
+		else {
+			$userdata=$this->session->userdata('logged_in');        
+                    	$user_id=$userdata['user_id'];  
+                    	$this->db->where('user.user_id',$user_id);
+                    	$this->db->join('hospital','hospital.hospital_id=visit_name.hospital_id');
+                    	$this->db->join('user_hospital_link','user_hospital_link.hospital_id=hospital.hospital_id');
+                    	$this->db->join('user','user.user_id=user_hospital_link.user_id');
+					
+		}
+		$this->db->where('inuse',1);
+		$this->db->where('op_ip',1);
+		$this->db->select("visit_name.hospital_id,visit_name_id,visit_name,op_ip")->from("visit_name");
+		$query=$this->db->get();
+		return $query->result();
+	}
+
+	function get_visit_name_ip($all=0){
+		if($all==0){
+			$hospital = $this->session->userdata('hospital');
+			$this->db->where('hospital_id',$hospital['hospital_id']);
+		}
+		else {
+			$userdata=$this->session->userdata('logged_in');        
+                    	$user_id=$userdata['user_id'];  
+                    	$this->db->where('user.user_id',$user_id);
+                    	$this->db->join('hospital','hospital.hospital_id=visit_name.hospital_id');
+                    	$this->db->join('user_hospital_link','user_hospital_link.hospital_id=hospital.hospital_id');
+                    	$this->db->join('user','user.user_id=user_hospital_link.user_id');
+					
+		}
+		$this->db->where('inuse',1);
+		$this->db->where('op_ip',2);
+		$this->db->select("visit_name.hospital_id,visit_name_id,visit_name,op_ip")->from("visit_name");
+		$query=$this->db->get();
+		return $query->result();
+	}
+
 	//get_print_layouts() selects the print layouts from the database and returns the result
 	function get_print_layouts(){
 		$this->db->select("print_layout_id,print_layout_name,print_layout_page")->from("print_layout");

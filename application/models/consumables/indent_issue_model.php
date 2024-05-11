@@ -322,12 +322,24 @@ class Indent_issue_model extends CI_Model{                                      
 			$column='cost';
 			$table='inventory';
 		}
+		if($fieldId == 'note')
+		{
+			$column='note';
+			$table='indent_item';
+		}
 		$data = array(
 			$column => $newValue
 		);
-		$this->db->where('indent_id', $indentId);
-		$this->db->where('item_id', $itemId);
-		$this->db->update($table, $data);
+		if($fieldId == 'note')
+		{
+			$this->db->where('indent_item_id', $indentId);
+			$this->db->where('item_id', $itemId);
+			$this->db->update($table, $data);
+		}else{
+			$this->db->where('indent_id', $indentId);
+			$this->db->where('item_id', $itemId);
+			$this->db->update($table, $data);
+		}
 	}
 }//indent_issue_model
 

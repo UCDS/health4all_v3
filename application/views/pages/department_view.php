@@ -83,7 +83,7 @@ function doPost(page_no){
 	var page_no_hidden = document.getElementById("page_no");
   	page_no_hidden.value=page_no;
         $('#appointment').submit();
-   }
+	}	
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
@@ -168,7 +168,7 @@ display: inline-grid;
 		<?php if(!empty($edit_departments)) { ?>
 			<?php echo form_open('departments/update_department',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('departments/add_department',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
+			<?php echo form_open('departments/add_department',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
@@ -302,7 +302,11 @@ display: inline-grid;
 <?php if(isset($get_all_departments) && count($get_all_departments)>0)
 { ?>
 <div style='padding: 0px 2px;'>
-
+<h3>List Departments</h3>
+	<?php  echo form_open('departments/get_all_department',array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
+            Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+    <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
+    </form><br/>
 <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
 
 </div>
@@ -326,7 +330,7 @@ display: inline-grid;
 	$offset = ($page_no-1) * $total_records_per_page;
 	$previous_page = $page_no - 1;
 	$next_page = $page_no + 1;
-	$adjacents = "2";	
+	$adjacents = "2";
 ?>
 
 <ul class="pagination" style="margin:0">

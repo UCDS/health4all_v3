@@ -872,6 +872,7 @@ class User_panel extends CI_Controller {
 					$hospital = $this->session->userdata('hospital');
 					$visit_name = $this->input->post('visit_name');
 					$inuse = $this->input->post('inuse');
+					$op_ip = $this->input->post('op_ip');
 					$added_by = $this->input->post('added_by');
 					$insert_datetime = $this->input->post('insert_datetime');
 					if($this->masters_model->check_visit_type($visit_name)) 
@@ -884,6 +885,7 @@ class User_panel extends CI_Controller {
 					 		'hospital_id' => $hospital['hospital_id'],
 					 		'visit_name' => $visit_name,
 					 		'inuse' => $inuse,
+					 		'op_ip' => $op_ip,
 					 		'created_by' => $added_by,
 					 		'created_date_time' => $insert_datetime,
 					 	);
@@ -929,9 +931,10 @@ class User_panel extends CI_Controller {
 				$update_record_id = $this->input->post('record_id');
 				$visit_name = $this->input->post('visit_name');
 				$inuse = $this->input->post('inuse');
+				$op_ip = $this->input->post('op_ip');
 				$updated_by = $this->input->post('updated_by');
 				$update_datetime = $this->input->post('updated_datetime');
-				if($this->masters_model->check_visit_type_inuse($visit_name,$inuse)) 
+				if($this->masters_model->check_visit_type_inuse($visit_name,$inuse,$op_ip)) 
 				{
 					$this->data['error'] = 'Visit Type Cannot Be Updated Combination Already Exists';
 				}else
@@ -939,6 +942,7 @@ class User_panel extends CI_Controller {
 					$update_data = array(
 						'visit_name' => $visit_name,
 					 	'inuse' => $inuse,
+						'op_ip' => $op_ip,
 						'updated_by' => $updated_by,
 						'updated_date_time' => $update_datetime,
 					);

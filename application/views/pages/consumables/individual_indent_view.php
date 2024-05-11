@@ -607,7 +607,17 @@
 										</td>
 
 										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
-										<td><?= $all_int->note; ?></td>
+										<td>
+											<span id="note_<?php echo $all_int->indent_item_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?php echo $all_int->item_note;?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil note_<?php echo $all_int->indent_item_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableEdit('note', '<?php echo $all_int->indent_item_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+											<!-- <?= $all_int->note; ?> -->
+										</td>
 										<td><?= $all_int->gtin_code;?></td>
 										
 
@@ -667,7 +677,17 @@
 										</td>
 
 										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
-										<td><?= $all_int->note; ?></td>
+										<td>
+											<span id="note_<?php echo $all_int->indent_item_id; ?>_<?php echo $all_int->item_id; ?>">
+												<?php echo $all_int->item_note;?>
+											</span>
+											<?php if($access==1)
+											{
+											?>
+    										<i class="fa fa-pencil note_<?php echo $all_int->indent_item_id; ?>_<?php echo $all_int->item_id; ?>-edit-icon" onclick="enableEdit('note', '<?php echo $all_int->indent_item_id; ?>','<?php echo $all_int->item_id; ?>')"></i>
+											<?php } ?>
+											<!-- <?= $all_int->note; ?> -->
+										</td>
 										<td><?= $all_int->gtin_code;?></td>
 										
 

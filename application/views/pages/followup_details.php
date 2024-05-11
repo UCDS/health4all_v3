@@ -737,8 +737,8 @@ echo "</select></li>";
 		<td><?php echo $followup->updated_first_name.' '.$followup->updated_last_name." & ".date("j M Y", strtotime("$followup->followup_update_time")).", ".date("h:i A.", strtotime("$followup->followup_update_time")); ?></td>
 		
 		<?php if($this->input->post('life_status') == 2) { ?>
-			<td><?php echo date('j M Y',strtotime($followup->death_date));?></td>
-			<td><?php if($followup->death_status==1){ echo 'At Center'; }else if($followup->death_status==2){ echo 'Other Centre'; }else{ echo 'Home'; }?></td>
+			<td><?php if($followup->death_date!=''){ echo date('j M Y',strtotime($followup->death_date)); }?></td>
+			<td><?php if($followup->death_status==1){ echo 'At Center'; }else if($followup->death_status==2){ echo 'Other Centre'; }else if($followup->death_status==3){ echo 'Home'; }?></td>
 		<?php } ?>
 		
 		<?php $sno++;} ?>

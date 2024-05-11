@@ -75,7 +75,7 @@ class Register extends CI_Controller {
 			$access=0;
 			$add_sms_access=0;
 			$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
-			foreach($this->data['functions'] as $f){
+			foreach($this->data['functions'] as $f){ 
 				if(($f->user_function=="Out Patient Registration" || $f->user_function == "IP Registration")){
 					$access = 1;
 				}
@@ -94,7 +94,6 @@ class Register extends CI_Controller {
 			$this->data['departments']=$this->staff_model->get_department();
 			$this->data['helpline_hospitals']=$this->hospital_model->get_hospitals_selectize(true);
 			$this->data['all_departments']=$this->data['departments'];
-			$this->data['visit_names']=$this->staff_model->get_visit_name();
 			$this->data['units']=$this->staff_model->get_unit();
 			$this->data['areas']=$this->staff_model->get_area();
 			$this->data['districts']=$this->staff_model->get_district();
@@ -118,6 +117,14 @@ class Register extends CI_Controller {
 				show_404();
 			}
 			$form=$this->staff_model->get_form($form_id); //Get the form details from database.
+			if($form->form_type=="OP")
+			{	
+				$this->data['visit_names']=$this->staff_model->get_visit_name_op();
+			}else if($form->form_type=="IP"){
+				$this->data['visit_names']=$this->staff_model->get_visit_name_ip();
+			}else{
+				$this->data['visit_names']=$this->staff_model->get_visit_name();
+			}
 			$form_a6=$this->staff_model->get_form_a6($form_id); 
 			$this->data['columns']=$form->num_columns;
 			$this->data['form_name']=$form->form_name;

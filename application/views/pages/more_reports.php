@@ -43,7 +43,8 @@ if($appointments==1) { ?>
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_3";?>">Out Patient Detail 3</a></button>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_followup";?>">Out Patient Detail - Followup</a></button>
+				<!-- <button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_followup";?>">Out Patient Detail - Followup</a></button> -->
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/op_detail_followup";?>">Visit Type  - Detail Followup</a></button>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/visit_type_summary";?>">Visit Type Summary</a></button>
 <?php		 }
 

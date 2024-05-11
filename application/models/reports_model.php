@@ -414,7 +414,7 @@ class Reports_model extends CI_Model{
 		return $resource->result();
 	}
 
-function get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$from_date,$to_date,$default_rowsperpage){
+	function get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$from_date,$to_date,$default_rowsperpage){
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
 		}
@@ -564,7 +564,7 @@ function get_op_detail_with_idproof($department,$unit,$area,$from_age,$to_age,$f
 		$resource=$this->db->get();
 		return $resource->result();
 	}
-	
+
 	function get_helpline_doctor(){
 		$hospital=$this->session->userdata('hospital');
 		
@@ -2158,7 +2158,15 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		if($this->input->post('area')){			
 			$this->db->where('pv.area',$this->input->post('area'));
 		}
-		
+
+		if($this->input->post('op_ip')==1 || empty($this->input->post('op_ip')))
+		{
+			$this->db->where("pv.visit_type","OP");
+		}
+		else if($this->input->post('op_ip')==2)
+		{
+			$this->db->where("pv.visit_type","IP");
+		}
 
 		$this->db->select("count(*) as count",false);
 		 $this->db->from('patient_visit as pv')
@@ -2174,8 +2182,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
-		 ->where('pv.hospital_id',$hospital['hospital_id'])
-		 ->where('visit_type','OP');			
+		 ->where('pv.hospital_id',$hospital['hospital_id']);			
 		$resource=$this->db->get();
 		return $resource->result();
 	}
@@ -2270,6 +2277,15 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 			$this->db->select('"0" as area',false);
 		}
 
+		if($this->input->post('op_ip')==1 || empty($this->input->post('op_ip')))
+		{
+			$this->db->where("pv.visit_type","OP");
+		}
+		else if($this->input->post('op_ip')==2)
+		{
+			$this->db->where("pv.visit_type","IP");
+		}
+
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, pvd.department, admit_date, admit_time, 
@@ -2290,8 +2306,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('user as volunteer_user','p.insert_by_user_id = volunteer_user.user_id','left')
 		 ->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left')
 		 ->join('visit_name vn','pv.visit_name_id=vn.visit_name_id','left')		
-		 ->where('pv.hospital_id',$hospital['hospital_id'])
-		 ->where('visit_type','OP');
+		 ->where('pv.hospital_id',$hospital['hospital_id']);
 		$this->db->limit($rows_per_page,$start);			
 		$resource=$this->db->get();
 		return $resource->result();

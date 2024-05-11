@@ -186,6 +186,14 @@ display: inline-grid;
 						<option <?php if($edit_visit_type['inuse']==2){ echo "selected"; }?> value="2">No</option>
 					</select>
 				</div>
+				<div class="form-group col-md-4">
+					<label for="inputrouteprimary ">OP/IP <span class="mandatory" style="color:red;">*</span> </label>
+					<select name="op_ip" required class="form-control">
+						<option value="">Choose OP/IP</option>
+						<option <?php if($edit_visit_type['op_ip']==1){ echo "selected"; }?> value="1">OP</option>
+						<option <?php if($edit_visit_type['op_ip']==2){ echo "selected"; }?> value="2">IP</option>
+					</select>
+				</div>
 				 <?php 
 				 	$user=$this->session->userdata('logged_in'); 
 					$user['user_id'];
@@ -360,6 +368,7 @@ echo "</select></li>";
 		<th style="text-align:center">#</th>
 		<th style="text-align:center">Visit Name</th>
 		<th style="text-align:center">Inuse</th>
+		<th style="text-align:center">OP/IP</th>
 		<th style="text-align:center">Added by</th>
 		<th style="text-align:center">Updated by</th>		
 		<th style="text-align:center">Created Datetime</th>		
@@ -376,6 +385,7 @@ echo "</select></li>";
 		<td style="text-align:right"><?php echo $sno;?></td>	
 		<td style="text-align:center"><?php echo $avt->visit_name; ?></td>	
 		<td style="text-align:center"><?php if($avt->inuse==1){ echo "Inuse"; }else{ echo "Not Inuse"; } ?></td>	
+		<td style="text-align:center"><?php if($avt->op_ip==1){ echo "OP"; }else if($avt->op_ip==2){ echo "IP"; } ?></td>	
 		<td style="text-align:center"><?php echo $avt->first_name; ?></td>	
 		<td style="text-align:center"><?php echo $avt->updated_by_name; ?></td>	
 		<td style="text-align:center"><?php if($avt->created_date_time!=''){ echo date("j M Y h:i A.", strtotime("$avt->created_date_time")); } ?></td>	

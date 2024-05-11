@@ -268,6 +268,11 @@ display: inline-grid;
 { ?>
 <div style='padding: 0px 2px;'>
 
+<h3>List Units</h3>
+	<?php  echo form_open('hospital_units/get_all_unit',array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
+            Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+    <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
+    </form><br/>
 <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
 
 </div>
