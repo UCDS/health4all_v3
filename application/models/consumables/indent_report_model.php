@@ -671,7 +671,7 @@ class Indent_report_model extends CI_Model
 		->from('inventory_summary')
 		->where('supply_chain_party_id', $this->input->post('scp_id'))
 		->where('item_id', $this->input->post('item'))
-		->where('transaction_date <=', $from_date)
+		->where('transaction_date < ', $from_date)
 		->order_by('transaction_date', 'DESC')
 		->limit(1);
 		$query = $this->db->get();

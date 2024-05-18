@@ -1844,7 +1844,6 @@ class Reports extends CI_Controller {
     
     public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital)
 	{
-	
 	       if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
@@ -1860,10 +1859,20 @@ class Reports extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default){		 
+			if($default->default_id=='pagination'){
+					$this->data['rowsperpage'] = $default->value;
+					$this->data['upper_rowsperpage']= $default->upper_range;
+				   $this->data['lower_rowsperpage']= $default->lower_range;	 
+				   break;
+
+				}
+		   }
 		$this->load->view('templates/header',$this->data);
-		$this->data['rowsperpage'] = $rowsperpage;
 		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date,$hospital);
 		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital);		
+		$this->data['filter_report']=$this->reports_model->get_login_activity_filter_data();		
+		//print_r($this->db->last_query());
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 

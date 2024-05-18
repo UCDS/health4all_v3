@@ -380,9 +380,11 @@ $(document).ready(function(){
 		<th>Department</th>
 		<th>Unit/ Area</th>
 		<!--<th>MLC Number</th>-->
-		<th>ICD Chapter</th>
-		<th>ICD Block</th>
-		<th>ICD Code</th>
+		<!-- <th>ICD Chapter</th>
+		<th>ICD Block</th> -->
+		<th>Followup ICD Code</th>
+		<th>Followup Diagnosis</th>
+		<th>Visit ICD Code</th>
 		<th>Outcome</th>
 		<th>Outcome Date/Time</th>
 	</thead>
@@ -418,8 +420,10 @@ $(document).ready(function(){
 		</td>
 
 	<!--	<td><?php if($s->mlc_number_manual=='') echo $s->mlc_number; else echo $s->mlc_number_manual;?></td> -->
-		<td><?php echo $s->chapter_title;?></td>
-		<td><?php echo $s->block_title;?></td>
+		<!-- <td><?php echo $s->chapter_title;?></td>
+		<td><?php echo $s->block_title;?></td> -->
+		<td><?php echo $s->patient_followup_icdcode;?></td>
+		<td><?php echo $s->diagnosis;?></td>
 		<td><?php echo $s->code_title;?></td>
 		<td><?php echo $s->outcome;?></td>
 		<td><?php if($s->outcome_date!=0) echo date("d-M-Y",strtotime($s->outcome_date))." ".date("g:iA",strtotime($s->outcome_time));?></td>

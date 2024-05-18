@@ -403,8 +403,11 @@ echo "</select></li>";
 	<thead>
 		<th>SNo</th>
 		<th>Patient ID</th>
-		<th>OP No.</th>
+		<th style="width:6%;">OP / IP </th>
 		<th>Registered Time</th>
+		<?php if($this->input->post('op_ip')==2) { ?>	
+			<th>Discharge Date</th>
+		<?php } ?>
 		<th>PatientInfo</th>
 		<th>Address</th>
 		<th>Phone</th>
@@ -413,13 +416,16 @@ echo "</select></li>";
     		<th>Registered By</th>
     		<th>Diagnosis</th>
     		<th>Priority</th>
-    		<th>Note</th>		
+    		<th>Note</th>
+		<?php if($this->input->post('op_ip')==1) { ?>
+			<th>Map</th>
+		<?php } ?>
 	</thead>
 	<tbody>
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($report as $s){
+	foreach($report as $s){ print_r();
 		$age="";
 		if(!!$s->age_years) $age.=$s->age_years."Y ";
 		if(!!$s->age_months) $age.=$s->age_months."M ";
@@ -431,6 +437,9 @@ echo "</select></li>";
 		<td><?php echo $s->patient_id;?></td>
 		<td><?php echo $s->hosp_file_no;?></td>
 		<td><?php echo date("j M Y", strtotime("$s->admit_date")).", ".date("h:i A.", strtotime("$s->admit_time"));?></td>
+		<?php if($this->input->post('op_ip')==2) { ?>
+			<td><?php if($s->outcome_date=="0000-00-00" || $s->outcome_date==""){ echo " "; }else{ echo date("j M Y", strtotime("$s->outcome_date")); } ?></td>	
+		<?php } ?>
 		<td><?php echo $s->name . ", " . $age . " / " . $s->gender." / ".$s->parent_spouse;?> </td>
 		<td><?php if(!!$s->address && !!$s->place) echo $s->address.", ".$s->place; else echo $s->address." ".$s->place;
 		if (!!$s->district) echo "<br/>, ".$s->district." District";
@@ -442,6 +451,13 @@ echo "</select></li>";
 		<td><?php echo $s->diagnosis;?></td>
 		<td><?php echo $s->priority_type;?></td>
 		<td><?php echo $s->note;?></td>	
+		<?php if($this->input->post('op_ip')==1) { ?>
+			<td><?php 
+				if($s->map_link) { ?>
+				<a href="<?php echo $s->map_link; ?>" target="_blank" > View</a> <?php echo $s->latitude." ,".$s->longitude ?>
+				<?php } else { echo "No map link <br>"." ,".$s->latitude." ,".$s->longitude; } ?>
+			</td>	
+		<?php } ?>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>

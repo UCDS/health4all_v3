@@ -167,7 +167,7 @@ display: inline-grid;
 		<?php if(!empty($edit_unit_name)) { ?>
 			<?php echo form_open('hospital_units/update_unit',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('hospital_units/add_unit',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
+			<?php echo form_open('hospital_units/add_unit',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
