@@ -78,7 +78,6 @@ class Op_Ip_report extends CI_Controller {
 
 				$this->data['title']="Followup Map";
 				$this->load->view('templates/header',$this->data);
-				$this->data['results_count']=$this->reports_model->get_count_followups();
 				$this->data['report']=$this->op_ip_model->get_followup_map();
 				$this->load->view('pages/followup_map',$this->data);
 				$this->load->view('templates/footer');
