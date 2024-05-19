@@ -392,84 +392,29 @@ function onchange_page_dropdown(dropdownobj){
 		<?php echo form_open("op_ip_report/followup_summary_death_routes",array('role'=>'form','class'=>'form-custom','onsubmit'=>'return validateForm()')); ?>
 			<div class="container">
 				<div class="row">
-				<div class="col-md-4">
-						Filter By : <input type="radio" name="death_followup" value="1" <?php if(empty($this->input->post('death_followup')) || $this->input->post('death_followup') == 1) {echo "checked" ;} ?>> Death Date
-						<input type="radio" name="death_followup" value="2" <?php if($this->input->post('death_followup') == 2) {echo "checked" ;} ?>> Followup Add Date
-					</div>
-					<script>
-						document.addEventListener("DOMContentLoaded", function() {
-						document.getElementById('followupadd_date').style.display = 'none';
-						document.querySelectorAll('input[name="death_followup"]').forEach(function(radio) {
-							radio.addEventListener('change', function() {
-								if (this.value == 1) {
-									document.getElementById('death_date').style.display = 'block';
-									document.getElementById('followupadd_date').style.display = 'none';
-								}
-								else if (this.value == 2) {
-									document.getElementById('death_date').style.display = 'none';
-									document.getElementById('followupadd_date').style.display = 'block';
-								}
-							});
-						});
-					});
-					function validateForm() {
-						var fromDate = document.getElementById("from_date").value;
-						var toDate = document.getElementById("to_date").value;
-						if (fromDate.trim() == "") {
-							alert("Please select from date.");
-							return false;
-						}
-						if (toDate.trim() == "") {
-							alert("Please select To Date.");
-							return false;
-						}
-						var fromDateObj = new Date(fromDate);
-						var toDateObj = new Date(toDate);
-						var tomorrowDate = new Date();
-						tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-						if (toDateObj >= tomorrowDate) {
-							alert("To Date should be before tomorrow's date.");
-							return false;
-						}
-						return true;
-					}
-					</script>
-					<div class="col-md-5" id="death_date" <?php if(empty($this->input->post('death_followup')) || $this->input->post('death_followup') == 1) {echo 'style="display:block;"';} else {echo 'style="display:none;"';} ?>>
+					<div class="col-md-5" id="followupadd_date" >
 					<?php 
-						$from_date = "";
-						$to_date = "";
-						if ($this->input->post('from_date')) {
-							$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
-						}
-						if ($this->input->post('to_date')) {
-							$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
-						}
-						if ($from_date == "" && $to_date == "") {
-							$from_date_placeholder = "Select Date";
-							$to_date_placeholder = "Select Date";
-						} else {
-							$from_date_placeholder = date("d-M-Y", strtotime($from_date));
-							$to_date_placeholder = date("d-M-Y", strtotime($to_date));
-						}
+						$from_date_1=0;$to_date_1=0;
+						if($this->input->post('from_date_1')) $from_date_1=date("Y-m-d",strtotime($this->input->post('from_date_1'))); else $from_date_1 = date("Y-m-d");
+						if($this->input->post('to_date_1')) $to_date_1=date("Y-m-d",strtotime($this->input->post('to_date_1'))); else $to_date_1 = date("Y-m-d");
 					?>
-						Death Date : <input class="form-control" type="text" placeholder="<?php echo $from_date_placeholder; ?>" name="from_date"  id="from_date" value="<?php if($this->input->post('from_date')){ echo date("d-M-Y",strtotime($from_date)); }?>" size="15"/>
-						To <input class="form-control" type="text" placeholder="<?php echo $to_date_placeholder; ?>" name="to_date" id="to_date" value="<?php if($this->input->post('to_date')){ echo date("d-M-Y",strtotime($to_date)); } ?>" size="15" />
+						Followup Add Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date_1')) { echo date("Y-m-d",strtotime($from_date_1)); }?>" name="from_date_1" max="<?php echo date('Y-m-d'); ?>" id="" size="15" />
+						To <input class="form-control" type="date" style = "background-color:#EEEEEE" value="<?php if($this->input->post('to_date_1')) { echo date("Y-m-d",strtotime($to_date_1)); } ?>" name="to_date_1" max="<?php echo date('Y-m-d'); ?>" id="" size="15" />
+	                </div>
+					<div class="col-md-5" id="death_date" >
+					<?php 
+						$from_date=0;$to_date=0;
+						if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
+						if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+					?>
+						Death Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date')) { echo date("Y-m-d",strtotime($from_date)); } ?>" name="from_date" max="<?php echo date('Y-m-d'); ?>" size="15" />
+						To <input class="form-control" style = "background-color:#EEEEEE" type="date"  name="to_date" id="" max="<?php echo date('Y-m-d'); ?>" value="<?php if($this->input->post('to_date')) { echo date("Y-m-d",strtotime($to_date)); } ?>" max="<?php echo date('Y-m-d'); ?>" size="15" />
 					</div>
 					</br></br>
 					<div class="col-md-2" style="margin-top:10px;">
 						<label><b>Life Status:  </b></label>
 						<input type="radio" name="life_status" class ="form-control" value="2" <?php if(empty($this->input->post('life_status')) || $this->input->post('life_status') == 2) {echo "checked" ;} ?>  > <label>Not Alive </label>
 					</div>
-
-					<div class="col-md-10" id="followupadd_date" style="margin-top:10px;" <?php if($this->input->post('death_followup') == 2) {echo 'style="display:block;"';} else {echo 'style="display:none;"';} ?>>
-					<?php 
-						$from_date_1=0;$to_date_1=0;
-						if($this->input->post('from_date_1')) $from_date_1=date("Y-m-d",strtotime($this->input->post('from_date_1'))); else $from_date_1 = date("Y-m-d");
-						if($this->input->post('to_date_1')) $to_date_1=date("Y-m-d",strtotime($this->input->post('to_date_1'))); else $to_date_1 = date("Y-m-d");
-					?>
-						Followup Add Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date_1)); ?>" name="from_date_1" id="from_date" size="15" />
-						To <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date_1)); ?>" name="to_date_1" id="to_date" size="15" />
-	                </div>
 
 					<div class="col-md-12" style="margin-top:10px;">
 					Search by : 
@@ -624,11 +569,6 @@ function onchange_page_dropdown(dropdownobj){
                 <i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
             </button>
         </a><br><br>
-
-		<div style='padding: 0px 2px;' id="print-container">
-            <h4><span style="color:black;">Note : </span> <span style="color:red;">Below Data May Vary If Filters Applied </span> </h4>
-        </div>
-
 		<table class="table table-bordered table-striped" id="table-sort">
 			<thead>
 				<tr>

@@ -196,11 +196,38 @@ display: inline-grid;
 	$page_no = 1;
 	?>
 
-<h4><b><?php echo $title; ?></b></h4>	
-		
+<h4><b><?php echo $title; ?></b></h4>
 
-<?php if(isset($report) && count($report)>0)
-{ ?>
+	<?php 
+		$from_date=0;$to_date=0;
+		if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
+		if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+		?>
+		<div class="row">
+			<?php echo form_open("reports/login_activity_detail",array('role'=>'form','class'=>'form-custom')); ?>
+					<b>Trend:  </b>
+					<label><input type ="radio" name="trend_type" class ="form-control"  
+					<?php if($this->input->post('trend_type')=="Day"){ echo " checked "; }?> value="Day" > Daily </label>
+					<label><input type="radio" name="trend_type" class ="form-control" value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
+					<label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label><br/>
+				<select name="hospital" id="hospital" class="form-control">
+					<option value="">Hospital</option>
+					<?php 
+					foreach($hospitals as $hosp){
+					echo "<option value='".$hosp->hospital_id."'";
+					if($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) echo " selected ";
+					echo ">".$hosp->hospital_short_name."</option>";
+					}
+					?>
+				</select>
+					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+		</form>	
+		<br/>	
+
+
 <div style='padding: 0px 2px;'>
 
 <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
@@ -228,7 +255,7 @@ display: inline-grid;
 	$next_page = $page_no + 1;
 	$adjacents = "2";	
 ?>
-
+<?php if(isset($report) && count($report)>0) { ?>
 <ul class="pagination" style="margin:0">
 <?php if($page_no > 1){
 echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
@@ -330,8 +357,48 @@ echo "</select></li>";
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
-	
+<?php } ?>
 
+	<?php if(!empty($filter_report))
+	{
+	?>
+		<table class="table table-bordered table-striped" id="table-sort">
+			<thead>
+				<th>SNo</th>
+				<th>User Name</th>
+				<th>Name</th>
+				<th>Gender</th>		
+				<th>Hospital</th>
+				<th>Department</th>
+				<th>Date Time</th> 
+					<th>Status</th>
+					<th>Details</th>		
+			</thead>
+			<tbody>
+			<?php 
+			$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
+			
+			foreach($filter_report as $s){
+				
+			?>
+			<tr>
+				<td><?php echo $sno;?></td>
+				<td><?php echo $s->username;?></td>
+				<td><?php echo $s->name;?></td>
+				<td><?php echo $s->gender;?></td>		
+				<td><?php echo $s->hospital;?></td>
+				<td><?php echo $s->department;?></td>
+				<td><?php echo date("j M Y", strtotime("$s->signin_date_time")).", ".date("h:i A.", strtotime("$s->signin_date_time"));
+				?></td>
+				<td><?php echo $s->status;?></td>
+				<td><?php echo $s->details;?></td>		
+			</tr>
+			<?php $sno++;}	?>
+			</tbody>
+		</table>
+	<?php
+	} else { 
+	?>
 
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
@@ -367,6 +434,9 @@ echo "</select></li>";
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
+   <?php } ?>
+
+   <?php if(isset($report) && count($report)>0) { ?>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
@@ -471,9 +541,6 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
-	<?php } else { ?>
-	
-	No Activities.
-<?php }  ?>
+	<?php } ?>
 </div>	
   

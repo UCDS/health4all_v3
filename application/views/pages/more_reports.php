@@ -129,10 +129,7 @@ foreach($this->data['functions'] as $function){
 <button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/followup_detail";?>">Followup List </a></button>
 <?php		 }
 
-if($function->user_function== "followup_map"){ ?>
-<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_map";?>">Followup Map</a></button>
-
-<?php }	if($function->user_function== "followup_summary"){ ?>
+if($function->user_function== "followup_summary"){ ?>
 <button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary";?>">Followup Summary - ICD Code</a></button>
 
 <?php } if($function->user_function== "followup_summary_route"){ ?>
@@ -144,7 +141,10 @@ if($function->user_function== "followup_map"){ ?>
 <?php } if($function->user_function== "followup_summary_death_routes"){ ?>
 <button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_summary_death_routes";?>">Followup Summary Death - Routes </a></button>
 
-<?php }  } ?>
+<?php } if($function->user_function== "followup_map"){ ?>
+<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url(). "op_ip_report/followup_map";?>">Followup Map</a></button>
+
+<?php }	 } ?>
 
 </div> <?php
 }

@@ -352,9 +352,29 @@ function onchange_page_dropdown(dropdownobj){
 						<input type ="radio" name="life_status" class ="form-control" value="1" checked  > <label> Alive</label>
 						<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  > <label>Not Alive </label>
 						<input type="radio" name="life_status" class ="form-control" value="3" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 3) {echo "checked" ;} ?>  > <label>No Follow up</label>
+						<input type="radio" name="life_status" class ="form-control" value="4" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 4) {echo "checked" ;} ?>  > <label>All</label>
+					</div></br></br>
+					<div class="col-md-5" id="followupadd_date" >
+					<?php 
+						$from_date_1=0;$to_date_1=0;
+						if($this->input->post('from_date_1')) $from_date_1=date("Y-m-d",strtotime($this->input->post('from_date_1'))); else $from_date_1 = date("Y-m-d");
+						if($this->input->post('to_date_1')) $to_date_1=date("Y-m-d",strtotime($this->input->post('to_date_1'))); else $to_date_1 = date("Y-m-d");
+					?>
+						Followup Add Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date_1')) { echo date("Y-m-d",strtotime($from_date_1)); } ?>" name="from_date_1" max="<?php echo date('Y-m-d'); ?>" size="15" />
+						To <input class="form-control" type="date" style = "background-color:#EEEEEE" value="<?php if($this->input->post('to_date_1')) { echo date("Y-m-d",strtotime($to_date_1)); } ?>" name="to_date_1" max="<?php echo date('Y-m-d'); ?>" size="15" />
 					</div>
-
-					<div class="col-md-12">
+					
+					<div class="col-md-5" id="death_date">
+					<?php 
+						$from_date=0;$to_date=0;
+						if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
+						if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
+					?>
+						Death Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date')) { echo date("Y-m-d",strtotime($from_date)); }?>" name="from_date" max="<?php echo date('Y-m-d'); ?>" size="15" />
+						To <input class="form-control" style = "background-color:#EEEEEE" type="date"  name="to_date" id="" max="<?php echo date('Y-m-d'); ?>" value="<?php if($this->input->post('to_date')) { echo date("Y-m-d",strtotime($to_date)); } ?>" max="<?php echo date('Y-m-d'); ?>" size="15" />
+					</div>
+					</br></br>
+					<div class="col-md-12" style=" margin-top: 10px">
 					Search by : 
 						<select name="route_primary" id="route_primary" class="form-control" onchange='onchange_primary_route_dropdown(this)'>
 							<option value="">Primary Route</option>
@@ -497,7 +517,12 @@ function onchange_page_dropdown(dropdownobj){
 				<div class="panel-primary col-md-12" >
 					<div class="panel-primary-inner-body">
 						<div class="panel-heading">
-							<h3 class="panel-title"><strong><center>Patient map</center></strong></h3>
+							<h3 class="panel-title" style="text-align:center;">
+							<?php if(!empty($report)) {  ?>
+								<strong>Patient map : </strong>
+									<span><b> <?php echo count($report) ;?> </b> Mapped out of <b> <?php echo $results_count[0]->count ;?> </b></span>
+							<?php } ?>
+							</h3>
 						</div>
 						<div id="map" style="height:550px;">  </div>
 					</div>

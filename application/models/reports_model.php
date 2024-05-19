@@ -1477,6 +1477,98 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		return $resource->result();
 	}
 	
+	function get_login_activity_filter_data()
+	{
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;	
+	   	
+	   	//Report for day or month or year.
+		if($this->input->post('trend_type'))
+		{
+			if($this->input->post('trend_type')=="Month")
+			{
+				
+				$current_date = date("Y-m-d");
+    			$future_date = date("Y-m-d", strtotime("+30 days"));
+					$to_time = '23:59';
+					$from_time = '00:00';
+					$from_timestamp = $current_date." ".$from_time;
+					$to_timestamp = $future_date." ".$to_time;
+				$this->db->where("signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp'");
+			}
+			else if($this->input->post('trend_type')=="Year")
+			{
+				$current_date = date("Y-m-d");
+   				$one_year_future = date("Y-m-d", strtotime("+1 year"));
+				   $to_time = '23:59';
+				   $from_time = '00:00';
+				   $from_timestamp = $current_date." ".$from_time;
+				   $to_timestamp = $one_year_future." ".$to_time;
+				$this->db->where("signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp'");
+			}
+			else{
+				$from_date = date("Y-m-d");
+				$to_date=$from_date;
+				$to_time = '23:59';
+				$from_time = '00:00';
+				$from_timestamp = $from_date." ".$from_time;
+				$to_timestamp = $to_date." ".$to_time;
+				$this->db->where("signin_date_time >=",$from_timestamp);
+				$this->db->where("signin_date_time <=",$to_timestamp);
+			}
+		}else
+		{
+			$from_date_param = $this->input->post('from_date');
+			$to_date_param = $this->input->post('to_date');
+		
+			if($from_date_param && $to_date_param){
+				$from_date=date("Y-m-d",strtotime($from_date_param));
+				$to_date=date("Y-m-d",strtotime($to_date_param));
+			}
+			else if($from_date_param || $to_date_param){
+				$from_date_param?$from_date=$from_date_param:$from_date=$to_date_param;
+				$to_date=$from_date;
+			}
+			else{
+				$from_date=date("Y-m-d");
+				$to_date=$from_date;
+			}
+
+			$to_time = '23:59';
+			$from_time = '00:00';
+			$from_timestamp = $from_date." ".$from_time;
+			$to_timestamp = $to_date." ".$to_time;
+			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		}
+	   		
+	   	if($this->input->post('hospital')!=''){
+			$this->db->where("hospital.hospital_id",$this->input->post('hospital'));
+		}
+				
+		$this->db->select("user_signin.username as username,CONCAT(staff.first_name,'  ',staff.last_name) as name, (case when staff.gender = 'M' then 'Male' when staff.gender = 'F' then 'Female' when staff.gender = 'O' then 'Others' end) as gender,hospital.hospital_short_name as hospital,department.department,signin_date_time,(case when is_success = 1 then 'Success' else 'Failed' end) as status,details",false);
+		$this->db->from("user_signin")
+		->join('user','user_signin.username = user.username')
+		->join('staff','user.staff_id = staff.staff_id')
+		->join('hospital','staff.hospital_id = hospital.hospital_id')		
+		->join('department','staff.department_id = department.department_id','left');
+		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
+		$this->db->limit($rows_per_page,$start);
+		$this->db->order_by('UNIX_TIMESTAMP(signin_date_time)','ASC');			
+		$resource=$this->db->get();
+		return $resource->result();
+	}
+
 	function get_appointment_slot_count(){
 	
 		
@@ -2288,7 +2380,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 
 		$this->db->select("p.patient_id, p.address, hosp_file_no, pv.visit_id, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
-		p.place, p.phone, pvd.department, admit_date, admit_time, 
+		p.place, p.phone, pvd.department, admit_date, admit_time, pv.visit_type, pf.latitude, pf.longitude, pf.map_link,pv.outcome_date,
 		CONCAT(volunteer.first_name, ' ', volunteer.last_name) as volunteer, pv.appointment_with as appointment_with_id,
 		pv.signed_consultation as signed,district.district,state.state,vn.visit_name,pv.visit_name_id,pf.diagnosis,pt.priority_type,pf.note",false);
 		 $this->db->from('patient_visit as pv')
@@ -3307,15 +3399,18 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		}
 
 		$this->db->select("patient.patient_id, hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
-		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,
+		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,pficd_code.code_title as patient_followup_icdcode,
 		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,department.department_id,unit_name,area_name,mlc_number,mlc_number_manual,
-		outcome,outcome_date,outcome_time",false);
+		outcome,outcome_date,outcome_time,icd_code.code_title,patient_followup.diagnosis",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
 		 ->join('mlc','patient_visit.visit_id=mlc.visit_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
+		 ->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
+		 ->join('patient_followup','patient_visit.patient_id=patient_followup.patient_id','left')
+		 ->join('icd_code as pficd_code','pficd_code.icd_code=patient_followup.icd_code','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','IP');
 		 //Commented temporarily for improving the query performance
@@ -4737,15 +4832,44 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			}
 		}
 
-        if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
-			$this->db->where('patient_followup.life_status',1);
-        }
-		else if($this->input->post('life_status')== 2){
-			$this->db->where('patient_followup.life_status',0);
+		if($this->input->post('life_status')!= 4)
+		{
+			if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
+				$this->db->where('patient_followup.life_status',1);
+			}
+			else if($this->input->post('life_status')== 2){
+				$this->db->where('patient_followup.life_status',0);
+			}
+			else if($this->input->post('life_status')== 3){
+				$this->db->where('patient_followup.life_status',2);
+			}	
 		}
-		else if($this->input->post('life_status')== 3){
-			$this->db->where('patient_followup.life_status',2);
-		}		
+			
+		if($this->input->post('from_date') && $this->input->post('to_date'))
+		{
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));   
+			$this->db->where("(patient_followup.death_date BETWEEN '$from_date' AND '$to_date')");         
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date'))
+		{
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+			$this->db->where('patient_followup.death_date >=',$from_date); 
+		}
+		
+		if ($this->input->post('from_date_1') && $this->input->post('to_date_1')) 
+		{
+			$from_date_1 = date("Y-m-d", strtotime($this->input->post('from_date_1')));
+			$to_date_1 = date("Y-m-d", strtotime($this->input->post('to_date_1')));
+			$from_time = '00:00';
+			$to_time = '23:59';
+			
+			$from_timestamp = $from_date_1.' '.$from_time;
+			$to_timestamp = $to_date_1.' '.$to_time;
+			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		}
+		
 		if($this->input->post('last_visit_type')){
 			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
 		}
@@ -4865,17 +4989,44 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         // }
         //$this->db->select("count(*) as count",false);
 		//Selection of Life Status
+		if($this->input->post('life_status')!= 4)
+		{
+			if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
+				$this->db->where('patient_followup.life_status',1);
+					}
+			else if($this->input->post('life_status')== 2){
+				$this->db->where('patient_followup.life_status',0);
+			}
+			else if($this->input->post('life_status')== 3){
+				$this->db->where('patient_followup.life_status',2);
+			}
+		}
+
+		if($this->input->post('from_date') && $this->input->post('to_date'))
+		{
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));   
+			$this->db->where("(patient_followup.death_date BETWEEN '$from_date' AND '$to_date')");         
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date'))
+		{
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+			$this->db->where('patient_followup.death_date >=',$from_date); 
+		}
 		
-		if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
-			$this->db->where('patient_followup.life_status',1);
-                }
-		else if($this->input->post('life_status')== 2){
-			$this->db->where('patient_followup.life_status',0);
+		if ($this->input->post('from_date_1') && $this->input->post('to_date_1')) 
+		{
+			$from_date_1 = date("Y-m-d", strtotime($this->input->post('from_date_1')));
+			$to_date_1 = date("Y-m-d", strtotime($this->input->post('to_date_1')));
+			$from_time = '00:00';
+			$to_time = '23:59';
+			
+			$from_timestamp = $from_date_1.' '.$from_time;
+			$to_timestamp = $to_date_1.' '.$to_time;
+			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
 		}
-		else if($this->input->post('life_status')== 3){
-			$this->db->where('patient_followup.life_status',2);
-		}
-				
+
 		// if($this->input->post('last_visit_type')){
 		// 	$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
 		// }

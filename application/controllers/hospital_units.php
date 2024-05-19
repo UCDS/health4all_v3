@@ -52,7 +52,7 @@ class Hospital_units extends CI_Controller
 
 						}
 					}
-					if ($this->input->post()) 
+					if ($this->input->post() && !empty($this->input->post('unit_name'))) 
 					{
 						$unit_name = $this->input->post('unit_name');
 						$department_id = $this->input->post('department_id');
