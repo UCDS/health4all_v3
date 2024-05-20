@@ -520,7 +520,7 @@ function onchange_page_dropdown(dropdownobj){
 							<h3 class="panel-title" style="text-align:center;">
 							<?php if(!empty($report)) {  ?>
 								<strong>Patient map : </strong>
-									<span><b> <?php echo count($report) ;?> </b> Mapped out of <b> <?php echo $results_count[0]->count ;?> </b></span>
+									<span><b><span id='mapCount'> 0 </span></b> mapped out of <b> <?php echo count($report) ;?> </b></span>
 							<?php } ?>
 							</h3>
 						</div>
@@ -549,9 +549,11 @@ function onchange_page_dropdown(dropdownobj){
             mapTypeId: 'terrain'
         });
 
-        <?php 
+        <?php
+			$mappedCount = 0;		
             foreach($report as $followup){  
-		    if(!!$followup->latitude && !!$followup->longitude && !!$followup->district_id) { 
+		    if(!!$followup->latitude && !!$followup->longitude) { 
+			$mappedCount+=1;
         ?>
 				<?php
 					$markerColor = 'red'; // Default color
@@ -596,6 +598,9 @@ function onchange_page_dropdown(dropdownobj){
                 }
 	    }
         ?>
+		document.getElementById("mapCount").innerHTML="<?php echo $mappedCount; ?>"
+		
+
     }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-1GMntG8XK9s7m4uWyWjhQdTaX-xZxYs&callback=initMap" async defer></script>
