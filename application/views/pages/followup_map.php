@@ -345,6 +345,7 @@ function onchange_page_dropdown(dropdownobj){
 		Followup Map
 	  </CENTER></h3><br>
 		<?php echo form_open("op_ip_report/followup_map",array('role'=>'form','class'=>'form-custom')); ?>
+                        <input type="hidden" name="after_initial_load" id="after_initial_load" value='1'>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-4">
