@@ -417,9 +417,7 @@ echo "</select></li>";
     		<th>Diagnosis</th>
     		<th>Priority</th>
     		<th>Note</th>
-		<?php if($this->input->post('op_ip')==1) { ?>
 			<th>Map</th>
-		<?php } ?>
 	</thead>
 	<tbody>
 	<?php 
@@ -451,13 +449,11 @@ echo "</select></li>";
 		<td><?php echo $s->diagnosis;?></td>
 		<td><?php echo $s->priority_type;?></td>
 		<td><?php echo $s->note;?></td>	
-		<?php if($this->input->post('op_ip')==1) { ?>
 			<td><?php 
 				if($s->map_link) { ?>
 				<a href="<?php echo $s->map_link; ?>" target="_blank" > View</a> <?php echo $s->latitude." ,".$s->longitude ?>
 				<?php } else { echo "No map link <br>"." ,".$s->latitude." ,".$s->longitude; } ?>
 			</td>	
-		<?php } ?>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>

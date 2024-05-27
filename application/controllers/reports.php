@@ -1281,6 +1281,8 @@ class Reports extends CI_Controller {
 		}
 		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome);
 		$this->data['report']=$this->reports_model->get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome,$this->data['rowsperpage']);
+		$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');
+		$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');
 		$this->form_validation->set_rules('from_date', 'From Date',
 		'trim|required|xss_clean');
 	    $this->form_validation->set_rules('to_date', 'To Date', 
@@ -1918,6 +1920,8 @@ class Reports extends CI_Controller {
                     $this->load->view('templates/header',$this->data);
                     $this->load->helper('form');
                     $this->load->library('form_validation');
+					$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');
+					$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');
                     $this->data['report']=$this->reports_model->get_outcome_summary();
                     $this->form_validation->set_rules('from_date', 'From Date',
                     'trim|required|xss_clean');

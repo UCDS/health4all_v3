@@ -6,6 +6,87 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<link rel="stylesheet" type="text/css"href="<?php echo base_url(); ?>assets/css/selectize.css">
+<style type="text/css">
+	.selectize-control.repositories .selectize-dropdown>div {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.selectize-control.repositories .selectize-dropdown .by {
+	font-size: 11px;
+	opacity: 0.8;
+}
+
+.selectize-control.repositories .selectize-dropdown .by::before {
+	content: 'by ';
+}
+
+.selectize-control.repositories .selectize-dropdown .name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.selectize-control.repositories .selectize-dropdown .title {
+	display: block;
+}
+
+.selectize-control.repositories .selectize-dropdown .description {
+	font-size: 12px;
+	display: block;
+	color: #a0a0a0;
+	white-space: nowrap;
+	width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.selectize-control.repositories .selectize-dropdown .meta {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 10px;
+}
+
+.selectize-control.repositories .selectize-dropdown .meta li {
+	margin: 0;
+	padding: 0;
+	display: inline;
+	margin-right: 10px;
+}
+
+.selectize-control.repositories .selectize-dropdown .meta li span {
+	font-weight: bold;
+}
+
+.selectize-control.repositories::before {
+	-moz-transition: opacity 0.2s;
+	-webkit-transition: opacity 0.2s;
+	transition: opacity 0.2s;
+	content: ' ';
+	z-index: 2;
+	position: absolute;
+	display: block;
+	top: 12px;
+	right: 34px;
+	width: 16px;
+	height: 16px;
+	background: url(<?php echo base_url(); ?> assets /images/spinner.gif);
+	background-size: 16px 16px;
+	opacity: 0;
+}
+
+.selectize-control.repositories.loading::before {
+	opacity: 0.4;
+}
+
+.selectize-control.repositories .selectize-dropdown > div {
+	border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.selectize-control {
+	display: inline-grid;
+} 
+</style>
 <script type="text/javascript">
 $(function(){
 	$("#from_date,#to_date").Zebra_DatePicker();
@@ -62,6 +143,46 @@ $(function(){
 		  });
 });
 </script>
+
+<script>
+	$(document).ready(function() {
+	
+	$("#icd_block").chained("#icd_chapter");
+	
+	$('#icd_code').selectize({
+    valueField: 'code_title',
+    labelField: 'code_title',
+    searchField: 'code_title',
+    create: false,
+    render: {
+        option: function(item, escape) {
+
+            return '<div>' +
+                '<span class="title">' +
+                    '<span class="icd_code">' + escape(item.code_title) + '</span>' +
+                '</span>' +
+            '</div>';
+        }
+    },
+    load: function(query, callback) {
+        if (!query.length) return callback();
+		$.ajax({
+            url: '<?php echo base_url();?>register/search_icd_codes',
+            type: 'POST',
+			dataType : 'JSON',
+			data : {query:query,block:$("#icd_block").val(),chapter:$("#icd_chapter").val()},
+            error: function(res) {
+                callback();
+            },
+            success: function(res) {
+                callback(res.icd_codes.slice(0, 10));
+            }
+        });
+    }
+	});
+	
+});
+</script>
 	<?php 
 	$from_date=0;$to_date=0;
 	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
@@ -116,39 +237,69 @@ $(function(){
 					}
 					?>
 					</select>
-					<!-- <select name="visit_name" id="visit_name" class="form-control" >
-					<option value="">All</option>
-					<?php 
-					foreach($visit_names as $v){
-						echo "<option value='".$v->visit_name_id."'";
-						if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id) echo " selected ";
-						echo ">".$v->visit_name."</option>";
-					}
-					?>
-					</select> -->
-					<select name="outcome_type" id="outcome_type" class="form-control" >
-					<option value="">All Outcomes</option>
-					<option value="Discharge" 
-					<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Discharge") echo " selected ";?>
-					>Discharge</option>
-					<option value="LAMA"
-					<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "LAMA") echo " selected ";?>
-					>LAMA</option>
-					<option value="Absconded"
-					<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Absconded") echo " selected ";?>					
-					>Absconded</option>
-					<option value="Death"
-					<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Death") echo " selected ";?>					
-					>Death</option>
-					<option value="Unupdated"
-					<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Unupdated") echo " selected ";?>					
-					>Unupdated</option>
-					</select>
-                    <select name="date_type_selection" id="date_type_selection" class="form-control">
+					<select name="date_type_selection" id="date_type_selection" class="form-control">
                         <option <?php if($this->input->post('date_type_selection') && $this->input->post('date_type_selection') == "admit_date") echo " selected ";?> value="admit_date" selected>Admit date</option>
                         <option <?php if($this->input->post('date_type_selection') && $this->input->post('date_type_selection') == "outcome_date") echo " selected ";?> value="outcome_date">Outcome Date</option>
                     </select>
-					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+					<div style="margin-top:10px;">
+						<select name="icd_chapter" id="icd_chapter" class="form-control" style="width:330px;" >
+							<option value="">ICD Chapter</option>
+							<?php 
+								foreach($icd_chapters as $v){
+									echo "<option value='".$v->chapter_id."'";
+									if($this->input->post('icd_chapter') && $this->input->post('icd_chapter') == $v->chapter_id) echo " selected ";
+									echo ">".$v->chapter_id." - ".$v->chapter_title."</option>";
+								}
+							?>
+						</select>
+						<select name="icd_block" id="icd_block" class="form-control" style="width:345px;" >
+							<option value="">ICD Block</option>
+							<?php 
+								foreach($icd_blocks as $v){
+									echo "<option value='".$v->block_id."' class='".$v->chapter_id."' ";
+										if($this->input->post('icd_block') && $this->input->post('icd_block') == $v->block_id) echo " selected ";
+										echo ">".$v->block_id." - ".$v->block_title."</option>";
+								}
+							?>
+						</select>
+
+						<select id="icd_code" class="repositories" style="width:345px;display:inline;" placeholder="Select ICD Code.." name="icd_code" >
+							<?php if($this->input->post('icd_code')) { ?>
+								<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
+							<?php } ?>
+						</select>
+						<!-- <select name="visit_name" id="visit_name" class="form-control" >
+						<option value="">All</option>
+						<?php 
+						foreach($visit_names as $v){
+							echo "<option value='".$v->visit_name_id."'";
+							if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id) echo " selected ";
+							echo ">".$v->visit_name."</option>";
+						}
+						?>
+						</select> -->
+						<select name="outcome_type" id="outcome_type" class="form-control" >
+						<option value="">All Outcomes</option>
+						<option value="Discharge" 
+						<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Discharge") echo " selected ";?>
+						>Discharge</option>
+						<option value="LAMA"
+						<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "LAMA") echo " selected ";?>
+						>LAMA</option>
+						<option value="Absconded"
+						<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Absconded") echo " selected ";?>					
+						>Absconded</option>
+						<option value="Death"
+						<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Death") echo " selected ";?>					
+						>Death</option>
+						<option value="Unupdated"
+						<?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Unupdated") echo " selected ";?>					
+						>Unupdated</option>
+						</select>
+                    </div>
+					<div style="margin-top:10px;">
+						<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+					</div>
 		</form>
 	<br />
 	<?php if(isset($report) && count($report)>0){ ?>
