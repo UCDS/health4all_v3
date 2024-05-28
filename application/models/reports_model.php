@@ -3276,6 +3276,17 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
 		}
 
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+
 		$this->db->select("count(*) as count", false);
 		$this->db->from('patient_visit')->join('patient', 'patient_visit.patient_id=patient.patient_id')
 		->join('department', 'patient_visit.department_id=department.department_id', 'left')
@@ -3283,6 +3294,11 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		->join('area', 'patient_visit.area=area.area_id', 'left')
 		->join('mlc', 'patient_visit.visit_id=mlc.visit_id', 'left')
 		->join('hospital', 'patient_visit.hospital_id=hospital.hospital_id', 'left')
+		->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
+		->join('patient_followup','patient_visit.patient_id=patient_followup.patient_id','left')
+		->join('icd_code as pficd_code','pficd_code.icd_code=patient_followup.icd_code','left')
+		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		->where('patient_visit.hospital_id', $hospital['hospital_id'])
 		->where('visit_type', 'IP');
 		$resource = $this->db->get();
@@ -3398,6 +3414,17 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
 		}
 
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+
 		$this->db->select("patient.patient_id, hosp_file_no,patient_visit.visit_id,CONCAT(IF(first_name=NULL,'',first_name),' ',IF(last_name=NULL,'',last_name)) name,
 		gender,IF(gender='F' AND father_name ='',spouse_name,father_name) parent_spouse,pficd_code.code_title as patient_followup_icdcode,
 		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,department.department_id,unit_name,area_name,mlc_number,mlc_number_manual,
@@ -3411,6 +3438,8 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		 ->join('icd_code','patient_visit.icd_10=icd_code.icd_code','left')
 		 ->join('patient_followup','patient_visit.patient_id=patient_followup.patient_id','left')
 		 ->join('icd_code as pficd_code','pficd_code.icd_code=patient_followup.icd_code','left')
+		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
 		 ->where('visit_type','IP');
 		 //Commented temporarily for improving the query performance
@@ -4355,6 +4384,17 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$this->db->select('"0" as area',false);
 		}
 
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+
 		$this->db->select("department 'department', department.department_id,
         SUM(CASE WHEN 1  THEN 1 ELSE 0 END) 'outcome',
         SUM(CASE WHEN gender = 'F'  THEN 1 ELSE 0 END) 'outcome_female',
@@ -4374,10 +4414,15 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         SUM(CASE WHEN gender = 'F' AND outcome!='Discharge' AND outcome!='LAMA' AND outcome!='Absconded' AND outcome!= 'Death' THEN 1 ELSE 0 END) 'female_unupdated',
         SUM(CASE WHEN gender = 'M' AND outcome!='Discharge' AND outcome!='LAMA' AND outcome!='Absconded' AND outcome!= 'Death' THEN 1 ELSE 0 END) 'male_unupdated',
         SUM(CASE WHEN outcome!='Discharge' AND outcome!='LAMA' AND outcome!='Absconded' AND outcome!= 'Death' THEN 1 ELSE 0 END) 'total_unupdated'");
-		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
+		$this->db->from('patient_visit')
+		 ->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('patient_followup','patient_followup.patient_id=patient.patient_id')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
+		 ->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
+		 ->join('icd_block','icd_code.block_id=icd_block.block_id','left')
+		 ->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
 		 ->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left')
 		 ->where('patient_visit.hospital_id',$hospital['hospital_id'])
          ->where('visit_type','IP')

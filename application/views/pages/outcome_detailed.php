@@ -235,12 +235,39 @@ $(document).ready(function(){
 					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Unupdated") echo " selected ";?> value="Unupdated"					
 					>Unupdated</option>
 					</select>
+					<div style="margin-top:10px;">
+						<select name="icd_chapter" id="icd_chapter" class="form-control" style="width:330px;" >
+							<option value="">ICD Chapter</option>
+							<?php 
+								foreach($icd_chapters as $v){
+									echo "<option value='".$v->chapter_id."'";
+									if($this->input->post('icd_chapter') && $this->input->post('icd_chapter') == $v->chapter_id) echo " selected ";
+									echo ">".$v->chapter_id." - ".$v->chapter_title."</option>";
+								}
+							?>
+						</select>
+						<select name="icd_block" id="icd_block" class="form-control" style="width:345px;" >
+							<option value="">ICD Block</option>
+							<?php 
+								foreach($icd_blocks as $v){
+									echo "<option value='".$v->block_id."' class='".$v->chapter_id."' ";
+										if($this->input->post('icd_block') && $this->input->post('icd_block') == $v->block_id) echo " selected ";
+										echo ">".$v->block_id." - ".$v->block_title."</option>";
+								}
+							?>
+						</select>
+						<select id="icd_code" class="repositories" style="width:345px;display:inline;" placeholder="Select ICD Code.." name="icd_code" >
+							<?php if($this->input->post('icd_code')) { ?>
+								<option value="<?php echo $this->input->post('icd_code');?>"><?php echo $this->input->post('icd_code');?></option>
+							<?php } ?>
+						</select>
+					</div>
 					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
 						echo $this->input->post('rows_per_page');
 					} else {
 						echo $rowsperpage;
 					}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >=48 && event.charCode <=57))" />
-					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
+					<input class="btn btn-sm btn-primary" type="submit" value="Submit" style="margin-top:10px;"/>
 		</form>
 	<br />
 	
