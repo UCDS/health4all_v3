@@ -2,6 +2,11 @@
 	#sortable .control-label{
 		font-size:0.8em;
 	}
+	#footer{
+		position: fixed;
+		bottom: 0px;
+		width: 100%;
+	}
 	</style>
 	<!-- Include scripts for jQuery Sortable -->
 	<script src="<?php echo base_url(); ?>assets/js/jquery.ui.core.min.js"></script>
@@ -106,8 +111,8 @@
 	}
   </script>
 <?php echo form_open('user_panel/form_layout',array('role'=>'form','class'=>'form-custom','id'=>'new-form')); ?>
-			<div class="col-md-10" >
-				<h4>Create Form for Patient Registration</h4>
+			<div class="col-md-12" >
+				<h4>Create Form for Patient Registration</h4><br/>
 				<div class="panel panel-default">
 				<div class="panel-heading">
 				<div class="row">
@@ -139,7 +144,7 @@
 						<input type="text" name="form_name" class="form-control" required />
 						</div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-4" style="margin-top:15px;">
 						<div class="form-group">
 						<label class="control-label">Print Layout(A4) with preview</label>
 						<select class="form-control" name="print_layout" id="print_layout" onchange="dispPreview();" required >
@@ -151,7 +156,7 @@
 						</select>
 						</div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-4" style="margin-top:15px;">
 						<div class="form-group">
 						<label class="control-label">Print Layout(A6)</label>
 						<select class="form-control" name="print_layout_a6" id="print_layout_a6" required >

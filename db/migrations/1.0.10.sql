@@ -160,3 +160,7 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'followup_summary_death_routes', 'followup_summary_death_routes', 'followup_summary_death_routes');
 
 ALTER TABLE `visit_name` ADD `op_ip` TINYINT NULL DEFAULT NULL AFTER `inuse`;
+
+CREATE TABLE `hospital_print_layout` ( `id` INT NOT NULL AUTO_INCREMENT, `hospital_id` INT NOT NULL, `add_on_print_layout_id` INT NOT NULL, PRIMARY KEY (`id`) );
+
+ALTER TABLE `hospital_print_layout` ADD `a6_print_layout_id` INT NOT NULL AFTER `add_on_print_layout_id`;

@@ -129,7 +129,7 @@ class Hospital_model extends CI_Model {
     }
    
     
-    function upsert_hospital(){													
+    function upsert_hospital(){												
         $fields = [
             "hospital", "place", "hospital_short_name", "district_id", "print_layout_id", 
             "a6_print_layout_id", "type1", "type2", "type3", "type4", "type5", "type6",
@@ -159,6 +159,16 @@ class Hospital_model extends CI_Model {
 		
         $this->db->trans_complete();
         return $this->db->trans_status() === TRUE;
+    }
+
+    function insertLayout($data)
+    {
+        $layout_data = array(
+            'hospital_id' => $this->input->post('hospital_id'),
+            'add_on_print_layout_id' => $data['add_on_print_layout_id']
+            //'a6_print_layout_id' => $data['a6_print_layout_id'],
+        );
+        $this->db->insert('hospital_print_layout', $layout_data);
     }
 
     function search_hospitals($default_rowsperpage){  

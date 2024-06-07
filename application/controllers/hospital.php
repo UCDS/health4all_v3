@@ -26,7 +26,7 @@ class Hospital extends CI_Controller {
 		}
     }   																	
 	function add_hospital(){	
-														
+				error_reporting(1);										
 		if(!$this->logged_in){  						
             show_404();
 		}
@@ -68,7 +68,19 @@ class Hospital extends CI_Controller {
 		}
 		else																//if validation true then executes below block of code
 		{
-		$this->load->model('hospital_model');								//instantiating hospital_model.
+		$this->load->model('hospital_model');	
+			$add_on_a4_layouts = $this->input->post('add_on_print_layout_id');
+			//$a6_layouts = $this->input->post('a6_print_layout_id');
+			for ($i = 0; $i < count($add_on_a4_layouts); $i++) {
+				$data[] = array(
+					'add_on_print_layout_id' => $add_on_a4_layouts[$i]
+					//'a6_print_layout_id' => $a6_layouts[$i]
+				);
+			}
+			foreach ($data as $layout_data) {
+				$this->hospital_model->insertLayout($layout_data);
+			}
+		//instantiating hospital_model.
         if($this->hospital_model->upsert_hospital()){							//calling add_method 
 		$this->data['msg']="Hospital added/updated Succesfully";					//if above condition is true then it displays hospital added succesfully message.
 		}
