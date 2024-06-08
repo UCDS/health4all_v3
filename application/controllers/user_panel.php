@@ -30,6 +30,7 @@ class User_panel extends CI_Controller {
                 // $this->load->library('dummy_data');
                 // $this->data['registered']=new Dummy_data();
 		$this->load->view('templates/header',$this->data);
+		$this->load->view('templates/leftnav',$this->data);
 		$this->load->view('pages/form_layout',$this->data);
 		$this->load->view('templates/footer');	
 		}

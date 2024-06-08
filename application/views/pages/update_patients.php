@@ -2848,7 +2848,7 @@ function initDistrictSelectize(){
 			
 	  </div>	
 	  
-	<div class="col-md-4 text-right">
+	<div class="col-md-3 text-right">
 			<label class="control-label">
 				<input type="text" name="selected_tab" id="selected_tab" class="sr-only" hidden value="" />
 				Signed Consultation? 
@@ -2864,9 +2864,9 @@ function initDistrictSelectize(){
 			&emsp;
 		</div>
 		
-		<div class="col-md-8">
+		<div class="col-md-9">
 		<input type="text" name="visit_id" class="sr-only" value="<?php echo $patient->visit_id;?>" hidden readonly />
-		<input type="text" name="patient_id" class="sr-only" value="<?php echo $patient->patient_id;?>" hidden readonly />
+		<input type="text" name="patient_id" id="patient_id" class="sr-only" value="<?php echo $patient->patient_id;?>" hidden readonly />
 		<input type="text" name="patient_number" class="sr-only" value="patient_number" hidden readonly />
 		<button type="button" class="btn btn-md btn-primary" value="Update" name="update_patient" onclick="onUpdatePatientSubmit(event)">Update</button>&emsp;
 		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div')">Print Summary</button>
@@ -2874,10 +2874,80 @@ function initDistrictSelectize(){
 			$visits = sizeof($patient_visits);
 		?>
 		<!-- <button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div-all')">(<?php echo $visits; ?>)-Print Summary All Visits</button> -->
-		<button type="button" class="btn btn-md btn-warning" onclick="printDiv('print-div_layout')">Print</button>
-		<button type="button" class="btn btn-md btn-warning" onclick="printDiv('a6-label')">Print Label</button>
+		<!--<button type="button" class="btn btn-md btn-warning" onclick="printDiv('print-div_layout')">Print</button>
+		<button type="button" class="btn btn-md btn-warning" onclick="printDiv('a6-label')">Print Label</button> -->
+		<button type="button" class="btn btn-md btn-warning" id="printButton"> Print Selected Format</button>
+		<select class="form-control" name="add_on_print_layout_id" id="add_on_print_layout_id" style="width:265px;">
+			<option value="Select">Select Format</option>
+			<?php foreach($hosp_all_print_layouts as $layout_id => $layout_name) { ?>
+				<option value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
+			<?php } ?>
+		</select>
+		<script>
+			$(document).ready(function(){
+				$('#printButton').click(function(){
+					var selectedValue = $('#add_on_print_layout_id').val();
+					var patientId = $('#patient_id').val(); // Get the patient_id value
+					if(selectedValue != 'Select') {
+						$.ajax({
+							url: '<?php echo base_url();?>register/print_add_on_layouts',
+							type: 'POST',
+							data: {selectedValue: selectedValue, patientId: patientId},
+							success: function(response) {
+								var printWindow = window.open('', '_blank');
+								printWindow.document.write('<style>body { padding-left: 20px; }</style>'); 
+								printWindow.document.write(response);
+								printWindow.document.close();
+								printWindow.print();
+								printWindow.close();
+							},
+							error: function(xhr, status, error) {
+								console.log(xhr.responseText);
+							}
+						});
+					} else {
+						alert("Please select a format.");
+					}
+				});
+			});
+		</script>
+		<!-- <div id="printModal" class="modal fade" role="dialog" style='overflow:none'>
+			<div class="modal-dialog">
+				<div class="modal-content"> 
+					<div class="modal-header">
+						<h4 class="modal-title">Print Layout</h4>
+						<button type="button" class="close" data-dismiss="modal" style="margin-top:-20px!important;">&times;</button>
+					</div>
+					<div class="modal-body">
+						<iframe id="printFrame" style="width:100%; border: none;"></iframe>
+					</div>
+					<div class="modal-footer" style="position: absolute; bottom: 0; width: 100%; height: 60px;">
+						<button type="button" class="btn btn-primary" id="printLayout">Print</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div> -->
+		<!-- <script>
+			function setModalDimensions(width, height) {
+				const modalDialog = document.querySelector('#printModal .modal-dialog');
+				const modalContent = document.querySelector('#printModal .modal-content');
+				const modalBody = document.querySelector('#printModal .modal-body');
+				modalDialog.style.maxWidth = width + 'px';
+				modalDialog.style.maxHeight = height + 'px';
+				modalContent.style.height = height + 'px';
+				modalBody.style.height = (height - 120) + 'px';
+				document.querySelector('#printFrame').style.height = '100%';
+			}
+			const modalWidth = 800;  
+			const modalHeight = 600;
+
+			$('#printModal').on('show.bs.modal', function () {
+				setModalDimensions(modalWidth, modalHeight);
+			});
+		</script> -->
 		<?php if ($add_sms_access==1){ ?>			
-		<button class="btn btn-md btn-warning" value="Print" type="button" onclick="openSmsModal()">Send SMS</button> 
+			<button class="btn btn-md btn-warning" value="Print" type="button" onclick="openSmsModal()">Send SMS</button> 
 		<?php } ?>
 	</div>
 	</div>

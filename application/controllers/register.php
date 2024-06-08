@@ -943,9 +943,12 @@ class Register extends CI_Controller {
 					$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 					$this->data['transport'] = $this->staff_model->get_transport_log();
 					$this->data['prescription']=$this->register_model->get_prescription($visit_id);
-									
+					
+					$hospital=$this->session->userdata('hospital');
+					$hospital_id=$hospital['hospital_id'];
+					$this->data['hosp_all_print_layouts']=$this->register_model->get_hosp_all_print_layouts($hospital_id);
 					// start -- 18_02_2023 --- Shruthi S M//
-					$pri_patient_id	= $this->data['patients'][0]->patient_id;		   
+					$pri_patient_id	= $this->data['patients'][0]->patient_id;
 					$this->data['update_print_layout'] = $this->register_model->get_print_layout($pri_patient_id);
 					$print_layout_id = $this->data['update_print_layout'][0]->print_layout_id;
 				    $a6_print_layout_id = $this->data['update_print_layout'][0]->a6_print_layout_id;
@@ -992,6 +995,17 @@ class Register extends CI_Controller {
 		else{
 		show_404();
 		}
+	}
+
+	function print_add_on_layouts()
+	{
+		$selectedValue = $this->input->post('selectedValue');
+		$patient_id = $this->input->post('patientId');
+		$this->data['registered']=$this->register_model->search_patient_print_layout($patient_id);
+		$print_layout_name = $this->staff_model->get_print_layout($selectedValue);
+		$page_name = $print_layout_name->print_layout_page;
+		$html_content =  $this->load->view('pages/print_layouts/'.$page_name,$this->data,true);
+		echo $html_content;
 	}
 
 	function get_all_counselingtype() 

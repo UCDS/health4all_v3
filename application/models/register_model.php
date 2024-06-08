@@ -1445,7 +1445,33 @@ class Register_model extends CI_Model{
         $result = $query->result();
 		return $result;
 	}
-	
+	function search_patient_print_layout($patient_id)
+	{
+		$this->db->select("patient.patient_id, patient.age_years, patient.gender, patient.address, patient.age_months, patient.age_days,
+                   patient.phone, patient_visit.admit_date, patient_visit.presenting_complaints, patient_visit.admit_time, CONCAT(patient.first_name, ' ', patient.last_name) AS name,
+				   IF(patient.father_name IS NULL OR patient.father_name='',patient.spouse_name,patient.father_name) AS parent_spouse
+				   ,patient.address,patient_visit.hosp_file_no,patient_visit.department_id,department.department,unit.unit_name,
+				   patient.patient_id_manual,mlc.mlc_number,mlc.mlc_number_manual,mlc.ps_name,mlc.brought_by,mlc.police_intimation,
+				   mlc.declaration_required, mlc.pc_number,mlc.mlc_id,patient_visit.mlc, patient.place, department.op_room_no,
+				   area.area_name,patient.district_id, district.district, patient_visit.visit_name_id, patient.occupation_id,
+				   occupation.occupation, visit_name.visit_name", FALSE);
+		$this->db->from('patient');
+		$this->db->join('patient_visit','patient.patient_id=patient_visit.patient_id','left');
+		$this->db->join('occupation','patient.occupation_id=occupation.occupation_id','left');
+		$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
+		$this->db->join('department','patient_visit.department_id=department.department_id','left');
+		$this->db->join('district','patient.district_id=district.district_id','left');
+		$this->db->join('state','district.state_id=state.state_id','left');
+		$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+		$this->db->join('area','patient_visit.area=area.area_id','left');
+		$this->db->join('mlc','patient_visit.visit_id=mlc.visit_id','left');
+		$this->db->where('patient.patient_id', $patient_id);
+		$this->db->order_by('patient_visit.admit_date','DESC');
+		$query=$this->db->get();
+		//echo $this->db->last_query();
+		return $query->row();
+	}
+
 	function search(){
 		$hospital=$this->session->userdata('hospital');
 		$hospital_id=$hospital['hospital_id'];
@@ -1955,6 +1981,42 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			// ->where('patient_id',$patient_id);
 		$query=$this->db->get();
 		return $query->result();
+	}
+
+	function get_hosp_all_print_layouts($hospital_id)
+	{
+		/*$this->db->where('hpl.hospital_id',$hospital_id);
+		$this->db->select("hpl.add_on_print_layout_id,print_layout.print_layout_name");
+		$this->db->from("hospital_print_layout as hpl");
+		$this->db->join('print_layout','print_layout.print_layout_id = hpl.add_on_print_layout_id','left');
+		$query=$this->db->get();
+		return $query->result();*/
+		
+		// Fetch print layout names from the print layout addon
+		$this->db->where('hpl.hospital_id', $hospital_id);
+		$this->db->select("hpl.add_on_print_layout_id, print_layout.print_layout_name");
+		$this->db->from("hospital_print_layout as hpl");
+		$this->db->join('print_layout', 'print_layout.print_layout_id = hpl.add_on_print_layout_id', 'left');
+		$query1 = $this->db->get();
+		$result1 = $query1->result();
+	
+		// Fetch print layout names from the main table hospital
+		$this->db->where('hos.hospital_id', $hospital_id);
+		$this->db->select("hos.print_layout_id, print_layout.print_layout_name,print_layout.print_layout_id as add_on_print_layout_id");
+		$this->db->from("hospital as hos");
+		$this->db->join('print_layout', 'print_layout.print_layout_id = hos.print_layout_id', 'left');
+		$query2 = $this->db->get();
+		$result2 = $query2->result();
+	
+		// Merge the results of both queries
+		$mergedResults = array_merge($result1, $result2);
+	
+		$dropdownOptions = array();
+		foreach ($mergedResults as $row) {
+			$dropdownOptions[$row->add_on_print_layout_id] = $row->print_layout_name;
+		}
+	
+		return $dropdownOptions;
 	}
 }
 ?>

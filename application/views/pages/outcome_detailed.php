@@ -5,6 +5,8 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/zebra_datepicker.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" >
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
+<link rel="stylesheet" type="text/css"href="<?php echo base_url(); ?>assets/css/selectize.css">
 <script type="text/javascript">
 $(document).ready(function(){
 		$("#from_date").Zebra_DatePicker();
@@ -62,6 +64,45 @@ $(document).ready(function(){
 		  });
 });
 </script>
+<script>
+	$(document).ready(function() {
+		
+	$("#icd_block").chained("#icd_chapter");
+	
+	$('#icd_code').selectize({
+    valueField: 'code_title',
+    labelField: 'code_title',
+    searchField: 'code_title',
+    create: false,
+    render: {
+        option: function(item, escape) {
+
+            return '<div>' +
+                '<span class="title">' +
+                    '<span class="icd_code">' + escape(item.code_title) + '</span>' +
+                '</span>' +
+            '</div>';
+        }
+    },
+    load: function(query, callback) {
+        if (!query.length) return callback();
+		$.ajax({
+            url: '<?php echo base_url();?>register/search_icd_codes',
+            type: 'POST',
+			dataType : 'JSON',
+			data : {query:query,block:$("#icd_block").val(),chapter:$("#icd_chapter").val()},
+            error: function(res) {
+                callback();
+            },
+            success: function(res) {
+                callback(res.icd_codes.slice(0, 10));
+            }
+        });
+    }
+	});
+	
+});
+</script>
 <script type="text/javascript">
         $(document).ready(function(){
 			// find the input fields and apply the time select to them.
@@ -107,6 +148,83 @@ $(document).ready(function(){
 	}	
 </script>
 <style type="text/css">
+	.selectize-control.repositories .selectize-dropdown>div {
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.selectize-control.repositories .selectize-dropdown .by {
+		font-size: 11px;
+		opacity: 0.8;
+	}
+
+	.selectize-control.repositories .selectize-dropdown .by::before {
+		content: 'by ';
+	}
+
+	.selectize-control.repositories .selectize-dropdown .name {
+		font-weight: bold;
+		margin-right: 5px;
+	}
+
+	.selectize-control.repositories .selectize-dropdown .title {
+		display: block;
+	}
+
+	.selectize-control.repositories .selectize-dropdown .description {
+		font-size: 12px;
+		display: block;
+		color: #a0a0a0;
+		white-space: nowrap;
+		width: 100%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	.selectize-control.repositories .selectize-dropdown .meta {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		font-size: 10px;
+	}
+
+	.selectize-control.repositories .selectize-dropdown .meta li {
+		margin: 0;
+		padding: 0;
+		display: inline;
+		margin-right: 10px;
+	}
+
+	.selectize-control.repositories .selectize-dropdown .meta li span {
+		font-weight: bold;
+	}
+
+	.selectize-control.repositories::before {
+		-moz-transition: opacity 0.2s;
+		-webkit-transition: opacity 0.2s;
+		transition: opacity 0.2s;
+		content: ' ';
+		z-index: 2;
+		position: absolute;
+		display: block;
+		top: 12px;
+		right: 34px;
+		width: 16px;
+		height: 16px;
+		background: url(<?php echo base_url(); ?> assets /images/spinner.gif);
+		background-size: 16px 16px;
+		opacity: 0;
+	}
+
+	.selectize-control.repositories.loading::before {
+		opacity: 0.4;
+	}
+
+	.selectize-control.repositories .selectize-dropdown > div {
+		border-bottom: 1px solid rgba(0,0,0,0.05);
+	}
+	.selectize-control {
+		display: inline-grid;
+	} 
 	.page_dropdown {
 		position: relative;
 		float: left;
@@ -262,12 +380,12 @@ $(document).ready(function(){
 							<?php } ?>
 						</select>
 					</div>
-					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
+					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" style="margin-top:10px;" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?> step="1" value=<?php if ($this->input->post('rows_per_page')) {
 						echo $this->input->post('rows_per_page');
 					} else {
 						echo $rowsperpage;
 					}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >=48 && event.charCode <=57))" />
-					<input class="btn btn-sm btn-primary" type="submit" value="Submit" style="margin-top:10px;"/>
+					<input class="btn btn-sm btn-primary" type="submit" value="Submit" style="margin-top:10px;" />
 		</form>
 	<br />
 	
