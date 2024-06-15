@@ -618,5 +618,146 @@ class Register_model extends CI_Model{
         }
     }// remove_donation_from_bleeding
 
+	function get_all_register_donor($default_rowsperpage)
+	{
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+        $hospital=$this->session->userdata('hospital');
+		$this->db->select("donor_id, name, parent_spouse, maritial_status, occupation, dob, age,
+		sex, blood_group, sub_group, phone, email, address, alerts, hospital_id")
+		->from("blood_donor")
+        ->where('hospital_id',$hospital['hospital_id']);
+        $this->db->order_by('donor_id',"DESC");
+        if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_all_register_donor_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("blood_donor")
+        //->where('hospital_id',$hospital['hospital_id']);
+		->where('hospital_id',$hospital_id);
+        $this->db->order_by('donor_id',"DESC");
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function edit_register_donor($record_id) 
+	{
+		$this->db->select('donor_id, name, parent_spouse, maritial_status, occupation, dob, age,
+		sex, blood_group, sub_group, phone, email, address, alerts, hospital_id');
+        $query = $this->db->get_where('blood_donor', array('donor_id' => $record_id));
+        return $query->row_array();
+    }
+
+	function get_patient_visits_to_edit()
+    {
+        $hospital=$this->session->userdata('hospital');
+		$hospital_id=$hospital['hospital_id'];
+        $donor_id = '';
+        if($this->input->post('donor_id')){
+            $donor_id = $this->input->post('donor_id');
+        }
+        else{
+            return;
+        }
+        $this->db->select('donor_id,name,parent_spouse,maritial_status,occupation,dob,age,sex,blood_group,phone,
+		email,address,hospital_id')
+                ->from('blood_donor')
+                ->where('donor_id',$donor_id)
+                ->where('hospital_id',$hospital_id);
+        $this->db->order_by('donor_id','DESC');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+	function get_patient_visits_edit_history()
+    {
+        $donor_id = '';
+        if($this->input->post('donor_id')){
+            $donor_id = $this->input->post('donor_id');
+        }
+        $this->db->select("table_name,field_name,previous_value,new_value,edit_date_time,user.username")
+                ->from('blood_donor_edit_history')
+                ->join('user','blood_donor_edit_history.edit_user_id=user.user_id','left')
+                ->where('blood_donor_edit_history.donor_id',$donor_id);
+        $this->db->order_by('blood_donor_edit_history.edit_date_time','DESC');      
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+	function get_donor_for_edits($edit_donor_id)
+    {
+        $this->db->select('donor_id,name,parent_spouse,maritial_status,occupation,dob,age,sex,blood_group,phone,
+		email,address,hospital_id')
+            ->from('blood_donor')
+            ->where('donor_id',$edit_donor_id);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+	function selected_donor_edits($input_data)
+	{
+		// Extract data from input
+		$donor_id = isset($input_data['donor_id']) ? $input_data['donor_id'] : '';
+		$user_id = isset($input_data['user_id']) ? $input_data['user_id'] : '';
+		$edit_time = date("Y-m-d H:i:s");
+		$table_name = 'blood_donor';
+		$edit_donor_history = array();
+		$patient = array();
+		$elements = ['name', 'dob', 'age', 'sex', 'maritial_status', 'parent_spouse', 'occupation', 'address', 'blood_group', 'phone', 'email'];
+
+		// Iterate through elements
+		foreach ($elements as $column) {
+			if (array_key_exists($column, $input_data)) {
+				$edit_data = array();
+				$patient[$column] = $input_data[$column]['new'];
+				$edit_data['donor_id'] = $donor_id;
+				$edit_data['edit_date_time'] = $edit_time;
+				$edit_data['edit_user_id'] = $user_id;
+				$edit_data['previous_value'] = $input_data[$column]['old'];
+				$edit_data['new_value'] = $input_data[$column]['new'];
+				$edit_data['field_name'] = $column;
+				$edit_data['table_name'] = $table_name;
+				array_push($edit_donor_history, $edit_data);
+			}
+		}
+
+		$this->db->trans_begin();
+
+		$this->db->insert_batch('blood_donor_edit_history', $edit_donor_history);
+
+		$this->db->where('donor_id', $donor_id);
+		$this->db->update('blood_donor', $patient);
+
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			return 2;
+		} else {
+			$this->db->trans_commit();
+			return 0;
+		}
+	}
 }
 ?>

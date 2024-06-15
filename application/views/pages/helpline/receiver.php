@@ -149,8 +149,8 @@
     
 	<div class="row"><!-- this section displays the dashboard panels -->
 		<br>
-		<div >
-			<div class="panel panel-default">
+		<div>
+			<div class="panel panel-default" style="height:100%">
 			    <div class="panel panel-heading">
 				    <h4>
 						<i class="fa flaticon-call-center-worker-with-headset" aria-hidden="true">
@@ -160,7 +160,7 @@
 					</h4>
 			    </div>
 			    <div class="panel-body">
-			        <div id="volunteerChart" style="height:800px"></div>
+			        <div id="volunteerChart" style="height:1200px!important"></div>
 			    </div>
 			</div>
 		</div>

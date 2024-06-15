@@ -396,6 +396,21 @@ function update_patient(){
         echo json_encode($this->data['patient_visit_details']);
     }
 
+    function get_op_ip_visit()
+    {
+        $this->load->model('patient_model');
+        $edit_visit_id = $this->input->post('visit_id');
+        $op_or_ip = $this->patient_model->select_op_ip($edit_visit_id);
+        $visit_types = [];
+        if($op_or_ip[0]->visit_type=="OP")
+        {
+            $visit_types = $this->staff_model->get_visit_name_op();
+        }else if($op_or_ip[0]->visit_type=="IP"){
+            $visit_types = $this->staff_model->get_visit_name_ip();
+        }
+        echo json_encode(['visit_types' => $visit_types]);
+    }
+
     function update_clinical_note_visits()
     {
         $this->load->model('patient_model');
@@ -537,4 +552,44 @@ function update_patient(){
             show_404();
         }
     } 
+
+    function list_blood_donor_details_edit()
+    {
+        if($this->session->userdata('logged_in'))
+        {                          
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){               //Checking if the user has acess to this functionality
+                if($function->user_function=="list_blood_donor_details_edit"){
+                    $access=1;break;
+                }
+            }
+            if($access==1)
+            { 
+                if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+                $this->data['title']="List Blood Donor Details Edits";
+                $this->load->model('masters_model');
+                $this->load->model('patient_model');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                foreach($this->data['defaultsConfigs'] as $default){		 
+                    if($default->default_id=='pagination'){
+                            $this->data['rowsperpage'] = $default->value;
+                            $this->data['upper_rowsperpage']= $default->upper_range;
+                            $this->data['lower_rowsperpage']= $default->lower_range;	 
+                        }
+                   }
+                $this->load->view('templates/header',$this->data);
+                $this->load->helper('form');
+                $this->data['all_blood_donor_details_count']=$this->patient_model->get_all_blood_donor_details_count($from_date,$to_date);
+                $this->data['all_blood_donor_details'] = $this->patient_model->get_all_blood_donor_details($this->data['rowsperpage']);
+                $this->load->view('pages/list_blood_donor_details_edit',$this->data);	
+                $this->load->view('templates/footer');
+            }else{
+                show_404();
+            }
+        }
+        else{
+            show_404();
+            }
+    }
 }

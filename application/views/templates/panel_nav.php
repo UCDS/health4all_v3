@@ -29,6 +29,7 @@
 	<li <?php if(current_url()==base_url()."bloodbank/staff/add_camp"){ echo "class='active'";}?>><a href="<?php echo base_url();?>bloodbank/staff/add_camp"><i class="fa fa-map-marker " style="color:#E84F4F"></i>Add Camp</a></li>                             
 <!--	<li <?php if(current_url()==base_url()."bloodbank/staff/add_hospital"){ echo "class='active'";}?>> <a href="<?php echo base_url();?>bloodbank/staff/add_hospital"><i class="fa fa-map-marker " style="color:#E84F4F"></i>Add Hospital</a></li> -->
 	<li <?php if(current_url()==base_url()."bloodbank/donation/get_donation"){ echo "class='active'";}?>><a href="<?php echo base_url();?>bloodbank/donation/get_donation"><i class="fa fa-edit " style="color:#E84F4F"></i>  Edit Donation</a></li>
+	<li <?php if(current_url()==base_url()."bloodbank/register/update_register_donor_details"){ echo "class='active'";}?>><a href="<?php echo base_url();?>bloodbank/register/update_register_donor_details"><i class="fa fa-users " style="color:#E84F4F"></i>  Edit Blood Donor Details</a></li>
 	<li <?php if(current_url()==base_url()."bloodbank/create_slots"){ echo "class='active'";}?>><a href="<?php echo base_url();?>bloodbank/create_slots"><i class="fa fa-calendar " style="color:#E84F4F"></i>  Create Slots</a></li>
 	<li <?php if(current_url()==base_url()."bloodbank/user_panel/invite_donor"){ echo "class='active'";}?>><a href="<?php echo base_url();?>bloodbank/user_panel/invite_donor"><i class="fa fa-phone" style="color:#E84F4F"></i>  Invite Donor's</a></li>
             </ul>

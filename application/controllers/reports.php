@@ -811,7 +811,7 @@ class Reports extends CI_Controller {
 				|| $function->user_function=="list_edit_patient_visits" || $function->user_function=="delete_patient_followup"
 				|| $function->user_function=="followup_summary_route"
 				|| $function->user_function=="followup_summary_death_icdcode" 
-				|| $function->user_function=="followup_summary_death_routes"){
+				|| $function->user_function=="followup_summary_death_routes" || $function->user_function=="list_blood_donor_details_edit"){
 				$access=1;
 				break;
 			}
@@ -1871,6 +1871,9 @@ class Reports extends CI_Controller {
 				}
 		   }
 		$this->load->view('templates/header',$this->data);
+		$userdata = $this->session->userdata('logged_in');
+		$user_id = $userdata['user_id'];
+		$this->data['hospitals']=$this->staff_model->user_hospital($user_id);
 		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date,$hospital);
 		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital);		
 		$this->data['filter_report']=$this->reports_model->get_login_activity_filter_data();		

@@ -784,8 +784,10 @@ bootbox.confirm({
                   var outcome_date = response[i]['outcome_date'];
                   var outcome_time = response[i]['outcome_time'];
                   var icd_10 = response[i]['icd_10'];
+                  var visit_type_op_ip = response[i]['visit_type'];
                 }
                 document.getElementById('visit_id_con').value = visit_id;
+                document.getElementById('visit_type_op_ip').value = visit_type_op_ip;
                 $('#admit_date_manual_update_old_value').append(admit_date);
                 $('#admit_time_update_old_value').append(admit_time);
                 $('#department_update_old_value').append(dnmame);
@@ -868,10 +870,37 @@ bootbox.confirm({
         });
       }
   </script>
+<script>
+      $(document).on("click",'#edit',function(){
+        var visit_id = $(this).attr("data-id");
+        alert(visit_id);
+          $.ajax({
+              type: "POST",
+              url: "<?php echo base_url('patient/get_op_ip_visit'); ?>",
+              data: {visit_id:visit_id},
+              dataType:'json',
+              success: function(response) {
+                console.log(response);
+                var visitTypeSelect = '<select name="visit_type_update_new_value" id="visit_type_update_new_value" class="form-control ip" disabled>' +
+                                        '<option>Choose Visit Type</option>';
+                $.each(response.visit_types, function(index, vt) {
+                    visitTypeSelect += '<option value="' + vt.visit_name_id + '">' + vt.visit_name + '</option>';
+                });
+                visitTypeSelect += '</select>';
+                
+                $('#visit_ip select[name="visit_type_update_new_value"]').replaceWith(visitTypeSelect);
+            },
+            error: function(error) {
+                console.error("Error:", error);
+            }
+            });
+      })
+</script>
     <?php } ?>
   </div>
 <div class="container">
       <input type="hidden" name="visit_id" value="" id="visit_id_con">
+      <input type="hidden" name="visit_type_op_ip" value="" id="visit_type_op_ip">
       <input type="hidden" name="post_patient_id" value="<?php echo $this->input->post('patient_id'); ?>" id="post_patient_id">
       <?php $user=$this->session->userdata('logged_in');  ?>
       <input type="hidden" name="sesion_user_id" value="<?php echo $user['user_id']; ?>" id="session_user_id">
@@ -944,8 +973,7 @@ bootbox.confirm({
         </td>
       </tr>
       
-      
-      <tr>
+      <tr id="visit_ip">
         <td>Vist Type</td>
         <td class="old-value-container" id="visti_type_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="visit_type_update" name="visit_type_update" value="visit_type_update"></td>

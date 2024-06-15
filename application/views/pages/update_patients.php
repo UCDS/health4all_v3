@@ -2879,8 +2879,8 @@ function initDistrictSelectize(){
 		<button type="button" class="btn btn-md btn-warning" id="printButton"> Print Selected Format</button>
 		<select class="form-control" name="add_on_print_layout_id" id="add_on_print_layout_id" style="width:265px;">
 			<option value="Select">Select Format</option>
-			<?php foreach($hosp_all_print_layouts as $layout_id => $layout_name) { ?>
-				<option value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
+			<?php foreach($hosp_all_print_layouts as $layout_name) { ?>
+				<option value="<?php echo $layout_name->add_on_print_layout_id; ?>"><?php echo $layout_name->print_layout_name; ?></option>
 			<?php } ?>
 		</select>
 		<script>

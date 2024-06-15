@@ -28,6 +28,15 @@
 			$("#print_preview").html(data);					
 			}						
 			});
+
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo base_url('user_panel/get_print_layout_file_name');?>',
+			data: { print_layout_id: $('select[name=print_layout]').val() },
+			success: function(response){	
+        		$("#print_layout_file_name").val(response); 							
+			}						
+			});
 	}
 	
   </script>
@@ -55,6 +64,13 @@
 						<label class="control-label">Update Print Layout Name</label>
 							<input type="text" class="form-control" name="print_layout_new_name" value="" 
 							placeholder="New Print Layout Name" id="print_layout_new_name" autocomplete="off">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+						<label class="control-label">Print Layout File Name</label>
+							<input type="text" class="form-control" name="print_layout_file_name" value="" 
+							id="print_layout_file_name" autocomplete="off" readonly>
 						</div>
 					</div>
 				</div>

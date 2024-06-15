@@ -687,7 +687,8 @@
 }
 ?>
 
-<?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^hospital/search_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url())) { ?>
+<?php if (preg_match("^user_panel/*^", current_url()) || preg_match("^hospital/add_hospital^", current_url()) || preg_match("^hospital/search_hospital^", current_url()) || preg_match("^departments/*^", current_url()) || preg_match("^hospital_areas/*^", current_url()) || preg_match("^hospital_units/*^", current_url()) || preg_match("^helpline/*^", current_url())
+|| preg_match("^hospital_beds/*^", current_url())) { ?>
 
 	<div class="col-xs-1 col-md-2 sidebar-left">
 		<strong>Settings</strong>
@@ -753,7 +754,15 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url() . "user_panel/counseling_text"; ?>"> Add / Update Counseling Text</a>
 			</li>
-			
+			<li <?php if (preg_match("^hospital_beds/add_hospital_beds^", current_url()) || preg_match("^hospital_beds/get_all_hospital_beds^", current_url()) || preg_match("^hospital_beds/update_hospital_beds^", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url(); ?>hospital_beds/add_hospital_beds">Add / Update Hospital Beds</a>
+			</li>
+
+			<li <?php if (preg_match("^hospital_beds/patient_allocate_beds^", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url(); ?>hospital_beds/patient_allocate_beds">Allocate Hospital Beds</a>
+			</li>
 
 			<li class="nav-divider"></li>
 

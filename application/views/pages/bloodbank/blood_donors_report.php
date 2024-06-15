@@ -103,6 +103,7 @@ $(function(){
 			<th>S.No</th>
 			<th>Blood Unit No.</th>
 			<th>Donation Date</th>
+			<th>Donor Id</th>
 			<th>Name</th>
 			<th>Address</th>
 			<th>Phone / Email</th>
@@ -130,6 +131,7 @@ $(function(){
 		<td><?php echo $i++;?></td>
 		<td><?php echo $s->blood_unit_num;?></td>
 		<td><?php if($s->donation_date!=0) echo date("d-M-y",strtotime($s->donation_date));?></td>
+		<td><?php echo $s->donor_id;?></td>
 		<td><?php echo $s->name;?></td>
 		<td><?php echo $s->address;?></td>
 		<td><?php echo $s->phone;?> / <?php echo $s->email;?></td>

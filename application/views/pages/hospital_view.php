@@ -264,75 +264,99 @@
 					 <img id="preview_logo_img"  width="100" height="100" alt="Preview of selected Logo" hidden>
 					 </div>
 					</div>
+					<?php if(!empty($this->input->get('hospital_id'))) { ?>
+					<div class="col-md-4" style="margin-top:9px;">
+						<button type="button" class="btn btn-primary" id="add_layout">Add Layout</button>
+					</div>
+					<?php } ?>
 				</div>
-				<?php if(!empty($this->input->get('hospital_id'))){  ?>	
-					<div class="row">
-						<div class="col-md-4">
-							<div class="form-group">
-								<label class="control-label">Print Layout(A4)</label>
-								<select class="form-control" name="print_layout_id" id="print_layout" onchange="dispPreview();">
-									<option value="Select">Select</option>
-									<?php foreach($print_layouts as $layout){
-									echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
-									}
-									?>
-								</select>
-							</div>
-						</div>
-						<div class="col-md-4">
-							<div class="form-group">
-								<label class="control-label">Print Layout(A6)</label>
-								<select class="form-control" name="a6_print_layout_id" id="print_layout_a6">
-									<option value="Select">Select</option>
-									<?php foreach($print_layouts as $layout){
-										echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
-									}
-									?>
-								</select>
-							</div>
-						</div>
-						<div class="col-md-4" style="margin-top:25px;">
-							<button type="button" class="btn btn-primary" id="add_layout">Add Layout</button>
-						</div>
-					</div>
-					<div class="row">
-					<div id="additional_layouts"></div>
-						
-						<script>
-							document.getElementById('add_layout').addEventListener('click', function() {
-								var additionalLayouts = document.getElementById('additional_layouts');
-								var newLayoutDiv = document.createElement('div');
-								newLayoutDiv.className = 'col-md-6';
-								newLayoutDiv.innerHTML = `
-									<div class="form-group">
-										<label class="control-label">Print Layout(A4)</label>
-										<select class="form-control" name="add_on_print_layout_id[]" onchange="dispPreview();">
-											<option value="Select">Select</option>
-											<?php foreach($print_layouts as $layout): ?>
-												<option value="<?= $layout->print_layout_id ?>"><?= $layout->print_layout_name ?></option>
-											<?php endforeach; ?>
-										</select>
-									</div>
-									<!--<div class="form-group">
-										<label class="control-label">Print Layout(A6)</label>
-										<select class="form-control" name="a6_print_layout_id[]">
-											<option value="Select">Select</option>
-											<?php foreach($print_layouts as $layout): ?>
-												<option value="<?= $layout->print_layout_id ?>"><?= $layout->print_layout_name ?></option>
-											<?php endforeach; ?>
-										</select>
-									</div>-->
-									<button type="button" class="btn btn-danger remove_layout" style="margin-bottom:25px;">Remove</button>
-								`;
-								additionalLayouts.appendChild(newLayoutDiv);
-							});
-							document.addEventListener('click', function(e) {
-								if (e.target && e.target.classList.contains('remove_layout')) {
-									e.target.parentElement.remove();
+				<div class="row" id="main_table_layouts">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="control-label">Print Layout(A4)</label>
+							<select class="form-control" name="print_layout_id" id="print_layout" onchange="dispPreview();">
+								<option value="Select">Select</option>
+								<?php foreach($print_layouts as $layout){
+								echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
 								}
-							});
-						</script>
+								?>
+							</select>
+						</div>
 					</div>
+					
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="control-label">Print Layout(A6)</label>
+							<select class="form-control" name="a6_print_layout_id" id="print_layout_a6">
+								<option value="Select">Select</option>
+								<?php foreach($print_layouts as $layout){
+									echo "<option value='$layout->print_layout_id'>$layout->print_layout_name</option>";
+								}
+								?>
+							</select>
+						</div>
+					</div>
+				</div>
+				<script>
+					window.addEventListener('load', function() {
+						var divToHide = document.getElementById('main_table_layouts');
+						divToHide.style.display = 'none'; // Hide the div
+					});
+				</script>
+				<?php if(!empty($this->input->get('hospital_id'))){  ?>	
+				<div id="additional_update_layouts">
+					<?php foreach ($get_addon_layouts_print as $selected_layout) : ?>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="control-label">Print Layout</label>
+								<select class="form-control" name="add_on_print_layout_id[]" onchange="dispPreview();">
+									<option value="Select">Select</option>
+									<?php foreach ($print_layouts as $layout) : ?>
+										<option value="<?= $layout->print_layout_id ?>" <?php if ($selected_layout->add_on_print_layout_id == $layout->print_layout_id) echo 'selected'; ?>>
+											<?= $layout->print_layout_name ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+							<button type="button" class="btn btn-danger remove_layout" style="margin-bottom:25px;">Remove</button>
+							<script>
+								document.addEventListener('click', function(e) {
+									if (e.target && e.target.classList.contains('remove_layout')) {
+										e.target.parentElement.remove();
+									}
+								});
+							</script>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<div class="row">
+					<div id="additional_layouts"></div>
+					<script>
+						document.getElementById('add_layout').addEventListener('click', function() {
+							var additionalLayouts = document.getElementById('additional_layouts');
+							var newLayoutDiv = document.createElement('div');
+							newLayoutDiv.className = 'col-md-6';
+							newLayoutDiv.innerHTML = `
+								<div class="form-group">
+									<label class="control-label">Print Layout</label>
+									<select class="form-control" name="add_on_print_layout_id[]" onchange="dispPreview();">
+										<option value="Select">Select</option>
+										<?php foreach($print_layouts as $layout): ?>
+											<option value="<?= $layout->print_layout_id ?>"><?= $layout->print_layout_name ?></option>
+										<?php endforeach; ?>
+									</select>
+								</div>
+								<button type="button" class="btn btn-danger remove_layout" style="margin-bottom:25px;">Remove</button>
+							`;
+							additionalLayouts.appendChild(newLayoutDiv);
+						});
+						document.addEventListener('click', function(e) {
+							if (e.target && e.target.classList.contains('remove_layout')) {
+								e.target.parentElement.remove();
+							}
+						});
+					</script>
+				</div>
 				<?php } else { ?>
 					<div class="row">
 						<div class="col-md-4">
