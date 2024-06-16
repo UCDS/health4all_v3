@@ -176,14 +176,14 @@ CREATE TABLE `blood_donor_edit_history` (
   `new_value` varchar(250) NOT NULL,
   `edit_date_time` datetime NOT NULL,
   `edit_user_id` int(11) NOT NULL
-) 
+); 
 
 ALTER TABLE `blood_donor_edit_history`
   ADD PRIMARY KEY (`edit_id`);
 
 ALTER TABLE `blood_donor_edit_history`
   MODIFY `edit_id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
+
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'list_blood_donor_details_edit', 'list_blood_donor_details_edit', 'list blood donor details edit');
 
@@ -195,11 +195,10 @@ CREATE TABLE `patient_bed` (
   `reservation_details` varchar(250) NOT NULL,
   `created_date` date DEFAULT NULL,
   `created_time` time DEFAULT NULL
-)
+);
 
 ALTER TABLE `patient_bed`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `patient_bed`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
