@@ -615,4 +615,75 @@ class Register extends CI_Controller {
         $this->load->view('pages/bloodbank/bleeding',$this->data);
         $this->load->view('templates/footer');
     }
+
+	function update_register_donor_details()
+    {
+        if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		foreach ($this->data['functions'] as $f ){
+			if($f->user_function=="Bloodbank"){
+				$access=1;
+			}
+		}
+		if($access==1)
+		{
+            $this->data['title']="Update Register Donor Details";
+            $this->load->model('../models/masters_model');
+            $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+            $this->data['departments'] = $this->staff_model->get_department();
+            $this->data['units'] = $this->staff_model->get_unit();
+            $this->data['areas'] = $this->staff_model->get_area();
+            $this->data['visit_types'] = $this->staff_model->get_visit_name();
+            $this->load->view('templates/header',$this->data);
+        	$this->load->view('templates/panel_nav',$this->data);
+            $this->load->helper('form');
+            $this->data['get_donor_details_to_edit'] = $this->register_model->get_patient_visits_to_edit();
+            if($this->input->post('donor_id'))
+            {
+                $this->data['donor_details_edit_history'] = $this->register_model->get_patient_visits_edit_history();
+                
+            }
+            $this->load->view('pages/bloodbank/update_donor_details',$this->data);
+        	$this->load->view('templates/footer');
+        }
+        else
+        {
+            show_404();
+        }
+    }
+
+	function get_donor_details_for_edit()
+    {
+        $this->load->model('register_model');
+        $edit_donor_id = $this->input->post('donor_id');
+        $this->data['donor_available_edits'] = $this->register_model->get_donor_for_edits($edit_donor_id);
+        echo json_encode($this->data['donor_available_edits']);
+    }
+
+	function update_selected_donor_details()
+    {
+    	$input_data = json_decode(trim(file_get_contents('php://input')), true);
+    	$this->load->model('register_model');
+    	$result = $this->register_model->selected_donor_edits($input_data);
+    	if($result == 1)
+        {
+            $result=array();    	
+            $result['Message'] = 'Donor id missing';        
+            echo(json_encode($result));
+        }
+        else if($result == 2) 
+        {
+            $result=array();    	
+            $result['Message'] = 'Error in transaction!';        
+            echo(json_encode($result));
+        } 
+        else 
+        {
+            $result=array(); 
+            $result['Message'] = 'Donor Details updated successfully!'; 
+            echo(json_encode($result));	
+        }
+    }
+	
 }

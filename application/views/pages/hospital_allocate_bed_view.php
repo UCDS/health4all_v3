@@ -5,13 +5,8 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
-
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/selectize.css">
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
-
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/bootstrap.min.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
@@ -76,54 +71,83 @@ $(document).ready(function(){$("#from_date").datepicker({
 
 </script>
 <script type="text/javascript">
-        $(document).ready(function(){
-	// find the input fields and apply the time select to them.
-        $('#from_time').ptTimeSelect();
-	$('#to_time').ptTimeSelect();
-        });
+$(document).ready(function(){
+// find the input fields and apply the time select to them.
+$('#from_time').ptTimeSelect();
+$('#to_time').ptTimeSelect();
+});
 </script>
-<script type="text/javascript">
-/**
-	 * sends a request to the specified url from a form. this will change the window location.
-	 * @param {string} path the path to send the post request to
-	 * @param {object} params the parameters to add to the url
-	 * @param {string} [method=post] the method to use on the form
-	 */
+<script>
+	$(document).ready(function() {
+		$(document).on("click", ".discharge-btn", function(e) {
+			e.preventDefault(); // Prevent the default action of the link
+			
+			var delete_id = $(this).data("id"); // Fetch the data-id attribute
 
-	function postFromLocation(path, params, method='post') {
+			if (delete_id !== '') {
+				if (confirm("Are you sure you want to discharge this patient?")) {
+					$.ajax({
+						type: "POST",
+						url: "<?php echo base_url('hospital_beds/discharge_patient_allocated_bed'); ?>",
+						data: { delete_id: delete_id },
+						dataType: 'json',
+						success: function(response) {
+							alert("Patient Discharge Successful");
+							location.reload();
+						},
+						error: function(error) {
+							console.error("Error discharging patient:", error);
+						}
+					});
+				}
+			}
+		});
+	});
 
-	  // The rest of this code assumes you are not using a library.
-	  // It can be made less verbose if you use one.
-	  const form = document.createElement('form');
-	  form.method = method;
-	  form.action = path;
-
-	  for (const key in params) {
-	    if (params.hasOwnProperty(key)) {
-	      const hiddenField = document.createElement('input');
-	      hiddenField.type = 'hidden';
-	      hiddenField.name = key;
-	      hiddenField.value = params[key];
-
-	      form.appendChild(hiddenField);
-	    }
-	  }
-
-	  document.body.appendChild(form);
-	  form.submit();
+	function myKeyUp(inputElement) 
+	{
+		var inputValue = $(inputElement).val();
+		var url = '<?php echo base_url("hospital_beds/fetch_patient_details"); ?>';
+		var bedIndex = inputElement.id.split('_')[2]; // Extracting the index from input id
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: { patient_id: inputValue },
+			success: function(result) {
+				console.log(result);
+				var data = JSON.parse(result);
+				if (data.length > 0) {
+					var patientDetails = data[0];
+					var fullName = `${patientDetails.first_name} ${patientDetails.last_name}`;
+					var details = `${fullName} / ${patientDetails.age_years} / ${patientDetails.gender} / ${patientDetails.address} / ${patientDetails.diagnosis}`;
+					$('#patient_details_' + bedIndex).val(details); // Setting textarea value based on index
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error(xhr.responseText);
+			}
+		});
 	}
+</script>
+
+<script type="text/javascript">
 function doPost(page_no){
-	var pathArray = window.location.pathname.split( '/' );
-		if (pathArray.length > 4){
-			postFromLocation(window.location.pathname,{page_no: page_no});
-		}
-		
+	var page_no_hidden = document.getElementById("page_no");
+  	page_no_hidden.value=page_no;
+        $('#appointment').submit();
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
 </script>
-
+<style>
+	#footer { position: fixed; bottom: 0; width: 100%; } 
+	.text-muted { margin-top:20px;text-align:center; } 
+	.navbar  { position: fixed; top: 0; width: 100%; } 
+	.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus{
+		z-index:0!important;
+	}
+</style>
 <style type="text/css">
 .page_dropdown{
     position: relative;
@@ -193,49 +217,150 @@ display: inline-grid;
 </style>
 
 	<?php 
-	$page_no = 1;
+	
+	$page_no = 1;	
+	
 	?>
-
-<h4><b><?php echo $title; ?></b></h4>
-
-	<?php 
-		$from_date=0;$to_date=0;
-		if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
-		if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
-		?>
-		<div class="row">
-			<?php echo form_open("reports/login_activity_detail",array('role'=>'form','class'=>'form-custom')); ?>
-					<!-- <b>Trend:  </b>
-					<label><input type ="radio" name="trend_type" class ="form-control"  
-					<?php if($this->input->post('trend_type')=="Day"){ echo " checked "; }?> value="Day" > Daily </label>
-					<label><input type="radio" name="trend_type" class ="form-control" 
-					value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
-					<label><input type="radio" name="trend_type" class ="form-control" 
-					value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label><br/> -->
-					
-				<select name="hospital" id="hospital" class="form-control">
-					<option value="">Hospital</option>
-					<?php 
-					foreach($hospitals as $hosp){ 
-					echo "<option value='".$hosp->hospital_id."'";
-					if($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id || 
-					$report[0]->hospital == $hosp->hospital_short_name) echo " selected ";
-					echo ">".$hosp->hospital_short_name."</option>";
+		
+	<div class="row col-md-offset-2">
+	<h2 style="margin-top:12%"><?php echo $title; ?></h2>
+		<?php echo form_open('hospital_beds/patient_allocate_beds',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
+		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
+		<div class="row" style="margin-top:2%;">
+			<div class="col-md-12">
+			<?php 
+			 	if(count($all_available_beds)!='0') 
+				{
+					foreach ($all_available_beds as $i => $abc) { 
+					$bed_number = $i + 1; 
+			?>
+				<div class="col-md-4">
+					<?php $hospital = $this->session->userdata('hospital'); ?>
+					<div class="form-group">
+						<label for="inputhospital_name" style="color:red;font-weight:bold;"></label>
+						<input type="hidden" name="bed_id_<?php echo $i; ?>" value="<?php echo $abc->hospital_bed_id; ?>"> <!-- Index properly -->
+						<input class="form-control" name="bed_name" id="inputbde_name" value="Bed <?php echo $bed_number ?>" type="text"  readonly style="color:#437bba!important;font-size:18px!important;">
+						<input type="text" class="form-control" name="patient_id_<?php echo $i; ?>" id="patient_id_<?php echo $i; ?>"
+    						value="" placeholder="Enter Patient Id" autocomplete="off" onkeyup="myKeyUp(this)">
+						<textarea name="patient_details_<?php echo $i; ?>" class="form-control" id="patient_details_<?php echo $i; ?>" placeholder="Enter Patient Details" rows="5" cols="12"></textarea>
+						<input type="checkbox" name="reserve_id_<?php echo $i; ?>" id="reserve_id_<?php echo $i; ?>" value="" onclick="toggleReserveDetails(<?php echo $i; ?>)"> &nbsp;Reserve Bed <br/><br/>
+						<textarea name="reserve_details_<?php echo $i; ?>" id="reserve_details_<?php echo $i; ?>" placeholder="Patient Details" class="form-control" rows="5" cols="12"></textarea>
+					</div>
+				</div>
+			<?php } } else { ?>
+					<h4 style="text-align:center;font-size:20px;"> No Beds Available to allocate </h4>
+			<?php } ?>
+			<script>
+				document.addEventListener("DOMContentLoaded", function() {
+					var allAvailableBeds = <?php echo count($all_available_beds); ?>;
+					for (var i = 0; i < allAvailableBeds; i++) {
+						var reserveDetailsTextarea = document.getElementById('reserve_details_' + i);
+						reserveDetailsTextarea.style.display = 'none';
 					}
+				});
+				function toggleReserveDetails(index) {
+					var reserveCheckbox = document.getElementById('reserve_id_' + index);
+					var reserveDetailsTextarea = document.getElementById('reserve_details_' + index);
+					var patientIdInput = document.getElementById('patient_id_' + index);
+					var patientDetailsTextarea = document.getElementById('patient_details_' + index);
+
+					if (reserveCheckbox.checked) {
+						reserveDetailsTextarea.style.display = 'block';
+						patientIdInput.style.display = 'none';
+						patientDetailsTextarea.style.display = 'none';
+					} else {
+						reserveDetailsTextarea.style.display = 'none';
+						patientIdInput.style.display = 'block';
+						patientDetailsTextarea.style.display = 'block';
+					}
+				}
+			</script>
+			<input type="hidden" name="total_beds" value="<?php echo count($all_available_beds); ?>">
+			</div>
+				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			    <input type="hidden" name="record_id" value="<?php echo $edit_bed['hospital_bed_id']; ?>" >
+				<input class="btn btn-md btn-primary col-md-offset-5" type="submit" value="Submit" style="margin-top:2%;">
+			</div>
+		</form>
+		<div class="container">
+			<h3>Allocated Beds </h3>
+			<div class="row" style="margin-top:2%;">
+				<div class="col-md-12">
+					<?php 
+						foreach($all_allocated_beds as $aab)
+						 {  
+							if($aab->reservation_details=='')
+							{
 					?>
-				</select>
-					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
-					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
-		</form>	
-		<br/>	
+					<div class="col-md-4">
+						<div class="form-group">
+							<input type="text" name="bed_id" class="form-control" value="Bed No <?php echo $aab->hospital_bed_id; ?>" readonly
+							style="font-size:18px;background-color:#5ce35c;color:black;">
+							<input type="text" class="form-control" name="patient_id" id="patient_id"
+								value="<?php echo $aab->patient_id; ?>" readonly>
+							<textarea name="patient_details" class="form-control" id="patient_details"  rows="5" cols="12" readonly><?php echo $aab->details; ?>
+							</textarea><br/>
+							<a data-id="<?php echo $aab->id;?>" class="btn btn-success discharge-btn"
+								style="color:white;text-decoration:none!important;background-color:#3de768!important;margin-left:30%;color:black;">Discharge Patient</a>
+						</div>
+					</div>
+					<?php }else { ?>
+						<div class="col-md-4">
+							<div class="form-group">
+								<input type="text" name="bed_id" class="form-control" value="Reserved Bed No <?php echo $aab->hospital_bed_id; ?>" 
+								readonly style="font-size:18px;background-color:#ffa500a6;color:black;">
+								<textarea name="reserve_details" id="reserve_details" class="form-control" rows="5" cols="12" readonly><?php echo $aab->reservation_details; ?>
+								</textarea><br/>
+								<a data-id="<?php echo $aab->id;?>" class="btn btn-warning discharge-btn"
+									style="color:white;text-decoration:none!important;margin-left:30%;">Discharge Patient</a>
+							</div>
+						</div>
+					<?php } }?>
+				</div>
+			</div>
+		</div>
+		<?php if (!empty($error) || $error!=0): ?>
+			<span style="color: red;"><?php echo $error; ?></span>
+		<?php elseif (isset($success)): ?>
+			<span style="color: green;"><?php echo $success; ?></span>
+		<?php endif; ?>
+	<br /><br />
 
 
-<div style='padding: 0px 2px;'>
-
-<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
-
+<?php if(isset($all_allocated_beds) && count($all_allocated_beds)>0)
+{ ?>
+<a href="#" id="toggleTable" style="font-size:15px;"> Click here to hide table</a>
+<script>
+    // JavaScript to toggle visibility and change link text
+    document.addEventListener('DOMContentLoaded', function() {
+        var toggleLink = document.getElementById('toggleTable');
+        var tableContainer = document.getElementById('tableContainer');
+		tableContainer.style.display = 'none';
+		toggleLink.textContent = 'Click here to display data in table';
+        // Initial state
+        var tableVisible = true;
+        toggleLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (tableVisible) {
+                tableContainer.style.display = 'none';
+                toggleLink.textContent = 'Click here to display data in table';
+                tableVisible = false;
+            } else {
+                tableContainer.style.display = 'block';
+                toggleLink.textContent = 'Click here to hide table';
+                tableVisible = true;
+            }
+        });
+    });
+</script>
+<div id="tableContainer">
+<div style='padding: 0px 2px;'> 
+	<h3>List Allocated Beds</h3>
+		<?php  echo form_open('hospital_areas/patient_allocate_beds',array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
+				Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+		<input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
+		</form><br/>
+	<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
 </div>
 <?php 
 	if ($this->input->post('rows_per_page')){
@@ -249,7 +374,7 @@ display: inline-grid;
 	else{
 		$page_no = 1;
 	}
-	$total_records = $report_count[0]->count ;
+	$total_records = $all_allocated_beds_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -259,7 +384,7 @@ display: inline-grid;
 	$next_page = $page_no + 1;
 	$adjacents = "2";	
 ?>
-<?php if(isset($report) && count($report)>0) { ?>
+
 <ul class="pagination" style="margin:0">
 <?php if($page_no > 1){
 echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
@@ -272,7 +397,7 @@ echo "href=# onclick=doPost($previous_page)";
 } ?>>Previous</a>
 </li>
 <?php
-  if ($total_no_of_pages <= 10){  	 
+  if ($total_no_of_pages <= 10){   
 	for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 	if ($counter == $page_no) {
 	echo "<li class='active'><a>$counter</a></li>";	
@@ -361,86 +486,38 @@ echo "</select></li>";
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
 </div>
-<?php } ?>
-
-	<?php if(!empty($filter_report))
-	{
-	?>
-		<table class="table table-bordered table-striped" id="table-sort">
-			<thead>
-				<th>SNo</th>
-				<th>User Name</th>
-				<th>Name</th>
-				<th>Gender</th>		
-				<th>Hospital</th>
-				<th>Department</th>
-				<th>Date Time</th> 
-					<th>Status</th>
-					<th>Details</th>		
-			</thead>
-			<tbody>
-			<?php 
-			$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
-			
-			foreach($filter_report as $s){
-				
-			?>
-			<tr>
-				<td><?php echo $sno;?></td>
-				<td><?php echo $s->username;?></td>
-				<td><?php echo $s->name;?></td>
-				<td><?php echo $s->gender;?></td>		
-				<td><?php echo $s->hospital;?></td>
-				<td><?php echo $s->department;?></td>
-				<td><?php echo date("j M Y", strtotime("$s->signin_date_time")).", ".date("h:i A.", strtotime("$s->signin_date_time"));
-				?></td>
-				<td><?php echo $s->status;?></td>
-				<td><?php echo $s->details;?></td>		
-			</tr>
-			<?php $sno++;}	?>
-			</tbody>
-		</table>
-	<?php
-	} else { 
-	?>
-
+	
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
-		<th>SNo</th>
-		<th>User Name</th>
-		<th>Name</th>
-		<th>Gender</th>		
-		<th>Hospital</th>
-		<th>Department</th>
-		<th>Date Time</th> 
-    		<th>Status</th>
-    		<th>Details</th>		
+		<th style="text-align:center">#</th>
+		<th style="text-align:center">Patient Id</th>
+		<th style="text-align:center">Hospital Bed Id</th>
+		<th style="text-align:center">Details</th>
+		<th style="text-align:center">Reservation Details</th>
+		<th style="text-align:center">Created Date / Time</th>
+		<!-- <th style="text-align:center">Actions</th>				 -->
 	</thead>
 	<tbody>
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($report as $s){
-		
+	foreach($all_allocated_beds as $aa) { 
 	?>
 	<tr>
-		<td><?php echo $sno;?></td>
-		<td><?php echo $s->username;?></td>
-		<td><?php echo $s->name;?></td>
-		<td><?php echo $s->gender;?></td>		
-		<td><?php echo $s->hospital;?></td>
-		<td><?php echo $s->department;?></td>
-		<td><?php echo date("j M Y", strtotime("$s->signin_date_time")).", ".date("h:i A.", strtotime("$s->signin_date_time"));
-		?></td>
-		<td><?php echo $s->status;?></td>
-		<td><?php echo $s->details;?></td>		
+		<td style="text-align:center"><?php echo $sno;?></td>	
+		<td style="text-align:right"><?php echo $aa->patient_id; ?></td>
+		<td style="text-align:right"><?php echo $aa->hospital_bed_id; ?></td>
+		<td style="text-align:center"><?php echo $aa->details; ?></td>
+		<td style="text-align:center"><?php echo $aa->reservation_details; ?></td>
+		<td style="text-align:center"><?php echo date("j M Y", strtotime("$aa->created_date")); ?></td>
+		<!-- <td style="text-align:center;">
+			<a data-id="<?php echo $aa->id;?>" class="btn btn-warning discharge-btn"
+			style="color:white;text-decoration:none!important;">Discharge Patient</a>
+		</td> -->
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
-   <?php } ?>
-
-   <?php if(isset($report) && count($report)>0) { ?>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
@@ -545,6 +622,8 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
-	<?php } ?>
+	<?php }  ?>
+	
 </div>	
+</div>
   

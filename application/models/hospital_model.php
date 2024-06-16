@@ -171,6 +171,20 @@ class Hospital_model extends CI_Model {
         $this->db->insert('hospital_print_layout', $layout_data);
     }
 
+    function deleteLayout()
+    {
+        $this->db->where('hospital_id', $this->input->post('hospital_id'));
+        $this->db->delete('hospital_print_layout');
+    }
+
+    function get_addon_layouts_print($hospital_id)
+    {
+        $this->db->where('hospital_id',$hospital_id);
+        $this->db->select("hospital_id,add_on_print_layout_id,id")->from("hospital_print_layout");
+		$query=$this->db->get();
+		return $query->result();
+    }
+
     function search_hospitals($default_rowsperpage){  
         
         

@@ -1985,38 +1985,12 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 
 	function get_hosp_all_print_layouts($hospital_id)
 	{
-		/*$this->db->where('hpl.hospital_id',$hospital_id);
+		$this->db->where('hpl.hospital_id',$hospital_id);
 		$this->db->select("hpl.add_on_print_layout_id,print_layout.print_layout_name");
 		$this->db->from("hospital_print_layout as hpl");
 		$this->db->join('print_layout','print_layout.print_layout_id = hpl.add_on_print_layout_id','left');
 		$query=$this->db->get();
-		return $query->result();*/
-		
-		// Fetch print layout names from the print layout addon
-		$this->db->where('hpl.hospital_id', $hospital_id);
-		$this->db->select("hpl.add_on_print_layout_id, print_layout.print_layout_name");
-		$this->db->from("hospital_print_layout as hpl");
-		$this->db->join('print_layout', 'print_layout.print_layout_id = hpl.add_on_print_layout_id', 'left');
-		$query1 = $this->db->get();
-		$result1 = $query1->result();
-	
-		// Fetch print layout names from the main table hospital
-		$this->db->where('hos.hospital_id', $hospital_id);
-		$this->db->select("hos.print_layout_id, print_layout.print_layout_name,print_layout.print_layout_id as add_on_print_layout_id");
-		$this->db->from("hospital as hos");
-		$this->db->join('print_layout', 'print_layout.print_layout_id = hos.print_layout_id', 'left');
-		$query2 = $this->db->get();
-		$result2 = $query2->result();
-	
-		// Merge the results of both queries
-		$mergedResults = array_merge($result1, $result2);
-	
-		$dropdownOptions = array();
-		foreach ($mergedResults as $row) {
-			$dropdownOptions[$row->add_on_print_layout_id] = $row->print_layout_name;
-		}
-	
-		return $dropdownOptions;
+		return $query->result();
 	}
 }
 ?>

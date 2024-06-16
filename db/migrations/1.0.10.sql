@@ -164,3 +164,42 @@ ALTER TABLE `visit_name` ADD `op_ip` TINYINT NULL DEFAULT NULL AFTER `inuse`;
 CREATE TABLE `hospital_print_layout` ( `id` INT NOT NULL AUTO_INCREMENT, `hospital_id` INT NOT NULL, `add_on_print_layout_id` INT NOT NULL, PRIMARY KEY (`id`) );
 
 ALTER TABLE `hospital_print_layout` ADD `a6_print_layout_id` INT NOT NULL AFTER `add_on_print_layout_id`;
+
+CREATE TABLE `hospital_bed` ( `hospital_bed_id` int(11) NOT NULL, `hospital_id` int(11) NOT NULL, `bed` varchar(100) NOT NULL);
+
+CREATE TABLE `blood_donor_edit_history` (
+  `edit_id` int(11) NOT NULL,
+  `donor_id` int(11) NOT NULL,
+  `table_name` varchar(250) NOT NULL,
+  `field_name` varchar(250) NOT NULL,
+  `previous_value` varchar(250) NOT NULL,
+  `new_value` varchar(250) NOT NULL,
+  `edit_date_time` datetime NOT NULL,
+  `edit_user_id` int(11) NOT NULL
+) 
+
+ALTER TABLE `blood_donor_edit_history`
+  ADD PRIMARY KEY (`edit_id`);
+
+ALTER TABLE `blood_donor_edit_history`
+  MODIFY `edit_id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'list_blood_donor_details_edit', 'list_blood_donor_details_edit', 'list blood donor details edit');
+
+CREATE TABLE `patient_bed` (
+  `id` int(11) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `hospital_bed_id` int(11) NOT NULL,
+  `details` text NOT NULL,
+  `reservation_details` varchar(250) NOT NULL,
+  `created_date` date DEFAULT NULL,
+  `created_time` time DEFAULT NULL
+)
+
+ALTER TABLE `patient_bed`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `patient_bed`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;

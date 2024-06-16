@@ -25,8 +25,8 @@ class Hospital extends CI_Controller {
             $this->load->model('gen_rep_model');
 		}
     }   																	
-	function add_hospital(){	
-				error_reporting(1);										
+	function add_hospital()
+	{											
 		if(!$this->logged_in){  						
             show_404();
 		}
@@ -68,27 +68,30 @@ class Hospital extends CI_Controller {
 		}
 		else																//if validation true then executes below block of code
 		{
-		$this->load->model('hospital_model');	
-			$add_on_a4_layouts = $this->input->post('add_on_print_layout_id');
-			//$a6_layouts = $this->input->post('a6_print_layout_id');
-			for ($i = 0; $i < count($add_on_a4_layouts); $i++) {
-				$data[] = array(
-					'add_on_print_layout_id' => $add_on_a4_layouts[$i]
-					//'a6_print_layout_id' => $a6_layouts[$i]
-				);
-			}
-			foreach ($data as $layout_data) {
-				$this->hospital_model->insertLayout($layout_data);
+			if(!empty($this->input->post('add_on_print_layout_id')))
+			{
+				$this->load->model('hospital_model');	
+				$add_on_a4_layouts = $this->input->post('add_on_print_layout_id');
+				for ($i = 0; $i < count($add_on_a4_layouts); $i++) {
+					$data[] = array(
+						'add_on_print_layout_id' => $add_on_a4_layouts[$i]
+					);
+				}
+				$this->hospital_model->deleteLayout();
+				foreach ($data as $layout_data) {
+					$this->hospital_model->insertLayout($layout_data);
+				}
 			}
 		//instantiating hospital_model.
-        if($this->hospital_model->upsert_hospital()){							//calling add_method 
-		$this->data['msg']="Hospital added/updated Succesfully";					//if above condition is true then it displays hospital added succesfully message.
-		}
+			if($this->hospital_model->upsert_hospital()){							//calling add_method 
+				$this->data['msg']="Hospital added/updated Succesfully";					//if above condition is true then it displays hospital added succesfully message.
+			}
 		}
 		$this->data['print_layouts']=$this->staff_model->get_print_layouts();
 		$this->data['districts']=$this->staff_model->get_district();
 		$this->load->model('hospital_model');	 							//instantiating hospital_model.
 		$this->data['helplines']=$this->hospital_model->get_helpline();
+		$this->data['get_addon_layouts_print']=$this->hospital_model->get_addon_layouts_print($this->input->get('hospital_id'));
 		$this->load->view('pages/hospital_view',$this->data);							//displaying hospitla_view page.
 		$this->load->view('templates/footer');								//displaying footer page.
     }   																	//add_hospital

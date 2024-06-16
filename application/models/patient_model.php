@@ -610,7 +610,7 @@ class patient_model extends CI_Model {
         patient_visit.visit_name_id,patient_visit.presenting_complaints,patient_visit.past_history,patient_visit.family_history,patient_visit.admit_weight,
         patient_visit.pulse_rate,patient_visit.respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,
         rs,pa,cns,cxr,provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,unit.unit_name,area.area_name,
-        visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id')
+        visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id,patient_visit.visit_type')
             ->from('patient_visit')
             ->join('department','department.department_id=patient_visit.department_id','left')
             ->join('unit','unit.unit_id=patient_visit.unit','left')
@@ -618,6 +618,16 @@ class patient_model extends CI_Model {
             ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
             ->join('counseling','counseling.visit_id=patient_visit.visit_id','left')
             ->join('counseling_text','counseling_text.counseling_text_id=counseling.counseling_text_id','left')
+            ->where('patient_visit.visit_id',$edit_visit_id);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function select_op_ip($edit_visit_id)
+    {
+        $this->db->select('patient_visit.visit_type')
+            ->from('patient_visit')
             ->where('patient_visit.visit_id',$edit_visit_id);
         $query = $this->db->get();
         $result = $query->result();
@@ -797,6 +807,86 @@ class patient_model extends CI_Model {
         $this->db->where('patient_id', $patient_id);
         $this->db->delete('patient_followup');
         return $this->db->affected_rows() > 0;
+    }
+
+    function get_all_blood_donor_details($default_rowsperpage)
+    {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(edit_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select('donor_id,table_name,field_name,previous_value,new_value,edit_date_time,edit_user_id,user.username')
+                ->from('blood_donor_edit_history')
+                ->join('user','user.user_id=blood_donor_edit_history.edit_user_id','left');
+        $this->db->order_by('blood_donor_edit_history.edit_date_time','DESC');
+
+        if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_all_blood_donor_details_count()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(edit_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select("count(*) as count",false)
+                ->from('blood_donor_edit_history')
+                ->join('user','user.user_id=blood_donor_edit_history.edit_user_id','left');
+        $this->db->order_by('blood_donor_edit_history.edit_date_time','DESC');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
     }
 }
 
