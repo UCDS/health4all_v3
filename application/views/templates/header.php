@@ -122,6 +122,14 @@
 break;
 } 
 							} 
+
+							foreach($functions as $f){
+								if($f->user_function=="allocate_beds") { ?>
+									<li> <a  href="<?php echo base_url()."hospital_beds/patient_allocate_beds";?>">Allocate Bed</a></li>
+								<?php		
+								break;
+								} 
+							} 
 ?>
 							</ul>
 						  </li>

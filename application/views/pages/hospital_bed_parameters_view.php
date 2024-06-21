@@ -164,96 +164,66 @@ display: inline-grid;
 		
 	<div class="row col-md-offset-2">
 	<h2><?php echo $title; ?></h2>
-		<?php if(!empty($edit_bed)) { ?>
-			<?php echo form_open('hospital_beds/update_hospital_beds',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
+		<?php if(!empty($edit_bed_parameters)) { ?>
+			<?php echo form_open('hospital_beds/update_hospital_bed_parameters',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('hospital_beds/add_hospital_beds',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
+			<?php echo form_open('hospital_beds/hospital_bed_parameters',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
 			<div class="col-md-12">
 				<div class="col-md-4">
-				<?php $hospital = $this->session->userdata('hospital'); ?>
-					<div class="form-group">
-						<label for="inputhospital_name">Hospital</label>
-						<input class="form-control" name="hospital_name"  id="inputhospital_name" 
-						value="<?php echo $hospital['hospital'] ?>" type="TEXT" align="middle" readonly>
+						<?php $hospital = $this->session->userdata('hospital'); ?>
+						<div class="form-group">
+							<label for="inputhospital_name" >Hospital</label>
+							<input type="text" class="form-control" name="hospital_name" value="<?php echo $hospital['hospital']; ?>" readonly> 
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="inputbed_parameter" >Bed Parameter</label>
+							<input type="text" class="form-control" name="bed_parameter" 
+							value="<?php echo $edit_bed_parameters['bed_parameter']; ?>" placeholder="Add Bed Parameter" autocomplete="off">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="inputbed_parameter_label" >Bed Parameter Label</label>
+							<input type="text" class="form-control" name="bed_parameter_label" 
+							value="<?php echo $edit_bed_parameters['bed_parameter_label']; ?>" placeholder="Add Bed Parameter Label" autocomplete="off">
+						</div>
 					</div>
 				</div>
-				<div class="col-md-4">
-					<div class="form-group">
-						<label for="inputbed_name">Bed</label>
-						<input class="form-control" name="bed_name"  id="inputbed_name" 
-						value="<?php echo $edit_bed['bed']; ?>" placeholder="Enter Bed Name" type="TEXT" align="middle" 
-						 required autocomplete="off">
-					</div>
-				</div>
-				<!--<div class="col-md-4">
-					<div class="form-group">
-						<label for="inputdepartment_id">Department</label>
-							<?php 
-								if(!empty($edit_bed['department_id'])) 
-								{ 
-									foreach($all_departments as $adname)
-									{
-										if($adname->department_id == $edit_bed['department_id'])
-										{
-											$adname= $adname->department;
-											break;
-										}
-									}
-								?>
-									<input class="form-control" name="department_id"  
-										value="<?php echo $adname ?>" type="text" readonly>
-								<?php
-								} 
-								else 
-								{ 
-								?> 
-									<select name="department_id" id="department_id" class="form-control" required>
-									<option value="">select</option>
-									<?php
-									foreach($all_departments as $dept)
-									{ 
-									?>
-									<option <?php if($edit_bed['department_id']==$dept->department_id) { echo "selected"; }?> value="<?php echo $dept->department_id?>"> <?php echo $dept->department; ?> </option>
-									<?php
-									}
-									?>
-									</select>
-							    <?php } ?>
-					</div>
-				</div>-->
 			</div>
 				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			    <input type="hidden" name="record_id" value="<?php echo $edit_bed['hospital_bed_id']; ?>" >
-				<?php if(!empty($edit_bed)) { ?>
+			    <input type="hidden" name="record_id" value="<?php echo $edit_bed_parameters['hospital_bed_parameter_id']; ?>" >
+				<?php if(!empty($edit_bed_parameters)) { ?>
 					<input class="btn btn-md btn-success col-md-offset-5" type="submit" value="Update" style="margin-top:2%;">
 				<?php } else { ?>
 					<input class="btn btn-md btn-primary col-md-offset-5" type="submit" value="Submit" style="margin-top:2%;">
 				<?php } ?>
 		</div>
 		</form>
-		<?php if (!empty($error) || $error!=0): ?>
-			<span style="color: red;"><?php echo $error; ?></span>
-		<?php elseif (isset($success)): ?>
-			<span style="color: green;"><?php echo $success; ?></span>
-		<?php endif; ?>
+		<div style='padding: 0px 2px;' class="col-md-offset-2">
+			<?php if (!empty($error) || $error!=0): ?>
+				<span style="color: red;"><?php echo $error; ?></span>
+			<?php elseif (isset($success)): ?>
+				<span style="color: green;"><?php echo $success; ?></span>
+			<?php endif; ?>
+		</div>
 	<br />
 
 
-<?php if(isset($all_beds) && count($all_beds_count)>0)
+<?php if(isset($all_bed_parameters) && count($all_bed_parameters)>0)
 { ?>
-<div style='padding: 0px 2px;'>
+<div style='padding: 0px 2px;' class="col-md-offset-2">
 
-<h3>List Beds</h3>
+<h3>List Bed Parameters</h3>
 	<?php  echo form_open('hospital_areas/get_all_hospital_beds',array('role'=>'form','class'=>'form-custom','id'=>'appointment')); ?>
             Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
     <input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
     </form><br/>
 <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
-
-</div>
 <?php 
 	if ($this->input->post('rows_per_page')){
 		$total_records_per_page = $this->input->post('rows_per_page');
@@ -266,7 +236,7 @@ display: inline-grid;
 	else{
 		$page_no = 1;
 	}
-	$total_records = $all_beds_count[0]->count ;
+	$total_records = $all_bed_parameters_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -373,69 +343,37 @@ echo "</select></li>";
 } ?>
 </ul>
 
-
-<div style='padding: 0px 2px;'>
+</div>
+<div style='padding: 0px 2px;' class="col-md-offset-2">
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 
-</div>
+
 	
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th style="text-align:center">#</th>
-		<!-- <th style="text-align:center">Department</th> -->
-		<th style="text-align:center">Bed</th>
+		<th style="text-align:center">Bed Parameters</th>
+		<th style="text-align:center">Bed Parameters Label</th>
 		<th style="text-align:center">Actions</th>				
 	</thead>
 	<tbody>
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($all_beds as $aa) { 
+	foreach($all_bed_parameters as $abp) { 
 	?>
 	<tr>
 		<td style="text-align:center"><?php echo $sno;?></td>	
-		<!-- <td style="text-align:center"><?php echo $aa->dname; ?></td>	 -->
-		<td style="text-align:center"><?php echo $aa->bed; ?></td>
+		<td style="text-align:center"><?php echo $abp->bed_parameter; ?></td>
+		<td style="text-align:center"><?php echo $abp->bed_parameter_label; ?></td>
 		<td style="text-align:center;">
-		<a class="btn btn-success" href="<?php echo base_url('hospital_beds/add_hospital_beds/'.$aa->hospital_bed_id); ?>" 
+		<a class="btn btn-success" href="<?php echo base_url('hospital_beds/hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
 			style="color:white!important;">Edit</a>
-		<a class="btn btn-danger delete-bed-btn" data-bed-id="<?php echo $aa->hospital_bed_id; ?>" href="<?php echo base_url('hospital_beds/delete_hospital_beds/'.$aa->hospital_bed_id); ?>" 
-			style="color:white!important;">Delete Bed</a>
 		</td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
-	<script>
-		$(document).ready(function() {
-			$('.btn-danger').on('click', function(e) 
-			{
-				e.preventDefault();
-				if (confirm("Are you sure you want to delete this bed?")) 
-				{
-					var bed_id = $(this).data('bed-id');
-					$.ajax({
-						type: 'POST',
-						url: '<?php echo base_url('hospital_beds/delete_bed'); ?>',
-						data: { bed_id: bed_id },
-						dataType: 'json',
-						success: function(response) {
-							console.log(response);
-							if (response.status == "success") {
-								alert(response.message);
-								location.reload();
-							} else {
-								alert('Failed to delete bed');
-							}
-						},
-						error: function(xhr, status, error) {
-							console.error('Ajax request failed');
-						}
-					});
-				}
-			});
-		});
-	</script>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
@@ -541,8 +479,8 @@ echo "</select></li>";
 } ?>
 </ul>
 	<?php } else { ?>
-	No data to display
+	<p class="col-md-offset-3"> No data to display </p>
 <?php }  ?>
 </div>	
-
+</div>
   

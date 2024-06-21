@@ -167,6 +167,10 @@ ALTER TABLE `hospital_print_layout` ADD `a6_print_layout_id` INT NOT NULL AFTER 
 
 CREATE TABLE `hospital_bed` ( `hospital_bed_id` int(11) NOT NULL, `hospital_id` int(11) NOT NULL, `bed` varchar(100) NOT NULL);
 
+ALTER TABLE `hospital_bed` ADD PRIMARY KEY (`hospital_bed_id`);
+
+ALTER TABLE `hospital_bed` MODIFY `hospital_bed_id` int(11) NOT NULL AUTO_INCREMENT;
+
 CREATE TABLE `blood_donor_edit_history` (
   `edit_id` int(11) NOT NULL,
   `donor_id` int(11) NOT NULL,
@@ -202,3 +206,33 @@ ALTER TABLE `patient_bed`
 
 ALTER TABLE `patient_bed`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `hospital_bed_parameter` (
+  `hospital_bed_parameter_id` int(11) NOT NULL,
+  `hospital_id` int(11) NOT NULL,
+  `bed_parameter` varchar(150) NOT NULL,
+  `bed_parameter_label` varchar(150) NOT NULL
+);
+
+ALTER TABLE `hospital_bed_parameter` ADD PRIMARY KEY (`hospital_bed_parameter_id`);
+
+ALTER TABLE `hospital_bed_parameter` MODIFY `hospital_bed_parameter_id` int(11) NOT NULL AUTO_INCREMENT;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'allocate_beds', 'allocate_beds', 'allocate beds');
+
+CREATE TABLE `patient_bed_parameter` (
+  `id` int(11) NOT NULL,
+  `hospital_bed_id` int(11) NOT NULL,
+  `hospital_bed_parameter_id` int(11) NOT NULL,
+  `bed_parameter_value` varchar(200) NOT NULL
+);
+
+ALTER TABLE `patient_bed_parameter` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `patient_bed_parameter` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `patient_bed` ADD `updated_by` INT NOT NULL AFTER `created_time`;
+
+ALTER TABLE `patient_bed` ADD `patient_name` VARCHAR(100) NOT NULL AFTER `details`, ADD `age_gender` VARCHAR(100) NOT NULL AFTER `patient_name`;
+
+ALTER TABLE `patient_bed` ADD `address` VARCHAR(150) NOT NULL AFTER `age_gender`;

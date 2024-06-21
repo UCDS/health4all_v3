@@ -759,9 +759,14 @@
 				<a href="<?php echo base_url(); ?>hospital_beds/add_hospital_beds">Add / Update Hospital Beds</a>
 			</li>
 
-			<li <?php if (preg_match("^hospital_beds/patient_allocate_beds^", current_url()))
+			<!-- <li <?php if (preg_match("^hospital_beds/patient_allocate_beds^", current_url()))
 				echo 'class="active"'; ?>>
-				<a href="<?php echo base_url(); ?>hospital_beds/patient_allocate_beds">Allocate Hospital Beds</a>
+				<a href="<?php echo base_url(); ?>hospital_beds/patient_allocate_beds">Allocate Beds</a>
+			</li> -->
+
+			<li <?php if (preg_match("^hospital_beds/hospital_bed_parameters^", current_url()) || preg_match("^hospital_beds/update_hospital_bed_parameters^", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url(); ?>hospital_beds/hospital_bed_parameters">Add / Update Bed Parameters</a>
 			</li>
 
 			<li class="nav-divider"></li>
