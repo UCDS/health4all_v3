@@ -325,7 +325,8 @@ bootbox.confirm({
 }
   
 </script>
-<h3 class="col-md-12" style="margin-top:7%">Edit Blood Donor Details</h3>
+<div class="container col-md-offset-2">
+<h3 class="col-md-12 " style="margin-top:7%">Edit Blood Donor Details</h3>
   <?php echo form_open("bloodbank/register/update_register_donor_details",array('role'=>'form','class'=>'form-custom col-md-12')); ?>   
  	   <div class="form-group">     
  	   		<label for="donor_id">Donor ID:</label>         
@@ -335,8 +336,8 @@ bootbox.confirm({
         </div>
         <input type="submit" value="Get details" name="submitBtn" class="btn btn-primary btn-sm" />
   </form>
-
-<div class="row">
+</div>
+<div class="row col-md-offset-2" >
   <div style="margin-top:4%!important;" class="col-md-12">
     <?php if(isset($get_donor_details_to_edit) && count($get_donor_details_to_edit)>0){ ?>
     
@@ -426,9 +427,7 @@ bootbox.confirm({
       <input type="hidden" name="donor_id" value="" id="donor_id_con">
       <input type="hidden" name="post_donor_id" value="<?php echo $this->input->post('donor_id'); ?>" id="post_donor_id">
       <?php $user=$this->session->userdata('logged_in');  ?>
-      <input type="hidden" name="sesion_user_id" value="<?php echo $user['user_id']; ?>" id="session_user_id"><br/>
-
-  <h2>Edit Details</h2>        
+      <input type="hidden" name="sesion_user_id" value="<?php echo $user['user_id']; ?>" id="session_user_id"><br/>       
   <table class="table">
     <thead>
       <tr>

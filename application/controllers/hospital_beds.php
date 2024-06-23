@@ -210,6 +210,18 @@ class hospital_beds extends CI_Controller{
 		}	
     }
 
+    public function delete_bed() 
+    {
+        $bed_id = $this->input->post('bed_id');
+        $deleted = $this->hospital_beds_model->delete_bed($bed_id);
+        if ($deleted) 
+        {
+            echo json_encode(['status' => 'success', 'message' => 'Bed deleted successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete bed']);
+        }
+    }
+
     function patient_allocate_beds()
     {
         if($this->session->userdata('logged_in'))
@@ -219,8 +231,9 @@ class hospital_beds extends CI_Controller{
 			$user_id=$userdata['user_id'];
 			$this->data['functions']=$this->staff_model->user_function($user_id);
 			foreach($this->data['functions'] as $function){
-				if($function->user_function=="Admin"){
+				if($function->user_function=="allocate_beds"){
 					$access = 1;
+                    if ($function->edit==1) $edit_access=1;
 					break;
 				}
 			}
@@ -228,6 +241,7 @@ class hospital_beds extends CI_Controller{
 			{
                 $this->load->helper('form');
                 $this->data['title']="Allocate Bed";
+                $this->data['edit_access']=$edit_access;
                 $this->data['userdata']=$this->session->userdata('logged_in');
                 $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
                 foreach($this->data['defaultsConfigs'] as $default){		 
@@ -239,26 +253,73 @@ class hospital_beds extends CI_Controller{
                         }
                     }
                 $total_beds = $this->input->post('total_beds');
-                for ($i = 0; $i <= $total_beds; $i++) {
-                    if ((!empty($this->input->post('patient_id_' . $i)) && !empty($this->input->post('patient_details_' . $i))) || !empty($this->input->post('reserve_details_' . $i))) {
-                        $data = array(
+                $allocated_bed_data = array();
+                $bed_parameter_data = array();
+
+                // Loop through each bed
+                for ($i = 0; $i < $total_beds; $i++) {
+                    if ((!empty($this->input->post('patient_id_' . $i)) && !empty($this->input->post('patient_details_' . $i)))) 
+                    {
+                        $allocated_bed_data[] = array(
                             'hospital_bed_id' => $this->input->post('bed_id_' . $i),
                             'patient_id' => $this->input->post('patient_id_' . $i),
                             'details' => $this->input->post('patient_details_' . $i),
+                            'patient_name' => $this->input->post('patient_name_store_' . $i),
+                            'age_gender' => $this->input->post('age_gender_' . $i),
+                            'address' => $this->input->post('address_store_' . $i),
+                            'created_date' => date('Y-m-d'),
+                            'created_time' => date('H:i:s'),
+                            'updated_by' => $this->input->post('updated_by'),
+                        );
+                        $bed_parameter_labels = $this->input->post('bed_parameter_label_' . $i);
+                        $hospital_bed_parameter_ids = $this->input->post('hospital_bed_parameter_id_' . $i);
+                        $bed_parameters = $this->input->post('bed_parameter_' . $i);
+
+                        foreach ($bed_parameter_labels as $key => $label) {
+                            $bed_parameter_data[] = array(
+                                'hospital_bed_id' => $this->input->post('bed_id_' . $i),
+                                'hospital_bed_parameter_id' => $hospital_bed_parameter_ids[$key],
+                                'bed_parameter_value' => $bed_parameters[$key]
+                            );
+                        }
+                    }if(!empty($this->input->post('reserve_details_' . $i)))
+                    {
+                        $allocated_bed_data[] = array(
+                            'hospital_bed_id' => $this->input->post('bed_id_' . $i),
                             'reservation_details' => $this->input->post('reserve_details_' . $i),
                             'created_date' => date('Y-m-d'),
-                            'created_time' => date('H:i:s')
+                            'created_time' => date('H:i:s'),
+                            'updated_by' => $this->input->post('updated_by'),
                         );
-                        $this->hospital_beds_model->insert_allocated_bed($data);
+                        $bed_parameter_labels = $this->input->post('bed_parameter_label_' . $i);
+                        $hospital_bed_parameter_ids = $this->input->post('hospital_bed_parameter_id_' . $i);
+                        $bed_parameters = $this->input->post('bed_parameter_' . $i);
+
+                        foreach ($bed_parameter_labels as $key => $label) {
+                            $bed_parameter_data[] = array(
+                                'hospital_bed_id' => $this->input->post('bed_id_' . $i),
+                                'hospital_bed_parameter_id' => $hospital_bed_parameter_ids[$key],
+                                'bed_parameter_value' => $bed_parameters[$key]
+                            );
+                        }
                     }
                 }
-                // Fetch all records from primary table
-                $this->data['all_available_beds'] = $this->hospital_beds_model->get_all_available_beds();
 
+                if (!empty($allocated_bed_data)) {
+                    $this->hospital_beds_model->insert_allocated_bed($allocated_bed_data);
+                }
+    
+                // Insert bed parameter data
+                if (!empty($bed_parameter_data)) {
+                    $this->hospital_beds_model->save_patient_bed_parameter($bed_parameter_data);
+                }
+                // Fetch all records from primary table
+                $this->data['all_available_beds'] = $this->hospital_beds_model->get_all_avnall_beds();
+                $this->data['all_bed_parameters'] = $this->hospital_beds_model->get_all_bed_parameters();
                 $this->data['all_allocated_beds'] = $this->hospital_beds_model->get_all_allocated_beds($this->data['rowsperpage']);
                 $this->data['all_allocated_beds_count'] = $this->hospital_beds_model->get_all_allocated_beds_count();
+                $this->data['all_beds'] = $this->hospital_beds_model->combined_tabluar_view();
                 $this->load->view('templates/header',$this->data);
-                $this->load->view('templates/leftnav',$this->data);
                 $this->load->view('pages/hospital_allocate_bed_view',$this->data);
                 $this->load->view('templates/footer');
             }
@@ -285,5 +346,153 @@ class hospital_beds extends CI_Controller{
         $patient_id = $this->input->post('patient_id');
         $result = $this->hospital_beds_model->fetch_selected_patient_details($patient_id);
         echo(json_encode($result));
+    }
+
+    function get_bed_parameters_data()
+    {
+        $bedId = $this->input->post('bedId');
+        $result = $this->hospital_beds_model->fetch_selected_bed_parameters($bedId);
+        echo(json_encode($result));
+    }
+
+    function hospital_bed_parameters($record_id='')
+    {
+        if($this->session->userdata('logged_in'))
+        {
+            $access=0;
+            $userdata=$this->session->userdata('logged_in');
+            $user_id=$userdata['user_id'];
+            $this->data['functions']=$this->staff_model->user_function($user_id);
+            foreach($this->data['functions'] as $function){
+                if($function->user_function=="Admin"){
+                    $access = 1;
+                    break;
+                }
+            }
+            if($access==1)
+            {
+                $this->load->helper('form');
+                $this->data['title']="Add Bed Parameters";
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                foreach($this->data['defaultsConfigs'] as $default)
+                {		 
+                    if($default->default_id=='pagination'){
+                            $this->data['rowsperpage'] = $default->value;
+                            $this->data['upper_rowsperpage']= $default->upper_range;
+                            $this->data['lower_rowsperpage']= $default->lower_range;	 
+
+                        }
+                }
+                if($this->input->post()) 
+                {
+                    $bed_parameter = $this->input->post('bed_parameter');
+                    $bed_parameter_label = $this->input->post('bed_parameter_label');
+                    if (!preg_match('/^[a-z0-9_]+$/', $bed_parameter_label)) 
+                    {
+                        $this->data['error'] = 'Bed Parameter Label should contain only lowercase alphanumeric characters and underscores.';
+                    }
+                    else if(!empty($bed_parameter) && !empty($bed_parameter_label))
+                    {
+                        if($this->hospital_beds_model->check_bed_parameter($bed_parameter,$bed_parameter_label)) 
+                        {
+                            $this->data['error'] = 'Bed parameters with hospital already exists';
+                        }
+                        else
+                        {
+                            $hospital=$this->session->userdata('hospital');
+                            $data_to_insert = array(
+                                'hospital_id' => $hospital['hospital_id'],
+                                'bed_parameter' => $this->input->post('bed_parameter'),
+                                'bed_parameter_label' => $this->input->post('bed_parameter_label'),
+                            );
+                            $this->hospital_beds_model->insert_bed_parameter($data_to_insert);
+                            $this->data['success'] = 'Bed Parameters Added Successfully';
+                        }
+                    }
+                }
+                // Fetch all records from primary table
+                $this->data['all_bed_parameters'] = $this->hospital_beds_model->get_all_bed_parameters($this->data['rowsperpage']);
+                $this->data['all_bed_parameters_count'] = $this->hospital_beds_model->get_all_bed_parameters_count();
+                //Fetch record to edit
+                $this->data['edit_bed_parameters'] = $this->hospital_beds_model->get_edit_bed_parameters($record_id);
+
+                $this->load->view('templates/header',$this->data);
+                $this->load->view('templates/leftnav',$this->data);
+                $this->load->view('pages/hospital_bed_parameters_view',$this->data);
+                $this->load->view('templates/footer');	
+            }
+            else
+            {
+                show_404();
+            }	
+        }
+        else
+        {
+            show_404();
+        }
+    }
+
+    function update_hospital_bed_parameters() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+            $access=0;
+			$userdata=$this->session->userdata('logged_in');
+			$user_id=$userdata['user_id'];
+			$this->data['functions']=$this->staff_model->user_function($user_id);
+			foreach($this->data['functions'] as $function){
+				if($function->user_function=="Admin"){
+					$access = 1;
+					break;
+				}
+			}
+			if($access==1)
+			{
+                $this->load->helper('form');
+                $this->data['title']="Add Bed Parameters";
+                $this->data['userdata']=$this->session->userdata('logged_in');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                foreach($this->data['defaultsConfigs'] as $default){		 
+                    if($default->default_id=='pagination'){
+                            $this->data['rowsperpage'] = $default->value;
+                            $this->data['upper_rowsperpage']= $default->upper_range;
+                            $this->data['lower_rowsperpage']= $default->lower_range;	 
+
+                        }
+                    }
+                    $bed_parameter = $this->input->post('bed_parameter');
+                    $bed_parameter_label = $this->input->post('bed_parameter_label');
+                    $update_record_id = $this->input->post('record_id');
+                    if($this->hospital_beds_model->check_bed_parameter($bed_parameter,$bed_parameter_label)) 
+                    {
+                        $this->data['error'] = 'Bed parameters with hospital already exists';
+                    }
+                    else
+                    {
+                        $update_data = array(
+                            'bed_parameter' => $this->input->post('bed_parameter'),
+                            'bed_parameter_label' => $this->input->post('bed_parameter_label'),
+                        );
+                        $this->hospital_beds_model->update_bed_parameter($update_record_id, $update_data);
+                        $this->data['success'] = 'Bed parameters Updated Successfully';
+                    }
+                // Fetch all records from primary table
+                $this->data['all_bed_parameters'] = $this->hospital_beds_model->get_all_bed_parameters($this->data['rowsperpage']);
+                $this->data['all_bed_parameters_count'] = $this->hospital_beds_model->get_all_bed_parameters_count();
+                $this->load->view('templates/header',$this->data);
+                $this->load->view('templates/leftnav',$this->data);
+                $this->load->view('pages/hospital_bed_parameters_view',$this->data);
+                $this->load->view('templates/footer');
+            }
+            else
+            {
+                show_404();
+            }
+		}
+		else
+		{
+			show_404();
+		}	
     }
 }

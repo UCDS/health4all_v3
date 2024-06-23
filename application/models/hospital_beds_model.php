@@ -45,7 +45,7 @@ class Hospital_beds_model extends CI_Model
         //->where('department.hospital_id',$hospital['hospital_id']);
         ->where('hospital_id',$hospital['hospital_id']);
 
-        $this->db->order_by('hospital_bed_id',"DESC");
+        $this->db->order_by('hospital_bed_id',"ASC");
         if ($default_rowsperpage !=0)
 		{
 			$this->db->limit($rows_per_page,$start);
@@ -63,7 +63,7 @@ class Hospital_beds_model extends CI_Model
         //->where('department.hospital_id',$hospital['hospital_id']);
         ->where('hospital_id',$hospital['hospital_id']);
 
-        $this->db->order_by('hospital_bed_id',"DESC");
+        $this->db->order_by('hospital_bed_id',"ASC");
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -88,14 +88,15 @@ class Hospital_beds_model extends CI_Model
 		->join("patient_bed as pb", "pb.hospital_bed_id = hb.hospital_bed_id", "left")
         ->where('hb.hospital_id',$hospital['hospital_id'])
         ->where('pb.hospital_bed_id IS NULL'); 
-        $this->db->order_by('hb.hospital_bed_id',"DESC");
+        $this->db->order_by('hb.hospital_bed_id',"ASC");
         $query = $this->db->get();
 		return $query->result();
     }
 
     function insert_allocated_bed($data)
     {
-        $this->db->insert('patient_bed', $data);
+       
+        $this->db->insert_batch('patient_bed', $data);
     }
 
     function get_all_allocated_beds($default_rowsperpage)
@@ -115,10 +116,14 @@ class Hospital_beds_model extends CI_Model
 		$start = ($page_no -1 )  * $rows_per_page;
 
         $hospital=$this->session->userdata('hospital');
-		$this->db->select("pb.id,pb.patient_id,pb.hospital_bed_id,pb.details,pb.created_time, pb.created_date,pb.reservation_details")
+		$this->db->select("pb.id,pb.patient_id,pb.hospital_bed_id,pb.details,pb.created_time, pb.created_date,pb.reservation_details,hb.bed,
+        updated_by.first_name as updated_by_name, MAX(pv.admit_date) as max_admit_date,pb.patient_name,pb.age_gender,pb.address")
 		->from("patient_bed as pb")
 		->join("hospital_bed as hb", "hb.hospital_bed_id = pb.hospital_bed_id")
+        ->join('staff as updated_by','updated_by.staff_id=pb.updated_by','left')
+        ->join('patient_visit as pv', 'pv.patient_id = pb.patient_id AND pv.visit_type = "IP"', 'left')
         ->where('hb.hospital_id',$hospital['hospital_id']);
+        $this->db->group_by('pb.id');
         $this->db->order_by('hb.hospital_bed_id',"ASC");
         if ($default_rowsperpage !=0)
 		{
@@ -144,8 +149,11 @@ class Hospital_beds_model extends CI_Model
     function delete_allocated_bed($delete_id)
     {
         $delete_id = $this->input->post('delete_id');
-        $this->db->where('id', $delete_id);
+        $this->db->where('hospital_bed_id', $delete_id);
         $this->db->delete('patient_bed');
+        
+        $this->db->where('hospital_bed_id', $delete_id);
+        $this->db->delete('patient_bed_parameter');
         return $this->db->affected_rows() > 0;
     }
 
@@ -153,12 +161,207 @@ class Hospital_beds_model extends CI_Model
     {
         $patient_id = $this->input->post('patient_id');
         $this->db->select("patient.first_name,patient.last_name,patient.age_years,patient.gender,patient.address,
-        patient_followup.diagnosis")
+        patient_followup.diagnosis, , MAX(pv.admit_date) as max_admit_date")
 		->from("patient")
 		->join("patient_followup", "patient_followup.patient_id= patient.patient_id")
+        ->join('patient_visit as pv', 'pv.patient_id = patient.patient_id AND pv.visit_type = "IP"', 'left')
         ->where('patient.patient_id',$patient_id);
         $query = $this->db->get();
 		return $query->result();
     }
+
+    function delete_bed()
+    {
+        $bed_id = $this->input->post('bed_id');
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('hospital_bed_id', $bed_id);
+        $this->db->delete('hospital_bed');
+        return $this->db->affected_rows() > 0;
+    }
+
+    function check_bed_parameter($bed_parameter,$bed_parameter_label) 
+    {
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id',$hospital['hospital_id']);
+        $this->db->where('bed_parameter', $bed_parameter);
+        $this->db->where('bed_parameter_label', $bed_parameter_label);
+        $query = $this->db->get('hospital_bed_parameter');
+        return $query->num_rows() > 0;
+    }
+
+    function get_all_bed_parameters($default_rowsperpage)
+    {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+        $hospital=$this->session->userdata('hospital');
+		$this->db->select("bed_parameter_label,bed_parameter,hospital_id,hospital_bed_parameter_id")
+		->from("hospital_bed_parameter")
+        ->where('hospital_id',$hospital['hospital_id']);
+        $this->db->order_by('hospital_bed_parameter_id',"DESC");
+        if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+	function get_all_bed_parameters_count()
+	{
+        $hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("hospital_bed_parameter")
+        ->where('hospital_id',$hospital['hospital_id']);
+        $this->db->order_by('hospital_bed_parameter_id',"DESC");
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+    function get_edit_bed_parameters($record_id) 
+	{
+		$this->db->select('bed_parameter_label,bed_parameter,hospital_id,hospital_bed_parameter_id');
+        $query = $this->db->get_where('hospital_bed_parameter', array('hospital_bed_parameter_id' => $record_id));
+        return $query->row_array();
+    }
+
+    function insert_bed_parameter($data) 
+    {
+        if(!empty($data['bed_parameter']))
+        {
+            $this->db->insert('hospital_bed_parameter', $data);
+        }
+    }
+
+    function update_bed_parameter($record_id, $data) {
+        $this->db->where('hospital_bed_parameter_id', $record_id);
+        $this->db->update('hospital_bed_parameter', $data);
+    }
+
+    function get_all_avnall_beds()
+    {
+        $this->db->select("pb.id,pb.patient_id, pb.hospital_bed_id, pb.details,pb.reservation_details, pb.created_date, pb.created_time,
+        hba.bed,pb.patient_name,pb.age_gender,pb.address")
+         ->from("patient_bed as pb")
+         ->join("hospital_bed as hba", "hba.hospital_bed_id= pb.hospital_bed_id")
+         ->order_by('hba.bed', "ASC");
+        $query = $this->db->get();
+        $patient_beds = $query->result();
+
+        $hospital = $this->session->userdata('hospital');
+        $this->db->select("hb.hospital_bed_id, hb.hospital_id, hb.bed")
+                ->from("hospital_bed as hb")
+                ->where('hb.hospital_id', $hospital['hospital_id']);
+        if (empty($patient_beds)) {
+            $this->db->order_by('hb.bed', "ASC");
+            $query = $this->db->get();
+            $available_beds = $query->result();
+        } else {
+            $excluded_ids = array();
+            foreach($patient_beds as $pb){
+                $excluded_ids[] = $pb->hospital_bed_id;
+            }
+            $this->db->where_not_in('hb.hospital_bed_id', $excluded_ids);
+            $this->db->order_by('hb.bed', "ASC");
+            $query = $this->db->get();
+            $available_beds = $query->result();
+        }
+        return array('patient_beds' => $patient_beds, 'available_beds' => $available_beds);
+    }
+
+    function save_patient_bed_parameter($data) 
+    {
+        $this->db->insert_batch('patient_bed_parameter', $data);
+    }
+
+    function fetch_selected_bed_parameters()
+    {
+        $bedId = $this->input->post('bedId');
+        $this->db->select("pbp.id, pbp.hospital_bed_id, pbp.hospital_bed_parameter_id, pbp.bed_parameter_value, hbp.bed_parameter_label")
+		->from("patient_bed_parameter as pbp")
+        ->join("hospital_bed_parameter as hbp", "hbp.hospital_bed_parameter_id = pbp.hospital_bed_parameter_id", "left")
+        ->where('hospital_bed_id',$bedId);
+        $query = $this->db->get();
+		return $query->result();
+    }
+
+    function combined_tabluar_view()
+    {
+            $hospital = $this->session->userdata('hospital');
+            $this->db->select("pb.id, pb.patient_id, pb.hospital_bed_id, pb.details, pb.reservation_details,
+                   pb.created_date, pb.created_time, hba.bed, pb.patient_name, pb.age_gender, pb.address,
+                    updated_by.first_name as updated_by_name")
+                    ->from("patient_bed as pb")
+                    ->join('hospital_bed as hba', 'hba.hospital_bed_id = pb.hospital_bed_id')
+                    ->join('staff as updated_by', 'updated_by.staff_id = pb.updated_by', 'left')
+                    ->where('hba.hospital_id', $hospital['hospital_id'])
+                    ->order_by('hba.bed', "ASC");
+            $query_patient_beds = $this->db->get();
+            $patient_beds = $query_patient_beds->result();
+            
+            $this->db->select("hb.hospital_bed_id, hb.hospital_id, hb.bed")
+                    ->from("hospital_bed as hb")
+                    ->where('hb.hospital_id', $hospital['hospital_id']);
+                    $this->db->order_by('hb.bed', "ASC");
+            $query_available_beds = $this->db->get();
+            $available_beds = $query_available_beds->result();
+            $all_beds = [];
+            $sno = 1;
+            foreach ($patient_beds as $pb) {
+                $details_lines = explode("\n", $pb->details);
+                $diagnosis = isset($details_lines[1]) ? trim($details_lines[1]) : '';
+                $admit_date = isset($details_lines[2]) ? trim($details_lines[2]) : ' - ';
+                if ($pb->patient_id == 0) 
+                {
+                    $patient_id = '-';
+                }else{
+                    $patient_id = $pb->patient_id;
+                }
+                $all_beds[$pb->hospital_bed_id] = [
+                    'sno' => $sno++,
+                    'occupied' => true,
+                    'bed' => $pb->bed,
+                    'patient_details' => [
+                        'id' => $pb->id,
+                        'patient_id' => $patient_id,
+                        'admit_date' => $admit_date,
+                        'details' => $pb->details,
+                        'diagnosis' => $diagnosis,
+                        'reservation_details' => $pb->reservation_details ?: '-',
+                        'created_date' => date("j M Y", strtotime("$pb->created_date")),
+                        'created_time' => $pb->created_time,
+                        'patient_name' => $pb->patient_name,
+                        'age_gender' => $pb->age_gender,
+                        'address' => $pb->address,
+                        'updated_by' => $pb->updated_by_name,
+                    ]
+                ];
+            }
+            foreach ($available_beds as $bed) {
+                if (!isset($all_beds[$bed->hospital_bed_id])) {
+                    $all_beds[$bed->hospital_bed_id] = [
+                        'sno' => $sno++,
+                        'occupied' => false,
+                        'bed' => $bed->bed,
+                        'patient_details' => null
+                    ];
+                }
+            }
+        return $all_beds;
+    }
+    
 }
 
