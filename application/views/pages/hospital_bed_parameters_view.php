@@ -181,13 +181,6 @@ display: inline-grid;
 					</div>
 					<div class="col-md-4">
 						<div class="form-group">
-							<label for="inputbed_parameter" >Bed Parameter</label>
-							<input type="text" class="form-control" name="bed_parameter" 
-							value="<?php echo $edit_bed_parameters['bed_parameter']; ?>" placeholder="Add Bed Parameter" autocomplete="off">
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="form-group">
 							<label for="inputbed_parameter_label" >Bed Parameter Label</label>
 							<input type="text" class="form-control" name="bed_parameter_label" 
 							value="<?php echo $edit_bed_parameters['bed_parameter_label']; ?>" placeholder="Add Bed Parameter Label" autocomplete="off">
@@ -352,7 +345,7 @@ echo "</select></li>";
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th style="text-align:center">#</th>
-		<th style="text-align:center">Bed Parameters</th>
+		<th style="text-align:center">Bed Parameters ID</th>
 		<th style="text-align:center">Bed Parameters Label</th>
 		<th style="text-align:center">Actions</th>				
 	</thead>
@@ -364,16 +357,48 @@ echo "</select></li>";
 	?>
 	<tr>
 		<td style="text-align:center"><?php echo $sno;?></td>	
-		<td style="text-align:center"><?php echo $abp->bed_parameter; ?></td>
+		<td style="text-align:center"><?php echo $abp->hospital_bed_parameter_id;?></td>	
 		<td style="text-align:center"><?php echo $abp->bed_parameter_label; ?></td>
 		<td style="text-align:center;">
-		<a class="btn btn-success" href="<?php echo base_url('hospital_beds/hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
-			style="color:white!important;">Edit</a>
+			<a class="btn btn-success" href="<?php echo base_url('hospital_beds/hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
+				style="color:white!important;">Edit</a>
+			<a class="btn btn-danger delete-bed-btn" data-bed-id="<?php echo $abp->hospital_bed_parameter_id; ?>" href="<?php echo base_url('hospital_beds/delete_hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
+			style="color:white!important;">Delete Bed Parameter</a>
 		</td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
+	<script>
+		$(document).ready(function() {
+			$('.btn-danger').on('click', function(e) 
+			{
+				e.preventDefault();
+				if (confirm("Are you sure you want to delete this bed parameter?")) 
+				{
+					var bed_parameter_id = $(this).data('bed-id');
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo base_url('hospital_beds/delete_hospital_bed_parameters'); ?>',
+						data: { bed_parameter_id: bed_parameter_id },
+						dataType: 'json',
+						success: function(response) {
+							console.log(response);
+							if (response.status == "success") {
+								alert(response.message);
+								location.reload();
+							} else {
+								alert('Failed to delete bed parameter');
+							}
+						},
+						error: function(xhr, status, error) {
+							console.error('Ajax request failed');
+						}
+					});
+				}
+			});
+		});
+	</script>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>

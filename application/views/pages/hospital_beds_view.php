@@ -188,6 +188,11 @@ display: inline-grid;
 						 required autocomplete="off">
 					</div>
 				</div>
+				<div class="col-md-4">
+					<div class="form-group" style="margin-top:30px;">
+						<input name="change_sequence"  id="inputchange_sequence" type="checkbox" > &nbsp<strong>Change Sequence</strong>
+					</div>
+				</div>
 				<!--<div class="col-md-4">
 					<div class="form-group">
 						<label for="inputdepartment_id">Department</label>
@@ -379,33 +384,36 @@ echo "</select></li>";
 
 </div>
 	
-	<table class="table table-bordered table-striped" id="table-sort">
-	<thead>
-		<th style="text-align:center">#</th>
-		<!-- <th style="text-align:center">Department</th> -->
-		<th style="text-align:center">Bed</th>
-		<th style="text-align:center">Actions</th>				
-	</thead>
-	<tbody>
-	<?php 
-	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
-	
-	foreach($all_beds as $aa) { 
-	?>
-	<tr>
-		<td style="text-align:center"><?php echo $sno;?></td>	
-		<!-- <td style="text-align:center"><?php echo $aa->dname; ?></td>	 -->
-		<td style="text-align:center"><?php echo $aa->bed; ?></td>
-		<td style="text-align:center;">
-		<a class="btn btn-success" href="<?php echo base_url('hospital_beds/add_hospital_beds/'.$aa->hospital_bed_id); ?>" 
-			style="color:white!important;">Edit</a>
-		<a class="btn btn-danger delete-bed-btn" data-bed-id="<?php echo $aa->hospital_bed_id; ?>" href="<?php echo base_url('hospital_beds/delete_hospital_beds/'.$aa->hospital_bed_id); ?>" 
-			style="color:white!important;">Delete Bed</a>
-		</td>
-	</tr>
-	<?php $sno++;}	?>
-	</tbody>
-	</table>
+<table class="table table-bordered table-striped" id="table-sort">
+    <thead>
+        <tr>
+            <th style="text-align:center"></th>
+			<th style="text-align:center">S.no</th>
+            <th style="text-align:center">Bed</th>
+            <th style="text-align:center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php 
+    $sno = (($page_no - 1) * $total_records_per_page) + 1; 
+    
+    foreach ($all_beds as $aa) { 
+    ?>
+        <tr data-bed-id="<?php echo $aa->hospital_bed_id; ?>">
+            <td style="text-align:center" class="sortable-handle"><i class="fa fa-arrows"></i></td>
+            <td style="text-align:center"><?php echo $sno; ?></td>
+            <td style="text-align:center"><?php echo $aa->bed; ?></td>
+            <td style="text-align:center;">
+                <a class="btn btn-success" href="<?php echo base_url('hospital_beds/add_hospital_beds/'.$aa->hospital_bed_id); ?>" style="color:white!important;">Edit</a>
+                <a class="btn btn-danger delete-bed-btn" data-bed-id="<?php echo $aa->hospital_bed_id; ?>" href="<?php echo base_url('hospital_beds/delete_hospital_beds/'.$aa->hospital_bed_id); ?>" style="color:white!important;">Delete Bed</a>
+            </td>
+        </tr>
+    <?php 
+    $sno++;
+    }   
+    ?>
+    </tbody>
+</table>
 	<script>
 		$(document).ready(function() {
 			$('.btn-danger').on('click', function(e) 
@@ -434,6 +442,47 @@ echo "</select></li>";
 					});
 				}
 			});
+		});
+	</script>
+	
+	<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+	<script>
+		$(document).ready(function() 
+		{
+			$('#inputchange_sequence').change(function() {
+				if ($(this).is(':checked')) {
+					$('#table-sort tbody').sortable({
+						handle: '.sortable-handle',
+						update: function(event, ui) {
+							updateBedSequence();
+						}
+					});
+				}else {
+					$('#table-sort tbody').sortable('destroy');
+				}
+			});
+			function updateBedSequence() {
+				var sequence = [];
+				$('#table-sort tbody tr').each(function(index) {
+					var bedId = $(this).data('bed-id');
+					sequence.push({ bedId: bedId, sequence: index + 1 });
+				});
+
+				$.ajax({
+					type: 'POST',
+					url: '<?php echo base_url('hospital_beds/update_bed_sequence'); ?>',
+					data: { sequence: sequence },
+					dataType: 'json',
+					success: function(response) {
+						console.log(response);
+						alert('Sequence updated successfully');
+						location.reload();
+					},
+					error: function(xhr, status, error) {
+						console.error(xhr.responseText);
+					}
+				});
+			}
 		});
 	</script>
 <div style='padding: 0px 2px;'>

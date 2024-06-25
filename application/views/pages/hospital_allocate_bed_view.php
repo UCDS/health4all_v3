@@ -115,7 +115,6 @@ $('#to_time').ptTimeSelect();
 			type: 'POST',
 			data: { patient_id: inputValue },
 			success: function(result) {
-				console.log(result);
 				var data = JSON.parse(result);
 				if (data.length > 0) {
 					var patientDetails = data[0];
@@ -132,10 +131,11 @@ $('#to_time').ptTimeSelect();
 					if (patientDetails.max_admit_date) {
 						var admitDate = new Date(patientDetails.max_admit_date);
             			var formattedDate = formatDate(admitDate);
-						details += '\n' + formattedDate;
+						
+						details += '\n' + 'Admit date : ' + formattedDate;
 					}
 					$('#patient_details_' + bedIndex).val(details); 
-					$('#patient_name_' + bedIndex).val(fullName + ' / ' + patientDetails.address);
+					$('#patient_name_' + bedIndex).val(fullName + ' , ' + patientDetails.address);
 					$('#address_store_' + bedIndex).val(patientDetails.address);
 					$('#patient_name_store_' + bedIndex).val(fullName);
 					$('#age_gender_' + bedIndex).val( patientDetails.age_years + ' / ' + patientDetails.gender);
@@ -248,38 +248,68 @@ display: inline-grid;
 	?>
 		
 	<div class="row col-md-offset-2">
-		<div class="col-md-5" style="margin-top:10%">
-			<h2 style="display: inline-block; margin-top: 8%;"><?php echo $title; ?></h2>&nbsp;&nbsp;&nbsp;
-			<a href="#" id="hide-details-link" style="font-size:15px;"> 
-				<span style="display: inline-block; float: right;margin-top: 11%;">Hide Patient Details</span>
+		<div class="col-md-8" style="margin-top:10%">
+			<h2 style="display: inline-block; margin-top: 4%;"><?php echo $title; ?></h2>&nbsp;&nbsp;&nbsp;
+			<a href="#" id="hide-details-link" style="font-size: 15px;">
+				<span id="icon-span">
+					<i class="fa fa-user" aria-hidden="true" style="color:red!important"></i>
+				</span>
+				<span id="text-span" style="margin-top: 6%;">Hide Patient Details</span>
 			</a>
+			<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
 		</div>
+		<style>
+			#text-span {
+				display: none;
+			}
+			#hide-details-link:hover #text-span {
+				display: inline-block;
+			}
+			#hide-details-link:hover #icon-span i {
+				color: green!important;
+			}
+		</style>
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
-				document.getElementById('hide-details-link').addEventListener('click', function(e) {
+				var link = document.getElementById('hide-details-link');
+				var textSpan = document.getElementById('text-span');
+
+				link.addEventListener('mouseenter', function() {
+					textSpan.style.display = 'inline-block';
+				});
+
+				link.addEventListener('mouseleave', function() {
+					textSpan.style.display = 'none';
+				});
+
+				link.addEventListener('click', function(e) {
 					e.preventDefault();
 					toggleInputs();
 				});
 
 				function toggleInputs() {
-					var inputs = document.querySelectorAll('input[type="text"].patient_name');
+					var inputs = document.querySelectorAll('input[type="text"].patient_name, textarea.patient_name');
+					var thElements = document.querySelectorAll('th.patient_name');
+					var tdElements = document.querySelectorAll('td.patient_name');
+
 					inputs.forEach(function(input) {
 						input.style.display = input.style.display === 'none' ? '' : 'none';
 					});
-					var thElements = document.querySelectorAll('th.patient_name');
-						thElements.forEach(function(th) {
-							th.style.display = th.style.display === 'none' ? '' : 'none';
-						});
 
-					var tdElements = document.querySelectorAll('td.patient_name');
-						tdElements.forEach(function(td) {
-							td.style.display = td.style.display === 'none' ? '' : 'none';
-						});
-					var linkText = document.querySelector('#hide-details-link span');
-					if (linkText.textContent.trim() === 'Hide Patient Details') {
-						linkText.textContent = 'Click to View Patient Details';
+					thElements.forEach(function(th) {
+						th.style.display = th.style.display === 'none' ? '' : 'none';
+					});
+
+					tdElements.forEach(function(td) {
+						td.style.display = td.style.display === 'none' ? '' : 'none';
+					});
+
+					if (textSpan.textContent.trim() === 'Hide Patient Details') {
+						textSpan.textContent = 'Click to View Patient Details';
+						document.getElementById('icon-span').innerHTML = '<i class="fa fa-user" aria-hidden="true" style="color:green!important"></i>';
 					} else {
-						linkText.textContent = 'Hide Patient Details';
+						textSpan.textContent = 'Hide Patient Details';
+						document.getElementById('icon-span').innerHTML = '<i class="fa fa-user" aria-hidden="true" style="color:red!important"></i>';
 					}
 				}
 			});
@@ -289,129 +319,68 @@ display: inline-grid;
 		<div class="row" style="margin-top:2%;">
 			<div class="col-md-12">
 			<?php
-				if (!empty($all_available_beds['available_beds'])) 
-				{
-					$count = count($all_available_beds['available_beds']);
-					for ($j = 0; $j < $count; $j++) 
+			if (!empty($all_available_beds['available_beds'])) {
+				$count = count($all_available_beds['available_beds']);
+				for ($j = 0; $j < $count; $j++) {
+					$abc = $all_available_beds['available_beds'][$j];
+					// Check if current bed is assigned to a patient
+					$patient_assigned = false;
+					$patient_details = null;
+					foreach ($all_available_beds['patient_beds'] as $patient_bed) {
+						if ($patient_bed->hospital_bed_id == $abc->hospital_bed_id) {
+							$patient_assigned = true;
+							$patient_details = $patient_bed;
+							break;
+						}
+					}
+					if ($patient_assigned && $patient_details) 
 					{
-						$abc = $all_available_beds['available_beds'][$j];
+						$lines = explode("\n", $patient_details->details);
+						$output_lines = [];
+						if (isset($lines[1])) {
+							$output_lines[] = $lines[1];
+						}
+						if (isset($lines[2])) {
+							$output_lines[] = $lines[2];
+						}
+						$patient_details->details = implode("\n", $output_lines);
+					}
 			?>
-					<div class="col-md-4">
-						<div class="form-group">
-							<label for="inputhospital_name" style="color:red;font-weight:bold;"></label>
-							<input type="hidden" name="bed_id_<?php echo $j; ?>" value="<?php echo $abc->hospital_bed_id; ?>"> <!-- Ensure proper index -->
-							<input class="form-control" name="bed_name_<?php echo $j; ?>" id="inputbde_name_<?php echo $j; ?>" value="<?php echo $abc->bed ?>" type="text" readonly style="color:#437bba!important;font-size:18px!important;">
-							<input type="text" class="form-control" name="patient_id_<?php echo $j; ?>" id="patient_id_<?php echo $j; ?>" value="" placeholder="Enter Patient Id" autocomplete="off" onkeyup="myKeyUp(this)">
-							<input type="text" class="form-control patient_name" name="patient_name_<?php echo $j; ?>" id="patient_name_<?php echo $j; ?>" value=""  autocomplete="off" placeholder="Patient Name">
-							<input type="hidden" class="form-control" name="patient_name_store_<?php echo $j; ?>" id="patient_name_store_<?php echo $j; ?>" value=""  autocomplete="off" >
-							<input type="hidden" class="form-control" name="address_store_<?php echo $j; ?>" id="address_store_<?php echo $j; ?>" value=""  autocomplete="off">
-							<input type="hidden" class="form-control" name="age_gender_<?php echo $j; ?>" id="age_gender_<?php echo $j; ?>" value=""  autocomplete="off">
-							<textarea style="max-width:100%!important;" name="patient_details_<?php echo $j; ?>" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="3" cols="12"></textarea>
-							<textarea style="max-width:100%!important;" name="reserve_details_<?php echo $j; ?>" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="3" cols="12"></textarea>
-							<div id="parameter_div" style="margin-top:2%!important;">
-								<?php foreach ($all_bed_parameters as $aabp): ?>
-									<div class="row " >
-										<div class="col-md-5">
-											<input type="text" class="form-control" name="bed_parameter_label_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter_label ?>" readonly autocomplete="off">
-										</div>
-										<div class="col-md-7" style="margin-left:-30px!important;width:67%!important;">
-											<?php if ($edit_access == 1): ?>
-												<input type="text" class="form-control" name="bed_parameter_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter; ?>" autocomplete="off">
-											<?php else: ?>
-												<input type="text" class="form-control" name="bed_parameter_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter; ?>" readonly autocomplete="off">
-											<?php endif; ?>
-											<input type="hidden" class="form-control" style="text-align:center" name="hospital_bed_parameter_id_<?php echo $j; ?>[]" value="<?php echo $aabp->hospital_bed_parameter_id; ?>" readonly>
-										</div>
-									</div>
-									
-								<?php endforeach; ?>
-							</div>
-							<div class="row" style="margin-top:2%!important;">
-								<div class="col-md-6">
-									<input type="checkbox" name="update_bed_<?php echo $j; ?>" id="update_bed_<?php echo $j; ?>" onclick="submitFormAndReload()"> &nbsp;Update Bed <br/><br/>
-								</div>
-								<div class="col-md-6" style="text-align:right;">
-									<input type="checkbox" name="reserve_id_<?php echo $j; ?>" id="reserve_id_<?php echo $j; ?>" value="" onclick="toggleReserveDetails(<?php echo $j; ?>)"> &nbsp;Reserve Bed <br/><br/>
-								</div>
-							</div>
+			<div class="col-md-4">
+            <div class="form-group">
+                <label for="inputhospital_name" style="color:red;font-weight:bold;"></label>
+                <input type="hidden" name="bed_id_<?php echo $j; ?>" value="<?php echo $abc->hospital_bed_id; ?>">
+				<input type="hidden" value="<?php echo $abc->hospital_bed_id; ?>" id="bed_no_id_<?php echo $abc->hospital_bed_id; ?>" data-id="<?php echo $abc->hospital_bed_id; ?>">
+			    <?php if ($patient_assigned && $patient_details) { ?>
+					<?php if ($patient_details->patient_name != '') { ?>
+						<input type="text" name="" class="form-control bedNameInput" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#5ce35c;color:black;">
+					<?php } else if ($patient_details->patient_name == '') { ?>
+						<input type="text" name="" class="form-control" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#ffa500a6;color:black;">
+					<?php } ?>
+					<div class="row">
+						<div class="col-md-6">
+							<input type="text" class="form-control" name="" id="patient_id_<?php echo $j; ?>" value="<?php if($patient_details->patient_id!=0) { echo $patient_details->patient_id; } ?>" autocomplete="off" readonly style="font-weight: bold;background-color:white!important;">
+						</div>
+						<div class="col-md-6" style="margin-left:-30px!important;width:59%!important;">
+							<input type="text" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="<?php echo $patient_details->age_gender; ?>" readonly style="font-weight: bold;background-color:white!important;">
 						</div>
 					</div>
-			<?php } } else { ?>
-				<h4 style="text-align:center;font-size:20px;"> No Beds Available to allocate </h4>
-			<?php
-			}
-			?>
-			<script>
-				document.addEventListener("DOMContentLoaded", function() {
-					var allAvailableBeds = <?php echo $count; ?>; // Use PHP count directly
-					for (var i = 0; i < allAvailableBeds; i++) {
-						toggleReserveDetails(i); // Initialize the toggle state
-					}
-				});
-				function toggleReserveDetails(index) {
-					var reserveCheckbox = document.getElementById('reserve_id_' + index);
-					var reserveDetailsTextarea = document.getElementById('reserve_details_' + index);
-					var patientIdInput = document.getElementById('patient_id_' + index);
-					var patientDetailsTextarea = document.getElementById('patient_details_' + index);
-					var patientNameInput = document.getElementById('patient_name_' + index);
-					var ageGenderInput = document.getElementById('age_gender_' + index);
-					//var parameterDiv = document.getElementById('parameter_div'); 
-					// if (reserveCheckbox.checked) {
-					// 	reserveDetailsTextarea.style.display = 'block';
-					// 	patientIdInput.style.display = 'none';
-					// 	patientDetailsTextarea.style.display = 'none';
-					// 	//parameterDiv.style.display = 'none'; // Hide parameter div
-					// } else {
-					// 	reserveDetailsTextarea.style.display = 'none';
-					// 	patientIdInput.style.display = 'block';
-					// 	patientDetailsTextarea.style.display = 'block';
-					// 	//parameterDiv.style.display = 'block';
-					// }
-					if (reserveCheckbox.checked) {
-						reserveDetailsTextarea.disabled = false; 
-						patientIdInput.disabled = true;
-						patientDetailsTextarea.disabled = true;
-						patientNameInput.disabled = true;
-						ageGenderInput.disabled = true;
-					} else {
-						reserveDetailsTextarea.disabled = true;
-						patientIdInput.disabled = false;
-						patientDetailsTextarea.disabled = false;
-						patientNameInput.disabled = false; 
-						ageGenderInput.disabled = false; 
-					}
-				}
-			</script>
-			<div class="row">
-				<div class="col-md-12">
-				<?php		
-					if (!empty($all_available_beds['patient_beds'])) 
-					{
-						foreach ($all_available_beds['patient_beds'] as $aab) 
-						{
-				?>
-						<div class="col-md-4">
-							<div class="form-group">
-								<input type="hidden" value="<?php echo $aab->hospital_bed_id; ?>" id="bed_no_id_<?php echo $aab->hospital_bed_id; ?>" data-id="<?php echo $aab->hospital_bed_id; ?>">
-								<?php if($aab->reservation_details=='') { ?>
-									<input type="text" name="" class="form-control bedNameInput" value="<?php echo $aab->bed; ?>" readonly style="font-size:18px;background-color:#5ce35c;color:black;">
-									<input type="text" class="form-control patient_id" value="<?php echo $aab->patient_id; ?>" readonly>
-									<input type="text" class="form-control patient_name" value="<?php echo $aab->patient_name .' / '.$aab->address ; ?>" readonly>
-									<input type="hidden" class="form-control age_gender" value="<?php echo $aab->age_gender; ?>" readonly>
-									<textarea name="" class="form-control patient_details" rows="3" cols="12" readonly><?php echo $aab->details; ?></textarea>
-								<?php } else { ?>
-									<input type="text" name="" class="form-control" value="<?php echo $aab->bed; ?>" 
-										readonly style="font-size:18px;background-color:#ffa500a6;color:black;">
-									<textarea name="" id="reserve_details" class="form-control" rows="3" cols="12" readonly><?php echo $aab->reservation_details; ?>
-										</textarea>
-									<?php } ?>
-								<div class="bedDataContainer_<?php echo $aab->hospital_bed_id; ?>">
-									<!-- Rows will be dynamically added here -->
-								</div><br/>
-								<input type="checkbox" data-id="<?php echo $aab->hospital_bed_id;?>" class="btn btn-warning discharge-checkbox" >&nbsp;&nbsp;<strong >Discharge Patient</strong>
-							</div>
-						</div>
-						<script>
+					<textarea type="text" class="form-control patient_name" name="" id="patient_name_<?php echo $j; ?>" 
+						value="" rows="2" cols="12" style="background-color:white!important;"
+						autocomplete="off" readonly><?php if($patient_details->patient_id!=0) { echo $patient_details->patient_name .' , '. $patient_details->address; } ?></textarea>
+					<input type="hidden" class="form-control" name="" id="patient_name_store_<?php echo $j; ?>" value="<?php echo $patient_details->patient_name; ?>" autocomplete="off">
+                    <input type="hidden" class="form-control" name="" id="address_store_<?php echo $j; ?>" value="<?php echo $patient_details->address; ?>" autocomplete="off">
+                    <input type="hidden" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="<?php echo $patient_details->age_gender; ?>" autocomplete="off">
+					<?php if ($patient_details->patient_name != '') { ?>
+					<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="2" cols="12" readonly><?php echo $patient_details->details; ?></textarea>
+                    <?php } else if ($patient_details->patient_name == '') { ?>
+					<textarea style="max-width:100%!important;background-color:white!important;" name="" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="3" cols="12" readonly><?php echo $patient_details->reservation_details; ?></textarea>
+					<?php } ?>
+					<div class="bedDataContainer_<?php echo $abc->hospital_bed_id; ?>">
+						<!-- Rows will be dynamically added here -->
+					</div><br/>
+					<input type="checkbox" data-id="<?php echo $abc->hospital_bed_id;?>" class="btn btn-warning discharge-checkbox" style="margin-top:-2%!important;">&nbsp;&nbsp;<strong >Discharge Patient</strong>
+					<script>
 							$(document).ready(function() {
 								function fetchBedData(bedId) {
 									$.ajax({
@@ -420,17 +389,16 @@ display: inline-grid;
 										dataType: 'json',
 										data: {bedId: bedId},
 										success: function(response) {
-											console.log(response);
 											var container = $('.bedDataContainer_' + bedId);
 											container.empty();
 											$.each(response, function(index, item) {
-												var html = '<div class="row">' +
+												var html = '<div class="row" >' +
 															'<div class="col-md-5">' +
-																'<input type="text" class="form-control bed-parameter-label" name="bed_parameter_label[]" value="' + item.bed_parameter_label + '" readonly>' +
+																'<input type="text" style="font-weight: bold;background-color:white!important;" class="form-control bed-parameter-label" name="bed_parameter_label[]" value="' + item.bed_parameter_label + '" readonly>' +
 															'</div>' +
 															
-															'<div class="col-md-7">' +
-																'<input type="text" class="form-control bed-parameter-value" name="bed_parameter_value[]" value="' + item.bed_parameter_value + '" readonly>' +
+															'<div class="col-md-7" style="margin-left:-30px!important;width:67%!important;">' +
+																'<input type="text" style="background-color:white!important;" class="form-control bed-parameter-value" name="bed_parameter_value[]" value="' + item.bed_parameter_value + '" readonly>' +
 															'</div>' +
 														'</div>';
 												container.append(html);
@@ -441,13 +409,85 @@ display: inline-grid;
 										}
 									});
 								}
-								var bedId = $('#bed_no_id_<?php echo $aab->hospital_bed_id; ?>').data('id');
+								var bedId = $('#bed_no_id_<?php echo $abc->hospital_bed_id; ?>').data('id');
 								fetchBedData(bedId);
 							});
 						</script>
-				<?php   }  } ?>
-				</div>
-			</div>
+				<?php } else { ?>
+					<input class="form-control" name="bed_name_<?php echo $j; ?>" id="inputbde_name_<?php echo $j; ?>" value="<?php echo $abc->bed ?>" type="text" readonly style="color:#437bba!important;font-size:18px!important;">
+                    <input type="text" class="form-control" name="patient_id_<?php echo $j; ?>" id="patient_id_<?php echo $j; ?>" value="" placeholder="Enter Patient Id" autocomplete="off" onkeyup="myKeyUp(this)">
+                    <input type="text" class="form-control patient_name" name="patient_name_<?php echo $j; ?>" id="patient_name_<?php echo $j; ?>" value="" autocomplete="off" placeholder="Patient Name">
+                    <input type="hidden" class="form-control" name="patient_name_store_<?php echo $j; ?>" id="patient_name_store_<?php echo $j; ?>" value="" autocomplete="off">
+                    <input type="hidden" class="form-control" name="address_store_<?php echo $j; ?>" id="address_store_<?php echo $j; ?>" value="" autocomplete="off">
+                    <input type="hidden" class="form-control" name="age_gender_<?php echo $j; ?>" id="age_gender_<?php echo $j; ?>" value="" autocomplete="off">
+                    <textarea style="max-width:100%!important;" name="patient_details_<?php echo $j; ?>" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="3" cols="12"></textarea>
+                    <textarea style="max-width:100%!important;" name="reserve_details_<?php echo $j; ?>" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="3" cols="12" disabled></textarea>
+					<div id="parameter_div" style="margin-top:2%!important;">
+						<?php foreach ($all_bed_parameters as $aabp): ?>
+							<div class="row">
+								<div class="col-md-5">
+									<input type="text" class="form-control" name="bed_parameter_label_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter_label ?>" readonly autocomplete="off">
+								</div>
+								<div class="col-md-7" style="margin-left:-30px!important;width:67%!important;">
+									<?php if ($edit_access == 1): ?>
+										<input type="text" class="form-control" name="bed_parameter_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter; ?>" autocomplete="off">
+									<?php else: ?>
+										<input type="text" class="form-control" name="bed_parameter_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter; ?>" readonly autocomplete="off">
+									<?php endif; ?>
+									<input type="hidden" class="form-control" style="text-align:center" name="hospital_bed_parameter_id_<?php echo $j; ?>[]" value="<?php echo $aabp->hospital_bed_parameter_id; ?>" readonly>
+								</div>
+							</div>
+						<?php endforeach; ?>
+					</div>
+					<div class="row" style="margin-top:2%!important;">
+						<div class="col-md-6">
+							<input type="checkbox" name="reserve_id_<?php echo $j; ?>" id="reserve_id_<?php echo $j; ?>" value="" onclick="toggleReserveDetails(<?php echo $j; ?>)"> &nbsp;Reserve Bed <br/><br/>
+						</div>
+						<div class="col-md-6" style="text-align:right;">
+							<button type="button" class="btn btn-success" id="update_bed_<?php echo $j; ?>" onclick="submitFormAndReload()">Update Bed</button>
+						</div>
+					</div>
+					<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							var allAvailableBeds = <?php echo count($all_available_beds['available_beds']); ?> // Use PHP count directly
+							for (var i = 0; i < allAvailableBeds; i++) {
+								toggleReserveDetails(i); // Initialize the toggle state
+							}
+						});
+						function toggleReserveDetails(index) {
+							var reserveCheckbox = document.getElementById('reserve_id_' + index);
+							var reserveDetailsTextarea = document.getElementById('reserve_details_' + index);
+							var patientIdInput = document.getElementById('patient_id_' + index);
+							var patientDetailsTextarea = document.getElementById('patient_details_' + index);
+							var patientNameInput = document.getElementById('patient_name_' + index);
+							var ageGenderInput = document.getElementById('age_gender_' + index);
+							if (reserveCheckbox.checked) {
+								reserveDetailsTextarea.disabled = false; 
+								patientIdInput.disabled = true;
+								patientDetailsTextarea.disabled = true;
+								patientNameInput.disabled = true;
+								ageGenderInput.disabled = true;
+							} else {
+								reserveDetailsTextarea.disabled = true;
+								patientIdInput.disabled = false;
+								patientDetailsTextarea.disabled = false;
+								patientNameInput.disabled = false; 
+								ageGenderInput.disabled = false; 
+							}
+						}
+					</script>
+				<?php } ?>
+            </div>
+        </div>
+			<?php
+				}
+			} else {
+			?>
+				<h4 style="text-align:center;font-size:20px;"> No Beds Available to allocate </h4>
+			<?php
+			}
+			?>
+			
 			<?php 
 				 	$user=$this->session->userdata('logged_in'); 
 					$user['user_id'];
@@ -666,8 +706,24 @@ echo "</select></li>";
 			<td><?php echo $bed['bed'] ?></td>
 			<td><?php echo $bed['occupied'] ? ($bed['patient_details'] ? $bed['patient_details']['patient_id'] : '-') : ' - '; ?></td>
 			<td><?php echo $bed['occupied'] ? $bed['patient_details']['admit_date'] : '-'; ?></td>
-			<td class="patient_name"><?php echo $bed['occupied'] ? $bed['patient_details']['patient_name'] . ' / ' . $bed['patient_details']['address'] : '-'; ?></td>
-			<td><?php echo $bed['occupied'] ? $bed['patient_details']['age_gender'] . ' / ' . $bed['patient_details']['diagnosis'] : '-'; ?></td>
+			<td class="patient_name">
+				<?php 
+				if ($bed['occupied'] && !empty($bed['patient_details']['patient_name']) && !empty($bed['patient_details']['address'])) {
+					echo $bed['patient_details']['patient_name'] . ' , ' . $bed['patient_details']['address'];
+				} else {
+					echo '-';
+				}
+				?>
+			</td>
+			<td>
+				<?php 
+				if ($bed['occupied'] && !empty($bed['patient_details']['age_gender']) && !empty($bed['patient_details']['diagnosis'])) {
+					echo $bed['patient_details']['age_gender'] . ' / ' . $bed['patient_details']['diagnosis'];
+				} else {
+					echo '-';
+				}
+				?>
+			</td>			
 			<td><?php echo $bed['occupied'] ?
 						($bed['patient_details']['reservation_details'] ?: 
 						(empty($bed['patient_details']['details']) ? '-' : implode(', ', $bed['patient_details']['parameters']))) : '-'; ?></td>

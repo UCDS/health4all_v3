@@ -45,7 +45,7 @@ class Hospital_beds_model extends CI_Model
         //->where('department.hospital_id',$hospital['hospital_id']);
         ->where('hospital_id',$hospital['hospital_id']);
 
-        $this->db->order_by('hospital_bed_id',"ASC");
+        $this->db->order_by('sequence',"ASC");
         if ($default_rowsperpage !=0)
 		{
 			$this->db->limit($rows_per_page,$start);
@@ -63,7 +63,7 @@ class Hospital_beds_model extends CI_Model
         //->where('department.hospital_id',$hospital['hospital_id']);
         ->where('hospital_id',$hospital['hospital_id']);
 
-        $this->db->order_by('hospital_bed_id',"ASC");
+        $this->db->order_by('sequence',"ASC");
 		$query = $this->db->get();
 		return $query->result();
 	}
@@ -180,11 +180,32 @@ class Hospital_beds_model extends CI_Model
         return $this->db->affected_rows() > 0;
     }
 
-    function check_bed_parameter($bed_parameter,$bed_parameter_label) 
+    function delete_bed_parameter_id()
+    {
+        $bed_id = $this->input->post('bed_parameter_id');
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('hospital_bed_parameter_id', $bed_id);
+        $res = $this->db->delete('hospital_bed_parameter');
+        if($res){
+            $this->db->where('hospital_bed_parameter_id', $bed_id);
+            $this->db->delete('patient_bed_parameter');
+        }
+        return $this->db->affected_rows() > 0;
+
+    }
+
+    public function update_bed_sequence_db($bedId, $newSequence) 
+    {
+        $this->db->where('hospital_bed_id', $bedId);
+        $this->db->update('hospital_bed', array('sequence' => $newSequence));
+        return $this->db->affected_rows() > 0;
+    }
+
+    function check_bed_parameter($bed_parameter_label) 
     {
         $hospital=$this->session->userdata('hospital');
         $this->db->where('hospital_id',$hospital['hospital_id']);
-        $this->db->where('bed_parameter', $bed_parameter);
         $this->db->where('bed_parameter_label', $bed_parameter_label);
         $query = $this->db->get('hospital_bed_parameter');
         return $query->num_rows() > 0;
@@ -207,7 +228,7 @@ class Hospital_beds_model extends CI_Model
 		$start = ($page_no -1 )  * $rows_per_page;
 
         $hospital=$this->session->userdata('hospital');
-		$this->db->select("bed_parameter_label,bed_parameter,hospital_id,hospital_bed_parameter_id")
+		$this->db->select("bed_parameter_label,hospital_id,hospital_bed_parameter_id")
 		->from("hospital_bed_parameter")
         ->where('hospital_id',$hospital['hospital_id']);
         $this->db->order_by('hospital_bed_parameter_id',"DESC");
@@ -233,14 +254,14 @@ class Hospital_beds_model extends CI_Model
 
     function get_edit_bed_parameters($record_id) 
 	{
-		$this->db->select('bed_parameter_label,bed_parameter,hospital_id,hospital_bed_parameter_id');
+		$this->db->select('bed_parameter_label,hospital_id,hospital_bed_parameter_id');
         $query = $this->db->get_where('hospital_bed_parameter', array('hospital_bed_parameter_id' => $record_id));
         return $query->row_array();
     }
 
     function insert_bed_parameter($data) 
     {
-        if(!empty($data['bed_parameter']))
+        if(!empty($data['bed_parameter_label']))
         {
             $this->db->insert('hospital_bed_parameter', $data);
         }
@@ -254,31 +275,21 @@ class Hospital_beds_model extends CI_Model
     function get_all_avnall_beds()
     {
         $this->db->select("pb.id,pb.patient_id, pb.hospital_bed_id, pb.details,pb.reservation_details, pb.created_date, pb.created_time,
-        hba.bed,pb.patient_name,pb.age_gender,pb.address")
+        hba.bed,pb.patient_name,pb.age_gender,pb.address,hba.sequence")
          ->from("patient_bed as pb")
          ->join("hospital_bed as hba", "hba.hospital_bed_id= pb.hospital_bed_id")
-         ->order_by('hba.bed', "ASC");
+         ->order_by('hba.sequence', "ASC");
         $query = $this->db->get();
         $patient_beds = $query->result();
 
         $hospital = $this->session->userdata('hospital');
-        $this->db->select("hb.hospital_bed_id, hb.hospital_id, hb.bed")
+        $this->db->select("hb.hospital_bed_id, hb.hospital_id, hb.bed,hb.sequence")
                 ->from("hospital_bed as hb")
                 ->where('hb.hospital_id', $hospital['hospital_id']);
-        if (empty($patient_beds)) {
-            $this->db->order_by('hb.bed', "ASC");
+            $this->db->order_by('hb.sequence', "ASC");
             $query = $this->db->get();
             $available_beds = $query->result();
-        } else {
-            $excluded_ids = array();
-            foreach($patient_beds as $pb){
-                $excluded_ids[] = $pb->hospital_bed_id;
-            }
-            $this->db->where_not_in('hb.hospital_bed_id', $excluded_ids);
-            $this->db->order_by('hb.bed', "ASC");
-            $query = $this->db->get();
-            $available_beds = $query->result();
-        }
+        
         return array('patient_beds' => $patient_beds, 'available_beds' => $available_beds);
     }
 
@@ -323,7 +334,7 @@ class Hospital_beds_model extends CI_Model
             foreach ($patient_beds as $pb) {
                 $details_lines = explode("\n", $pb->details);
                 $diagnosis = isset($details_lines[1]) ? trim($details_lines[1]) : '';
-                $admit_date = isset($details_lines[2]) ? trim($details_lines[2]) : ' - ';
+                $admit_date = isset($details_lines[2]) ? trim(substr($details_lines[2], strpos($details_lines[2], ':') + 1)) : ' - ';
                 if ($pb->patient_id == 0) 
                 {
                     $patient_id = '-';
