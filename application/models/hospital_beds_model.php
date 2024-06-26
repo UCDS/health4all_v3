@@ -202,6 +202,13 @@ class Hospital_beds_model extends CI_Model
         return $this->db->affected_rows() > 0;
     }
 
+    public function update_bed_param_sequence_db($hospital_bed_parameter_id, $newSequence) 
+    {
+        $this->db->where('hospital_bed_parameter_id', $hospital_bed_parameter_id);
+        $this->db->update('hospital_bed_parameter', array('sequence' => $newSequence));
+        return $this->db->affected_rows() > 0;
+    }
+
     function check_bed_parameter($bed_parameter_label) 
     {
         $hospital=$this->session->userdata('hospital');
@@ -228,10 +235,10 @@ class Hospital_beds_model extends CI_Model
 		$start = ($page_no -1 )  * $rows_per_page;
 
         $hospital=$this->session->userdata('hospital');
-		$this->db->select("bed_parameter_label,hospital_id,hospital_bed_parameter_id")
+		$this->db->select("bed_parameter_label,hospital_id,hospital_bed_parameter_id,sequence")
 		->from("hospital_bed_parameter")
         ->where('hospital_id',$hospital['hospital_id']);
-        $this->db->order_by('hospital_bed_parameter_id',"DESC");
+        $this->db->order_by('sequence',"ASC");
         if ($default_rowsperpage !=0)
 		{
 			$this->db->limit($rows_per_page,$start);
@@ -247,7 +254,7 @@ class Hospital_beds_model extends CI_Model
 		$this->db->select("count(*) as count",false)
 		->from("hospital_bed_parameter")
         ->where('hospital_id',$hospital['hospital_id']);
-        $this->db->order_by('hospital_bed_parameter_id',"DESC");
+        $this->db->order_by('sequence',"ASC");
 		$query = $this->db->get();
 		return $query->result();
 	}

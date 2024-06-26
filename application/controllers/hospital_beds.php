@@ -101,16 +101,58 @@ class hospital_beds extends CI_Controller{
 
     function update_bed_sequence() 
     {
+        $this->db->trans_start();
         $sequence = $this->input->post('sequence');
-        foreach ($sequence as $item) {
+        $transaction_success = true;
+        foreach ($sequence as $item) 
+        {
             $bedId = $item['bedId'];
             $newSequence = $item['sequence'];
             $success = $this->hospital_beds_model->update_bed_sequence_db($bedId, $newSequence);
+            if($success === false) 
+            {
+                $transaction_success = false;
+                break;
+            }
         }
-        echo json_encode(array('message' => 'Sequence updated successfully'));
+        if ($transaction_success===true) 
+        {
+            $this->db->trans_commit();
+            echo json_encode(array('message' => 'Sequence updated successfully'));
+        } else 
+        {
+            $this->db->trans_rollback();
+            echo json_encode(array('message' => 'Sequence update failed'));
+        }
     }
 
-
+    function update_bed_parameter_sequence() 
+    {
+        $this->db->trans_start();
+        $sequence = $this->input->post('sequence');
+        $transaction_success = true;
+        foreach ($sequence as $item) 
+        {
+             $hospital_bed_parameter_id = $item['hospital_bed_parameter_id'];
+             $newSequence = $item['sequence'];
+             $success = $this->hospital_beds_model->update_bed_param_sequence_db($hospital_bed_parameter_id, $newSequence);
+             if($success === false) 
+             {
+                $transaction_success = false;
+                break;
+             }
+         }
+         if ($transaction_success===true) 
+         {
+             $this->db->trans_commit();
+             echo json_encode(array('message' => 'Sequence updated successfully'));
+         } else 
+         {
+             $this->db->trans_rollback();
+             echo json_encode(array('message' => 'Sequence update failed'));
+         }
+    }
+    
     function update_hospital_beds() 
 	{
 		if($this->session->userdata('logged_in'))

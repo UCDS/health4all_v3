@@ -240,3 +240,5 @@ ALTER TABLE `patient_bed` ADD `address` VARCHAR(150) NOT NULL AFTER `age_gender`
 ALTER TABLE `hospital_bed_parameter` DROP COLUMN `bed_parameter`;
 
 ALTER TABLE `hospital_bed` ADD `sequence` INT NOT NULL AFTER `bed`;
+
+ALTER TABLE `hospital_bed_parameter` ADD `sequence` INT NOT NULL AFTER `bed_parameter_label`;
