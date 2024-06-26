@@ -109,13 +109,13 @@ class hospital_beds extends CI_Controller{
             $bedId = $item['bedId'];
             $newSequence = $item['sequence'];
             $success = $this->hospital_beds_model->update_bed_sequence_db($bedId, $newSequence);
-            if($success === false) 
+            if($success=== 0) 
             {
                 $transaction_success = false;
                 break;
             }
         }
-        if ($transaction_success===true) 
+        if ($transaction_success) 
         {
             $this->db->trans_commit();
             echo json_encode(array('message' => 'Sequence updated successfully'));
@@ -136,7 +136,7 @@ class hospital_beds extends CI_Controller{
              $hospital_bed_parameter_id = $item['hospital_bed_parameter_id'];
              $newSequence = $item['sequence'];
              $success = $this->hospital_beds_model->update_bed_param_sequence_db($hospital_bed_parameter_id, $newSequence);
-             if($success === false) 
+             if($success=== 0) 
              {
                 $transaction_success = false;
                 break;

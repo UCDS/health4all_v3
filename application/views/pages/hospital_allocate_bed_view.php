@@ -374,7 +374,7 @@ display: inline-grid;
 					<?php if ($patient_details->patient_name != '') { ?>
 					<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="2" cols="12" readonly><?php echo $patient_details->details; ?></textarea>
                     <?php } else if ($patient_details->patient_name == '') { ?>
-					<textarea style="max-width:100%!important;background-color:white!important;" name="" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="3" cols="12" readonly><?php echo $patient_details->reservation_details; ?></textarea>
+					<textarea style="max-width:100%!important;background-color:white!important;" name="" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="2" cols="12" readonly><?php echo $patient_details->reservation_details; ?></textarea>
 					<?php } ?>
 					<div class="bedDataContainer_<?php echo $abc->hospital_bed_id; ?>">
 						<!-- Rows will be dynamically added here -->
@@ -421,7 +421,7 @@ display: inline-grid;
                     <input type="hidden" class="form-control" name="address_store_<?php echo $j; ?>" id="address_store_<?php echo $j; ?>" value="" autocomplete="off">
                     <input type="hidden" class="form-control" name="age_gender_<?php echo $j; ?>" id="age_gender_<?php echo $j; ?>" value="" autocomplete="off">
                     <textarea style="max-width:100%!important;" name="patient_details_<?php echo $j; ?>" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="3" cols="12"></textarea>
-                    <textarea style="max-width:100%!important;" name="reserve_details_<?php echo $j; ?>" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="3" cols="12" disabled></textarea>
+                    <textarea style="max-width:100%!important;" name="reserve_details_<?php echo $j; ?>" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="2" cols="12" disabled></textarea>
 					<div id="parameter_div" style="margin-top:2%!important;">
 						<?php foreach ($all_bed_parameters as $aabp): ?>
 							<div class="row">
@@ -724,9 +724,40 @@ echo "</select></li>";
 				}
 				?>
 			</td>			
-			<td><?php echo $bed['occupied'] ?
-						($bed['patient_details']['reservation_details'] ?: 
-						(empty($bed['patient_details']['details']) ? '-' : implode(', ', $bed['patient_details']['parameters']))) : '-'; ?></td>
+			<td>
+				<?php if($bed['patient_details']['reservation_details']!='')
+				{
+					echo $bed['patient_details']['reservation_details'];
+				}else
+				{
+					if ($bed['occupied']) {
+						$occupied_bed_id = $bed['bed_id'];
+						$hospital_bed_id = $bed['patient_details']['hospital_bed_id'];
+						
+						if ($occupied_bed_id == $hospital_bed_id && !empty($bed['patient_details']['details'][$occupied_bed_id])) {
+							$details = $bed['patient_details']['details'][$occupied_bed_id];
+							$details_output = [];
+		
+							foreach ($details as $key => $value) {
+								if (!empty($value)) {
+									$details_output[] = "$key: $value";
+								}
+							}
+		
+							if (!empty($details_output)) {
+								echo implode(', ', $details_output);
+							} else {
+								echo '-';
+							}
+						} else {
+							echo '-';
+						}
+					} else {
+						echo '-';
+					}
+				}
+			 ?>
+			</td>
 			<td><?php echo $bed['occupied'] ? $bed['patient_details']['created_date'] . ' ' . $bed['patient_details']['created_time'] : '-'; ?></td>
 			<td><?php echo $bed['occupied'] ? $bed['patient_details']['updated_by'] : '-'; ?></td>
 		</tr>
