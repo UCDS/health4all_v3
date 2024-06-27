@@ -236,3 +236,9 @@ ALTER TABLE `patient_bed` ADD `updated_by` INT NOT NULL AFTER `created_time`;
 ALTER TABLE `patient_bed` ADD `patient_name` VARCHAR(100) NOT NULL AFTER `details`, ADD `age_gender` VARCHAR(100) NOT NULL AFTER `patient_name`;
 
 ALTER TABLE `patient_bed` ADD `address` VARCHAR(150) NOT NULL AFTER `age_gender`;
+
+ALTER TABLE `hospital_bed_parameter` DROP COLUMN `bed_parameter`;
+
+ALTER TABLE `hospital_bed` ADD `sequence` INT NOT NULL AFTER `bed`;
+
+ALTER TABLE `hospital_bed_parameter` ADD `sequence` INT NOT NULL AFTER `bed_parameter_label`;

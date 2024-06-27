@@ -181,18 +181,54 @@ display: inline-grid;
 					</div>
 					<div class="col-md-4">
 						<div class="form-group">
-							<label for="inputbed_parameter" >Bed Parameter</label>
-							<input type="text" class="form-control" name="bed_parameter" 
-							value="<?php echo $edit_bed_parameters['bed_parameter']; ?>" placeholder="Add Bed Parameter" autocomplete="off">
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="form-group">
 							<label for="inputbed_parameter_label" >Bed Parameter Label</label>
 							<input type="text" class="form-control" name="bed_parameter_label" 
 							value="<?php echo $edit_bed_parameters['bed_parameter_label']; ?>" placeholder="Add Bed Parameter Label" autocomplete="off">
 						</div>
 					</div>
+					<div class="col-md-4">
+						<div class="form-group" style="margin-top:30px;">
+							<input name="change_sequence"  id="inputchange_sequence" type="checkbox" > &nbsp<strong>Change Sequence</strong>
+						</div>
+					</div>
+					<script>
+						$(document).ready(function() 
+						{
+							$('#inputchange_sequence').change(function() {
+								if ($(this).is(':checked')) {
+									$('#table-sort tbody').sortable({
+										handle: '.sortable-handle',
+										update: function(event, ui) {
+											updateBedSequence();
+										}
+									});
+								}else {
+									$('#table-sort tbody').sortable('destroy');
+								}
+							});
+							function updateBedSequence() {
+								var sequence = [];
+								$('#table-sort tbody tr').each(function(index) {
+									var hospital_bed_parameter_id = $(this).data('bed-id');
+									sequence.push({ hospital_bed_parameter_id: hospital_bed_parameter_id, sequence: index + 1 });
+								});
+
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo base_url('hospital_beds/update_bed_parameter_sequence'); ?>',
+									data: { sequence: sequence },
+									dataType: 'json',
+									success: function(response) {
+										alert('Sequence updated successfully');
+										location.reload();
+									},
+									error: function(xhr, status, error) {
+										console.error(xhr.responseText);
+									}
+								});
+							}
+						});
+					</script>
 				</div>
 			</div>
 				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
@@ -351,8 +387,10 @@ echo "</select></li>";
 	
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
-		<th style="text-align:center">#</th>
-		<th style="text-align:center">Bed Parameters</th>
+		<th style="text-align:center"></th>
+		<th style="text-align:center">S.no</th>
+		<th style="text-align:center">Bed Parameters ID</th>
+		<th style="text-align:center">Sequence ID</th>
 		<th style="text-align:center">Bed Parameters Label</th>
 		<th style="text-align:center">Actions</th>				
 	</thead>
@@ -360,20 +398,53 @@ echo "</select></li>";
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($all_bed_parameters as $abp) { 
+	foreach($all_bed_parameters as $abp) {  
 	?>
-	<tr>
+	<tr data-bed-id="<?php echo $abp->hospital_bed_parameter_id; ?>">
+		<td style="text-align:center" class="sortable-handle"><i class="fa fa-arrows"></i></td>
 		<td style="text-align:center"><?php echo $sno;?></td>	
-		<td style="text-align:center"><?php echo $abp->bed_parameter; ?></td>
+		<td style="text-align:center"><?php echo $abp->hospital_bed_parameter_id;?></td>	
+		<td style="text-align:center"><?php echo $abp->sequence;?></td>	
 		<td style="text-align:center"><?php echo $abp->bed_parameter_label; ?></td>
 		<td style="text-align:center;">
-		<a class="btn btn-success" href="<?php echo base_url('hospital_beds/hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
-			style="color:white!important;">Edit</a>
+			<a class="btn btn-success" href="<?php echo base_url('hospital_beds/hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
+				style="color:white!important;">Edit</a>
+			<a class="btn btn-danger delete-bed-btn" data-bed-id="<?php echo $abp->hospital_bed_parameter_id; ?>" href="<?php echo base_url('hospital_beds/delete_hospital_bed_parameters/'.$abp->hospital_bed_parameter_id); ?>" 
+			style="color:white!important;">Delete Bed Parameter</a>
 		</td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
 	</table>
+	<script>
+		$(document).ready(function() {
+			$('.btn-danger').on('click', function(e) 
+			{
+				e.preventDefault();
+				if (confirm("Are you sure you want to delete this bed parameter?")) 
+				{
+					var bed_parameter_id = $(this).data('bed-id');
+					$.ajax({
+						type: 'POST',
+						url: '<?php echo base_url('hospital_beds/delete_hospital_bed_parameters'); ?>',
+						data: { bed_parameter_id: bed_parameter_id },
+						dataType: 'json',
+						success: function(response) {
+							if (response.status == "success") {
+								alert(response.message);
+								location.reload();
+							} else {
+								alert('Failed to delete bed parameter');
+							}
+						},
+						error: function(xhr, status, error) {
+							console.error('Ajax request failed');
+						}
+					});
+				}
+			});
+		});
+	</script>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
