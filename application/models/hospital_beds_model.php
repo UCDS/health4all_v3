@@ -163,7 +163,7 @@ class Hospital_beds_model extends CI_Model
         $this->db->select("patient.first_name,patient.last_name,patient.age_years,patient.gender,patient.address,
         patient_followup.diagnosis, , MAX(pv.admit_date) as max_admit_date")
 		->from("patient")
-		->join("patient_followup", "patient_followup.patient_id= patient.patient_id")
+		->join("patient_followup", "patient_followup.patient_id= patient.patient_id",'left')
         ->join('patient_visit as pv', 'pv.patient_id = patient.patient_id AND pv.visit_type = "IP"', 'left')
         ->where('patient.patient_id',$patient_id);
         $query = $this->db->get();
@@ -184,15 +184,53 @@ class Hospital_beds_model extends CI_Model
     {
         $bed_id = $this->input->post('bed_parameter_id');
         $hospital=$this->session->userdata('hospital');
-        $this->db->where('hospital_id', $hospital['hospital_id']);
+        
+        $this->db->select('hospital_bed_parameter_id');
+        $this->db->from("patient_bed_parameter");
         $this->db->where('hospital_bed_parameter_id', $bed_id);
-        $res = $this->db->delete('hospital_bed_parameter');
-        if($res){
+        $query = $this->db->get()->row();
+        if($query)
+        {
             $this->db->where('hospital_bed_parameter_id', $bed_id);
             $this->db->delete('patient_bed_parameter');
         }
-        return $this->db->affected_rows() > 0;
 
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('hospital_bed_parameter_id', $bed_id);
+        $res = $this->db->delete('hospital_bed_parameter');
+
+        return $this->db->affected_rows() > 0;
+    }
+
+    public function edited_bed_parameters($updated_parameters) 
+    {
+        $success = true;
+        foreach ($updated_parameters as $parameter) 
+        {
+            $data = array(
+                'bed_parameter_value' => $parameter['bed_parameter_value']
+            );
+            $this->db->where('id', $parameter['bed_parameter_id']);
+            $this->db->update('patient_bed_parameter', $data);
+            if ($this->db->affected_rows() == 0) {
+                $success = false;
+                break;
+            }
+        }
+        return $success;
+    }
+
+    public function bed_params_edit()
+    {
+        $bed_id = $this->input->post('bed_id');
+        $hospital=$this->session->userdata('hospital');
+        $this->db->select('pbp.id,pbp.hospital_bed_id,pbp.hospital_bed_parameter_id,pbp.bed_parameter_value,hbp.bed_parameter_label');
+        $this->db->from('patient_bed_parameter as pbp');
+        $this->db->join("hospital_bed_parameter as hbp", "hbp.hospital_bed_parameter_id = pbp.hospital_bed_parameter_id");
+        $this->db->where('pbp.hospital_bed_id', $bed_id);
+        $this->db->where('hbp.hospital_id', $hospital['hospital_id']);
+        $query = $this->db->get();
+        return $query->result_array();
     }
 
     public function update_bed_sequence_db($bedId, $newSequence) 
@@ -321,7 +359,7 @@ class Hospital_beds_model extends CI_Model
             $hospital = $this->session->userdata('hospital');
             $this->db->select("pb.id, pb.patient_id, pb.hospital_bed_id, pb.details, pb.reservation_details,
                    pb.created_date, pb.created_time, hba.bed, pb.patient_name, pb.age_gender, pb.address,
-                    updated_by.first_name as updated_by_name,hba.hospital_bed_id")
+                    updated_by.first_name as updated_by_name,hba.hospital_bed_id,hba.sequence")
                     ->from("patient_bed as pb")
                     ->join('hospital_bed as hba', 'hba.hospital_bed_id = pb.hospital_bed_id')
                     ->join('staff as updated_by', 'updated_by.staff_id = pb.updated_by', 'left')
