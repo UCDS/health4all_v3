@@ -351,9 +351,9 @@ class hospital_beds extends CI_Controller{
                             $allocated_bed_data[] = array(
                                 'hospital_bed_id' => $this->input->post('bed_id_' . $i),
                                 'patient_id' => $this->input->post('patient_id_' . $i),
-                                'details' => $this->input->post('patient_details_' . $i),
+                                'details' => $this->input->post('patient_details_store_' . $i),
                                 'patient_name' => $this->input->post('patient_name_store_' . $i),
-                                'age_gender' => $this->input->post('age_gender_' . $i),
+                                'age_gender' => $this->input->post('age_gender_store_' . $i),
                                 'address' => $this->input->post('address_store_' . $i),
                                 'created_date' => date('Y-m-d'),
                                 'created_time' => date('H:i:s'),
@@ -395,6 +395,20 @@ class hospital_beds extends CI_Controller{
 		{
 			show_404();
 		}
+    }
+
+    public function get_bed_params_edit() 
+    {
+        $bed_id = $this->input->post('bed_id');
+        $edit_details = $this->hospital_beds_model->bed_params_edit($bed_id);
+        echo json_encode($edit_details);
+    }
+
+    public function update_edited_bed_params() 
+    {
+        $updated_parameters = $this->input->post('parameters');
+        $success = $this->hospital_beds_model->edited_bed_parameters($updated_parameters);
+        echo json_encode(['success' => $success]);
     }
 
     function discharge_patient_allocated_bed()
@@ -479,7 +493,6 @@ class hospital_beds extends CI_Controller{
                 $this->data['all_bed_parameters_count'] = $this->hospital_beds_model->get_all_bed_parameters_count();
                 //Fetch record to edit
                 $this->data['edit_bed_parameters'] = $this->hospital_beds_model->get_edit_bed_parameters($record_id);
-
                 $this->load->view('templates/header',$this->data);
                 $this->load->view('templates/leftnav',$this->data);
                 $this->load->view('pages/hospital_bed_parameters_view',$this->data);
