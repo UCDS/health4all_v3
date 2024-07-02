@@ -361,7 +361,7 @@ class Hospital_beds_model extends CI_Model
                    pb.created_date, pb.created_time, hba.bed, pb.patient_name, pb.age_gender, pb.address,
                     updated_by.first_name as updated_by_name,hba.hospital_bed_id,hba.sequence")
                     ->from("patient_bed as pb")
-                    ->join('hospital_bed as hba', 'hba.hospital_bed_id = pb.hospital_bed_id')
+                    ->join('hospital_bed as hba', 'hba.hospital_bed_id = pb.hospital_bed_id','left')
                     ->join('staff as updated_by', 'updated_by.staff_id = pb.updated_by', 'left')
                     ->where('hba.hospital_id', $hospital['hospital_id'])
                     ->order_by('hba.sequence', "ASC");
@@ -382,59 +382,7 @@ class Hospital_beds_model extends CI_Model
             $hospital_bed_parameter = $this->db->get();
             $bed_parameters = $hospital_bed_parameter->result();
 
-            $parameter_values = [];
-            foreach ($bed_parameters as $parameter) { 
-                if (!isset($parameter_values[$parameter->hospital_bed_id])) {
-                    $parameter_values[$parameter->hospital_bed_id] = []; // Initialize array if not set
-                }
-                $parameter_values[$parameter->hospital_bed_id][$parameter->bed_parameter_label] = $parameter->bed_parameter_value;
-            }
-
-            $all_beds = [];
-            $sno = 1;
-            foreach ($patient_beds as $pb) {
-                $details_lines = explode("\n", $pb->details);
-                $diagnosis = isset($details_lines[1]) ? trim($details_lines[1]) : '';
-                $admit_date = isset($details_lines[2]) ? trim(substr($details_lines[2], strpos($details_lines[2], ':') + 1)) : ' - ';
-                if ($pb->patient_id == 0) 
-                {
-                    $patient_id = '-';
-                }else{
-                    $patient_id = $pb->patient_id;
-                }
-                $all_beds[$pb->hospital_bed_id] = [
-                    'sno' => $sno++,
-                    'occupied' => true,
-                    'bed' => $pb->bed,
-                    'bed_id'=>$pb->hospital_bed_id,
-                    'patient_details' => [
-                        'id' => $pb->id,
-                        'patient_id' => $patient_id,
-                        'admit_date' => $admit_date,
-                        'details' => $parameter_values,
-                        'diagnosis' => $diagnosis,
-                        'reservation_details' => $pb->reservation_details ,
-                        'created_date' => date("j M Y", strtotime("$pb->created_date")),
-                        'created_time' => $pb->created_time,
-                        'patient_name' => $pb->patient_name,
-                        'age_gender' => $pb->age_gender,
-                        'address' => $pb->address,
-                        'updated_by' => $pb->updated_by_name,
-                        'hospital_bed_id' => $pb->hospital_bed_id,
-                    ]
-                ];
-            }
-            foreach ($available_beds as $bed) {
-                if (!isset($all_beds[$bed->hospital_bed_id])) {
-                    $all_beds[$bed->hospital_bed_id] = [
-                        'sno' => $sno++,
-                        'occupied' => false,
-                        'bed' => $bed->bed,
-                        'patient_details' => null
-                    ];
-                }
-            }
-        return $all_beds;
+            return array('patient_beds' => $patient_beds, 'available_beds' => $available_beds, 'bed_parameters' => $bed_parameters);
     }
     
 }
