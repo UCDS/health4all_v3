@@ -813,77 +813,87 @@ echo "</select></li>";
 		<th style="text-align:center">S.no</th>
 		<th style="text-align:center">Bed</th>
 		<th style="text-align:center">Patient Id</th>
-		<th style="text-align:center">Admit Date</th>
+		<th style="text-align:center;width:11%;">Admit Date</th>
 		<th style="text-align:center" class="patient_name">Name / Address</th>
-		<th style="text-align:center">Age / Gender / Diagnosis</th>
+		<th style="text-align:center;width:17%;">Age / Gender / Diagnosis</th>
 		<th style="text-align:center">Parameters</th>
-		<th style="text-align:center">Update Date / Time</th>
+		<th style="text-align:center;width:13%;">Update Date</th>
 		<th style="text-align:center">Updated by</th>
 		<!-- <th style="text-align:center">Actions</th>-->
 	</thead>
 	<tbody>
-	<?php foreach ($all_beds as $sno => $bed): print_r($bed);?>
+	<?php $i = 1; ?>
+	<?php foreach ($all_beds['available_beds'] as $bed): ?>
 		<tr>
-			<td style="text-align:center"><?php echo $bed['sno']; ?></td>
-			<td><?php echo $bed['bed'] ?></td>
-			<td><?php echo $bed['occupied'] ? ($bed['patient_details'] ? $bed['patient_details']['patient_id'] : '-') : ' - '; ?></td>
-			<td><?php echo $bed['occupied'] ? $bed['patient_details']['admit_date'] : '-'; ?></td>
-			<td class="patient_name">
-				<?php 
-				if ($bed['occupied'] && (!empty($bed['patient_details']['patient_name']) || !empty($bed['patient_details']['address']))) {
-					echo '<b>'.$bed['patient_details']['patient_name'].'</b>'. ' , ' . $bed['patient_details']['address'];
-				} else {
-					echo '-';
-				}
-				?>
-			</td>
-			<td>
-				<?php 
-				if ($bed['occupied'] && (!empty($bed['patient_details']['age_gender']) || !empty($bed['patient_details']['diagnosis']))) {
-					echo $bed['patient_details']['age_gender'] . ' / ' . $bed['patient_details']['diagnosis'];
-				} else {
-					echo '-';
-				}
-				?>
-			</td>			
-			<td>
-				<?php if($bed['patient_details']['reservation_details']!='')
-				{
-					echo $bed['patient_details']['reservation_details'];
-				}else
-				{
-					if ($bed['occupied']) {
-						$occupied_bed_id = $bed['bed_id'];
-						$hospital_bed_id = $bed['patient_details']['hospital_bed_id'];
-						
-						if ($occupied_bed_id == $hospital_bed_id && !empty($bed['patient_details']['details'][$occupied_bed_id])) {
-							$details = $bed['patient_details']['details'][$occupied_bed_id];
-							$details_output = [];
-		
-							foreach ($details as $key => $value) {
-								if (!empty($value)) {
-									$details_output[] = '<b>' . $key . '</b> : ' . $value;
-								}
-							}
-		
-							if (!empty($details_output)) {
-								echo implode(', ', $details_output);
-							} else {
-								echo '-';
-							}
+			<td style="text-align:right;"><?php echo $i++; ?></td>
+			<td><?php echo $bed->bed; ?></td>
+			<?php
+			$patient_found = false;
+			foreach ($all_beds['patient_beds'] as $patient_bed) 
+			{ 
+				$details_lines = explode("\n", $patient_bed->details);
+				$diagnosis = isset($details_lines[1]) ? trim($details_lines[1]) : '';
+				$admit_date = isset($details_lines[2]) ? trim(substr($details_lines[2], strpos($details_lines[2], ':') + 1)) : ' - ';
+				if ($patient_bed->hospital_bed_id == $bed->hospital_bed_id) {
+					$patient_found = true;
+					echo '<td>' . ($patient_bed->patient_id != 0 ? $patient_bed->patient_id : '-') . '</td>';
+					echo '<td>' . $admit_date . '</td>';
+					echo '<td class="patient_name"><b>';
+						if (!empty($patient_bed->patient_name)) {
+							echo $patient_bed->patient_name;
+						} 
+						echo '</b>';
+						if (!empty($patient_bed->patient_name) && !empty($patient_bed->address)) {
+							echo ' , ';
+						}
+						if (empty($patient_bed->patient_name) && empty($patient_bed->address)) {
+							echo ' - ';
+						}
+						if (!empty($patient_bed->address)) {
+							echo $patient_bed->address;
+						} 
+					echo '</td>';
+					echo '<td>';
+						if (!empty($patient_bed->age_gender) && !empty($diagnosis)) {
+							echo $patient_bed->age_gender . ' / ' . $diagnosis;
+						} elseif (!empty($patient_bed->age_gender)) {
+							echo $patient_bed->age_gender;
+						} elseif (!empty($diagnosis)) {
+							echo $diagnosis;
 						} else {
 							echo '-';
 						}
+					echo '</td>';
+					$matched_parameters = array_filter($all_beds['bed_parameters'], function($param) use ($bed) {
+						return $param->hospital_bed_id == $bed->hospital_bed_id;
+					});
+					
+					if (!empty($matched_parameters) && empty($patient_bed->reservation_details)) {
+						echo '<td>';
+						foreach ($matched_parameters as $param) {
+							echo '<b>'.$param->bed_parameter_label.'</b>'. ' : ' . $param->bed_parameter_value . '<br>';
+						}
+						echo '</td>';
 					} else {
-						echo '-';
+						echo '<td>'. $patient_bed->reservation_details .'</td>';
 					}
+					echo '<td>' . date("j M Y ", strtotime("$patient_bed->created_date")) . '</td>';
+					echo '<td>' . $patient_bed->updated_by_name . '</td>';
+					break;
 				}
-			 ?>
-			</td>
-			<td><?php echo $bed['occupied'] ? $bed['patient_details']['created_date'] . ' ' . $bed['patient_details']['created_time'] : '-'; ?></td>
-			<td><?php echo $bed['occupied'] ? $bed['patient_details']['updated_by'] : '-'; ?></td>
+			}
+			if (!$patient_found) {
+				echo '<td> - </td>';
+				echo '<td> - </td>';
+				echo '<td> - </td>';
+				echo '<td> - </td>';
+				echo '<td> - </td>';
+				echo '<td> - </td>';
+				echo '<td> - </td>';
+			}
+			?>
 		</tr>
-	<?php endforeach; ?>
+        <?php endforeach; ?>
 	</tbody>
 	</table>
 <div style='padding: 0px 2px;'>
