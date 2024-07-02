@@ -822,7 +822,7 @@ echo "</select></li>";
 		<!-- <th style="text-align:center">Actions</th>-->
 	</thead>
 	<tbody>
-	<?php foreach ($all_beds as $sno => $bed): print_r($bed);?>
+	<?php foreach ($all_beds as $sno => $bed): ?>
 		<tr>
 			<td style="text-align:center"><?php echo $bed['sno']; ?></td>
 			<td><?php echo $bed['bed'] ?></td>
