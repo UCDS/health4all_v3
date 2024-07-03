@@ -994,6 +994,7 @@ class User_panel extends CI_Controller {
 				{
 					$hospital = $this->session->userdata('hospital');
 					$priority_type = $this->input->post('priority_type');
+					$color_code = $this->input->post('color_code');
 					$added_by = $this->input->post('added_by');
 					$insert_datetime = $this->input->post('insert_datetime');
 					if($this->masters_model->check_priority_type($priority_type)) 
@@ -1005,6 +1006,7 @@ class User_panel extends CI_Controller {
 					 	$data_to_insert = array(
 					 		'hospital_id' => $hospital['hospital_id'],
 					 		'priority_type' => $priority_type,
+					 		'color_code' => $color_code,
 					 		'created_by' => $added_by,
 					 		'created_date_time' => $insert_datetime,
 					 	);
@@ -1049,6 +1051,7 @@ class User_panel extends CI_Controller {
 				$hospital = $this->session->userdata('hospital');
 				$update_record_id = $this->input->post('record_id');
 				$priority_type = $this->input->post('priority_type');
+				$color_code = $this->input->post('color_code');
 				$updated_by = $this->input->post('updated_by');
 				$update_datetime = $this->input->post('updated_datetime');
 				if($this->masters_model->check_priority_type($priority_type)) 
@@ -1058,6 +1061,7 @@ class User_panel extends CI_Controller {
 				{
 					$update_data = array(
 						'priority_type' => $priority_type,
+						'color_code' => $color_code,
 						'updated_by' => $updated_by,
 						'updated_date_time' => $update_datetime,
 					);

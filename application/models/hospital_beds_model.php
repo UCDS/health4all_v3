@@ -320,9 +320,11 @@ class Hospital_beds_model extends CI_Model
     function get_all_avnall_beds()
     {
         $this->db->select("pb.id,pb.patient_id, pb.hospital_bed_id, pb.details,pb.reservation_details, pb.created_date, pb.created_time,
-        hba.bed,pb.patient_name,pb.age_gender,pb.address,hba.sequence")
+        hba.bed,pb.patient_name,pb.age_gender,pb.address,hba.sequence,pt.priority_type_id,pt.color_code,pf.priority_type_id as followup_priority_type")
          ->from("patient_bed as pb")
          ->join("hospital_bed as hba", "hba.hospital_bed_id= pb.hospital_bed_id")
+         ->join("patient_followup as pf", "pf.patient_id= pb.patient_id",'left')
+         ->join("priority_type as pt", "pt.priority_type_id= pf.priority_type_id",'left')
          ->order_by('hba.sequence', "ASC");
         $query = $this->db->get();
         $patient_beds = $query->result();

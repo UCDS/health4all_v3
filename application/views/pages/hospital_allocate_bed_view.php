@@ -255,7 +255,7 @@ display: inline-grid;
 	<div class="row col-md-offset-2">
 		<div class="col-md-8" style="margin-top:10%">
 			<h2 style="display: inline-block; margin-top: 4%;"><?php echo $title; ?></h2>&nbsp;&nbsp;&nbsp;
-			<a href="#" id="hide-details-link" style="font-size: 15px;">
+			<a href="#" id="hide-details-link" style="font-size: 15px;text-decoration:none!important;">
 				<span id="icon-span">
 					<i class="fa fa-user" aria-hidden="true" style="color:red!important"></i>
 				</span>
@@ -357,11 +357,13 @@ display: inline-grid;
                 <input type="hidden" name="bed_id_<?php echo $j; ?>" value="<?php echo $abc->hospital_bed_id; ?>">
 				<input type="hidden" value="<?php echo $abc->hospital_bed_id; ?>" id="bed_no_id_<?php echo $abc->hospital_bed_id; ?>" data-id="<?php echo $abc->hospital_bed_id; ?>">
 			    <?php if ($patient_assigned && $patient_details) { ?>
-					<?php if ($patient_details->patient_name != '') { ?>
+					<?php if ($patient_details->patient_name != '' && $patient_details->priority_type_id==$patient_details->followup_priority_type && $patient_details->color_code!='') { ?>
+						<input type="text" name="" class="form-control bedNameInput" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px; background-color:<?php echo $patient_details->color_code; ?>; color:black">
+					<?php } if ($patient_details->patient_name == '' && $patient_details->reservation_details!= '' ) { ?>
+						<input type="text" name="" class="form-control" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#88f9e1a6;color:black;">
+					<?php } if ($patient_details->patient_name != '' && ($patient_details->followup_priority_type=='0' || $patient_details->followup_priority_type==''))  { ?>
 						<input type="text" name="" class="form-control bedNameInput" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#5ce35c;color:black;">
-					<?php } else if ($patient_details->patient_name == '') { ?>
-						<input type="text" name="" class="form-control" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#ffa500a6;color:black;">
-					<?php } ?>
+					<?php }?>
 					<div class="row">
 						<div class="col-md-6">
 							<input type="text" class="form-control" name="" id="patient_id_<?php echo $j; ?>" value="<?php if($patient_details->patient_id!=0) { echo $patient_details->patient_id; } ?>" autocomplete="off" readonly style="font-weight: bold;background-color:white!important;">
