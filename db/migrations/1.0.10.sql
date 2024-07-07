@@ -242,3 +242,5 @@ ALTER TABLE `hospital_bed_parameter` DROP COLUMN `bed_parameter`;
 ALTER TABLE `hospital_bed` ADD `sequence` INT NOT NULL AFTER `bed`;
 
 ALTER TABLE `hospital_bed_parameter` ADD `sequence` INT NOT NULL AFTER `bed_parameter_label`;
+
+ALTER TABLE `priority_type` ADD `color_code` VARCHAR(50) NOT NULL AFTER `priority_type`;

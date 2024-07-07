@@ -728,7 +728,7 @@
 				echo 'class="active"'; ?>>
 				<a href="<?php echo base_url(); ?>hospital_units/add_unit">Add / Update Units</a>
 			</li>
-			<li <?php if(preg_match("/user_panel\/priority_type/", current_url()) || preg_match("/user_panel\/priority_type\/1/", current_url())){ echo 'class="active"'; }?>>
+			<li <?php if(preg_match("/user_panel\/priority_type/", current_url()) || preg_match("/user_panel\/priority_type\/1/", current_url()) || preg_match("/user_panel\/update_priority_type/", current_url()) ){ echo 'class="active"'; }?>>
 				<a href="<?php echo base_url() . "user_panel/priority_type"; ?>"> Add / Update Priority Type</a>
 			</li>
 			<li <?php if(preg_match("/user_panel\/visit_type/", current_url()) || preg_match("/user_panel\/visit_type\/1/", current_url())){ echo 'class="active"'; }?>>

@@ -2264,7 +2264,7 @@ else if($type=="dosage"){
 		}
 
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select(" priority_type.priority_type,priority_type.priority_type_id,
+		$this->db->select(" priority_type.priority_type,priority_type.priority_type_id,priority_type.color_code,
 		staff.first_name, priority_type.created_date_time,priority_type.updated_date_time,updated_by.first_name as updated_by_name")
 		->from("priority_type")
 		->join('staff','staff.staff_id=priority_type.created_by','left')
@@ -2287,7 +2287,7 @@ else if($type=="dosage"){
 
 	function get_edit_priority_type_by_id($record_id) 
 	{
-		$this->db->select('priority_type,created_by,updated_by,created_date_time,updated_date_time,priority_type_id');
+		$this->db->select('priority_type,created_by,updated_by,created_date_time,updated_date_time,priority_type_id,color_code');
         $query = $this->db->get_where('priority_type', array('priority_type_id' => $record_id));
         return $query->row_array();
     }
