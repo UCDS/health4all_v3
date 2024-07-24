@@ -23,6 +23,37 @@ $admin=0;
 $followup=0;
 $diagnostic=0;
 $sanitation=0;
+$custom_reports=0;
+
+// custom reports tab starts here
+
+foreach($this->data['functions'] as $function)
+{
+	if( $function->user_function=="custom_report"){
+		$custom_reports=1;
+?>
+		<button class="accordion">Custom Report</button>
+<?php			break;	}
+}
+
+if($custom_reports==1) { ?>
+	<div class="panel_accordion" style="padding-right:18px!important;">
+<?php
+
+foreach($get_custom_reports as $report){ 
+?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> 
+		<a class="anchor_style" href="<?php echo base_url()."reports/custom_generated_report/".$report->report_id;?>"><?php echo $report->report_name ?></a>
+	</button>
+
+<?php  } ?>
+
+</div> <?php
+
+}
+
+// custom reports tab end here
+
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail" || $function->user_function=="appointment_by_staff" || $function->user_function=="patient_location_report" || $function->user_function=="referral"  
 			|| $function->user_function=="issue_list" || $function->user_function=="issue_summary" || $function->user_function=="prescription_report"
@@ -38,7 +69,7 @@ foreach($this->data['functions'] as $function){
 		}
 		
 if($appointments==1) { ?>
-<div class="panel_accordion">
+<div class="panel_accordion" style="padding-right:18px!important;">
 <?php
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="OP Detail"){ ?>
@@ -122,7 +153,7 @@ foreach($this->data['functions'] as $function){
 }
 
 if($followup==1) { ?>
-<div class="panel_accordion">
+<div class="panel_accordion" style="padding-right:18px!important;">
 <?php
 foreach($this->data['functions'] as $function){
 	if($function->user_function=="patient_follow_up"){ ?>
@@ -166,7 +197,7 @@ foreach($this->data['functions'] as $function){
 <?php 
 
 if($helpline==1) { ?>
-<div class="panel_accordion">
+<div class="panel_accordion" style="padding-right:18px!important;">
 <?php
 foreach($this->data['functions'] as $function){
 			if($function->user_function=="completed_calls_report"){ ?>
@@ -225,7 +256,7 @@ foreach($this->data['functions'] as $function){
 }
 
 if($Diagnostic==1) { ?>
-<div class="panel_accordion">
+<div class="panel_accordion" style="padding-right:18px!important;">
 <?php
 foreach($this->data['functions'] as $function){
 	if($function->user_function=="Diagnostics - Summary"){ ?>
@@ -269,7 +300,7 @@ foreach($this->data['functions'] as $function){
 }
 
 if($sanitation==1) { ?>
-<div class="panel_accordion">
+<div class="panel_accordion" style="padding-right:18px!important;">
 <?php
 foreach($this->data['functions'] as $function){
 	if($function->user_function=="Sanitation Evaluation"){ ?>
@@ -307,7 +338,7 @@ foreach($this->data['functions'] as $function){
 <?php 
 
 if($admin==1) { ?>
-<div class="panel_accordion">
+<div class="panel_accordion" style="padding-right:18px!important;">
 <?php
 foreach($this->data['functions'] as $function){
 

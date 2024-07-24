@@ -769,6 +769,11 @@
 				<a href="<?php echo base_url(); ?>hospital_beds/hospital_bed_parameters">Add / Update Bed Parameters</a>
 			</li>
 
+			<li <?php if (preg_match("/user_panel\/custom_report_name/", current_url()) || preg_match("/user_panel\/update_custom_report_name/", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/custom_report_name"; ?>"> Add / Update Custom Report Name</a>
+			</li>
+
 			<li class="nav-divider"></li>
 
 			<li class="navbar-text">User</li>

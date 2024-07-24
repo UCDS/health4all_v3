@@ -7,6 +7,7 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
@@ -145,6 +146,7 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+
 </style>
 
 <style type="text/css">
@@ -164,34 +166,26 @@ display: inline-grid;
 		
 	<div class="row col-md-offset-2">
 	<h2><?php echo $title; ?></h2>
-		<?php if(!empty($edit_priority_type)) { ?>
-			<?php echo form_open('user_panel/update_priority_type',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
+		<?php if(!empty($edit_report_name)) { ?>
+			<?php echo form_open('user_panel/update_custom_report_name',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('user_panel/priority_type',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
+		<?php echo form_open('user_panel/custom_report_name',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
-			<div class="col-md-12">
-				<div class="form-group col-md-4">
-					<label for="inputrouteprimary ">Add Priority Name <span class="mandatory" style="color:red;">*</span> </label>
-					<input class="form-control" name="priority_type" id="inputrouteprimary" 
-					placeholder="Enter Priority Name" type="text" 
-					value="<?php echo $edit_priority_type['priority_type'] ?>" autocomplete="off" required>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label for="inputrouteprimary ">Enter Report Name <span class="mandatory" style="color:red;">*</span> </label>
+					<input type="text" name="report_name" class="form-control" placeholder="Enter Report Name" 
+						value="<?php echo $edit_report_name['report_name'] ?>" autocomplete="off" required>
 				</div>
-				<div class="form-group col-md-4">
-					<label for="inputrouteprimary ">Enter Color Code <span class="mandatory" style="color:red;">*</span> </label>
-					<input class="form-control" name="color_code" id="inputcolor_code" 
-					placeholder="Enter Color Code" type="text" 
-					value="<?php echo $edit_priority_type['color_code'] ?>" autocomplete="off" required>
-				</div></br>
-				<span style="color:red"> Note : </span><p style="color:black">Only Hex Colors can be Added Ex: #000000</p>
-					<p style="color:red"> ' # ' <span style="color:black">mandatory</span></p></br>
-				 <?php 
+			</div>
+				<?php 
 				 	$user=$this->session->userdata('logged_in'); 
 					$user['user_id'];
 					$user_data=$this->session->userdata('logged_in');
 					$user_data['staff_id'];
-					if(!empty($edit_priority_type))
+					if(!empty($edit_report_name))
 					{
 				?>
 					<input type="hidden" class="form-control" name="updated_by" value="<?php echo $user['staff_id'] ?>">
@@ -200,19 +194,13 @@ display: inline-grid;
 					<input type="hidden" class="form-control" name="added_by" value="<?php echo $user['staff_id'] ?>">
 					<input type="hidden" class="form-control" name="insert_datetime" value="<?php echo date('Y-m-d H:i:s') ?>">
 				<?php } ?>
-				
-				<div class="form-group col-md-4">
-					<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-					<input type="hidden" name="record_id" value="<?php echo $edit_priority_type['priority_type_id']; ?>" >
-					<?php if(!empty($edit_priority_type)) { ?>
-						<input class="btn btn-md btn-success" type="submit" value="Update" style="margin-top:8%;">
-					<?php } else { ?>
-						<input class="btn btn-md btn-primary" type="submit" value="Submit" style="margin-top:8%;">
-					<?php } ?>
-				</div>
-			</div>
-
-				
+				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+				<input type="hidden" name="record_id" value="<?php echo $edit_report_name['report_id']; ?>" >
+				<?php if(!empty($edit_report_name)) { ?>
+					<input class="btn btn-md btn-success" type="submit" value="Update" style="margin-top:24px;margin-left:20px;">
+				<?php } else { ?>
+				<input class="btn btn-md btn-primary" type="submit" value="Submit" style="margin-top:24px;margin-left:20px;">
+				<?php } ?>
 		</div>
 		</form>
 		<?php if (!empty($error) || $error!=0): ?>
@@ -223,7 +211,7 @@ display: inline-grid;
 	<br />
 
 
-<?php if(isset($all_priority_type) && count($all_priority_type)>0)
+<?php if(isset($all_report_name) && count($all_report_name)>0)
 { ?>
 <div style='padding: 0px 2px;'>
 
@@ -242,7 +230,7 @@ display: inline-grid;
 	else{
 		$page_no = 1;
 	}
-	$total_records = $all_priority_type_count[0]->count ;
+	$total_records = $all_report_name_count[0]->count ;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;
@@ -355,14 +343,13 @@ echo "</select></li>";
 
 </div>
 	
-	<table class="table table-bordered table-striped" id="table-sort">
+	<table class="table table-bordered table-striped" id="table-sort" style="width:100%">
 	<thead>
 		<th style="text-align:center">#</th>
-		<th style="text-align:center">Priority Name</th>
-		<th style="text-align:center">Color Code</th>
-		<th style="text-align:center">Added by</th>
-		<th style="text-align:center">Updated by</th>		
-		<th style="text-align:center">Created Datetime</th>		
+		<th style="text-align:center">Report Name</th>
+		<th style="text-align:center">Created by</th>
+		<th style="text-align:center">Created Datetime</th>
+		<th style="text-align:center">Updated by</th>
 		<th style="text-align:center">Updated Datetime</th>		
 		<th style="text-align:center">Actions</th>		
 	</thead>
@@ -370,46 +357,60 @@ echo "</select></li>";
 	<?php 
 	$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
 	
-	foreach($all_priority_type as $apt) { 
+	foreach($all_report_name as $arn) 
+	{ 
 	?>
 	<tr>
-		<td style="text-align:right"><?php echo $sno;?></td>	
-		<td style="text-align:center"><?php echo $apt->priority_type; ?></td>	
-		<td style="text-align:center"><?php echo $apt->color_code; ?></td>	
-		<td style="text-align:center"><?php echo $apt->first_name; ?></td>	
-		<td style="text-align:center"><?php echo $apt->updated_by_name; ?></td>	
-		<td style="text-align:center"><?php if($apt->created_date_time!=''){ echo date("j M Y h:i A.", strtotime("$apt->created_date_time")); } ?></td>	
+		<td style="text-align:right"><?php echo $sno;?></td>
+		<td style="text-align:center"><?php echo $arn->report_name;?></td>	
+		<td style="text-align:center"><?php echo $arn->first_name;?></td>	
+		<td style="text-align:center"><?php echo date("j M Y h:i A.", strtotime("$arn->created_date_time")); ?></td>	
+		<td style="text-align:center"><?php echo $arn->updated_by_name;?></td>	
+		<td style="text-align:center"><?php if($arn->updated_date_time!=''){ echo date("j M Y h:i A.", strtotime("$arn->updated_date_time")); } ?></td>
+		<?php 
+			$hospital=$this->session->userdata('hospital');
+			if($arn->hospital_id==$hospital['hospital_id'])
+			{
+		?>
 		<td style="text-align:center">
-			<?php if($apt->updated_date_time!=''){ echo date("j M Y h:i A.", strtotime("$apt->updated_date_time")); } ?>
-		</td>	
-		<td style="text-align:center;">
-			<a class="btn btn-success" href="<?php echo base_url('user_panel/priority_type/'.$apt->priority_type_id); ?>" style="color:white!important;">Edit</a>
-			<a class="btn btn-danger delete-bed-btn" data-priority-type-id="<?php echo $apt->priority_type_id; ?>" href="<?php echo base_url('user_panel/delete_priority_type/'.$apt->priority_type_id); ?>" 
-				style="color:white!important;">Delete</a>
+			<a class="btn btn-success" href="<?php echo base_url('user_panel/custom_report_name/'.$arn->report_id); ?>" style="color:white!important;">Edit</a>
+			<?php $report_id_exists = false; ?>
+			<?php foreach ($report_layout_report_id_count as $rl): ?>
+				<?php if ($rl['report_id'] == $arn->report_id): ?>
+					<?php $report_id_exists = true; ?>
+					<a class="btn btn-danger" data-layout-id="<?php echo $arn->report_id; ?>" style="color:white!important;">Delete Layout</a>
+					<a class="btn btn-warning" data-toggle="modal" data-target="#dataModal" data-view-id="<?php echo $arn->report_id; ?>" style="color:white!important;">View Layout</a>
+					<?php break; ?>
+				<?php endif; ?>
+			<?php endforeach; ?>
+			<?php if (!$report_id_exists): ?>
+				<a class="btn btn-info" href="<?php echo base_url('user_panel/custom_report_layout/'.$arn->report_id); ?>" style="color:white!important;">Add Layout</a>
+			<?php endif; ?>
 		</td>
+		<?php } ?>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
-	</table>
 	<script>
 		$(document).ready(function() {
+			$('#dataModal').modal('hide');
 			$('.btn-danger').on('click', function(e) 
 			{
 				e.preventDefault();
-				if (confirm("Are you sure you want to delete this priority?")) 
+				if (confirm("Are you sure you want to delete this custom report?")) 
 				{
-					var priority_type_id = $(this).data('priority-type-id');
+					var layout_id = $(this).data('layout-id');
 					$.ajax({
 						type: 'POST',
-						url: '<?php echo base_url('user_panel/delete_priority_type'); ?>',
-						data: { priority_type_id: priority_type_id },
+						url: '<?php echo base_url('user_panel/custom_report_layout_delt'); ?>',
+						data: { layout_id: layout_id },
 						dataType: 'json',
 						success: function(response) {
 							if (response.status == "success") {
 								alert(response.message);
 								location.reload();
 							} else {
-								alert('Failed to delete priority type');
+								alert('Failed to delete custome layout');
 							}
 						},
 						error: function(xhr, status, error) {
@@ -418,8 +419,75 @@ echo "</select></li>";
 					});
 				}
 			});
+			$('.btn-warning').click(function() {
+				var report_id = $(this).data('view-id');
+				$.ajax({
+				url: '<?php echo base_url('user_panel/fetch_saved_custom_layout'); ?>',
+				type: 'post',
+				data: {report_id: report_id},
+				dataType: 'json',
+				success: function(response) {
+					$('#dataBody').empty();
+					var rows = '';
+					var mainTableSet = new Set();
+					$.each(response, function(index, data) {
+						rows += '<tr>' +
+									'<td>' + data.column_name + '</td>' +
+									'<td>' + data.table_name + '.' + data.field_name + '</td>' +
+									'<td>' + data.function + '</td>';
+						if (data.width != 0) {
+							rows += '<td>' + data.width + '</td>';
+						} else {
+							rows += '<td></td>';
+						}
+						rows += '</tr>';
+						mainTableSet.add(data.main_table);
+					});
+					$('#dataBody').html(rows); 
+					var modalTitle = 'Layout Fields';
+					if (mainTableSet.size > 0) {
+						modalTitle += ' - primary table : ' + Array.from(mainTableSet).join(', ');
+					}
+					$('#dataModalLabel').html(modalTitle);
+					$('#dataModal').modal('show');
+				},
+				error: function() {
+					alert('Error fetching data.');
+				}
+				});
+			});
 		});
 	</script>
+	</table>
+	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="dataModalLabel"></h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-19px!important;">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered">
+				<thead>
+					<tr>
+					<th>Column Name</th>
+					<th>Field Name</th>
+					<th>Function</th>
+					<th>Width</th>
+					</tr>
+				</thead>
+				<tbody id="dataBody">
+				</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			</div>
+			</div>
+		</div>
+	</div>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>

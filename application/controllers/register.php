@@ -980,9 +980,9 @@ class Register extends CI_Controller {
 				 /* Till here */
 				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
 				 $this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
-				 $this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no);
-				 
-        //--- end  18_02_2023 --- //
+				 //$this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no); <!-- changed on 24-07-2024 -->
+				 $this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->visit_id);
+        		//--- end  18_02_2023 --- //
 				$this->load->view('pages/update_patients',$this->data);
 			}
 		}
