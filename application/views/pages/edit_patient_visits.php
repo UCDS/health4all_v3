@@ -873,7 +873,6 @@ bootbox.confirm({
 <script>
       $(document).on("click",'#edit',function(){
         var visit_id = $(this).attr("data-id");
-        alert(visit_id);
           $.ajax({
               type: "POST",
               url: "<?php echo base_url('patient/get_op_ip_visit'); ?>",

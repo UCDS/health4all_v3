@@ -7,6 +7,7 @@ class User_panel extends CI_Controller {
 		$this->load->model('staff_model');	
 		$this->load->model('masters_model');	
 		$this->load->model('helpline_model');	
+		$this->load->model('register_model');	
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
 		$user_id=$userdata['user_id'];
@@ -1082,6 +1083,183 @@ class User_panel extends CI_Controller {
 			show_404();
 		}	
     }
+
+	function delete_priority_type()
+	{
+		$priority_type = $this->input->post('priority_type_id');
+        $deleted = $this->masters_model->delete_priority($priority_type);
+        if($deleted) 
+        {
+            echo json_encode(['status' => 'success', 'message' => 'Priority deleted successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete priority']);
+        }
+	}
 	//priority type ends here
 	
+	//Custom Report Name Starts here
+	function custom_report_name($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Custom Report Name";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$report_name = $this->input->post('report_name');
+					$added_by = $this->input->post('added_by');
+					$insert_datetime = $this->input->post('insert_datetime');
+
+					if($this->masters_model->check_report_name($hospital['hospital_id'], $report_name)) 
+					{
+					 	$this->data['error'] = 'Report name already exists with this hospital';
+					}
+					else
+					{
+						$data_to_insert = array(
+							'hospital_id' => $hospital['hospital_id'],
+							'report_name' => $report_name,
+							'created_by' => $added_by,
+					 		'created_date_time' => $insert_datetime,
+						);
+						$this->masters_model->insert_report_name($data_to_insert);
+						$this->data['success'] = 'Report Name Added Successfully';
+					}
+				}
+				//Fetch all records from primary table
+				$this->data['all_report_name'] = $this->masters_model->get_all_report_name($this->data['rowsperpage']);
+				$this->data['all_report_name_count'] = $this->masters_model->get_all_report_name_count();
+				$this->data['report_layout_report_id_count'] = $this->masters_model->report_layout_report_id_count();
+				//Fetch record to edit
+				$this->data['edit_report_name'] = $this->masters_model->get_edit_report_name_by_id($record_id);
+
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/custom_report_name',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	public function fetch_saved_custom_layout() 
+	{
+		$report_id = $this->input->post('report_id');
+		$data = $this->masters_model->get_saved_custom_layout($report_id);
+		echo json_encode($data);
+	}
+
+	function update_custom_report_name()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Custom Report Name";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$report_name = $this->input->post('report_name');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+				if($this->masters_model->check_report_name($hospital['hospital_id'], $report_name)) 
+				{
+					$this->data['error'] = 'Report name already exists with this hospital';
+				}else
+				{
+					$update_data = array(
+						'report_name' => $report_name,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+					);
+					$this->masters_model->update_report_name($update_record_id,$update_data);
+					$this->data['success'] = 'Report Name Updated Successfully';
+				}
+			//Fetch all records from primary table
+			$this->data['all_report_name'] = $this->masters_model->get_all_report_name($this->data['rowsperpage']);
+			$this->data['all_report_name_count'] = $this->masters_model->get_all_report_name_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/custom_report_name',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
+	// Custom report name end here
+
+	// Custom form layout start here
+
+	function custom_report_layout($form_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Custom Report Layout";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['form_name']=$this->masters_model->get_edit_report_name_by_id($form_id);
+			$this->data['print_layouts']=$this->staff_model->get_print_layouts();
+			$this->data['districts']=$this->staff_model->get_district();
+			$this->data['all_priority_type'] = $this->masters_model->get_all_priority_type();
+			$this->data['all_secondary_routes'] = $this->masters_model->get_all_secondary_routes();
+			$this->data['volunteer']=$this->register_model->get_volunteer();
+			$this->data['codes'] = $this->register_model->search_icd_codes();
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			
+			//$this->load->view('pages/form_layout',$this->data);
+			$this->load->view('pages/custom_report_layout',$this->data);
+			$this->load->view('templates/footer');	
+		}
+		else{
+			show_404();
+		}
+	}
+
+	function custom_report_layout_delt()
+	{
+		$layout_delt_id = $this->input->post('layout_id');
+        $deleted = $this->masters_model->delete_custom_layout_id($layout_delt_id);
+        if($deleted) 
+        {
+            echo json_encode(['status' => 'success', 'message' => 'Custom Report deleted successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete bed']);
+        }
+	}
+
+	function save_custom_form(){
+		if($this->session->userdata('logged_in')){
+				if($this->masters_model->upload_custom_form()){
+					echo 1;
+				}
+				else echo 0;
+		}
+	}
+	// Custom form layout end here
+
 }

@@ -2895,8 +2895,7 @@ function initDistrictSelectize(){
 							data: {selectedValue: selectedValue, patientId: patientId},
 							success: function(response) {
 								var printWindow = window.open('', '_blank');
-								printWindow.document.write('<style>body { padding-left: 20px; }</style>'); 
-								printWindow.document.write(response);
+								printWindow.document.write('<style>.row { height: 20% !important; } body { padding-left: 20px; }</style>');								printWindow.document.write(response);
 								printWindow.document.close();
 								printWindow.print();
 								printWindow.close();

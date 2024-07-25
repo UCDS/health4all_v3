@@ -168,7 +168,35 @@ $(function(){
 		};
 		$("#table-sort").tablesorter(options);
 		$('.print').click(function(){
-		$('#table-sort').trigger('printTable');
+			//$('#table-sort').trigger('printTable'); changed for improvement
+			$('#table-sort').find('.tablesorter-filter-row').hide();
+				var printContent = '<!DOCTYPE html>';
+				printContent += '<html>';
+				printContent += '<head>';
+				printContent += '<title>Print</title>';
+				printContent += '<style>';
+				printContent += 'table { border-collapse: collapse; width: 95%; }';
+				printContent += 'th, td { border: 1px solid #ddd; padding: 8px; }';
+				printContent += 'th { background-color: #f2f2f2; }';
+				printContent += '</style>';
+				printContent += '</head>';
+				printContent += '<body>';
+				//printContent += document.getElementById("print-container");
+				var printContainer = document.getElementById("print-container");
+				var printContent = printContainer.innerHTML;
+				printContent = '<div style="text-align: center;">' + printContent + '</div>';
+				printContent = '<style>table { border-collapse: collapse; } table, th, td { border: 1px solid black; }</style>' + printContent;
+				printContent += document.getElementById("table-sort").outerHTML;
+				printContent += '</body>';
+				printContent += '</html>';
+				var printWindow = window.open('', '_blank', 'width=800,height=600');
+				printWindow.document.write(printContent);
+				printWindow.document.close();
+				printWindow.print();
+				window.onbeforeunload = function() {
+					printWindow.close();
+				};
+				window.location.reload();
 		});
 		
 
@@ -536,7 +564,7 @@ function onchange_page_dropdown(dropdownobj){
 </form>
 <?php if(isset($report) && count($report)>0){ ?>
 
-		<div style='padding: 0px 2px;'>
+		<div style='padding: 0px 2px;' id="print-container">
             <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
         </div>
                

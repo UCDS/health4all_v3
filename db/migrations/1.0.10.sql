@@ -244,3 +244,40 @@ ALTER TABLE `hospital_bed` ADD `sequence` INT NOT NULL AFTER `bed`;
 ALTER TABLE `hospital_bed_parameter` ADD `sequence` INT NOT NULL AFTER `bed_parameter_label`;
 
 ALTER TABLE `priority_type` ADD `color_code` VARCHAR(50) NOT NULL AFTER `priority_type`;
+
+CREATE TABLE `custom_report` (
+  `report_id` int(11) NOT NULL,
+  `hospital_id` int(11) NOT NULL,
+  `report_name` varchar(150) NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `created_date_time` datetime DEFAULT NULL,
+  `updated_date_time` datetime DEFAULT NULL
+);
+
+ALTER TABLE `custom_report` ADD PRIMARY KEY (`report_id`);
+
+ALTER TABLE `custom_report` MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `custom_report` ADD `created_by` INT NOT NULL AFTER `report_name`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+
+ALTER TABLE `custom_report` ADD `main_table` VARCHAR(150) NOT NULL AFTER `updated_date_time`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'custom_report', 'custom_report', 'custom report');
+
+CREATE TABLE `report_layout` (
+  `id` int(11) NOT NULL,
+  `report_id` int(11) NOT NULL,
+  `table_name` varchar(150) NOT NULL,
+  `field_name` varchar(150) NOT NULL,
+  `column_name` varchar(200) NOT NULL,
+  `sequence_id` int(11) NOT NULL
+);
+
+ALTER TABLE `report_layout` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `report_layout` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `report_layout` ADD `width` INT NOT NULL AFTER `field_name`;
+
+ALTER TABLE `report_layout` ADD `function` VARCHAR(100) NOT NULL AFTER `width`;

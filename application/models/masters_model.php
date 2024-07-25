@@ -2141,7 +2141,8 @@ else if($type=="dosage"){
 		->join("patient_visit",'patient_visit.visit_id=counseling.visit_id','left')
 		->join("counseling_text",'counseling_text.counseling_text_id=counseling.counseling_text_id','left')
 		->join("counseling_type",'counseling_type.counseling_type_id=counseling_text.counseling_type_id','left');
-        $this->db->where('patient_visit.hosp_file_no', $hosp_file_no);
+       // $this->db->where('patient_visit.hosp_file_no', $hosp_file_no); if below code got any errors remove below code and uncomment it <!-- changed on 24-07-2024 -->
+        $this->db->where('patient_visit.visit_id', $hosp_file_no);
         $query = $this->db->get();
 		return $query->result();
 	}
@@ -2296,6 +2297,427 @@ else if($type=="dosage"){
         $this->db->where('priority_type_id', $record_id);
         $this->db->update('priority_type', $data);
     }
+
+	function delete_priority()
+    {
+        $priority_type = $this->input->post('priority_type_id');
+        $hospital=$this->session->userdata('hospital');
+        
+		$this->db->where('priority_type_id', $priority_type);
+		$query = $this->db->get('patient_followup');
+		if ($query->num_rows() > 0) 
+		{
+			$data = array(
+				'priority_type_id' => 0,
+			);
+			$this->db->where('priority_type_id', $priority_type);
+			$this->db->update('patient_followup', $data);
+		}
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('priority_type_id', $priority_type);
+        $res = $this->db->delete('priority_type');
+
+        return $this->db->affected_rows() > 0;
+    }
+
 	//priority type function end here
+
+	//custom report name start here
+	function check_report_name($hospital_id, $report_name) 
+    {
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('report_name', $report_name);
+        $query = $this->db->get('custom_report');
+        return $query->num_rows() > 0;
+    }
+
+	function insert_report_name($data) 
+    {
+        $this->db->insert('custom_report', $data);
+    }
+
+	function get_all_report_name()
+    {
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("h.hospital as hname,staff.first_name,updated_by.first_name as updated_by_name,
+		cr.report_name,cr.created_date_time,cr.updated_date_time,cr.report_id,h.hospital_id")
+		->from("custom_report cr")
+		->join('staff','staff.staff_id=cr.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=cr.updated_by','left')
+		->join('hospital as h','h.hospital_id=cr.hospital_id','left');
+		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+	function get_all_report_name_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("custom_report cr")
+		->join('staff','staff.staff_id=cr.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=cr.updated_by','left')
+		->join('hospital as h','h.hospital_id=cr.hospital_id','left');
+		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function get_edit_report_name_by_id($record_id) 
+	{
+		$this->db->select('report_id,hospital_id,report_name,created_by,updated_by,created_date_time,updated_date_time');
+        $query = $this->db->get_where('custom_report', array('report_id' => $record_id));
+        return $query->row_array();
+    }
+
+	function update_report_name($record_id, $data) {
+         $this->db->where('report_id', $record_id);
+         $this->db->update('custom_report', $data);
+    }
+	
+	function get_custom_form_name($form_id)
+	{
+		$this->db->select('report_id,hospital_id,report_name,created_by,updated_by,created_date_time,updated_date_time');
+        $query = $this->db->get_where('custom_report', array('report_id' => $record_id));
+        return $query->row_array();
+	}
+
+	function upload_custom_form()
+	{
+		$hospital = $this->session->userdata('hospital');
+
+		$fields = json_decode($this->input->post('fields'));
+		$width = json_decode($this->input->post('wid'));
+		$ft = json_decode($this->input->post('funct'));
+		$field_value = json_decode($this->input->post('field_value'));
+		$table = json_decode($this->input->post('table'));
+		$report_id = $this->input->post('form_id');
+		$from_table = $this->input->post('from_table');
+		$columns = $this->input->post('columns');
+		$count = count($fields->field_name);
+
+		$this->db->trans_start();
+		$data_1 =array();
+		$data_1= array(
+			'main_table' => $from_table,
+		);
+		$this->db->where('report_id', $report_id);
+        $this->db->update('custom_report', $data_1);
+		$fields_data = array();
+		for ($i = 0; $i < $count; $i++) {
+			$fields_data[] = array(
+				'report_id' => $report_id,
+				'table_name' => $table->table_name[$i], 
+				'field_name' => $fields->field_name[$i],
+				'width' => $width->def_width[$i],
+				'function' => $ft->get_function[$i],
+				'column_name' => $field_value->field_values[$i],
+				'sequence_id' => $i + 1,
+			);
+		}
+
+		$this->db->insert_batch('report_layout', $fields_data);
+		$this->db->trans_complete();
+
+		if ($this->db->trans_status() === FALSE) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	public function get_report_layout_fields($form_id)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("rl.report_id,rl.table_name,rl.field_name,rl.column_name,rl.sequence_id,
+		cr.report_name,rl.width")
+		->from("report_layout rl")
+		->join('custom_report cr','cr.report_id=rl.report_id','left');
+		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
+		$this->db->where('rl.report_id', $form_id);
+		$query = $this->db->get();
+		if(empty($query->result()))
+		{
+			return 0;
+		}else{
+			return $query->result();
+		}
+	}
+
+	public function get_customised_report_data($default_rowsperpage)
+	{
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("rl.table_name,rl.field_name,rl.sequence_id,cr.main_table,rl.function")
+		->from("report_layout rl")
+		->join('custom_report cr','cr.report_id=rl.report_id','left');
+		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		$fields_columns = $query->result();
+		
+		if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+	
+        if($this->input->post('from_time') && $this->input->post('to_time')){
+			$from_time=date("H:i",strtotime($this->input->post('from_time')));
+			$to_time=date("H:i",strtotime($this->input->post('to_time')));
+				
+		}
+		else if($this->input->post('from_time') || $this->input->post('to_time')){
+			if($this->input->post('from_time')){
+                            $from_time=$this->input->post('from_time');
+                            $to_time = '23:59';
+                        }else{
+                            $from_time = '00:00';
+                            $to_time=$this->input->post('to_time');
+                        }				
+		}		
+		else{
+			$to_time = '23:59';
+		 	$from_time = '00:00';
+		}
+
+		if($this->input->post('life_status')!= 4)
+		{
+			if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
+				$this->db->where('patient_followup.life_status',1);
+					}
+			else if($this->input->post('life_status')== 2){
+				$this->db->where('patient_followup.life_status',0);
+			}
+			else if($this->input->post('life_status')== 3){
+				$this->db->where('patient_followup.life_status',2);
+			}
+		}
+
+		if($this->input->post('department')){
+			$this->db->where('patient_visit.department_id',$this->input->post('department'));
+		}
+		if($this->input->post('unit')){
+			$this->db->select('IF(unit!="",unit,0) unit',false);
+			$this->db->where('patient_visit.unit',$this->input->post('unit'));
+		}
+		else{
+			$this->db->select('"0" as unit',false);
+		}
+		if($this->input->post('area')){
+			$this->db->select('IF(area!="",area,0) area',false);
+			$this->db->where('patient_visit.area',$this->input->post('area'));
+		}
+		else{
+			$this->db->select('"0" as area',false);
+		}
+
+		if($this->input->post('icd_code')){
+			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
+			$this->db->where('icd_code.icd_code',$icd_code);
+		}
+		if($this->input->post('icd_block')){
+			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+		}
+		if($this->input->post('icd_chapter')){
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+		}
+		
+		if($this->input->post('ndps')!=0)
+		{
+			if($this->input->post('ndps')==1){
+				$this->db->where('patient_followup.ndps',1);
+			}if($this->input->post('ndps')==2){
+				$this->db->where('patient_followup.ndps',0);
+			}
+		}
+
+		if($this->input->post('sort_by_age')==1){
+			$this->db->order_by('patient.age_years',ASC);
+		}else{
+			$this->db->order_by('patient.age_years',DESC);
+		}
+
+		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
+		{
+			$secondary=array();
+			$this->db->select('id');
+			$this->db->from('route_secondary');
+			$this->db->where('route_primary_id',$this->input->post('route_primary'));
+			$query = $this->db->get();
+			$res = $query->result_array();
+			foreach ($res as $row){ $secondary[] = $row['id']; }
+			if(!empty($secondary))
+			{
+				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
+			}
+		}
+
+		if($this->input->post('priority_type')){
+			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
+		}
+
+		if($this->input->post('volunteer')){
+			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
+		}
+
+		if($this->input->post('route_secondary')){
+			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
+		}
+
+		if($this->input->post('district'))
+		{
+			$this->db->where('patient.district_id',$this->input->post('district'));
+		}
+		
+		if($this->input->post('state'))
+		{
+			$this->db->where('state.state_id',$this->input->post('state'));
+		}
+		
+		$selected_columns = [];
+		$admit_date = "MAX(admit_date)";
+		foreach($fields_columns as $fc)
+		{
+			$selected_columns[] = $fc->table_name.'.'.$fc->field_name;
+			if($fc->field_name=="admit_date" && $fc->function=="min")
+			{
+				$admit_date = "MIN(admit_date)";
+			}
+		}
+		$main_table = $fields_columns[0]->main_table;
+		if ($main_table == 'patient_followup') 
+		{
+			$this->db->select('patient_followup.patient_id,department.department,unit.unit_name,area.area_name,
+			visit_name.visit_name, icd_code.code_title');
+		} if ($main_table == 'patient_visit') {
+			$this->db->select('patient_visit.patient_id,department.department,unit.unit_name,area.area_name,
+			visit_name.visit_name, icd_code.code_title');
+		} if ($main_table == 'patient') {
+			$this->db->select('patient_visit.patient_id,department.department,unit.unit_name,area.area_name,
+			visit_name.visit_name, icd_code.code_title');
+		}
+
+		switch ($main_table) 
+		{
+			case 'patient_followup':
+			$this->db->from('patient_followup');
+			$this->db->join('patient_visit','patient_visit.patient_id=patient_followup.patient_id','left');
+			$this->db->join('patient','patient.patient_id=patient_followup.patient_id','left');
+			$this->db->join('hospital','patient_followup.hospital_id=hospital.hospital_id','left');
+			$this->db->join('department','patient_visit.department_id=department.department_id','left');
+			$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+			$this->db->join('area','patient_visit.area=area.area_id','left');	
+			$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
+			$this->db->join('icd_block','icd_code.block_id=icd_block.block_id','left');
+			$this->db->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left');
+			$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');	
+			$this->db->where('patient_followup.hospital_id',$hospital['hospital_id']);
+			$this->db->where("(patient_followup.death_date BETWEEN '$from_date' AND '$to_date')");         
+			break;
+		
+			case 'patient_visit':
+			$this->db->from('patient_visit');
+			$this->db->join('patient_followup','patient_visit.patient_id=patient_followup.patient_id','left');
+			$this->db->join('patient','patient_visit.patient_id=patient.patient_id','left');
+			$this->db->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left');
+			$this->db->join('department','patient_visit.department_id=department.department_id','left');
+			$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+			$this->db->join('area','patient_visit.area=area.area_id','left');
+			$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
+			$this->db->join('icd_block','icd_code.block_id=icd_block.block_id','left');
+			$this->db->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left');
+			$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');	
+			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
+			$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
+			break;	
+
+			case 'patient':
+			$this->db->from('patient');
+			$this->db->join('patient_visit','patient.patient_id=patient_visit.patient_id','left');
+			$this->db->join('patient_followup','patient.patient_id=patient_followup.patient_id','left');
+			$this->db->join('department','patient_visit.department_id=department.department_id','left');
+			$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+			$this->db->join('area','patient_visit.area=area.area_id','left');
+			$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
+			$this->db->join('icd_block','icd_code.block_id=icd_block.block_id','left');
+			$this->db->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left');
+			$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');	
+			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+			$this->db->where("(patient.insert_datetime BETWEEN '$from_date.$from_time' AND '$to_date.$to_time')");
+			break;
+		}
+		$subquery = '(SELECT patient_id,'.$admit_date.' AS max_admit_date
+             FROM patient_visit
+             GROUP BY patient_id) latest_patient_visit';
+		$this->db->join($subquery, 'patient_visit.patient_id = latest_patient_visit.patient_id AND patient_visit.admit_date = latest_patient_visit.max_admit_date', 'left');
+
+		$this->db->select(implode(', ', $selected_columns));
+		if($this->input->post('op_ip')==1 || empty($this->input->post('op_ip')))
+		{
+			$this->db->where("patient_visit.visit_type","OP");
+		}
+		else if($this->input->post('op_ip')==2)
+		{
+			$this->db->where("patient_visit.visit_type","IP");
+		}
+		$this->db->order_by('patient_visit.insert_datetime','DESC');
+		$this->db->group_by('patient_visit.patient_id','DESC');
+		$this->db->limit($rows_per_page,$start);	
+		$final = $this->db->get();
+		$final_result = $final->result();
+		return $final_result;
+	}
+
+	function report_layout_report_id_count()
+	{
+		$this->db->distinct();
+		$this->db->select('report_id');
+		$this->db->from('report_layout');
+		$res = $this->db->get()->result_array();
+		return $res;
+	}
+	
+	function delete_custom_layout_id()
+    {
+        $layout_delt_id = $this->input->post('layout_id');        
+        $this->db->where('report_id', $layout_delt_id);
+        $this->db->delete('report_layout');
+
+        return $this->db->affected_rows() > 0;
+    }
+
+	function get_saved_custom_layout()
+	{
+		$report_id = $this->input->post('report_id');
+		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table');
+		$this->db->from('report_layout rl');
+		$this->db->join('custom_report cr','cr.report_id=rl.report_id','left');
+		$this->db->where('rl.report_id', $report_id);
+		$res = $this->db->get()->result_array();
+		return $res;
+	}
 }
 ?>

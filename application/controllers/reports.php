@@ -819,6 +819,7 @@ class Reports extends CI_Controller {
 		if($access==1){
 		$this->data['title']="More Reports";
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		$this->data['get_custom_reports'] = $this->masters_model->get_all_report_name();
 		$this->load->view('templates/header',$this->data);
 		$this->load->view('pages/more_reports',$this->data);	
 		$this->load->view('templates/footer');
@@ -2210,6 +2211,73 @@ class Reports extends CI_Controller {
 		}
 		else{
 			show_404();
+		}
+	}
+
+	public function custom_generated_report($form_id="")
+	{
+		if(!$this->session->userdata('logged_in')){
+			show_404();
+		}
+		$this->load->helper('form');
+		if($this->session->userdata('hospital')){ 
+			if($form_id=="")
+			{
+				show_404();
+			}
+			else
+			{	
+				$access=0;
+				$add_sms_access=0;
+				$this->data['staff_hospital'] = $hospital = $this->session->userdata('hospital');
+				foreach($this->data['functions'] as $f)
+				{ 
+					if(($f->user_function=="custom_report")){
+						$access = 1;
+					}
+				}
+				if($access==1)
+				{
+					$user=$this->session->userdata('logged_in');
+					$this->data['user_id']=$user['user_id'];
+					$this->data['form_id']=$form_id;
+					$this->data['title']= 'Custom Reports';
+					$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+					foreach($this->data['defaultsConfigs'] as $default)
+					{		 
+						if($default->default_id=='pagination'){
+							$this->data['rowsperpage'] = $default->value;
+							$this->data['upper_rowsperpage']= $default->upper_range;
+							$this->data['lower_rowsperpage']= $default->lower_range;
+							break;
+						}
+					}
+					$this->data['fields']=$this->masters_model->get_report_layout_fields($form_id);
+					$this->data['all_departments']=$this->staff_model->get_department();
+					$this->data['all_districts']=$this->staff_model->get_district();   
+					$this->data['all_states']=$this->staff_model->get_states(); 
+					$this->data['units']=$this->staff_model->get_unit();
+					$this->data['areas']=$this->staff_model->get_area();
+					$this->data['route_primary']=$this->register_model->get_primary_route();
+					$this->data['route_secondary']=$this->register_model->get_secondary_route();
+					$this->data['priority_types']=$this->register_model->get_priority_type();
+					$this->data['volunteer']=$this->register_model->get_volunteer();
+					$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');	
+					$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');
+					if($this->data['fields']!=0)
+					{
+						$this->data['report']=$this->masters_model->get_customised_report_data($this->data['rowsperpage']);
+						//print_r($this->db->last_query());
+					}
+					$this->load->view('templates/header',$this->data);
+					$this->load->library('form_validation');
+					$this->load->view('pages/custom_generated_report',$this->data);
+				}
+				$this->load->view('templates/footer');
+			}
+		}
+		else{
+			redirect('home','refresh');
 		}
 	}
 }

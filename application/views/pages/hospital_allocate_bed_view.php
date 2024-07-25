@@ -65,7 +65,35 @@ $(document).ready(function(){$("#from_date").datepicker({
 		  };
 			$("#table-sort").tablesorter(options);
 		  $('.print').click(function(){
-			$('#table-sort').trigger('printTable');
+			//$('#table-sort').trigger('printTable'); old changde for improvement 
+			$('#table-sort').find('.tablesorter-filter-row').hide();
+				var printContent = '<!DOCTYPE html>';
+				printContent += '<html>';
+				printContent += '<head>';
+				printContent += '<title>Print</title>';
+				printContent += '<style>';
+				printContent += 'table { border-collapse: collapse; width: 95%; }';
+				printContent += 'th, td { border: 1px solid #ddd; padding: 8px; }';
+				printContent += 'th { background-color: #f2f2f2; }';
+				printContent += '</style>';
+				printContent += '</head>';
+				printContent += '<body>';
+				//printContent += document.getElementById("print-container");
+				var printContainer = document.getElementById("print-container");
+				var printContent = printContainer.innerHTML;
+				printContent = '<div style="text-align: center;">' + printContent + '</div>';
+				printContent = '<style>table { border-collapse: collapse; } table, th, td { border: 1px solid black; }</style>' + printContent;
+				printContent += document.getElementById("table-sort").outerHTML;
+				printContent += '</body>';
+				printContent += '</html>';
+				var printWindow = window.open('', '_blank', 'width=800,height=600');
+				printWindow.document.write(printContent);
+				printWindow.document.close();
+				printWindow.print();
+				window.onbeforeunload = function() {
+					printWindow.close();
+				};
+				window.location.reload();
 		  });
 });
 
@@ -133,9 +161,10 @@ $('#to_time').ptTimeSelect();
             			var formattedDate = formatDate(admitDate);
 						
 						details += '\n' + 'Admit date : ' + formattedDate;
+						//details += '\n' + '<b>' + 'Admit date' + '</b>' + ': ' + formattedDate;
 					}
 					if (patientDetails.diagnosis !== null && typeof formattedDate !== 'undefined') {
-						$('#patient_details_' + bedIndex).val(patientDetails.diagnosis + '\n' + 'Admit Date : ' + formattedDate);
+						$('#patient_details_' + bedIndex).val(patientDetails.diagnosis + '\n' + 'Admit date' + formattedDate);
 					}
 					//$('#patient_details_' + bedIndex).val(patientDetails.diagnosis + '\n' +'Admit Date : ' + formattedDate);
 					$('#patient_details_store_' + bedIndex).val(details); 
@@ -262,6 +291,7 @@ display: inline-grid;
 				<span id="text-span" style="margin-top: 6%;">Hide Patient Details</span>
 			</a>
 			<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
+			<p><input type="checkbox" name="Enable Priority" id="enable_priority"> <b>Enable Priority</b></p>
 		</div>
 		<style>
 			#text-span {
@@ -358,11 +388,22 @@ display: inline-grid;
 				<input type="hidden" value="<?php echo $abc->hospital_bed_id; ?>" id="bed_no_id_<?php echo $abc->hospital_bed_id; ?>" data-id="<?php echo $abc->hospital_bed_id; ?>">
 			    <?php if ($patient_assigned && $patient_details) { ?>
 					<?php if ($patient_details->patient_name != '' && $patient_details->priority_type_id==$patient_details->followup_priority_type && $patient_details->color_code!='') { ?>
-						<input type="text" name="" class="form-control bedNameInput" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px; background-color:<?php echo $patient_details->color_code; ?>; color:black">
+						<input type="text" name="" class="form-control bedNameInput_<?php echo $abc->hospital_bed_id; ?>" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px; background-color:#43f243; ?>; color:black">
+						<script>
+							$(document).ready(function() {
+								$('#enable_priority').change(function() {
+									if ($(this).is(':checked')) {
+										$('.bedNameInput_<?php echo $abc->hospital_bed_id; ?>').css('background-color', '<?php echo $patient_details->color_code; ?>');
+									} else {
+										$('.bedNameInput_<?php echo $abc->hospital_bed_id; ?>').css('background-color', '#43f243');
+									}
+								});
+							});
+						</script>
 					<?php } if ($patient_details->patient_name == '' && $patient_details->reservation_details!= '' ) { ?>
-						<input type="text" name="" class="form-control" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#88f9e1a6;color:black;">
+						<input type="text" name="" class="form-control" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#f59654;color:black;">
 					<?php } if ($patient_details->patient_name != '' && ($patient_details->followup_priority_type=='0' || $patient_details->followup_priority_type==''))  { ?>
-						<input type="text" name="" class="form-control bedNameInput" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#5ce35c;color:black;">
+						<input type="text" name="" class="form-control bedNameInput" value="<?php echo $abc->bed; ?>" readonly style="font-size:18px;background-color:#43f243;color:black;">
 					<?php }?>
 					<div class="row">
 						<div class="col-md-6">
@@ -381,7 +422,7 @@ display: inline-grid;
 					<?php if ($patient_details->patient_name != '') { ?>
 						<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="2" cols="12" readonly><?php echo $patient_details->details; ?></textarea>
                     <?php } else if ($patient_details->patient_name == '') { ?>
-						<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="" placeholder="Patient Diagnosis & Admit Date" rows="2" cols="12" readonly></textarea>
+						<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="" placeholder="Patient Diagnosis & Admit Date" rows="2" cols="12" readonly ></textarea>
 					<?php } ?>
 					<div class="bedDataContainer_<?php echo $abc->hospital_bed_id; ?>">
 						<!-- Rows will be dynamically added here -->
@@ -389,9 +430,9 @@ display: inline-grid;
 					<?php if ($patient_details->patient_name != '') { ?>
 						<textarea style="max-width:100%!important;background-color:white!important;" name="" id="" placeholder="Reservation Details" class="form-control" rows="2" cols="12" readonly></textarea>
                     <?php } else if ($patient_details->patient_name == '') { ?>
-						<textarea style="max-width:100%!important;background-color:white!important;" name="" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="2" cols="12" readonly><?php echo $patient_details->reservation_details; ?></textarea>
+						<textarea style="max-width:100%!important;background-color:white!important;" name="" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="2" cols="12" readonly ><?php echo $patient_details->reservation_details; ?></textarea>
 					<?php } ?>
-					<div class="row" style="margin-top:3%!important;">
+					<div class="row" style="margin-top:11%!important;">
 						<div class="col-md-7">
 							<input type="checkbox" data-id="<?php echo $abc->hospital_bed_id;?>" class="btn btn-warning discharge-checkbox" style="margin-top:-2%!important;">&nbsp;&nbsp;<strong >Discharge Patient</strong>
 						</div>
@@ -683,7 +724,7 @@ display: inline-grid;
 				Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 		<input type="submit" value="Search" name="submitBtn" class="btn btn-primary btn-sm" /> 
 		</form><br/>
-	<h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5>
+	<!-- <h5>Data as on <?php echo date("j-M-Y h:i A"); ?></h5> -->
 </div>
 <?php 
 	if ($this->input->post('rows_per_page')){
@@ -806,20 +847,35 @@ echo "</select></li>";
 
 
 <div style='padding: 0px 2px;'>
-<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
-
+	<h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 </div>
-	
+
+	<div class="container-fluid">	
+		<!-- PDF & Excel Button -->
+		<div style='padding: 0px 2px;' id="print-container">
+            <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+        </div>
+		<button type="button" class="btn btn-default btn-md print">
+			<span class="glyphicon glyphicon-print"></span> Print
+		</button>
+			<!--created button which converts html table to Excel sheet-->
+		<!-- <a href="#" id="test" onClick="javascript:fnExcelReport();">
+			<button type="button" class="btn btn-default btn-md excel">
+					<i class="fa fa-file-excel-o"ara-hidden="true"></i> Export to excel
+			</button>
+		</a> -->
+	</div>
+
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 		<th style="text-align:center">S.no</th>
 		<th style="text-align:center">Bed</th>
 		<th style="text-align:center">Patient Id</th>
-		<th style="text-align:center;width:11%;">Admit Date</th>
+		<th style="text-align:center;width:9%;">Admit Date</th>
 		<th style="text-align:center" class="patient_name">Name / Address</th>
-		<th style="text-align:center;width:17%;">Age / Gender / Diagnosis</th>
-		<th style="text-align:center">Parameters</th>
-		<th style="text-align:center;width:13%;">Update Date</th>
+		<th style="text-align:center;">Age / Gender / Diagnosis</th>
+		<th style="text-align:center;width:19%;">Parameters</th>
+		<th style="text-align:center;width:11%;">Update Date</th>
 		<th style="text-align:center">Updated by</th>
 		<!-- <th style="text-align:center">Actions</th>-->
 	</thead>

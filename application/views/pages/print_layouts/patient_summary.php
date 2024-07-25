@@ -458,7 +458,7 @@
 				<?php } ?>
 
 				<?php
-					if ($print_summary_counseling) 
+					if(isset($print_summary_counseling)) 
 					{
 						foreach($print_summary_counseling as $psc)
 						{
