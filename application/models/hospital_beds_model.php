@@ -224,8 +224,10 @@ class Hospital_beds_model extends CI_Model
     {
         $bed_id = $this->input->post('bed_id');
         $hospital=$this->session->userdata('hospital');
-        $this->db->select('pbp.id,pbp.hospital_bed_id,pbp.hospital_bed_parameter_id,pbp.bed_parameter_value,hbp.bed_parameter_label');
+        $this->db->select('pbp.id,pbp.hospital_bed_id,pbp.hospital_bed_parameter_id,pbp.bed_parameter_value,hbp.bed_parameter_label,
+        pbed.patient_name,pbed.age_gender,pbed.details');
         $this->db->from('patient_bed_parameter as pbp');
+        $this->db->join("patient_bed as pbed", "pbed.hospital_bed_id = pbp.hospital_bed_id");
         $this->db->join("hospital_bed_parameter as hbp", "hbp.hospital_bed_parameter_id = pbp.hospital_bed_parameter_id");
         $this->db->where('pbp.hospital_bed_id', $bed_id);
         $this->db->where('hbp.hospital_id', $hospital['hospital_id']);
