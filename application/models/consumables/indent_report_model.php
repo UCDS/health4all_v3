@@ -251,6 +251,7 @@ class Indent_report_model extends CI_Model
 		->where('item.item_id', $item_id)
 		->where('inventory.supply_chain_party_id', $scp_id);
 		
+		$this->db->order_by('indent.indent_date','ASC');
 		if($this->input->post('generic_item')){
             $this->db->where('item.generic_item_id', $this->input->post('generic_item'));
         }

@@ -64,7 +64,9 @@ $(document).ready(function(){$("#from_date").datepicker({
 			}
 		  };
 			$("#table-sort").tablesorter(options);
+			$('.hosp_name_id').hide();
 		  $('.print').click(function(){
+			$('.hosp_name_id').show();
 			//$('#table-sort').trigger('printTable'); old changde for improvement 
 			$('#table-sort').find('.tablesorter-filter-row').hide();
 				var printContent = '<!DOCTYPE html>';
@@ -93,6 +95,7 @@ $(document).ready(function(){$("#from_date").datepicker({
 				window.onbeforeunload = function() {
 					printWindow.close();
 				};
+				
 				window.location.reload();
 		  });
 });
@@ -111,18 +114,18 @@ $('#to_time').ptTimeSelect();
 			if (this.checked) {
 				var delete_id = $(this).data("id");
 				if (delete_id !== '') {
-					if (confirm("Are you sure you want to discharge this patient?")) {
+					if (confirm("Are you sure want to clear this bed?")) {
 						$.ajax({
 							type: "POST",
 							url: "<?php echo base_url('hospital_beds/discharge_patient_allocated_bed'); ?>",
 							data: { delete_id: delete_id },
 							dataType: 'json',
 							success: function(response) {
-								alert("Patient Discharge Successful");
+								alert("Bed Clear Successful");
 								location.reload();
 							},
 							error: function(error) {
-								console.error("Error discharging patient:", error);
+								console.error("Error clearing bed:", error);
 							}
 						});
 					} else {
@@ -434,7 +437,7 @@ display: inline-grid;
 					<?php } ?>
 					<div class="row" style="margin-top:11%!important;">
 						<div class="col-md-7">
-							<input type="checkbox" data-id="<?php echo $abc->hospital_bed_id;?>" class="btn btn-warning discharge-checkbox" style="margin-top:-2%!important;">&nbsp;&nbsp;<strong >Discharge Patient</strong>
+							<input type="checkbox" data-id="<?php echo $abc->hospital_bed_id;?>" class="btn btn-warning discharge-checkbox" style="margin-top:-2%!important;">&nbsp;&nbsp;<strong >Clear Bed</strong>
 						</div>
 						<div class="col-md-5" style="text-align:right;">
 							<a href="#" data-param-id="<?php echo $abc->hospital_bed_id;?>" id="edit_parameter_id_<?php echo $abc->hospital_bed_id;?>" style="text-decoration:none;color:red;">Edit Parameters</a>
@@ -449,6 +452,9 @@ display: inline-grid;
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-21px!important;">
 										<span aria-hidden="true">&times;</span>
 									</button>
+								</div>
+								<div class="modal-details" id="modal-details">
+									
 								</div>
 								<div class="modal-body" id="modal-body">
 									
@@ -509,8 +515,15 @@ display: inline-grid;
 											data: { bed_id: bed_id },
 											dataType: 'json',
 											success: function(response) {
+												//console.log(response);
 												if (response.length > 0) 
 												{
+													patient = response[0];
+													var patientLabel = '<p style="margin-left:25px;margin-top:5px;">' +
+														'<span style="font-weight:bold;">Patient Details:</span> ' +
+														patient.patient_name + ', ' + patient.age_gender +
+														'</p>';
+           											$('#modal-details').append(patientLabel);
 													$('#modal-body').empty();
 													$.each(response, function(index, item) {
 														var html = '<div class="row mb-3">';
@@ -550,7 +563,7 @@ display: inline-grid;
 										var parameterId = $(element).closest('.row').find('.bed-parameter-edit-id').val();
 										updatedParameters.push({
 											bed_parameter_id:	parameterId,
-											bed_parameter_value: parameterValue
+											bed_parameter_value: parameterValue,
 										});
 									});
 									$.ajax({
@@ -559,7 +572,7 @@ display: inline-grid;
 										data: { parameters: updatedParameters },
 										dataType: 'json',
 										success: function(response) {
-											console.log(response);
+											//console.log(response);
 											location.reload();
 										},
 										error: function(xhr, status, error) {
@@ -853,7 +866,8 @@ echo "</select></li>";
 	<div class="container-fluid">	
 		<!-- PDF & Excel Button -->
 		<div style='padding: 0px 2px;' id="print-container">
-            <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
+			<h5 class="hosp_name_id" style="margin-bottom:0px!important;"><?php $hospital=$this->session->userdata('hospital'); echo $hospital['hospital']; ?>
+            <h5 style="margin-top:0px!important;">Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
         </div>
 		<button type="button" class="btn btn-default btn-md print">
 			<span class="glyphicon glyphicon-print"></span> Print
@@ -883,7 +897,7 @@ echo "</select></li>";
 	<?php $i = 1; ?>
 	<?php foreach ($all_beds['available_beds'] as $bed): ?>
 		<tr>
-			<td style="text-align:right;"><?php echo $i++; ?></td>
+			<td style="text-align:center;"><?php echo $i++; ?></td>
 			<td><?php echo $bed->bed; ?></td>
 			<?php
 			$patient_found = false;
