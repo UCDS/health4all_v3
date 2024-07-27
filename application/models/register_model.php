@@ -1449,17 +1449,18 @@ class Register_model extends CI_Model{
 	{
 		$this->db->select("patient.patient_id, patient.age_years, patient.gender, patient.address, patient.age_months, patient.age_days,
                    patient.phone, patient_visit.admit_date, patient_visit.presenting_complaints, patient_visit.admit_time, CONCAT(patient.first_name, ' ', patient.last_name) AS name,
-				   IF(patient.father_name IS NULL OR patient.father_name='',patient.spouse_name,patient.father_name) AS parent_spouse
-				   ,patient.address,patient_visit.hosp_file_no,patient_visit.department_id,department.department,unit.unit_name,
+				   IF(patient.father_name IS NULL OR patient.father_name='',patient.spouse_name,patient.father_name) AS parent_spouse,
+				   patient.mother_name,patient.address,patient_visit.hosp_file_no,patient_visit.department_id,department.department,unit.unit_name,
 				   patient.patient_id_manual,mlc.mlc_number,mlc.mlc_number_manual,mlc.ps_name,mlc.brought_by,mlc.police_intimation,
 				   mlc.declaration_required, mlc.pc_number,mlc.mlc_id,patient_visit.mlc, patient.place, department.op_room_no,
 				   area.area_name,patient.district_id, district.district, patient_visit.visit_name_id, patient.occupation_id,
-				   occupation.occupation, visit_name.visit_name", FALSE);
+				   occupation.occupation, visit_name.visit_name,hospital.hospital_short_name,patient.insert_datetime patient_reg_date_time ", FALSE);
 		$this->db->from('patient');
 		$this->db->join('patient_visit','patient.patient_id=patient_visit.patient_id','left');
 		$this->db->join('occupation','patient.occupation_id=occupation.occupation_id','left');
 		$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
 		$this->db->join('department','patient_visit.department_id=department.department_id','left');
+		$this->db->join('hospital','department.hospital_id=hospital.hospital_id','left');
 		$this->db->join('district','patient.district_id=district.district_id','left');
 		$this->db->join('state','district.state_id=state.state_id','left');
 		$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
