@@ -202,11 +202,33 @@ class Hospital_beds_model extends CI_Model
         return $this->db->affected_rows() > 0;
     }
 
-    public function edited_bed_parameters($updated_parameters) 
+    public function edited_bed_parameters($updated_parameters, $bed_id) 
     {
         $success = true;
+        $user=$this->session->userdata('logged_in'); 
+        $data_2 = array(
+            'created_date' => date('Y-m-d'),
+            'created_time' => date('H:i:s'),
+            'updated_by' => $user['staff_id']
+        );
+        $this->db->where('hospital_bed_id', $bed_id);
+        $this->db->update('patient_bed', $data_2);
+
+        if ($this->db->affected_rows() === 0) {
+            $success = false;
+        }
+        
         foreach ($updated_parameters as $parameter) 
         {
+            $data_null = array(
+                'bed_parameter_value' => NULL
+            );
+            $this->db->where('id', $parameter['bed_parameter_id']);
+            $this->db->update('patient_bed_parameter', $data_null);
+            if ($this->db->affected_rows() == 0) {
+                $success = false;
+                break;
+            }
             $data = array(
                 'bed_parameter_value' => $parameter['bed_parameter_value']
             );
@@ -225,7 +247,7 @@ class Hospital_beds_model extends CI_Model
         $bed_id = $this->input->post('bed_id');
         $hospital=$this->session->userdata('hospital');
         $this->db->select('pbp.id,pbp.hospital_bed_id,pbp.hospital_bed_parameter_id,pbp.bed_parameter_value,hbp.bed_parameter_label,
-        pbed.patient_name,pbed.age_gender,pbed.details');
+        pbed.patient_name,pbed.age_gender,pbed.details,pbed.patient_id');
         $this->db->from('patient_bed_parameter as pbp');
         $this->db->join("patient_bed as pbed", "pbed.hospital_bed_id = pbp.hospital_bed_id");
         $this->db->join("hospital_bed_parameter as hbp", "hbp.hospital_bed_parameter_id = pbp.hospital_bed_parameter_id");
