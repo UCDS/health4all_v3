@@ -442,7 +442,7 @@ display: inline-grid;
 						<div class="col-md-5" style="text-align:right;">
 							<a href="#" data-param-id="<?php echo $abc->hospital_bed_id;?>" id="edit_parameter_id_<?php echo $abc->hospital_bed_id;?>" style="text-decoration:none;color:red;">Edit Parameters</a>
 						</div>
-					</div>
+					</div><br/><br/>
 
 					<div class="modal fade" id="yourModal" tabindex="-1" role="dialog" aria-labelledby="yourModalLabel" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
@@ -454,6 +454,9 @@ display: inline-grid;
 									</button>
 								</div>
 								<div class="modal-details" id="modal-details">
+									
+								</div>
+								<div class="modal-param-bed-id" id="modal-param-bed-id">
 									
 								</div>
 								<div class="modal-body" id="modal-body">
@@ -498,7 +501,6 @@ display: inline-grid;
 								}
 								var bedId = $('#bed_no_id_<?php echo $abc->hospital_bed_id; ?>').data('id');
 								fetchBedData(bedId);
-
 								$('#edit_parameter_id_<?php echo $abc->hospital_bed_id;?>').on('click', function(e) 
 								{
 									$('#yourModal').modal({
@@ -518,12 +520,18 @@ display: inline-grid;
 												//console.log(response);
 												if (response.length > 0) 
 												{
+													$('#modal-details').empty();
 													patient = response[0];
 													var patientLabel = '<p style="margin-left:25px;margin-top:5px;">' +
-														'<span style="font-weight:bold;">Patient Details:</span> ' +
+														'<span style="font-weight:bold;">Patient Details:</span> ' + patient.patient_id + ' , ' +
 														patient.patient_name + ', ' + patient.age_gender +
 														'</p>';
            											$('#modal-details').append(patientLabel);
+													
+													$('#modal-param-bed-id').empty();
+													var bedIdInput  = '<input type="hidden" name="edit_param_bed_id" value="'+ bed_id +'">'
+													$('#modal-param-bed-id').append(bedIdInput);
+
 													$('#modal-body').empty();
 													$.each(response, function(index, item) {
 														var html = '<div class="row mb-3">';
@@ -557,6 +565,7 @@ display: inline-grid;
 
 								$('#updateParametersBtn').on('click', function() 
 								{
+									var bed_id = $('#modal-param-bed-id').find('input[name="edit_param_bed_id"]').val(); // Change here
 									var updatedParameters = [];
 									$('.bed-parameter-edit-value').each(function(index, element) {
 										var parameterValue = $(element).val();
@@ -569,7 +578,7 @@ display: inline-grid;
 									$.ajax({
 										type: 'POST',
 										url: '<?php echo base_url('hospital_beds/update_edited_bed_params'); ?>',
-										data: { parameters: updatedParameters },
+										data: { parameters: updatedParameters, bed_id: bed_id },
 										dataType: 'json',
 										success: function(response) {
 											//console.log(response);
@@ -593,7 +602,7 @@ display: inline-grid;
 							<input type="text" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="">
 						</div>
 					</div>
-					<input type="text" class="form-control patient_name" name="patient_name_<?php echo $j; ?>" id="patient_name_<?php echo $j; ?>" value="" autocomplete="off" placeholder="Patient Name">
+					<input type="text" class="form-control patient_name" name="patient_name_<?php echo $j; ?>" id="patient_name_<?php echo $j; ?>" value="" autocomplete="off" placeholder="Patient Name" style="height:55px!important;">
                     <input type="hidden" class="form-control" name="patient_name_store_<?php echo $j; ?>" id="patient_name_store_<?php echo $j; ?>" value="" autocomplete="off">
                     <input type="hidden" class="form-control" name="address_store_<?php echo $j; ?>" id="address_store_<?php echo $j; ?>" value="" autocomplete="off">
                     <input type="hidden" class="form-control" name="age_gender_store_<?php echo $j; ?>" id="age_gender_store_<?php echo $j; ?>" value="" autocomplete="off">
@@ -617,14 +626,14 @@ display: inline-grid;
 						<?php endforeach; ?>
 					</div>
 					<textarea style="max-width:100%!important;" name="reserve_details_<?php echo $j; ?>" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="2" cols="12" disabled></textarea>
-					<div class="row" style="margin-top:10%!important;">
+					<div class="row" style="margin-top:12%!important;">
 						<div class="col-md-6">
 							<input type="checkbox" name="reserve_id_<?php echo $j; ?>" id="reserve_id_<?php echo $j; ?>" value="" onclick="toggleReserveDetails(<?php echo $j; ?>)"> &nbsp;Reserve Bed <br/><br/>
 						</div>
 						<div class="col-md-6" style="text-align:right;">
 							<button type="button" class="btn btn-success" id="update_bed_<?php echo $j; ?>" onclick="submitFormAndReload()">Update Bed</button>
 						</div>
-					</div>
+					</div><br/><br/>
 					<script>
 						document.addEventListener("DOMContentLoaded", function() {
 							var allAvailableBeds = <?php echo count($all_available_beds['available_beds']); ?> // Use PHP count directly
@@ -639,14 +648,14 @@ display: inline-grid;
 							var patientDetailsTextarea = document.getElementById('patient_details_' + index);
 							var patientNameInput = document.getElementById('patient_name_' + index);
 							var ageGenderInput = document.getElementById('age_gender_' + index);
-							if (reserveCheckbox.checked) {
-								reserveDetailsTextarea.disabled = false; 
+							if (reserveCheckbox && reserveCheckbox.checked) {
+								reserveDetailsTextarea && reserveDetailsTextarea.disabled?false:true; 
 								patientIdInput.disabled = true;
 								patientDetailsTextarea.disabled = true;
 								patientNameInput.disabled = true;
 								ageGenderInput.disabled = true;
 							} else {
-								reserveDetailsTextarea.disabled = true;
+								reserveDetailsTextarea && reserveDetailsTextarea.disabled?true:false; 
 								patientIdInput.disabled = false;
 								patientDetailsTextarea.disabled = false;
 								patientNameInput.disabled = false; 
@@ -949,7 +958,7 @@ echo "</select></li>";
 					} else {
 						echo '<td>'. $patient_bed->reservation_details .'</td>';
 					}
-					echo '<td>' . date("j M Y ", strtotime("$patient_bed->created_date")) . '</td>';
+					echo '<td>' . date("j M Y ", strtotime("$patient_bed->created_date")). date("h:i A.", strtotime("$patient_bed->created_time")) . '</td>';
 					echo '<td>' . $patient_bed->updated_by_name . '</td>';
 					break;
 				}

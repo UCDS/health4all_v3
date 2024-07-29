@@ -415,7 +415,7 @@ function onchange_page_dropdown(dropdownobj){
 			$page_no = 1;	
 		?>
 			<div class="row">	
-				<?php echo form_open("reports/custom_generated_report/" . $form_id, array('role' => 'form', 'class' => 'form-custom', 'id' => 'appointment')); ?>				Choose OP / IP : &nbsp;&nbsp;
+				<?php echo form_open("reports/custom_generated_report/" . $form_id, array('role' => 'form', 'class' => 'form-custom', 'id' => '')); ?>Choose OP / IP : &nbsp;&nbsp;
 				<input type="radio" name="op_ip" class ="form-control" value="1" <?php if(empty($this->input->post('op_ip')) || $this->input->post('op_ip')==1){ echo "checked"; }  ?>> &nbsp;OP&nbsp;
 				<input type="radio" name="op_ip" class ="form-control" value="2" <?php if(!empty($this->input->post('op_ip')) && $this->input->post('op_ip')==2 ){ echo "checked"; } ?>> &nbsp;IP&nbsp; </br>
 				<label><b>Life Status:  </b></label>
@@ -731,7 +731,7 @@ function onchange_page_dropdown(dropdownobj){
 			<thead>
 				<tr>
 					<th style="text-align:center;">S.no</th>
-					<th style="text-align:center;">Patient Id</th>
+					<!--<th style="text-align:center;">Patient Id</th>-->
 					<?php 
 						foreach($fields as $fd) 
 						{ 
@@ -746,7 +746,7 @@ function onchange_page_dropdown(dropdownobj){
 				<?php foreach($report as $r): ?>
 					<tr>
 						<td style="text-align:right;"><?php echo $sno; ?></td>
-						<td style="text-align:center;"><?php echo $r->patient_id; ?></td>
+						<!--<td style="text-align:center;"><?php echo $r->patient_id; ?></td>-->
 						<?php foreach($fields as $fd): ?>
 							<?php switch ($fd->field_name) {
 								case 'icd_code':
@@ -883,5 +883,5 @@ function onchange_page_dropdown(dropdownobj){
 		</ul>
 	</div>
 	<?php } else { ?>
-	No custom layout had been added for this report.
+			<p class="col-md-offset-2"> No custom layout had been added for this report. </p>
 	<?php } ?>

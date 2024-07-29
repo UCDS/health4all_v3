@@ -2448,19 +2448,9 @@ else if($type=="dosage"){
 
 	public function get_customised_report_data($default_rowsperpage)
 	{
-		if ($this->input->post('page_no')) {
-			$page_no = $this->input->post('page_no');
-		}
-		else{
-			$page_no = 1;
-		}
-		if($this->input->post('rows_per_page')) {
-			$rows_per_page = $this->input->post('rows_per_page');
-		}
-		else{
-			$rows_per_page = $default_rowsperpage;
-		}
-		$start = ($page_no -1 )  * $rows_per_page;
+		$page_no = $this->input->post('page_no') ? $this->input->post('page_no') : 1;
+		$rows_per_page = $this->input->post('rows_per_page') ? $this->input->post('rows_per_page') : $default_rowsperpage;
+		$start = ($page_no - 1) * $rows_per_page;
 
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("rl.table_name,rl.field_name,rl.sequence_id,cr.main_table,rl.function")
@@ -2607,16 +2597,17 @@ else if($type=="dosage"){
 			}
 		}
 		$main_table = $fields_columns[0]->main_table;
+		$columns_string = implode(', ', $selected_columns);
 		if ($main_table == 'patient_followup') 
 		{
-			$this->db->select('patient_followup.patient_id,department.department,unit.unit_name,area.area_name,
-			visit_name.visit_name, icd_code.code_title');
-		} if ($main_table == 'patient_visit') {
-			$this->db->select('patient_visit.patient_id,department.department,unit.unit_name,area.area_name,
-			visit_name.visit_name, icd_code.code_title');
-		} if ($main_table == 'patient') {
-			$this->db->select('patient_visit.patient_id,department.department,unit.unit_name,area.area_name,
-			visit_name.visit_name, icd_code.code_title');
+			$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
+			visit_name.visit_name, icd_code.code_title");
+		} elseif ($main_table == 'patient_visit') {
+			$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
+			visit_name.visit_name, icd_code.code_title");
+		} elseif ($main_table == 'patient') {
+			$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
+			visit_name.visit_name, icd_code.code_title");
 		}
 
 		switch ($main_table) 
@@ -2674,7 +2665,6 @@ else if($type=="dosage"){
              GROUP BY patient_id) latest_patient_visit';
 		$this->db->join($subquery, 'patient_visit.patient_id = latest_patient_visit.patient_id AND patient_visit.admit_date = latest_patient_visit.max_admit_date', 'left');
 
-		$this->db->select(implode(', ', $selected_columns));
 		if($this->input->post('op_ip')==1 || empty($this->input->post('op_ip')))
 		{
 			$this->db->where("patient_visit.visit_type","OP");
@@ -2704,9 +2694,13 @@ else if($type=="dosage"){
     {
         $layout_delt_id = $this->input->post('layout_id');        
         $this->db->where('report_id', $layout_delt_id);
-        $this->db->delete('report_layout');
-
-        return $this->db->affected_rows() > 0;
+        $result = $this->db->delete('report_layout');
+		if($result)
+		{
+			$this->db->where('report_id', $layout_delt_id);
+			$this->db->delete('custom_report');
+		}
+		return $this->db->affected_rows() > 0;
     }
 
 	function get_saved_custom_layout()

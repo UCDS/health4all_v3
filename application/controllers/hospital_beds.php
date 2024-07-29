@@ -407,7 +407,8 @@ class hospital_beds extends CI_Controller{
     public function update_edited_bed_params() 
     {
         $updated_parameters = $this->input->post('parameters');
-        $success = $this->hospital_beds_model->edited_bed_parameters($updated_parameters);
+        $bed_id = $this->input->post('bed_id');
+        $success = $this->hospital_beds_model->edited_bed_parameters($updated_parameters, $bed_id);
         echo json_encode(['success' => $success]);
     }
 
