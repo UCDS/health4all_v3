@@ -2460,49 +2460,15 @@ else if($type=="dosage"){
 		$query = $this->db->get();
 		$fields_columns = $query->result();
 		
-		if($this->input->post('from_date') && $this->input->post('to_date')){
-			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
-			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
-		}
-		else if($this->input->post('from_date') || $this->input->post('to_date')){
-			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
-			$to_date=$from_date;
-		}
-		else{
-			$from_date=date("Y-m-d");
-			$to_date=$from_date;
-		}
+		$from_date = $this->input->post('from_date') ? date("Y-m-d", strtotime($this->input->post('from_date'))) : date("Y-m-d");
+		$to_date = $this->input->post('to_date') ? date("Y-m-d", strtotime($this->input->post('to_date'))) : $from_date;
 	
-        if($this->input->post('from_time') && $this->input->post('to_time')){
-			$from_time=date("H:i",strtotime($this->input->post('from_time')));
-			$to_time=date("H:i",strtotime($this->input->post('to_time')));
-				
-		}
-		else if($this->input->post('from_time') || $this->input->post('to_time')){
-			if($this->input->post('from_time')){
-                            $from_time=$this->input->post('from_time');
-                            $to_time = '23:59';
-                        }else{
-                            $from_time = '00:00';
-                            $to_time=$this->input->post('to_time');
-                        }				
-		}		
-		else{
-			$to_time = '23:59';
-		 	$from_time = '00:00';
-		}
+        $from_time = $this->input->post('from_time') ?: '00:00';
+		$to_time = $this->input->post('to_time') ?: '23:59';
 
-		if($this->input->post('life_status')!= 4)
-		{
-			if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
-				$this->db->where('patient_followup.life_status',1);
-					}
-			else if($this->input->post('life_status')== 2){
-				$this->db->where('patient_followup.life_status',0);
-			}
-			else if($this->input->post('life_status')== 3){
-				$this->db->where('patient_followup.life_status',2);
-			}
+		if ($this->input->post('life_status') != 4) {
+			$life_status = $this->input->post('life_status');
+			$this->db->where('patient_followup.life_status', ($life_status == 1 || empty($life_status)) ? 1 : ($life_status == 2 ? 0 : 2));
 		}
 
 		if($this->input->post('department')){
@@ -2534,20 +2500,9 @@ else if($type=="dosage"){
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
 		
-		if($this->input->post('ndps')!=0)
-		{
-			if($this->input->post('ndps')==1){
-				$this->db->where('patient_followup.ndps',1);
-			}if($this->input->post('ndps')==2){
-				$this->db->where('patient_followup.ndps',0);
-			}
-		}
+		if ($this->input->post('ndps') != 0){ $this->db->where('patient_followup.ndps', $this->input->post('ndps') == 1 ? 1 : 0); }
 
-		if($this->input->post('sort_by_age')==1){
-			$this->db->order_by('patient.age_years',ASC);
-		}else{
-			$this->db->order_by('patient.age_years',DESC);
-		}
+		if ($this->input->post('sort_by_age')){ $this->db->order_by('patient.age_years', $this->input->post('sort_by_age') == 1 ? 'ASC' : 'DESC'); }
 
 		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
 		{
@@ -2576,13 +2531,11 @@ else if($type=="dosage"){
 			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
 		}
 
-		if($this->input->post('district'))
-		{
+		if($this->input->post('district')){
 			$this->db->where('patient.district_id',$this->input->post('district'));
 		}
 		
-		if($this->input->post('state'))
-		{
+		if($this->input->post('state')){
 			$this->db->where('state.state_id',$this->input->post('state'));
 		}
 		

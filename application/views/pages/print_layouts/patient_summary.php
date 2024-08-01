@@ -223,13 +223,13 @@
 					</table>
 					</td>
 				</tr>
+				<?php } ?>
 				<?php if(!!$patient->clinical_findings) { ?>
 				<tr class="print-element" width="95%">
 					<td colspan="3"  style="padding-top:5px">
 					<b>Clinical Findings</b>: <?php echo $patient->clinical_findings;?>
 					</td>
 				</tr>
-				<?php } ?>
 				<?php } ?>
 				</tbody>
 				

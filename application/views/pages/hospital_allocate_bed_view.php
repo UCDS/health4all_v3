@@ -936,11 +936,11 @@ echo "</select></li>";
 					echo '</td>';
 					echo '<td>';
 						if (!empty($patient_bed->age_gender) && !empty($diagnosis)) {
-							echo $patient_bed->age_gender . ' / ' . $diagnosis;
+							echo '<b>'.$patient_bed->age_gender . ' / ' . $diagnosis.'</b>';
 						} elseif (!empty($patient_bed->age_gender)) {
-							echo $patient_bed->age_gender;
+							echo '<b>'.$patient_bed->age_gender.'</b>';
 						} elseif (!empty($diagnosis)) {
-							echo $diagnosis;
+							echo '<b>'.$diagnosis.'</b>';
 						} else {
 							echo '-';
 						}

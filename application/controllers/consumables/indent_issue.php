@@ -314,7 +314,7 @@ class Indent_issue extends CI_Controller{                                       
                 $this->load->view('pages/consumables/issued_details_view',$this->data);
             }else{
                 log_message("info", "SAIRAM :=> ".json_encode($this->input->post(NULL, FALSE)));
-
+                $this->data['checkbox_checked_val'] = $this->input->post('checkbox_checked_val');
                 $this->data['get_issue']=$this->indent_issue_model->issue_indent();                   //get data from issue_indent method of indent_issue model and store it into data array of index:get_issue
                 $this->data['all_indents']= $this->indent_issue_model->get_approved_indents();        //get data from get_approved_indents method of indent_issue model and store it into data array of index:all_indents
                 $this->data['msg']= "<b style='color:green' >Issued successfully</b>";
