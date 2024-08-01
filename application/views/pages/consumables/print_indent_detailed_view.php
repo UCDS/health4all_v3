@@ -117,6 +117,7 @@
                     
 
                     if ($prev !== $all_issue->indent_item_id) {
+                            if($checkbox_checked_val=='0') {
                         ?>
                         <tr>
 
@@ -150,7 +151,7 @@
                             <!-- name="add_$indent_item->id" -->
 
                         </tr>
-                        
+                        <?php } ?>
                         <tr name="<?php echo "indent_item_" . $all_issue->indent_item_id; ?>" class="warning indent_item">
 
                             <td style="border:2px solid black;  padding: 3px;">

@@ -387,7 +387,6 @@
 
 					<div class="row">
 						<div class="col-md-6">
-
 							<b>Issue Date:<font color="red">*</font></b>
 							<input type="text" value="<?php echo date("d-M-Y"); ?>" name="issue_date" id="issue_date" />
 						</div>
@@ -395,17 +394,40 @@
 							<b>Issue Time: </b>
 							<input type="text" value="<?php echo date("h:i A"); ?>" name="issue_time" id="issue_time" />
 						</div>
+						<div class="col-md-12"><br/>
+							<input type="checkbox" value=" " name="single_batch" id="single_batch" />
+							<b style="color:red;">Please select checkbox if the indent issue is in single batch </b>
+						</div>
+						<script>
+							$(document).ready(function() {
+								$('#single_batch').on('change', function() {
+									if ($(this).is(':checked')) {
+										$('#checkbox_checked').val('1');
+										$('.indent_item').find('button').click();
+										$('.indent_item').addClass('hidden');
+										$('#issue_invoice_table').find('input.narrow[type="number"]').prop('readonly', true);
+										$('#error-alerts').hide().attr('style', 'display: none!important; max-width: 40%; margin: auto;');
+									} else {
+										$('#checkbox_checked').val('0');
+										$('.indent_item').removeClass('hidden');
+										$('#issue_invoice_table').find('input.narrow[type="number"]').prop('readonly', false);
+										$('#error-alerts').show().attr('style', 'display: none!important; max-width: 40%; margin: auto;');;
+									}
+								});
+							});
+						</script>
 						<input class="sr-only" type="hidden" id="from_party_id" name="from_party_id"
 							value="<?= $all_int->from_party_id; ?>" readonly>
 						<input class="sr-only" type="hidden" id="to_party_id" name="to_party_id"
 							value="<?= $all_int->to_party_id; ?>" readonly>
+						<input type="hidden" id="checkbox_checked" name="checkbox_checked_val" class="form-control" value="0" readonly>
 					</div>
 				</div>
 
 			</div>
-			<div class="row">
+			<div class="row" id="msg_hide">
 				<div id="error-alerts" style="max-width: 40%; margin: auto;">
-					<div class="alert alert-danger">
+					<div class="alert alert-danger" >
 						<center>
 							<p id="error-message"></p>
 						</center>
@@ -484,7 +506,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-6">
-				<div class="form-group form-group-lg">
+				<div class="form-group form-group-lg ">
 					<label for="indent_note">Note </label><br>
 					<textarea class="form-control" name="indent_note" id="indent_note"
 						placeholder="Add a note for the indent"><?php echo $all_int->indent_note; ?></textarea>

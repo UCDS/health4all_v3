@@ -306,7 +306,7 @@ class hospital_beds extends CI_Controller{
 			if($access==1)
 			{
                 $this->load->helper('form');
-                $this->data['title']="Allocate Bed";
+                $this->data['title']="Update Bed";
                 $this->data['edit_access']=$edit_access;
                 $this->data['userdata']=$this->session->userdata('logged_in');
                 $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
