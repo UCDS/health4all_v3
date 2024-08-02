@@ -584,7 +584,7 @@ function onchange_page_dropdown(dropdownobj){
 		</form>
 		</div>
 	</div><br/>
-<?php if(!empty($fields) && count($fields)>0){ ?>
+<?php if(!empty($report) && count($report)>0){ ?>
 	<div class="row col-md-offset-2">
 		
 		<div style='padding: 0px 2px;' id="print-container">

@@ -442,7 +442,7 @@ display: inline-grid;
 						<div class="col-md-5" style="text-align:right;">
 							<a href="#" data-param-id="<?php echo $abc->hospital_bed_id;?>" id="edit_parameter_id_<?php echo $abc->hospital_bed_id;?>" style="text-decoration:none;color:red;">Edit Parameters</a>
 						</div>
-					</div><br/><br/>
+					</div><br/><br/><br/><br/>
 
 					<div class="modal fade" id="yourModal" tabindex="-1" role="dialog" aria-labelledby="yourModalLabel" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
@@ -633,7 +633,7 @@ display: inline-grid;
 						<div class="col-md-6" style="text-align:right;">
 							<button type="button" class="btn btn-success" id="update_bed_<?php echo $j; ?>" onclick="submitFormAndReload()">Update Bed</button>
 						</div>
-					</div><br/><br/>
+					</div><br/><br/><br/><br/>
 					<script>
 						document.addEventListener("DOMContentLoaded", function() {
 							var allAvailableBeds = <?php echo count($all_available_beds['available_beds']); ?> // Use PHP count directly
@@ -648,14 +648,14 @@ display: inline-grid;
 							var patientDetailsTextarea = document.getElementById('patient_details_' + index);
 							var patientNameInput = document.getElementById('patient_name_' + index);
 							var ageGenderInput = document.getElementById('age_gender_' + index);
-							if (reserveCheckbox && reserveCheckbox.checked) {
-								reserveDetailsTextarea && reserveDetailsTextarea.disabled?false:true; 
+							if (reserveCheckbox.checked) {
+								reserveDetailsTextarea.disabled = false;
 								patientIdInput.disabled = true;
 								patientDetailsTextarea.disabled = true;
 								patientNameInput.disabled = true;
 								ageGenderInput.disabled = true;
 							} else {
-								reserveDetailsTextarea && reserveDetailsTextarea.disabled?true:false; 
+								reserveDetailsTextarea.disabled = true;
 								patientIdInput.disabled = false;
 								patientDetailsTextarea.disabled = false;
 								patientNameInput.disabled = false; 
