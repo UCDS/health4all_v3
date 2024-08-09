@@ -391,7 +391,7 @@ function doPost(page_no){
 	
 	var page_no_hidden = document.getElementById("page_no");	
   	page_no_hidden.value=page_no;
-        $('#followup_list').submit();
+        $('#custom_report').submit();
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
@@ -415,7 +415,8 @@ function onchange_page_dropdown(dropdownobj){
 			$page_no = 1;	
 		?>
 			<div class="row">	
-				<?php echo form_open("reports/custom_generated_report/" . $form_id, array('role' => 'form', 'class' => 'form-custom', 'id' => '')); ?>Choose OP / IP : &nbsp;&nbsp;
+				<?php echo form_open("reports/custom_generated_report/" . $form_id, array('role' => 'form', 'class' => 'form-custom', 'id' => 'custom_report')); ?>Choose OP / IP : &nbsp;&nbsp;
+				<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
 				<input type="radio" name="op_ip" class ="form-control" value="1" <?php if(empty($this->input->post('op_ip')) || $this->input->post('op_ip')==1){ echo "checked"; }  ?>> &nbsp;OP&nbsp;
 				<input type="radio" name="op_ip" class ="form-control" value="2" <?php if(!empty($this->input->post('op_ip')) && $this->input->post('op_ip')==2 ){ echo "checked"; } ?>> &nbsp;IP&nbsp; </br>
 				<label><b>Life Status:  </b></label>
@@ -574,7 +575,6 @@ function onchange_page_dropdown(dropdownobj){
 					}
 				</script>
 				<input type="hidden" name="form_id" value="<?php echo $form_id;?>">
-				<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
 			 	<span>Rows per page : </span><input type="number" class="form-control rows_per_page" name="rows_per_page" id="rows_per_page" style="margin-top:2%;"
 			 	min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" 
 				value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
@@ -599,7 +599,7 @@ function onchange_page_dropdown(dropdownobj){
 			else{
 				$page_no = 1;
 			}
-			$total_records = count($report);
+			$total_records = $report_count[0]->count;
 			if ($this->input->post('rows_per_page')){
 				$total_records_per_page = $this->input->post('rows_per_page');
 			}else{
@@ -742,7 +742,7 @@ function onchange_page_dropdown(dropdownobj){
 				</tr>
 			</thead>
 			<tbody>
-				<?php $sno = 1; ?>
+				<?php $sno=(($page_no - 1) * $total_records_per_page)+1 ;?>
 				<?php foreach($report as $r): ?>
 					<tr>
 						<td style="text-align:right;"><?php echo $sno; ?></td>
@@ -782,6 +782,7 @@ function onchange_page_dropdown(dropdownobj){
 			</tbody>
 		</table>
 	</div>
+	<h5 class="row col-md-offset-2">Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
 	<div class="col-md-offset-2">
 		<ul class="pagination" style="margin-top: 0px;
 				margin-right: 0px;

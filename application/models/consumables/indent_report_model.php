@@ -237,11 +237,12 @@ class Indent_report_model extends CI_Model
 		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, 
 		scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
 		inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, 
-		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time")
+		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time,indent_item.note as item_note")
 		->from('inventory')
 		->join('item', 'item.item_id = inventory.item_id') //remove left later
 		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
 		->join('indent', 'indent.indent_id = inventory.indent_id') // remove left later for only relevant details
+		->join('indent_item', 'indent_item.indent_id = indent.indent_id')
 		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent.from_id')
 		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent.to_id')
 		->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
@@ -250,7 +251,9 @@ class Indent_report_model extends CI_Model
 		->where('indent.hospital_id', $hospital['hospital_id'])
 		->where('item.item_id', $item_id)
 		->where('inventory.supply_chain_party_id', $scp_id);
-		
+
+		$this->db->group_by('indent_item.indent_id');
+
 		$this->db->order_by('indent.indent_date','ASC');
 		if($this->input->post('generic_item')){
             $this->db->where('item.generic_item_id', $this->input->post('generic_item'));

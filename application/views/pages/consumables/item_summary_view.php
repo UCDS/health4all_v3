@@ -577,7 +577,8 @@ $('#to_id').change(function(){
 							<td><?= $expiry_date == ""? "": date("d-M-Y", strtotime($expiry_date)); ?></td> -->
 							<!-- <td><?= $inventory_item->gtin_code; ?></td> -->
 							<td><?= $inventory_item->patient_id ? $inventory_item->patient_id: ""; ?></td>
-							<td><?= $inventory_item->note;?></td>
+							<!-- <td><?= $inventory_item->note;?></td> --> <!-- commented on aug 08 2024 -->
+							<td><?= $inventory_item->item_note;?></td>
 						</tr>
 						<?php
 						
