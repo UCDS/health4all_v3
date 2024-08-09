@@ -1845,9 +1845,12 @@ function initDistrictSelectize(){
 							</thead>
 							<tbody class="daily_notes dynamic-row">
 								<tr>
-									<td><textarea rows="4" cols="60" name="clinical_note[]"  class="form-control"></textarea></td>
-									<td><span class="note_date_label">Select Date and Time to save the note</span> <br /> <input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" /> </td>
-									<td>
+									<td style="width:80%!important;"><textarea rows="4" cols="60" name="clinical_note[]"  class="form-control add_clinical_note "></textarea></td>
+									<td >
+										<span class="note_date_label">Select Date and Time to save the note</span> &nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="datetime-local" class="daily_notes_date form-control" name="note_date[]" />
+									</td>
+									<td style="padding-top:35px;">
 										<button  type="button" class="btn btn-sm btn-primary add_daily_note">Add</button>
 										<button  type="button" class="btn btn-sm btn-danger remove_daily_note">X</button>
 									</td>
@@ -1857,20 +1860,36 @@ function initDistrictSelectize(){
 				</div>
 				<script>
 					$(function(){
+						var initializeClassicEditor = function(element) {
+							ClassicEditor
+								.create(element, {
+									toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+								})
+								.catch(error => {
+									console.error(error);
+								});
+						};
 						var toggleAddRemoveButton = function(parent){
 							$(parent).find(".add_daily_note").hide();
 							$(parent).find(".add_daily_note:first").show();
 							$(parent).find(".remove_daily_note").show();
 							$(parent).find(".remove_daily_note:first").hide();
 						}
-						$(document).on('click', ".add_daily_note", function(){
-							var row = $(this).parents('tr:eq(0)').clone(false);
-							row.find('input,textarea').each(function(){
+						$('tbody.daily_notes').find('.add_clinical_note').each(function() {
+							initializeClassicEditor(this);
+						});
+						$(document).on('click', ".add_daily_note", function() {
+							var $tbody = $(this).parents('tbody.daily_notes');
+							var $row = $(this).parents('tr:eq(0)');
+							var $newRow = $row.clone(true);
+							$newRow.find('input,textarea').each(function() {
 								$(this).val('').removeClass('error_field');
 							});
-							row.find('span.error').remove();
-							$(this).parents('tbody.daily_notes').append(row);
-							toggleAddRemoveButton($('tbody.daily_notes'));
+							$newRow.find('span.error').remove();
+							$newRow.find('.ck').remove();
+							$tbody.append($newRow);
+							initializeClassicEditor($newRow.find('.add_clinical_note')[0]);
+							toggleAddRemoveButton($tbody);
 						});
 						$(document).on('click', ".remove_daily_note", function(){
 							$(this).parents('tr').remove();

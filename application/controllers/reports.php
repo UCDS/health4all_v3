@@ -2267,7 +2267,9 @@ class Reports extends CI_Controller {
 					if($this->data['fields']!=0)
 					{
 						$this->data['report']=$this->masters_model->get_customised_report_data($this->data['rowsperpage']);
-						//print_r($this->db->last_query());
+						//print_r($this->db->last_query()); echo '</br></br>';
+						$this->data['report_count']=$this->masters_model->get_customised_report_data_count();
+						//print_r($this->data['report_count']);
 					}
 					$this->load->view('templates/header',$this->data);
 					$this->load->library('form_validation');
