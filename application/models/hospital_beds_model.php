@@ -204,6 +204,7 @@ class Hospital_beds_model extends CI_Model
 
     public function edited_bed_parameters($updated_parameters, $bed_id) 
     {
+	$this->db->trans_begin();    
         $success = true;
         $user=$this->session->userdata('logged_in'); 
         $data_2 = array(
@@ -216,30 +217,51 @@ class Hospital_beds_model extends CI_Model
 
         if ($this->db->affected_rows() === 0) {
             $success = false;
-        }
+	
+	}
+
         
         foreach ($updated_parameters as $parameter) 
-        {
+	{
+	    	
+	    //echo("<script>console.log('PHP: " . $parameter['bed_parameter_id'] . "');</script>");
             $data_null = array(
                 'bed_parameter_value' => NULL
             );
             $this->db->where('id', $parameter['bed_parameter_id']);
-            $this->db->update('patient_bed_parameter', $data_null);
-            if ($this->db->affected_rows() == 0) {
-                $success = false;
+	    $this->db->update('patient_bed_parameter', $data_null);
+	    //Commenting because $this->db->affected_rows() is returing 0 always
+            /*if ($this->db->affected_rows() == 0) {
+		$success = false;
                 break;
-            }
+	    }
+	    echo("<script>console.log('PHP: " . $parameter['bed_parameter_id'] . "');</script>");*/
             $data = array(
                 'bed_parameter_value' => $parameter['bed_parameter_value']
             );
             $this->db->where('id', $parameter['bed_parameter_id']);
-            $this->db->update('patient_bed_parameter', $data);
-            if ($this->db->affected_rows() == 0) {
+	    $this->db->update('patient_bed_parameter', $data);
+	    //Commenting because $this->db->affected_rows() is returing 0 always
+            /*if ($this->db->affected_rows() == 0) {
                 $success = false;
                 break;
-            }
-        }
-        return $success;
+	    }*/
+	}
+	if ($success == false){
+		$this->db->trans_rollback();
+		return $success;
+	}
+	if ($this->db->trans_status() === FALSE)
+	{
+		$this->db->trans_rollback();
+		return false;
+	}
+	else
+	{
+		$this->db->trans_commit();
+		return true;
+	}
+   
     }
 
     public function bed_params_edit()
