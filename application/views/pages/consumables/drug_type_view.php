@@ -168,7 +168,7 @@ display: inline-grid;
 		<?php if(!empty($edit_drug_type)) { ?>
 			<?php echo form_open('consumables/drug_type/update_drug_type',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('consumables/drug_type/add_drug_type',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
+			<?php echo form_open('consumables/drug_type/add_drug_type',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
@@ -212,14 +212,17 @@ display: inline-grid;
 				<?php } ?>
 				
 			</div>
-				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			    <input type="hidden" name="record_id" value="<?php echo $edit_drug_type['drug_type_id']; ?>" >
+			<div class="col-md-2">
+				<label for="Inputdescription">Rows per page</label>
+				<input type="text" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			</div>
+				<input type="hidden" name="record_id" value="<?php echo $edit_drug_type['drug_type_id']; ?>" >
+		</div>
 				<?php if(!empty($edit_drug_type)) { ?>
 					<input class="btn btn-md btn-success" type="submit" value="Update" style="margin-top:2%;">
 				<?php } else { ?>
 					<input class="btn btn-md btn-primary" type="submit" value="Submit" style="margin-top:2%;">
 				<?php } ?>
-		</div>
 		</form>
 		<?php if (!empty($error) || $error!=0): ?>
 			<span style="color: red;"><?php echo $error; ?></span>

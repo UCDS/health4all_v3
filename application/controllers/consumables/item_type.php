@@ -57,17 +57,23 @@ class Item_type extends CI_Controller {
 			$insert_datetime = $this->input->post('insert_datetime');
 			if($this->item_type_model->check_item_type($item_type)) 
 			{
-				$this->data['error'] = 'Item Type already exists';
+				if(!empty($this->input->post('item_type')))
+				{
+					$this->data['error'] = 'Item Type already exists';
+				}
 			}
 			else
 			{
-				$data_to_insert = array(
-					'item_type' => $item_type,
-					'created_by' => $added_by,
-					'created_date_time' => $insert_datetime,
-				);
-				$this->item_type_model->insert_item_type($data_to_insert);
-				$this->data['success'] = 'Item Type Added Successfully';
+				if(!empty($this->input->post('item_type')))
+				{
+					$data_to_insert = array(
+						'item_type' => $item_type,
+						'created_by' => $added_by,
+						'created_date_time' => $insert_datetime,
+					);
+					$this->item_type_model->insert_item_type($data_to_insert);
+					$this->data['success'] = 'Item Type Added Successfully';
+				}
 			}
 		}
 		// Fetch all records from primary table

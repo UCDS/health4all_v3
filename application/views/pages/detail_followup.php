@@ -482,16 +482,17 @@ $patient = $patients[0];
 			</div>	 -->
 			
 			<div class="row">		
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Priority Type </label>
-								<select class="form-control" name="priority_type" >
+								<select class="form-control" id="priority_type" name="priority_type" >
 									<option value="Select">Select</option>
-									 <?php foreach($priority_types as $type){
-									 echo "<option value='".$type->priority_type_id."'";
-									 if($patient_followup->priority_type_id && $patient_followup->priority_type_id == $type->priority_type_id) echo " selected ";
-				echo ">".$type->priority_type."</option>";
-				}
+									 <?php foreach($priority_types as $type)
+									 {
+									 	echo "<option value='".$type->priority_type_id."'";
+									 	if($patient_followup->priority_type_id && $patient_followup->priority_type_id == $type->priority_type_id) echo " selected ";
+											echo ">".$type->priority_type."</option>";
+									 }
 									?> 
 								</select>
 							</div>

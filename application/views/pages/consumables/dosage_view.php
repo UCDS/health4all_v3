@@ -167,16 +167,16 @@ display: inline-grid;
 		<?php if(!empty($edit_dosage_type)) { ?>
 			<?php echo form_open('consumables/dosage/update_dosage',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?>
 		<?php } else { ?>
-			<?php echo form_open('consumables/dosage/add_dosage',array('class'=>'form-group','role'=>'form','id'=>'')); ?> 
+			<?php echo form_open('consumables/dosage/add_dosage',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<?php } ?>
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
-				<div class="col-md-5 form-group">
+				<div class="col-md-4 form-group">
 					<label for="dosage">Dosage<font style="color:red">* ( Only numbers should be entered )</font></label>
 					<input type="number" min="1" step="1" class="form-control" placeholder="Enter Dosage" id="dosage" 
 					name="dosage" value="<?php echo $edit_dosage_type['dosage']; ?>" required >
 				</div>
-				<div class="col-md-5 form-group">
+				<div class="col-md-3 form-group">
 					<label for="dosage_unit">Dosage Unit<font style="color:red">*</font></label>
 					<input type="text" class="form-control" placeholder="Enter Dosage Unit" id="dosage_unit" 
 					name="dosage_unit" value="<?php echo $edit_dosage_type['dosage_unit']; ?>" required autocomplete="off">
@@ -195,9 +195,11 @@ display: inline-grid;
 					<input type="hidden" class="form-control" name="added_by" value="<?php echo $user['staff_id'] ?>">
 					<input type="hidden" class="form-control" name="insert_datetime" value="<?php echo date('Y-m-d H:i:s') ?>">
 				<?php } ?>
-				
-				<input type="hidden" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-			    <input type="hidden" name="record_id" value="<?php echo $edit_dosage_type['dosage_id']; ?>" >
+				<div class="col-md-3 form-group">
+					<label for="dosage_unit">Rows per page</label>
+					<input type="text" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			    	<input type="hidden" name="record_id" value="<?php echo $edit_dosage_type['dosage_id']; ?>" >
+				</div>
 				<?php if(!empty($edit_dosage_type)) { ?>
 					<input class="btn btn-md btn-success" type="submit" value="Update" style="margin-top:2%;">
 				<?php } else { ?>

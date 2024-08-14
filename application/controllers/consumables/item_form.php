@@ -56,17 +56,23 @@ class Item_form extends CI_Controller {
 			$insert_datetime = $this->input->post('insert_datetime');
 			if($this->item_form_model->check_item_form($item_form)) 
 			{
-				$this->data['error'] = 'Item Form already exists';
+				if(!empty($this->input->post('item_form_id')))
+				{
+					$this->data['error'] = 'Item Form already exists';
+				}
 			}
 			else
 			{
-				$data_to_insert = array(
-					'item_form' => $item_form,
-					'created_by' => $added_by,
-					'created_date_time' => $insert_datetime,
-				);
-				$this->item_form_model->add_item_form($data_to_insert);
-				$this->data['success'] = 'Item Form Added Successfully';
+				if(!empty($this->input->post('item_form_id')))
+				{
+					$data_to_insert = array(
+						'item_form' => $item_form,
+						'created_by' => $added_by,
+						'created_date_time' => $insert_datetime,
+					);
+					$this->item_form_model->add_item_form($data_to_insert);
+					$this->data['success'] = 'Item Form Added Successfully';
+				}
 			}
 		}
 			// Fetch all records from primary table

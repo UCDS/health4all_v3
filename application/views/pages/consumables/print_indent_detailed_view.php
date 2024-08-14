@@ -47,16 +47,16 @@
     <hr style="border: 2px solid black">
     <center>
 
-        <label style="float:left"><b>Indent From Party: </b>
+        <label style="float:left;margin-left:30px;"><b>Indent From Party: </b>
             <?php echo " " . $all_issue->from_party; ?>
         </label><!-- From label-->
-        <label style="float:right"><b>Indent To Party: </b>
+        <label style="float:right;margin-right:30px;"><b>Indent To Party: </b>
             <?php echo " " . $all_issue->to_party; ?>
         </label><br><br><!--  To label -->
-        <label style="float:left"><b>Indented by : </b>
+        <label style="float:left;margin-left:30px;"><b>Indented by : </b>
             <?php echo $all_issue->order_first . " " . $all_issue->order_last . " at " . date("d-M-Y g:i A", strtotime($all_issue->indent_date)); ?>
         </label><br><br><!--Date Time label -->
-        <label style="float:left"><b>Approval by : </b>
+        <label style="float:left;margin-left:30px;"><b>Approval by : </b>
             <?php
             if ($all_issue->indent_status == "Approved" || $all_issue->indent_status == "Issued") {
                 echo $all_issue->approve_first . " " . $all_issue->approve_last . " at " . date("d-M-Y g:i A", strtotime($all_issue->approve_date_time));
@@ -64,7 +64,7 @@
                 echo " NA";
             } ?>
         </label><br><br><!--Date Time label -->
-        <label style="float:left"><b>Issued by : </b>
+        <label style="float:left;margin-left:30px;"><b>Issued by : </b>
             <?php
             if ($all_issue->indent_status == "Issued") {
                 echo $all_issue->issue_first . " " . $all_issue->issue_last . " at " . date("d-M-Y g:i A", strtotime($all_issue->issue_date_time));
@@ -75,7 +75,7 @@
 
     </center>
     <br /><br /><br />
-    <table style=" border:2px solid black;width:100%;border-collapse: collapse;">
+    <table style=" border:2px solid black;width:95%;border-collapse: collapse;margin-left:30px;">
 
         <?php
         $i = 1;
@@ -155,12 +155,10 @@
                         <tr name="<?php echo "indent_item_" . $all_issue->indent_item_id; ?>" class="warning indent_item">
 
                             <td style="border:2px solid black;  padding: 3px;">
-                                <i>
-                                    <?php echo $all_issue->item_name . "-" . $all_issue->item_type . "-" . $all_issue->item_form . "-" . $all_issue->dosage . $all_issue->dosage_unit; ?>
-                                </i>
+                                <?php echo $all_issue->item_name . "-" . $all_issue->item_type . "-" . $all_issue->item_form . "-" . $all_issue->dosage . $all_issue->dosage_unit; ?>
                             </td>
-                            <td style="border:2px solid black;  padding: 3px;"></td>
-                            <td style="border:2px solid black;  padding: 3px;"></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->quantity_indented; ?></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->quantity_approved; ?></td>
                             <td style="border:2px solid black;  padding: 3px;">
                                 <?= $all_issue->quantity; ?>
                             </td>
@@ -190,9 +188,7 @@
                         <tr>
 
                             <td style="border:2px solid black;  padding: 3px;">
-                                <i>
-                                    <?php echo $all_issue->item_name . "-" . $all_issue->item_type . "-" . $all_issue->item_form . "-" . $all_issue->dosage . $all_issue->dosage_unit; ?>
-                                </i>
+                                <?php echo $all_issue->item_name . "-" . $all_issue->item_type . "-" . $all_issue->item_form . "-" . $all_issue->dosage . $all_issue->dosage_unit; ?>
                             </td>
                             <td style="border:2px solid black;  padding: 3px;"></td>
                             <td style="border:2px solid black;  padding: 3px;"></td>
@@ -267,11 +263,11 @@
         </tbody>
     </table>
     <br /><br />
-    <p><b>Note: </b><br>
+    <p style="margin-left:30px;"><b>Note: </b><br>
         <?php echo $all_issue->indent_note ?>
     </p>
 
-    <b>
+    <b style="margin-left:30px;">
 
         <?php 
         if($details[0]->indent_status == "Issued")

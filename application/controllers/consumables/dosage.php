@@ -58,18 +58,24 @@ class dosage extends CI_Controller {
 			$insert_datetime = $this->input->post('insert_datetime');
 			if($this->dosage_model->check_dosage($dosage,$dosage_unit)) 
 			{
-				$this->data['error'] = 'Dosage and Dosage Unit already exists';
+				if(!empty($this->input->post('dosage'))) 
+				{
+					$this->data['error'] = 'Dosage and Dosage Unit already exists';
+				}
 			}
 			else
 			{
-				$data_to_insert = array(
-					'dosage' => $dosage,
-					'dosage_unit' => $dosage_unit,
-					'created_by' => $added_by,
-					'created_date_time' => $insert_datetime,
-				);
-				$this->dosage_model->add_dosage($data_to_insert);
-				$this->data['success'] = 'Dosage and Dosage Unit Added Successfully';
+				if(!empty($this->input->post('dosage'))) 
+				{
+					$data_to_insert = array(
+						'dosage' => $dosage,
+						'dosage_unit' => $dosage_unit,
+						'created_by' => $added_by,
+						'created_date_time' => $insert_datetime,
+					);
+					$this->dosage_model->add_dosage($data_to_insert);
+					$this->data['success'] = 'Dosage and Dosage Unit Added Successfully';
+				}
 			}
 		}
 		// Fetch all records from primary table

@@ -474,7 +474,7 @@ $('#to_id').change(function(){
 		<div class="col-md-offset-2" >
 			<div id="print-container">
 				<?php if(count($search_inventory_summary) > 0) { ?>
-					<h3 style="text-align:center;">Item - <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name; ?></span></h3>
+					<h3 style="text-align:center;">Item - <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name; ?></span> - <span class="text text-primary headerprint"><?php echo $search_inventory_summary[0]->item_form ?></span></h3>
 					<!-- <h3>Type: <i><?php echo $search_inventory_summary[0]->item_type;?></i></h3> -->
 					<?php
 						foreach($parties as $scp)
@@ -563,7 +563,7 @@ $('#to_id').change(function(){
 							// $item_i = $inventory
 							$batch = $inventory_item->batch;
 						?>
-							<td><? $i++; ?></td>
+							<td><?php echo $i++; ?></td>
 							<td><a href="<?= base_url().$sub_url."indents_list_detailed/$inventory_item->indent_id"; ?>"><?= $inventory_item->indent_id;?></a></td>
 							<td><?= $issue_date; ?></td>
 							<!-- <td ><?= ($inventory_item->inward_outward === "inward")? "Inward ($inventory_item->to_party)": "Outward ($inventory_item->from_party)"; ?></td> -->

@@ -355,7 +355,7 @@ display: inline-grid;
 		<?php echo form_open('hospital_beds/patient_allocate_beds',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<div class="row" style="margin-top:2%;">
-			<div class="col-md-12">
+			<div class="col-md-12" >
 			<?php
 			if (!empty($all_available_beds['available_beds'])) {
 				$count = count($all_available_beds['available_beds']);
@@ -384,7 +384,7 @@ display: inline-grid;
 						$patient_details->details = implode("\n", $output_lines);
 					}
 			?>
-			<div class="col-md-4">
+			<div class="col-md-4" style="max-height:800px!important;overflow-y:auto;margin-bottom:80px;">
             <div class="form-group">
                 <label for="inputhospital_name" style="color:red;font-weight:bold;"></label>
                 <input type="hidden" name="bed_id_<?php echo $j; ?>" value="<?php echo $abc->hospital_bed_id; ?>">
@@ -412,7 +412,7 @@ display: inline-grid;
 						<div class="col-md-6">
 							<input type="text" class="form-control" name="" id="patient_id_<?php echo $j; ?>" value="<?php if($patient_details->patient_id!=0) { echo $patient_details->patient_id; } ?>" autocomplete="off" readonly style="font-weight: bold;background-color:white!important;">
 						</div>
-						<div class="col-md-6" style="margin-left:-30px!important;width:59%!important;">
+						<div class="col-md-6 custom-responsive-margin">
 							<input type="text" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="<?php echo $patient_details->age_gender; ?>" readonly style="font-weight: bold;background-color:white!important;">
 						</div>
 					</div>
@@ -435,15 +435,14 @@ display: inline-grid;
                     <?php } else if ($patient_details->patient_name == '') { ?>
 						<textarea style="max-width:100%!important;background-color:white!important;" name="" id="reserve_details_<?php echo $j; ?>" placeholder="Reservation Patient Details" class="form-control" rows="2" cols="12" readonly ><?php echo $patient_details->reservation_details; ?></textarea>
 					<?php } ?>
-					<div class="row" style="margin-top:11%!important;">
-						<div class="col-md-7">
+					<div class="row" style="margin-top:12%!important;">
+						<div class="col-md-6">
 							<input type="checkbox" data-id="<?php echo $abc->hospital_bed_id;?>" class="btn btn-warning discharge-checkbox" style="margin-top:-2%!important;">&nbsp;&nbsp;<strong >Clear Bed</strong>
 						</div>
 						<div class="col-md-5" style="text-align:right;">
-							<a href="#" data-param-id="<?php echo $abc->hospital_bed_id;?>" id="edit_parameter_id_<?php echo $abc->hospital_bed_id;?>" style="text-decoration:none;color:red;">Edit Parameters</a>
+							<a href="#" class="btn btn-danger" data-param-id="<?php echo $abc->hospital_bed_id;?>" id="edit_parameter_id_<?php echo $abc->hospital_bed_id;?>" style="text-decoration:none;color:white;">Edit Parameters</a>
 						</div>
-					</div><br/><br/><br/><br/>
-
+					</div>
 					<div class="modal fade" id="yourModal" tabindex="-1" role="dialog" aria-labelledby="yourModalLabel" aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered" role="document">
 							<div class="modal-content">
@@ -487,7 +486,7 @@ display: inline-grid;
 																'<input type="text" style="font-weight: bold;background-color:white!important;" class="form-control bed-parameter-label" name="bed_parameter_label[]" value="' + item.bed_parameter_label + '" readonly>' +
 															'</div>' +
 															
-															'<div class="col-md-7" style="margin-left:-30px!important;width:67%!important;">' +
+															'<div class="col-md-7 custom-margin" >' +
 																'<input type="text" style="background-color:white!important;" class="form-control bed-parameter-value" name="bed_parameter_value[]" value="' + item.bed_parameter_value + '" readonly>' +
 															'</div>' +
 														'</div>';
@@ -594,11 +593,44 @@ display: inline-grid;
 						</script>
 				<?php } else { ?>
 					<input class="form-control" name="bed_name_<?php echo $j; ?>" id="inputbde_name_<?php echo $j; ?>" value="<?php echo $abc->bed ?>" type="text" readonly style="color:#437bba!important;font-size:18px!important;">
-                    <div class="row">
+                    <style>
+						.custom-responsive-margin {
+							margin-left: -30px !important;
+							width: 59% !important;
+						}
+
+
+						@media (max-width: 1200px) {
+							.custom-responsive-margin {
+								width: 75% !important; /* Adjust as needed */
+							}
+						}
+
+						@media (max-width: 992px) {
+							.custom-responsive-margin {
+								width: 80% !important; /* Adjust as needed */
+							}
+						}
+
+						@media (max-width: 768px) {
+							.custom-responsive-margin {
+								margin-left: 0 !important;
+								width: 100% !important;
+							}
+						}
+
+						@media (max-width: 576px) {
+							.custom-responsive-margin {
+								margin-left: 0 !important;
+								width: 100% !important;
+							}
+						}
+					</style>
+					<div class="row">
 						<div class="col-md-6">
 								<input type="text" class="form-control" name="patient_id_<?php echo $j; ?>" id="patient_id_<?php echo $j; ?>" value="" placeholder="Enter Patient Id" autocomplete="off" onkeyup="myKeyUp(this)">
 						</div>
-						<div class="col-md-6" style="margin-left:-30px!important;width:59%!important;">
+						<div class="col-md-6 custom-responsive-margin" >
 							<input type="text" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="">
 						</div>
 					</div>
@@ -614,7 +646,35 @@ display: inline-grid;
 								<div class="col-md-5">
 									<input type="text" class="form-control" name="bed_parameter_label_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter_label ?>" readonly autocomplete="off">
 								</div>
-								<div class="col-md-7" style="margin-left:-30px!important;width:67%!important;">
+								<style>
+									.custom-margin {
+									margin-left: -30px !important;
+									width: 67% !important;
+								}
+								@media (max-width: 1200px) {
+									.custom-margin {
+										width: 75% !important;
+									}
+								}
+								@media (max-width: 992px) {
+									.custom-margin {
+										width: 80% !important;
+									}
+								}
+								@media (max-width: 768px) {
+									.custom-margin {
+										margin-left: 0 !important;
+										width: 100% !important;
+									}
+								}
+								@media (max-width: 576px) {
+									.custom-margin {
+										margin-left: 0 !important;
+										width: 100% !important;
+									}
+								}
+								</style>
+								<div class="col-md-7 custom-margin" >
 									<?php if ($edit_access == 1): ?>
 										<input type="text" class="form-control" name="bed_parameter_<?php echo $j; ?>[]" value="<?php echo $aabp->bed_parameter; ?>" autocomplete="off">
 									<?php else: ?>
@@ -633,7 +693,7 @@ display: inline-grid;
 						<div class="col-md-6" style="text-align:right;">
 							<button type="button" class="btn btn-success" id="update_bed_<?php echo $j; ?>" onclick="submitFormAndReload()">Update Bed</button>
 						</div>
-					</div><br/><br/><br/><br/>
+					</div>
 					<script>
 						document.addEventListener("DOMContentLoaded", function() {
 							var allAvailableBeds = <?php echo count($all_available_beds['available_beds']); ?> // Use PHP count directly

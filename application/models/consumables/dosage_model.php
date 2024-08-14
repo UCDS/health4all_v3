@@ -19,13 +19,28 @@ class dosage_model extends CI_Model {
         $this->db->insert('dosage', $data);
     }
 
-	function get_all_dosage_type()
+	function get_all_dosage_type($default_rowsperpage)
     {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
 		$this->db->select("dosage.dosage,dosage.dosage_id,dosage.dosage_unit,dosage.created_date_time,staff.first_name,
 		updated_by.first_name as updated_by_name,dosage.updated_date_time")
 		->from("dosage")
 		->join('staff','staff.staff_id=dosage.created_by','left')
 		->join('staff as updated_by','updated_by.staff_id=dosage.updated_by','left');
+        $this->db->limit($rows_per_page,$start);
 		$query = $this->db->get();
 		return $query->result();
     }

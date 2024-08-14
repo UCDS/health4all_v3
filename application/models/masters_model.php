@@ -2432,7 +2432,7 @@ else if($type=="dosage"){
 	{
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("rl.report_id,rl.table_name,rl.field_name,rl.column_name,rl.sequence_id,
-		cr.report_name,rl.width")
+		cr.report_name,rl.width,cr.main_table")
 		->from("report_layout rl")
 		->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
@@ -2594,6 +2594,7 @@ else if($type=="dosage"){
 			case 'patient_followup':
 			$this->db->from('patient_followup');
 			$this->db->join('patient','patient_followup.patient_id=patient.patient_id','left');
+			$this->db->join('patient_visit','patient_visit.patient_id=patient.patient_id','left');
 			$this->db->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left');
 			$this->db->join('hospital','patient_followup.hospital_id=hospital.hospital_id','left');
 			$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
@@ -2605,6 +2606,7 @@ else if($type=="dosage"){
 			$this->db->join('district','patient.district_id=district.district_id','left');
 			$this->db->join('state','district.state_id=state.state_id','left');
 			$this->db->where("(patient_followup.add_time BETWEEN '$from_date $from_time' AND '$to_date $to_time')");
+			$this->db->group_by("patient_followup.patient_id");
 			if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
 				$this->db->where('patient_followup.life_status',1);
 					}

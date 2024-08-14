@@ -56,18 +56,24 @@ class drug_type extends CI_Controller {
 			$insert_datetime = $this->input->post('insert_datetime');
 			if($this->drug_type_model->check_drug_type($drug_type,$description)) 
 			{
-				$this->data['error'] = 'Drug Type already exists';
+				if(!empty($this->input->post('drug_type')))
+				{
+					$this->data['error'] = 'Drug Type already exists';
+				}
 			}
 			else
 			{
-				$data_to_insert = array(
-					'drug_type' => $drug_type,
-					'description' => $description,
-					'created_by' => $added_by,
-					'created_date_time' => $insert_datetime,
-				);
-				$this->drug_type_model->add_drug_type($data_to_insert);
-				$this->data['success'] = 'Drug Type Added Succesfully';
+				if(!empty($this->input->post('drug_type')))
+				{
+					$data_to_insert = array(
+						'drug_type' => $drug_type,
+						'description' => $description,
+						'created_by' => $added_by,
+						'created_date_time' => $insert_datetime,
+					);
+					$this->drug_type_model->add_drug_type($data_to_insert);
+					$this->data['success'] = 'Drug Type Added Succesfully';
+				}
 			}
 		}
 			// Fetch all records from primary table

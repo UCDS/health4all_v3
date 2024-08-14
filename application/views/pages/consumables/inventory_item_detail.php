@@ -512,7 +512,7 @@ $('#to_id').change(function(){
 						}
 					?>
 					<h4 style="text-align:center;">
-						Item : <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name; ?></span> ,
+						Item : <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name.' - '.$search_inventory_summary[0]->item_form; ?></span> ,
                         Dates : <?php echo date("d M Y", strtotime($this->input->post('from_date')));?> to <?php echo date("d M Y", strtotime($this->input->post('to_date')));?>
 					</h4>
 					<h4 style="text-align:center;">Opening Balance : <?php if($closing_balance){ echo $closing_balance[0]->closing_balance; }else{ echo '0'; } ?></h4>
@@ -595,7 +595,7 @@ $('#to_id').change(function(){
 							<td style="text-align:right;"><?= (float)$inventory_item->cost; ?></td>
 							<td><?php if($batch!=''){ echo $batch;}?><?php if($batch!='' && $manufacture_date!=''){ echo " | "; }?><?php if($manufacture_date!='') { echo date("d-M-Y", strtotime($manufacture_date)); ?> to <?php } if($expiry_date!='') { echo date("d-M-Y", strtotime($expiry_date)); } ?> </td>
 							<td><?= $inventory_item->patient_id ? $inventory_item->patient_id: ""; ?></td>
-							<td><?= $inventory_item->note;?></td>
+							<td><?= $inventory_item->item_note;?></td>
 						</tr>
 						<?php
 						$i++;

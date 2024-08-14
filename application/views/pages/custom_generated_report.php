@@ -415,15 +415,19 @@ function onchange_page_dropdown(dropdownobj){
 			$page_no = 1;	
 		?>
 			<div class="row">	
-				<?php echo form_open("reports/custom_generated_report/" . $form_id, array('role' => 'form', 'class' => 'form-custom', 'id' => 'custom_report')); ?>Choose OP / IP : &nbsp;&nbsp;
+				<?php echo form_open("reports/custom_generated_report/" . $form_id, array('role' => 'form', 'class' => 'form-custom', 'id' => 'custom_report')); ?>
 				<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>	
+				<?php if($fields[0]->main_table == 'patient_visit') { ?>
+				Choose OP / IP : &nbsp;&nbsp;
 				<input type="radio" name="op_ip" class ="form-control" value="1" <?php if(empty($this->input->post('op_ip')) || $this->input->post('op_ip')==1){ echo "checked"; }  ?>> &nbsp;OP&nbsp;
 				<input type="radio" name="op_ip" class ="form-control" value="2" <?php if(!empty($this->input->post('op_ip')) && $this->input->post('op_ip')==2 ){ echo "checked"; } ?>> &nbsp;IP&nbsp; </br>
+				<?php  } if($fields[0]->main_table == 'patient_followup') { ?>
 				<label><b>Life Status:  </b></label>
 				<input type ="radio" name="life_status" class ="form-control" value="1" <?php if( empty($this->input->post('life_status')) || ($this->input->post('life_status') == 1))  echo "checked" ; ?> > <label> Alive</label>
 				<input type="radio" name="life_status" class ="form-control" value="2" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 2) {echo "checked" ;} ?>  > <label> Not Alive </label>
 				<input type="radio" name="life_status" class ="form-control" value="3" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 3) {echo "checked" ;} ?>  > <label> No Follow up</label>
 				<input type="radio" name="life_status" class ="form-control" value="4" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 4) {echo "checked" ;} ?>  > <label> All</label>
+				<?php } ?>
 				<br/>
 				From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 				To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
