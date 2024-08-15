@@ -98,7 +98,6 @@ function submit_appointment(e) {
         success: function (data) {
 				bootbox.dialog({
 					message: 'Appointment updated successfully',
-					title: "Message",
 					buttons: {
 						sucess: {
 							label: "Ok",

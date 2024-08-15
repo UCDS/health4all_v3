@@ -138,6 +138,7 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
                 $this->data['rowsperpage'] = $default->value;
                 $this->data['upper_rowsperpage']= $default->upper_range;
                 $this->data['lower_rowsperpage']= $default->lower_range;
+				break;
             }
         }
         foreach($this->data['functions'] as $function){
