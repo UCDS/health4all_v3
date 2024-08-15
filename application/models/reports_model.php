@@ -1686,10 +1686,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->where('hospital.hospital_id',$hospital['hospital_id']);
 		
 		
-		$taken_appointments = "SUM(case when pv.visit_id is null then 0 else 1 end) as taken_appointments ";
+	
 		
 		$this->db->select("aps.slot_id,aps.date,aps.from_time,aps.to_time,aps.department_id,aps.visit_name_id,aps.appointment_update_by,aps.appointment_update_time,
-		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit ,".$taken_appointments.", ".$default_appointment_status_add.",".$default_appointment_status_remove,false);
+		d.department,CONCAT(staff.first_name, ' ', staff.last_name) as appointment_update_by_name,vn.visit_name,aps.appointments_limit,aps.appointments_taken as taken_appointments,".$default_appointment_status_add.",".$default_appointment_status_remove,false);
 		 $this->db->from('appointment_slot as aps')
 		 ->join('department as d','aps.department_id=d.department_id','left')
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
@@ -1840,7 +1840,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) as appointment_update_by,
 		appointment_update_time,
 		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,district.district,state.state,
-		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id",false);
+		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id,pv.appointment_slot_id",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
@@ -2694,7 +2694,7 @@ pv.appointment_status_update_time,pv.appointment_status_update_by as appointment
 SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count_add,SUM(CASE WHEN aps.is_default =  2 THEN 1 ELSE 0 END) AS default_status_count_remove,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id, ".$slots_alloted,false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
-		 ->join('department d','pv1.department_id=d.department_id','left')
+		 ->join('departmen d','pv1.department_id=d.department_id','left')
 		 ->join('unit','pv1.unit=unit.unit_id','left')
 		 ->join('area','pv1.area=area.area_id','left')
 		 ->join('appointment_status aps','pv1.appointment_status_id=aps.id','left')		
@@ -2806,10 +2806,11 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
             $this->db->where('department_id',$this->input->post('department_id'));
         }
         else {
-        	return 4;
+        	return -4;
         }
- 
+		
         if($this->input->post('visit_name_id')){
+			
             $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
         }
         else {
@@ -2820,13 +2821,13 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
             $this->db->where('date',$date);
         }
         else {
-        	return 5;
+        	return -5;
         }
        
         $query = $this->db->get();
         $result = $query->result_array();
         if ($result[0]['count'] > 0){
-        	$this->db->select('appointments_limit as appointments_limit,from_time as from_time,to_time as to_time');
+        	$this->db->select('slot_id as slot_id,appointments_limit as appointments_limit,from_time as from_time,to_time as to_time,appointments_taken as appointments_taken');
         	$this->db->from('appointment_slot');
         
 		$this->db->where('department_id',$this->input->post('department_id'));
@@ -2845,29 +2846,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         	$result = $query->result_array();
         	if (count($result)==1){
         		$appointments_limit = $result[0]['appointments_limit'];
+				$slot_id = $result[0]['slot_id'];
         		$from_time = $result[0]['from_time'];
         		$to_time = $result[0]['to_time'];
-        		
-        		$this->db->select('count(*) as count',false);
-        		$this->db->from('patient_visit');
-        
-			
-			$this->db->where('department_id',$this->input->post('department_id'));
-			
-			
-			$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-			
-			
-			$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-			$from_timestamp = $date." ".$from_time;
-			$to_timestamp = $date." ".$to_time;
-
-			$this->db->where("(appointment_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
-			$this->db->where("(ifnull(appointment_status_id,'') not in (select id from appointment_status where is_default=2 and hospital_id=(select hospital_id from department where department_id=". $this->input->post('department_id').") ) )"); 
-        		$query = $this->db->get();
-        		$result = $query->result_array();
-        		$appoints_taken = $result[0]['count'];
-        		
+        		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+				$from_timestamp = $date." ".$from_time;
+				$to_timestamp = $date." ".$to_time;
+        		$appointments_taken = $result[0]['appointments_taken'];
+        		//echo("<script>console.log('appointments_taken: " . $appointments_taken . "');</script>");
+				//echo("<script>console.log('appointments_limit: " . $appointments_limit . "');</script>");
         		$operation="add";
         		$curr_appointment_time="";
         		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
@@ -2876,7 +2863,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
             			$this->db->where('visit_id',$this->input->post('visit_id'));
         		}
         		else {
-        			return 1;
+        			return -1;
         		}
         				
 			
@@ -2887,9 +2874,6 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 				$curr_appointment_time = $result[0]['appointment_time'];
 				$department_id = $result[0]['department_id'];
 				$visit_name_id = $result[0]['visit_name_id'];
-				//echo("<script>console.log('from_timestamp: " . $from_timestamp . "');</script>");
-				//echo("<script>console.log('curr_appointment_time: " . $curr_appointment_time . "');</script>");
-				//echo("<script>console.log('to_timestamp: " . $to_timestamp . "');</script>");
 				if($curr_appointment_time!=""){
 					if( strtotime($curr_appointment_time) >= strtotime($from_timestamp) && strtotime($curr_appointment_time)<= strtotime($to_timestamp) && $department_id==$this->input->post('department_id') && $visit_name_id==$this->input->post('visit_name_id'))
 					{
@@ -2897,22 +2881,21 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 					}
 				}
         		}
-        		//echo("<script>console.log('operation: " . $operation . "');</script>");
         		
-        		if($appoints_taken < $appointments_limit) {
-        			return 0;
+        		if($appointments_taken < $appointments_limit) {
+        			return $slot_id;
         		}
         		else{
         			if ($operation=="update"){
-        				return 0;
+        				return $slot_id;
         			}
         			else {
-        				return 3;
+        				return -3;
         			}
         		}
         	}
         	else {
-        		return 2;
+        		return -2;
         	}
       		
       	}
@@ -3025,7 +3008,8 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         	} 
     	}
     	
-	function update_appointment(){
+	function update_appointment($appointment_slot_id_current){
+		
         $appointment_info = array();
         if($this->input->post('department_id')){
             $appointment_info['department_id'] = $this->input->post('department_id');
@@ -3039,11 +3023,14 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
          if($this->input->post('summary_sent_time')){
             $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
         }
-	$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
-	$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+		$appointment_info['appointment_slot_id'] = $appointment_slot_id_current;
+		$appointment_slot_id_old = $this->input->post('appointment_slot_id_old');
+		$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+		$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
+		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id']]);
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
@@ -3063,7 +3050,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         if($this->input->post('appointment_status_time')){
             $appointment_info['appointment_status_update_time'] = $this->input->post('appointment_status_time');
         }
-	$appointment_info['appointment_status_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+		$appointment_info['appointment_status_update_by'] = $this->session->userdata('logged_in')['staff_id'];
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);

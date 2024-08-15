@@ -526,81 +526,50 @@ class Reports extends CI_Controller {
                 }
         }
         
-        public function validate_appointment_slot()
-	{
-		if($this->session->userdata('logged_in')){
-                $this->data['userdata']=$this->session->userdata('logged_in');
-                $access=0;
-                
-                foreach($this->data['functions'] as $function){
-                    if($function->user_function=="create_appointment"){
-			    $access=1;
-			    break;
-                    }
-                }
-                if($access==1){
-                	$val = $this->reports_model->validate_appointment_slot();
-              		if ($val==0){               
-				header('Content-Type: application/json; charset=UTF-8');
-			    	header('HTTP/1.1 200 OK');  
-			    	$result=array(); 
-			    	$result['Message'] = 'Appointment validation successful'; 
-			    	echo(json_encode($result));
-		       }
-		       else if ($val==2) {
+        private function validate_appointment_slot()
+		{ 
+            $appointment_slot = $this->reports_model->validate_appointment_slot();
+            if ($appointment_slot>=0){               
+					return $appointment_slot;
+		    }
+		    else if ($appointment_slot==-2) {
 		       	header('Content-Type: application/json; charset=UTF-8');
-			    	header('HTTP/1.1 500 Internal Server Error');    
-			    	$result=array();    	
+			    header('HTTP/1.1 500 Internal Server Error');    
+			    $result=array();    	
 				$result['Message'] = 'Selected appointment time is outside of the slot';        
 				echo(json_encode($result));	       
-		       }
-		       else if ($val==3) {
-		       	header('Content-Type: application/json; charset=UTF-8');
-			    	header('HTTP/1.1 500 Internal Server Error');    
-			    	$result=array();    	
+		    }
+		    else if ($appointment_slot==-3) {
+				header('Content-Type: application/json; charset=UTF-8');
+				header('HTTP/1.1 500 Internal Server Error');    
+			    $result=array();    	
 				$result['Message'] = 'Appointment limit exceeded';        
 				echo(json_encode($result));	       
-		       }
-		       else if ($val==4) {
+		    }
+		    else if ($appointment_slot==-4) {
 		       	header('Content-Type: application/json; charset=UTF-8');
-			    	header('HTTP/1.1 500 Internal Server Error');    
-			    	$result=array();    	
+			    header('HTTP/1.1 500 Internal Server Error');    
+			    $result=array();    	
 				$result['Message'] = 'Please enter Department';        
 				echo(json_encode($result));	       
-		       }
-		       else if ($val==5) {
-		       	header('Content-Type: application/json; charset=UTF-8');
-			    	header('HTTP/1.1 500 Internal Server Error');    
-			    	$result=array();    	
+		    }
+		    else if ($appointment_slot==-5) {
+				header('Content-Type: application/json; charset=UTF-8');
+			    header('HTTP/1.1 500 Internal Server Error');    
+			    $result=array();    	
 				$result['Message'] = 'Please enter Appointment time';        
 				echo(json_encode($result));	       
-		       }
-		       else{
-			    	header('Content-Type: application/json; charset=UTF-8');
-			    	header('HTTP/1.1 500 Internal Server Error');    
-			    	$result=array();    	
+		    }
+		    else{
+			    header('Content-Type: application/json; charset=UTF-8');
+			    header('HTTP/1.1 500 Internal Server Error');    
+			    $result=array();    	
 				$result['Message'] = 'Error in Appointment slot validation';        
 				echo(json_encode($result));
 			}
-                }
-                else {
-			header('Content-Type: application/json; charset=UTF-8');
-			header('HTTP/1.1 404 Not Found');    
-			$result=array();    	
-			$result['Message'] = '404 Not Found';        
-			echo(json_encode($result));    	
-		    }
-              }
-              else {
-		   header('Content-Type: application/json; charset=UTF-8');
-		   header('HTTP/1.1 404 Not Found');    
-		   $result=array();    	
-		   $result['Message'] = '404 Not Found';        
-		   echo(json_encode($result));    	
-	      }
-               
+			return $appointment_slot;
 	}
-    	public function add_appointment_slot()
+    public function add_appointment_slot()
 	{
 		if($this->session->userdata('logged_in')){
                 $this->data['userdata']=$this->session->userdata('logged_in');
@@ -726,6 +695,7 @@ class Reports extends CI_Controller {
     }    
 	public function appointment($department=0,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0)
 	{
+		
 	       if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
@@ -737,11 +707,14 @@ class Reports extends CI_Controller {
 		}
 		if($access==1){
 		$this->data['updated']=false;	
-		if($this->input->post('visit_id')){ 
-			if($this->reports_model->update_appointment()){$this->data['updated']=true;}
-			if($this->input->post('customform')){
-				return;
+		if($this->input->post('visit_id')){		
+			$appointment_slot_id_current = $this->validate_appointment_slot();
+			
+			if($appointment_slot_id_current >= 0) {
+				echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
+				$this->reports_model->update_appointment($appointment_slot_id_current);
 			}
+			return;
 		}	
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
 		$this->data['title']="Registrations/Appointments";
