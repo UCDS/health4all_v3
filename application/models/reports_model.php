@@ -2694,7 +2694,7 @@ pv.appointment_status_update_time,pv.appointment_status_update_by as appointment
 SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count_add,SUM(CASE WHEN aps.is_default =  2 THEN 1 ELSE 0 END) AS default_status_count_remove,IFNULL(d.department,'Not set') as department_name,IFNULL(d.department_id,'Not set') as department_id, ".$slots_alloted,false);
 		 $this->db->from('patient_visit as pv1')
 		 ->join('visit_name vs','pv1.visit_name_id=vs.visit_name_id','left')
-		 ->join('departmen d','pv1.department_id=d.department_id','left')
+		 ->join('department d','pv1.department_id=d.department_id','left')
 		 ->join('unit','pv1.unit=unit.unit_id','left')
 		 ->join('area','pv1.area=area.area_id','left')
 		 ->join('appointment_status aps','pv1.appointment_status_id=aps.id','left')		
