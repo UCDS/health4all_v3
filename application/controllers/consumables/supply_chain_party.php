@@ -3,6 +3,7 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
     function __construct() {				
         parent::__construct();					//calling parent constructor.
         $this->load->model('staff_model');
+        $this->load->model('masters_model');
 		//$this->load->model('list_departments');	
 		if($this->session->userdata('logged_in')){		// checking for user authentication.
             $userdata=$this->session->userdata('logged_in');      //store the user information into the userdata variable.
@@ -131,6 +132,14 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
         $this->data['functions']=$this->staff_model->user_function($user_id);
         $access = -1;
 		//var_dump($user_id);
+        $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults"); 
+        foreach($this->data['defaultsConfigs'] as $default){		 
+        if($default->default_id=='pagination'){
+                $this->data['rowsperpage'] = $default->value;
+                $this->data['upper_rowsperpage']= $default->upper_range;
+                $this->data['lower_rowsperpage']= $default->lower_range;
+            }
+        }
         foreach($this->data['functions'] as $function){
             if($function->user_function=="Masters - Consumables"){
                 $access = 1;
@@ -167,7 +176,7 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
             $this->data['search_items'] = array();  
         } else {
             // fetch search results from model and supply them to view
-            $this->data['search_items'] = $this->supply_chain_party_model->get_scp_parties();
+            $this->data['search_items'] = $this->supply_chain_party_model->get_scp_parties($this->data['rowsperpage']);
             // echo json_encode($this->data['search_items']);
         }
         $this->load->view('pages/consumables/supply_chain_parties_list_view', $this->data);

@@ -18,13 +18,28 @@ class Item_type_model extends CI_Model {
         $this->db->insert('item_type', $data);
     }
 
-	function get_all_item_type()
+	function get_all_item_type($default_rowsperpage)
     {
+		if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
 		$this->db->select("item_type.item_type,item_type.item_type_id,item_type.created_date_time,staff.first_name,
 		updated_by.first_name as updated_by_name,item_type.updated_date_time")
 		->from("item_type")
 		->join('staff','staff.staff_id=item_type.created_by','left')
 		->join('staff as updated_by','updated_by.staff_id=item_type.updated_by','left');
+		$this->db->limit($rows_per_page,$start);
 		$query = $this->db->get();
 		return $query->result();
     }

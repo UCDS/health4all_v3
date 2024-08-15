@@ -237,7 +237,8 @@ class Indent_report_model extends CI_Model
 		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, 
 		scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
 		inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, 
-		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time,indent_item.note as item_note")
+		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time,
+		indent_item.note as item_note,item_form.item_form")
 		->from('inventory')
 		->join('item', 'item.item_id = inventory.item_id') //remove left later
 		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
@@ -636,11 +637,13 @@ class Indent_report_model extends CI_Model
 		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, 
 		scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
 		inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, 
-		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time")
+		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time,
+		item_form.item_form,indent_item.note as item_note")
 		->from('inventory')
 		->join('item', 'item.item_id = inventory.item_id') //remove left later
 		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details
 		->join('indent', 'indent.indent_id = inventory.indent_id') // remove left later for only relevant details
+		->join('indent_item', 'indent_item.indent_id = indent.indent_id')
 		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent.from_id')
 		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent.to_id')
 		->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
@@ -651,7 +654,9 @@ class Indent_report_model extends CI_Model
 		->where('inventory.supply_chain_party_id', $scp_id)
 		->where('inventory.date_time >=', $from_date)
 		->where('inventory.date_time <=', $to_date);
+		$this->db->group_by('indent_item.indent_id');
 
+		$this->db->order_by('indent.indent_date','ASC');
 		$query = $this->db->get();
 		$query_string = $this->db->last_query();
 		//echo $query_string;
@@ -663,25 +668,50 @@ class Indent_report_model extends CI_Model
 
 	function get_item_closing_balance()
 	{
-		if ($this->input->post('from_date') ) 
+		$from_date = date("Y-m-d");
+		$time = "00:00:00";
+		$scp_id = $this->input->post('scp_id');
+		$item_id = $this->input->post('item');
+		
+		$max_days = 90;
+		$checked_dates = [];
+
+		for ($i = 0; $i < $max_days; $i++) 
 		{
-			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
-		}else {
-			$from_date = date("Y-m-d");
+			$current_check_date = $from_date . ' 00:00:00';
+			$checked_dates[] = $current_check_date;
+
+			$this->db->select("inventory_summary.closing_balance")
+			->from('inventory_summary')
+			->where('supply_chain_party_id', $scp_id)
+			->where('item_id', $item_id)
+			->where('transaction_date', $current_check_date)
+			->order_by('transaction_date', 'DESC')
+			->limit(1);
+			$query = $this->db->get();
+			$records = $query->result();
+
+			if (!empty($records)) {
+				return $records;
+			}
+			$from_date = date("Y-m-d", strtotime($from_date . ' -1 day'));
 		}
-
-		$hospital=$this->session->userdata('hospital');
-		$this->db->select("inventory_summary.closing_balance")
-		->from('inventory_summary')
-		->where('supply_chain_party_id', $this->input->post('scp_id'))
-		->where('item_id', $this->input->post('item'))
-		->where('transaction_date < ', $from_date)
-		->order_by('transaction_date', 'DESC')
-		->limit(1);
-		$query = $this->db->get();
-		//echo $this->db->last_query();
-		$records = $query->result();
-		return $records;
-
+		//echo "Dates checked: " . implode(', ', $checked_dates) . "<br/>";
+		//-echo "Closing balance: Not found";
+		
+		//old code commented on 14-08-2024
+		// $from_date = date("Y-m-d");
+		// $scp_id = $this->input->post('scp_id');
+		// $item_id = $this->input->post('item');
+		// $this->db->select("inventory_summary.closing_balance")
+		// 	->from('inventory_summary')
+		// 	->where('supply_chain_party_id', $scp_id)
+		// 	->where('item_id', $item_id)
+		// 	->where('transaction_date <', $from_date.' '.$time)
+		// 	->order_by('transaction_date', 'DESC')
+		// 	->limit(1);
+		// 	$query = $this->db->get();
+		// 	$records = $query->result();
+		// 	return $records;
 	}
 }

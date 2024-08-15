@@ -272,68 +272,48 @@
 				
 
 				<?php foreach ($functions as $f) {
-
 					if ($f->user_function == "Masters - Consumables") { ?>
-						<div class="panel panel-default" id="masters_div">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a id="masters" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" >
-										Masters <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("masters"))
-											echo 'glyphicon-chevron-up';
-										else
-											echo 'glyphicon-chevron-down';?>"></span>
-									</a>
-								</h4>
-							</div>
-							
-
-							<div id="collapseOne" class="panel-collapse collapse <?php if(check_if_group_active("masters")) echo 'in'?>">
-							<div class="panel-body">
-									<ul class="list-group">
-										
-												<a class="<?php echo (activate_item("^consumables/generic_item/^"))?>" 
-													href="<?php echo base_url(); ?>consumables/generic_item/generic_items_list">Generic
-												Item</a>
-										<a href="<?php echo base_url(); ?>consumables/item/items_list" class="<?php echo (activate_item("^consumables/item/^"))?>">Item</a>
-										
-										<a class="<?php echo (activate_item("^consumables/item_type/^"))?>" 
-													href="<?php echo base_url(); ?>consumables/item_type/add_item_type">Item Type</a>
-										
-										<a class="<?php echo (activate_item("^consumables/item_form/^")) ?>" 
-													href="<?php echo base_url(); ?>consumables/item_form/item_forms_list">Item Form</a>
-										
-										<a class="<?php echo (activate_item("^add_dosage^")) ?>" 
-													href="<?php echo base_url(); ?>consumables/dosage/add_dosage">Dosages</a>
-										<a href="<?php echo base_url(); ?>consumables/drug_type/add_drug_type" class="<?php echo (activate_item("^add_drug_type^")) ?>">
-												Drug Type</a>
-										<a class="<?php echo (activate_item("^consumables/supply_chain_party/^")) ?>" 
-													href="<?php echo base_url(); ?>consumables/supply_chain_party/supply_chain_parties_list">Supply
-												Chain
-												Party</a>
-
-
-									<?php
-
-					}
-				} ?>
-								<?php foreach ($functions as $f) {
-									if ($f->user_function == "consumables_drugs") { ?>
-
-										<a class="<?php if (preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()))
-											echo 'list-group-item active';
-										else
-											echo 'list-group-item' ?>" href="<?php echo base_url(); ?>hospital/drugs_available">Hospital Drug List</a>
-									
-
-					<?php
-
-									}
-								} ?>
-
-									</ul>
+							<div class="panel panel-default" id="masters_div">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a id="masters-link" style="display: inline-block; width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#masters">
+											Masters <span style="margin-left: 50%;" class="glyphicon <?php echo (check_if_group_active("masters") ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'); ?>"></span>
+										</a>
+									</h4>
+								</div>
+								<div id="masters" class="panel-collapse collapse <?php echo (check_if_group_active("masters") ? 'in' : ''); ?>">
+									<div class="panel-body">
+										<ul class="list-group">
+											<a class="<?php echo activate_item('^consumables/generic_item/^'); ?>" href="<?php echo base_url(); ?>consumables/generic_item/generic_items_list">Generic Item</a>
+											<a class="<?php echo activate_item('^consumables/item/^'); ?>" href="<?php echo base_url(); ?>consumables/item/items_list">Item</a>
+											<a class="<?php echo activate_item('^consumables/item_type/^'); ?>" href="<?php echo base_url(); ?>consumables/item_type/add_item_type">Item Type</a>
+											<a class="<?php echo activate_item('^consumables/item_form/^'); ?>" href="<?php echo base_url(); ?>consumables/item_form/item_forms_list">Item Form</a>
+											<a class="<?php echo activate_item('^add_dosage^'); ?>" href="<?php echo base_url(); ?>consumables/dosage/add_dosage">Dosages</a>
+											<a class="<?php echo activate_item('^add_drug_type^'); ?>" href="<?php echo base_url(); ?>consumables/drug_type/add_drug_type">Drug Type</a>
+											<a class="<?php echo activate_item('^consumables/supply_chain_party/^'); ?>" href="<?php echo base_url(); ?>consumables/supply_chain_party/supply_chain_parties_list">Supply Chain Party</a>
+										</ul>
+									</div>
 								</div>
 							</div>
+				<?php }	} ?>
+							
+
+				<?php foreach ($functions as $f) {
+						if ($f->user_function == "consumables_drugs") { ?>
+						<div class="panel panel-default" id="consumables_drugs">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a class="<?php if (preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url())) { echo 'list-group-item active'; } ?>" href="<?php echo base_url(); ?>hospital/drugs_available">Hospital Drug List</a>
+									<!-- <a style="display: inline-block;width: 100%;" class="<?php if (preg_match("^drugs_available^", current_url()) || preg_match("^delete_drug^", current_url()))
+											echo 'list-group-item active';
+										else
+											echo 'list-group-item' ?>" href="<?php echo base_url(); ?>hospital/drugs_available">Hospital Drug List
+									</a> -->
+								</h4>
+							</div>
 						</div>
+				<?php } } ?>
+
 				<?php foreach ($functions as $f) {
 					if ($f->user_function == "Consumables") { ?>
 						<div class="panel panel-default" id="reports_div">
