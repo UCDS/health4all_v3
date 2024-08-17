@@ -83,7 +83,7 @@ if(isset($patient_visit_data) && count($patient_visit_data)>0)
 											<td style="text-align:center"><?php echo $p->visit_name;?></td>
 											<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
 											<td>
-												<a data-id="<?php echo $p->visit_id;?>" class="btn btn-danger" id="del" >Delete</a>
+												<a data-id="<?php echo $p->visit_id;?>" data-appointment-slot-id="<?php echo $p->appointment_slot_id;?>"  data-appointment-status-category="<?php echo $p->appointment_status_category;?>" class="btn btn-danger" id="del" >Delete</a>
 											</td>
 											</tr>
 										<?php $prev = $p;
@@ -94,13 +94,17 @@ if(isset($patient_visit_data) && count($patient_visit_data)>0)
 									$(document).on("click",'#del',function(){
 										var $btn = $(this);
 										var visit_id = $btn.attr("data-id");
+										var appointment_slot_id = $btn.attr("data-appointment-slot-id");
+										var appointment_status_category = $btn.attr("data-appointment-status-category");
 										conf = confirm('Are you sure you want to delete this entry?');
 										if(conf==true)
 										{
 											$.ajax({
 													type: "POST",
 													url: "<?php echo base_url('patient/delete_patient_visit_id'); ?>",
-													data: {visit_id:visit_id},
+													data: {visit_id:visit_id,
+													appointment_slot_id:appointment_slot_id,
+													appointment_status_category:appointment_status_category},
 													success: function(response) {
 														//console.log(response);
 														$btn.closest('tr').remove();

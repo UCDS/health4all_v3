@@ -311,12 +311,13 @@ class patient_model extends CI_Model {
         
         $this->db->select('patient_visit.patient_id,patient_visit.visit_type,patient.age_years,patient.age_months,patient.age_days,patient.gender,patient.phone,
         patient.address,patient.first_name,patient_visit.hosp_file_no as op_ip_no,patient_visit.admit_date,hospital.hospital as hospital_name,department.department as dept_name,
-        visit_name.visit_name,patient_visit.appointment_time,patient_visit.visit_id,patient.last_name')
+        visit_name.visit_name,patient_visit.appointment_time,patient_visit.visit_id,patient.last_name,patient_visit.appointment_slot_id,aps.is_default as appointment_status_category ')
                 ->from('patient_visit')
                 ->join('patient','patient.patient_id=patient_visit.patient_id','left')
                 ->join('hospital','hospital.hospital_id=patient_visit.hospital_id','left')
                 ->join('department','department.department_id=patient_visit.department_id','left')
                 ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
+				->join('appointment_status aps','patient_visit.appointment_status_id=aps.id','left')	
                 ->where('patient_visit.patient_id', "$patient_id");
                 $this->db->order_by('patient_visit.admit_date','DESC');
         $query = $this->db->get();
@@ -339,7 +340,7 @@ class patient_model extends CI_Model {
         return $result;
     }
 
-    function ins_del_ops_duplicate_data($data,$visit_id) 
+    function ins_del_ops_duplicate_data($data,$visit_id,$appointment_slot_id,$appointment_status_category) 
     {
         $this->db->trans_start();
         $data = array(
@@ -413,6 +414,7 @@ class patient_model extends CI_Model {
         
         $this->db->insert('patient_visit_duplicate', $data);
         $this->db->delete('patient_visit',array('visit_id'=> $visit_id));
+		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id, 0,$appointment_status_category,0]);
         $this->db->trans_complete();
         if($this->db->trans_status()===FALSE)
         {
@@ -610,7 +612,7 @@ class patient_model extends CI_Model {
         patient_visit.visit_name_id,patient_visit.presenting_complaints,patient_visit.past_history,patient_visit.family_history,patient_visit.admit_weight,
         patient_visit.pulse_rate,patient_visit.respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,
         rs,pa,cns,cxr,provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,unit.unit_name,area.area_name,
-        visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id,patient_visit.visit_type')
+        visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id,patient_visit.visit_type,patient_visit.appointment_slot_id')
             ->from('patient_visit')
             ->join('department','department.department_id=patient_visit.department_id','left')
             ->join('unit','unit.unit_id=patient_visit.unit','left')

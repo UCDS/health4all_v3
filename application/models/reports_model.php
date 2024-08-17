@@ -2989,7 +2989,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$this->input->post('appointment_status_category'),$this->input->post('appointment_status_category')]);
 		}
         $this->db->trans_complete();
-		echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
+		//echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
         if($this->db->trans_status()==FALSE){
                 return false;
                 

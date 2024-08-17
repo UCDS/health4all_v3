@@ -24,7 +24,7 @@ BEGIN
         SET appointments_taken = appointments_taken + 1 
         WHERE slot_id = appointment_slot_id_current;
 		
-		-- Reducing the appointments_checkedin count for old category == 1
+		-- Reducing the appointments_checkedin count for old the slot and increasing it for current slot to the category == 1 
 		IF appointment_status_category_old = 1 THEN
 			UPDATE appointment_slot 
 			SET appointments_checkedin = CASE 
@@ -37,8 +37,7 @@ BEGIN
 			SET appointments_checkedin = appointments_checkedin + 1
 			WHERE slot_id = appointment_slot_id_current;
 		END IF;
-        
-        -- Reducing the appointments_cancelled count for old status == 2
+        -- Reducing the appointments_cancelled count for old the slot and increasing it for current slot to the category == 2
 		IF appointment_status_category_old = 2 THEN
 			UPDATE appointment_slot 
 			SET appointments_cancelled = CASE 

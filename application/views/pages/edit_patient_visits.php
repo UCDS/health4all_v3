@@ -785,7 +785,22 @@ bootbox.confirm({
                   var outcome_time = response[i]['outcome_time'];
                   var icd_10 = response[i]['icd_10'];
                   var visit_type_op_ip = response[i]['visit_type'];
+				  var appointment_slot_id = response[i]['appointment_slot_id'];
                 }
+				if (appointment_slot_id) {
+					$('#tr_department').hide();
+					$('#tr_unit').hide();
+					$('#tr_area').hide();
+					$('#visit_ip').hide();
+					$('#alert_appointment_slot').show();
+				}
+				else {
+					$('#tr_department').show();
+					$('#tr_unit').show();
+					$('#tr_area').show();
+					$('#visit_ip').show();
+					$('#alert_appointment_slot').hide();
+				}
                 document.getElementById('visit_id_con').value = visit_id;
                 document.getElementById('visit_type_op_ip').value = visit_type_op_ip;
                 $('#admit_date_manual_update_old_value').append(admit_date);
@@ -903,7 +918,8 @@ bootbox.confirm({
       <input type="hidden" name="post_patient_id" value="<?php echo $this->input->post('patient_id'); ?>" id="post_patient_id">
       <?php $user=$this->session->userdata('logged_in');  ?>
       <input type="hidden" name="sesion_user_id" value="<?php echo $user['user_id']; ?>" id="session_user_id">
-  <h2>Edit Details</h2>        
+  <h2>Edit Details</h2>  
+  <div id="alert_appointment_slot" hidden class="alert alert-danger" role="alert">This visit is belonging to an appointment slot. Edit provision for Department,Unit,Area and Visit Type won't be available here. Please check the Registrations/Appointments for the same.</div>  
   <table class="table">
     <thead>
       <tr>
@@ -930,7 +946,7 @@ bootbox.confirm({
         <td><input type="time" class="form-control" id="admit_time_update_new_value" name="admit_time_update_new_value" placeholder="" value="<?php echo $time_2 ?>" disabled></td>
       </tr>
       
-      <tr>
+      <tr id="tr_department">
         <td>Department</td>
         <td class="old-value-container" id="department_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="department_name_update" name="department_name_update" value="department_name_update"></td>
@@ -944,7 +960,7 @@ bootbox.confirm({
         </td>
       </tr>
       
-      <tr>
+      <tr id="tr_unit">
         <td>Unit</td>
         <td class="old-value-container" id="unit_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="unit_name_update" name="unit_name_update" value="unit_name_update"></td>
@@ -958,7 +974,7 @@ bootbox.confirm({
         </td>
       </tr>
       
-      <tr>
+      <tr id="tr_area">
         <td>Area</td>
         <td class="old-value-container" id="area_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="area_update" name="area_update" value="area_update"></td>
