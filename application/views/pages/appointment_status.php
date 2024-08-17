@@ -5,6 +5,8 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootbox.min.js"></script>
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
@@ -95,6 +97,38 @@ function doPost(page_no){
    }
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
+}
+
+function submit_appointment_status(e) {
+	e.preventDefault();
+	var event_prop = e;
+	var visitid=$(event_prop.target).data('visitid');
+	var formName = "submit_appointment_status_"+visitid;
+	var form = $("#"+formName);
+	var url = form.attr('action');
+	$.ajax({
+		type: "POST",
+		url: url,
+		async:false,
+        cache:false,
+        data: form.serialize(),
+        success: function (data) {
+				bootbox.dialog({
+					message: 'Appointment status updated successfully',
+					buttons: {
+						sucess: {
+							label: "Ok",
+							callback: function () {
+								//location.reload();
+							}
+						}
+					}
+				});
+			},
+			error: function (error) {  
+				  bootbox.alert("Error in updating the appointment status");
+				}
+			});
 }
 </script>
 <style type="text/css">
@@ -574,8 +608,8 @@ echo "</select></li>";
 				<span><b>Doctor Consulted:</b> <?php echo $s->doctor;?></span>
 				</p>	
 			</div>	
-
-			<?php echo form_open("reports/appointments_status",array('role'=>'form','class'=>'form-custom')); ?>
+				
+			<?php echo form_open("reports/appointments_status",array('role'=>'form','class'=>'form-custom','id'=>'submit_appointment_status_'.$s->visit_id,'enctype'=>'multipart/form-data')); ?>
 			<input type="hidden" name="appointment" value="true">
 			<input type="hidden" name="visit_id" value="<?php echo $s->visit_id;?>">
 			<input type="hidden" name="from_date" value="<?php echo $this->input->post('from_date');?>">
@@ -588,14 +622,16 @@ echo "</select></li>";
 			<input type="hidden" name="phone" id="phone" value='<?php echo $this->input->post('phone');?>'>		
 			<input type="hidden" name="h4allid" id="h4allid" value='<?php echo $this->input->post('h4allid');?>'>				
 			<input type="hidden" name="opno" id="opno" value='<?php echo $this->input->post('opno');?>'>				
-			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>						
+			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>
+			<input type="hidden" name="appointment_slot_id" value="<?php echo $s->appointment_slot_id;?>">	
+			<input type="hidden" name="appointment_status_category_old" value="<?php echo $s->appointment_status_category;?>">			
 			<div class="form-group">
 				<label for="Appointment Status">Appointment Status*:</label>
 				<select name="appointment_status_id_val" id="appointment_status_id" required class="form-control">
 					<option value="">Select Appointment Status</option>
 					<?php 
 					foreach($all_appointment_status as $status){
-						echo "<option value='".$status->id."'";
+						echo "<option value='".$status->id."|".$status->is_default."'";
 						if($s->appointment_status_id) {
 							if($s->appointment_status_id == $status->id) echo " selected ";
 							echo ">".$status->appointment_status."</option>";
@@ -618,7 +654,7 @@ echo "</select></li>";
 			</div>
 
 <div style="text-align:center;margin-top:5px">
-			<button type="submit" class="btn btn-primary btn-sm"">Submit</button>
+			<button type="button" onclick="submit_appointment_status(event)" data-visitid="<?php echo $s->visit_id; ?>" class="btn btn-primary btn-sm"">Submit</button>
 			<button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
 </div>
 			</form> 

@@ -706,13 +706,19 @@ class Reports extends CI_Controller {
 			}
 		}
 		if($access==1){
-		$this->data['updated']=false;	
 		if($this->input->post('visit_id')){		
 			$appointment_slot_id_current = $this->validate_appointment_slot();
-			
+			$updated = false;
 			if($appointment_slot_id_current >= 0) {
-				echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-				$this->reports_model->update_appointment($appointment_slot_id_current);
+				//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
+				$updated = $this->reports_model->update_appointment($appointment_slot_id_current);
+				if($updated == false){
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Error in Appointment slot validation';        
+					echo(json_encode($result));
+				}
 			}
 			return;
 		}	
@@ -1081,7 +1087,7 @@ class Reports extends CI_Controller {
 	        $this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->data['updated']=false;		
-		if($this->input->post('visit_id')){ 
+		if($this->input->post('visit_id')){		
 			if($this->reports_model->update_appointment_status()){$this->data['updated']=true;}
 		}
 		foreach($this->data['defaultsConfigs'] as $default){		 
@@ -1089,7 +1095,7 @@ class Reports extends CI_Controller {
 		 			$this->data['rowsperpage'] = $default->value;
 		 			$this->data['upper_rowsperpage']= $default->upper_range;
 		 			$this->data['lower_rowsperpage']= $default->lower_range;	 
-
+					break;
 		 		}
 			}
 		$this->data['report_count']=$this->reports_model->get_appointment_status_count($department,$unit,$area,$from_age,$to_age,$from_date,$to_date);
