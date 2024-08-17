@@ -211,11 +211,13 @@ $(document).ready(function(){$("#from_date").datepicker({
 		?>
 		<td class="text-right"><?php 
 		if($s->slots_alloted!="") {
-			$remaining_appointments = $s->slots_alloted - $appointments_effective;		}
+			$remaining_appointments = $s->slots_alloted - $appointments_effective;		
+			if ($remaining_appointments >= 0) { echo $remaining_appointments; $total_remaining_appointments = $total_remaining_appointments + $remaining_appointments;} else {echo 0;}
+		}
 		else{
 			echo 'NA';
 		}
-		if ($remaining_appointments >= 0) { echo $remaining_appointments; $total_remaining_appointments = $total_remaining_appointments + $remaining_appointments;} else {echo 0;} ?></td>
+		?></td>
 		<?php  if ($default_appointment_status_add !=""){ ?>
 		<td style="text-align:right"> <?php echo $s->default_status_count_add;$total_default_status_count_add = $total_default_status_count_add + $s->default_status_count_add;?></td>		
 		<td style="text-align:right"> <?php echo round(($s->default_status_count_add/$appointments_effective)*100,0)."%"; ?></td>
