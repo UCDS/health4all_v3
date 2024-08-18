@@ -119,7 +119,7 @@ function submit_appointment_status(e) {
 						sucess: {
 							label: "Ok",
 							callback: function () {
-								//location.reload();
+								location.reload();
 							}
 						}
 					}

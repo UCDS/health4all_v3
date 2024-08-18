@@ -787,7 +787,8 @@ bootbox.confirm({
                   var visit_type_op_ip = response[i]['visit_type'];
 				  var appointment_slot_id = response[i]['appointment_slot_id'];
                 }
-				if (appointment_slot_id) {
+				//console.log(appointment_slot_id);
+				if (appointment_slot_id > 0) {
 					$('#tr_department').hide();
 					$('#tr_unit').hide();
 					$('#tr_area').hide();
