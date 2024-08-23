@@ -308,6 +308,11 @@
 
 		/* overflow-y: auto; */
 	}
+	#footer { position: fixed; bottom: 0; width: 100%; } 
+	#footer p {
+		text-align: center;
+		margin-top: 2%;
+	}
 </style>
 
 <?php if (count($issue_details) > 0) { 
@@ -337,7 +342,20 @@
 					<b>Indent Id : </b>
 					<?php echo " " . $single_issue->indent_id; ?>
 				</div><!-- End of indent_id label-->
-
+				<div class="col-md-4"><!--Indent id label-->
+					<?php
+					$status_color = "text-success";
+					if ($single_issue->indent_status == "Indented") {
+						$status_color = "text-warning";
+					} else if ($single_issue->indent_status == "Approved") {
+						$status_color = "text-primary";
+					} else if ($single_issue->indent_status == "Rejected") {
+						$status_color = "text-danger";
+					}
+					?>
+						<b>Approval status : </b>
+						<b class="<?php echo $status_color; ?>"><?php echo " ". $single_issue->indent_status; ?></b>
+				</div>
 			</div>
 			<div class="row" style="padding:5px 0px;">
 				<div class="col-md-4"><!-- From_party label-->
@@ -345,26 +363,10 @@
 					<?php echo " " . $single_issue->from_party; ?>
 				</div><!-- End of from_party label -->
 
-				<div class="col-md-4" style="padding:5px 0px;"><!-- To party label -->
+				<div class="col-md-4"><!-- To party label -->
 					<b>Indent To Party : </b>
 					<?php echo " " . $single_issue->to_party; ?>
 				</div><!-- End of to party label-->
-			</div>
-			<div class="row">
-				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
-				<?php
-				$status_color = "text-success";
-				if ($single_issue->indent_status == "Indented") {
-					$status_color = "text-warning";
-				} else if ($single_issue->indent_status == "Approved") {
-					$status_color = "text-primary";
-				} else if ($single_issue->indent_status == "Rejected") {
-					$status_color = "text-danger";
-				}
-				?>
-					<b>Approval status : </b>
-					<b class="<?php echo $status_color; ?>"><?php echo " ". $single_issue->indent_status; ?></b>
-				</div><!-- End of date time label-->
 			</div>
 			<?php
 				$f = $functions;
@@ -378,62 +380,7 @@
 					} 
 				}
 			?>
-			<div class="row">
-				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
-					<b>Indent Date Time : </b>
-					<span id="indentDateTime">
-						<?php echo " " . date("d-M-Y g:i A", strtotime($single_issue->indent_date)); ?>
-					</span>&nbsp;&nbsp;
-					<?php if($access==1)
-						{
-					?>
-					<i class="fa fa-pencil indentDateTime-edit-icon" onclick="enableDateTimeEdit('indentDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
-					<?php } ?>
-				</div><!-- End of date time label-->
-			</div>
-			<div class="row">
-				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
-					<b>Approval Date Time : </b>
-					<span id="approvalDateTime">
-					<?php 
-						if ($single_issue->indent_status == "Approved" || $single_issue->indent_status == "Issued") {
-							echo " " . date("d-M-Y g:i A", strtotime($single_issue->approve_date_time));}
-						else { 
-							echo " NA";
-						} ?>
-					</span>&nbsp;&nbsp;
-					<?php if($access==1)
-						{
-					?>
-					<i class="fa fa-pencil approvalDateTime-edit-icon" onclick="enableDateTimeEdit('approvalDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
-					<?php } ?>
-				</div><!-- End of date time label-->
-			</div>
-			<div class="row">
-				<div class="col-md-5"  style="padding:5px 0px; margin-left: 15px;"><!-- Date Time label -->
-					<b>Issue Date Time : </b>
-					<span id="issueDateTime">
-					<?php 
-						if ($single_issue->indent_status == "Issued") {
-							echo " " . date("d-M-Y g:i A", strtotime($single_issue->issue_date_time));}
-						else { 
-							echo " NA";
-						} ?>
-					</span>&nbsp;&nbsp;
-					<?php if($access==1)
-						{
-					?>
-					<i class="fa fa-pencil issueDateTime-edit-icon" onclick="enableDateTimeEdit('issueDateTime', '<?php echo $single_issue->indent_id; ?>')"></i>
-					<?php } ?>
-				</div><!-- End of date time label-->
-			</div>
 		</div>
-
-		
-
-
-
-
 
 		<div class="container">
 		<div class="row">
@@ -718,59 +665,123 @@
 		</div>
 		</div>
 		<div class="container">
-			<div>
-				<b>Note:</b>
-				<p><?php echo $single_issue->indent_note; ?></p>
-			</div>
+			<div></br>
+				<b style="float:left;">Note:</b><p style="float:right;margin-right:70%!important;"><?php echo $single_issue->indent_note; ?></p>
+			</div></br></br>
 			<div class="span9">
 				<div class="span3">
 					<div class="col-md-12"><!-- Indenter name -->
-						<b>
+						<b style="margin-left:-15px;">
 							<?php echo "Indented" . " " . "by :"; ?>
 						</b>
-						<?php echo $single_issue->order_first . " " . $single_issue->order_last; ?></br></br>
+						<?php echo $single_issue->order_first . " " . $single_issue->order_last; ?> at
+						<span id="indentDateTime">
+							<?php echo " " . date("d-M-Y g:i A", strtotime($single_issue->indent_date)); ?>
+						</span>&nbsp;&nbsp;
+						<?php if($access==1)
+							{
+						?>
+							<i class="fa fa-pencil indentDateTime-edit-icon" onclick="enableDateTimeEdit('indentDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
+						<?php } ?></br></br>
 					</div><!-- End of indenter name-->
 				</div>
 				<div class="span3">
 					<div class="col-md-12"><!-- Approver name-->
-						<b>
+						<b style="margin-left:-15px;">
 							<?php echo "Approved" . " " . "by :"; ?>
 						</b>
-						<?php echo $single_issue->approve_first . " " . $single_issue->approve_last; ?></br></br>
+						<?php echo $single_issue->approve_first . " " . $single_issue->approve_last; ?> at
+						<span id="approvalDateTime">
+							<?php 
+								if ($single_issue->indent_status == "Approved" || $single_issue->indent_status == "Issued") {
+									echo " " . date("d-M-Y g:i A", strtotime($single_issue->approve_date_time));}
+								else { 
+									echo " NA";
+								} ?>
+						</span>&nbsp;&nbsp;
+						<?php if($access==1)
+							{
+						?>
+							<i class="fa fa-pencil approvalDateTime-edit-icon" onclick="enableDateTimeEdit('approvalDateTime','<?php echo $single_issue->indent_id; ?>')"></i>
+						<?php } ?></br></br>
 					</div><!-- End of approver name-->
 				</div>
 				<div class="span3">
 					<div class="col-md-12"><!-- Issuer name-->
-						<b>
+						<b style="margin-left:-15px;">
 							<?php echo "Issued" . " " . "by :"; ?>
 						</b>
-						<?php echo $single_issue->issue_first . " " . $single_issue->issue_last; ?></br></br>
+						<?php echo $single_issue->issue_first . " " . $single_issue->issue_last; ?> at
+						<span id="issueDateTime">
+						<?php 
+							if ($single_issue->indent_status == "Issued") {
+								echo " " . date("d-M-Y g:i A", strtotime($single_issue->issue_date_time));}
+							else { 
+								echo " NA";
+							} ?>
+						</span>&nbsp;&nbsp;
+						<?php if($access==1)
+							{
+						?>
+							<i class="fa fa-pencil issueDateTime-edit-icon" onclick="enableDateTimeEdit('issueDateTime', '<?php echo $single_issue->indent_id; ?>')"></i>
+						<?php } ?></br></br>
 					</div><!-- End of issuer name-->
 				</div>
-				<div class="span3">
-					<div class="col-md-12"><!-- Issuer signature-->
+				<!-- <div class="span3">
+					<div class="col-md-12">
 						<b>
 							<?php echo "Issuer Signature :"; ?>
 						</b></br></br>
-					</div><!-- End of issuer signature-->
-				</div>
+					</div>
+				</div> -->
 			</div>
 		</div>						
 		<div class="row">
+			<div class="col-md-4"></div>
 			<div class="col-md-4">
-				
-
 					<button class="btn btn-primary" type="button" name="print" id="print"
 							onclick=goBackToList()>Go to indents list</button>
-				
-			</div>
-			<div class="col-md-4">
-					
-
 					<button class="btn btn-primary" type="button" name="back_to_list" id="back_to_list"
 							onclick="printDiv('print-div-2')">Print</button>
-				
+			<?php 
+				foreach ($functions as $f) 
+				  {
+					if ($f->user_function == "delete_indent" && $single_issue->indent_status=="Issued") 
+					{ 
+			?>
+					<a data-id="<?php echo $single_issue->indent_id; ?>" class="btn btn-danger" id="del" >Delete Indent</a>
+
+			<?php } } ?>
+
 			</div>
+			<div class="col-md-4"></div>
+			<script>
+				$(document).on("click",'#del',function(){
+					var $btn = $(this);
+					var indent_id = $btn.attr("data-id");
+					//alert(indent_id);
+					conf = confirm('Are you sure you want to delete this indent?');
+					if(conf==true)
+					{
+						$.ajax({
+								type: "POST",
+								url: "<?php echo base_url('consumables/indent_reports/delete_indent_id'); ?>",
+								data: {indent_id:indent_id},
+								success: function(response) 
+								{
+									alert("Indent deleted successfully");
+									window.location.href = '<?php echo base_url('consumables/indent_reports/indents_list'); ?>';
+								},
+								error: function(error) {
+									//console.error("Error:", error);
+								}
+							});
+					}else
+					{
+						return false;
+					}
+				})
+			</script>
 		</div>
 	</div>
 </div>

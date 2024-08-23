@@ -281,3 +281,38 @@ ALTER TABLE `report_layout` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `report_layout` ADD `width` INT NOT NULL AFTER `field_name`;
 
 ALTER TABLE `report_layout` ADD `function` VARCHAR(100) NOT NULL AFTER `width`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'delete_indent', 'delete_indent', 'delete_indent');
+
+CREATE TABLE `indent_deleted_data` (
+  `delete_id` int(11) NOT NULL,
+  `indent_id` int(11) NOT NULL,
+  `approve_date_time` datetime NOT NULL,
+  `issue_date_time` datetime NOT NULL,
+  `indent_date` datetime NOT NULL,
+  `from_id` int(11) NOT NULL,
+  `to_id` int(11) NOT NULL,
+  `orderby_id` int(11) NOT NULL,
+  `approver_id` int(11) NOT NULL,
+  `issuer_id` int(11) NOT NULL,
+  `indent_status` varchar(50) NOT NULL,
+  `indent_note` text NOT NULL,
+  `indent_item_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `quantity_indented` int(11) NOT NULL,
+  `quantity_approved` int(11) NOT NULL,
+  `quantity_issued` int(11) NOT NULL,
+  `issue_date` date NOT NULL,
+  `consumption_status` varchar(50) NOT NULL,
+  `manufacture_date` datetime NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  `batch` varchar(10) NOT NULL,
+  `cost` float NOT NULL,
+  `item_note` text NOT NULL,
+  `delete_datetime` datetime NOT NULL,
+  `staff_id` int(11) NOT NULL
+);
+
+ALTER TABLE `indent_deleted_data` ADD PRIMARY KEY (`delete_id`);
+
+ALTER TABLE `indent_deleted_data` MODIFY `delete_id` int(11) NOT NULL AUTO_INCREMENT;

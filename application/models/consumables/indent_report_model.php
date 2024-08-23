@@ -668,34 +668,43 @@ class Indent_report_model extends CI_Model
 
 	function get_item_closing_balance()
 	{
-		$from_date = date("Y-m-d");
-		$time = "00:00:00";
+		$from_date = date("Y-m-d",strtotime($this->input->post('from_date')));
 		$scp_id = $this->input->post('scp_id');
 		$item_id = $this->input->post('item');
-		
-		$max_days = 90;
-		$checked_dates = [];
 
-		for ($i = 0; $i < $max_days; $i++) 
-		{
-			$current_check_date = $from_date . ' 00:00:00';
-			$checked_dates[] = $current_check_date;
+		$this->db->select("inventory_id,supply_chain_party_id,inward_outward,item_id,quantity,date_time,inward_outward_type,
+		manufacture_date,expiry_date,batch,cost,patient_id,indent_id,note,gtin_code")
+		->from('inventory')
+		->where('supply_chain_party_id', $scp_id)
+		->where('item_id', $item_id)
+		->where('date_time <', $from_date);
+		$query = $this->db->get();
+		$records = $query->result();
+		return $records;
 
-			$this->db->select("inventory_summary.closing_balance")
-			->from('inventory_summary')
-			->where('supply_chain_party_id', $scp_id)
-			->where('item_id', $item_id)
-			->where('transaction_date', $current_check_date)
-			->order_by('transaction_date', 'DESC')
-			->limit(1);
-			$query = $this->db->get();
-			$records = $query->result();
+		// $max_days = 90;
+		// $checked_dates = [];
 
-			if (!empty($records)) {
-				return $records;
-			}
-			$from_date = date("Y-m-d", strtotime($from_date . ' -1 day'));
-		}
+		// for ($i = 0; $i < $max_days; $i++) 
+		// {
+		// 	$current_check_date = $from_date . ' 00:00:00';
+		// 	$checked_dates[] = $current_check_date;
+
+		// 	$this->db->select("inventory_summary.closing_balance")
+		// 	->from('inventory_summary')
+		// 	->where('supply_chain_party_id', $scp_id)
+		// 	->where('item_id', $item_id)
+		// 	->where('transaction_date', $current_check_date)
+		// 	->order_by('transaction_date', 'DESC')
+		// 	->limit(1);
+		// 	$query = $this->db->get();
+		// 	$records = $query->result();
+
+		// 	if (!empty($records)) {
+		// 		return $records;
+		// 	}
+		// 	$from_date = date("Y-m-d", strtotime($from_date . ' -1 day'));
+		// }
 		//echo "Dates checked: " . implode(', ', $checked_dates) . "<br/>";
 		//-echo "Closing balance: Not found";
 		

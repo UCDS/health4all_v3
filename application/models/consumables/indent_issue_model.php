@@ -91,7 +91,9 @@ class Indent_issue_model extends CI_Model{                                      
 		$this->db->select('indent.indent_id, quantity_indented, quantity_approved, quantity_issued, indent.approve_date_time,indent_item.indent_item_id,indent_item.quantity_approved, 
 		indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,from_party.supply_chain_party_id from_party_id,to_party.supply_chain_party_name to_party,to_party.supply_chain_party_id to_party_id,orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name, 
 		indent_item.quantity_issued, indent_item.indent_item_id, indent_item.indent_status item_status, indent_item.note item_note, indent.indent_status, indent.indent_date, indent.note indent_note, 
-		inventory.inventory_id, inventory.quantity, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.cost, inventory.patient_id, inventory.note, inventory.gtin_code,inventory.item_id')
+		inventory.inventory_id, inventory.quantity, inventory.batch, inventory.manufacture_date, inventory.expiry_date, 
+		inventory.cost, inventory.patient_id, inventory.note, inventory.gtin_code,inventory.item_id,indent.orderby_id,
+		indent_item.issue_date as isdate,indent_item.consumption_status as cstatus,indent.approver_id, indent_item.item_id as indent_itemid')
 		->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('inventory', 'indent_item.item_id = inventory.item_id AND indent_item.indent_id = inventory.indent_id', 'left')
@@ -341,6 +343,51 @@ class Indent_issue_model extends CI_Model{                                      
 			$this->db->update($table, $data);
 		}
 	}
+
+	function ins_del_indent_id_data($original_data,$indent_id) 
+    {
+        $this->db->trans_start();
+		foreach ($original_data as $data) {
+			$insert_data = array(
+				'indent_id' => $data->indent_id,
+				'approve_date_time' => $data->approve_date_time,
+				'issue_date_time' => $data->issue_date_time,
+				'indent_date' => $data->indent_date,
+				'from_id' => $data->from_party_id,
+				'to_id' => $data->to_party_id,
+				'orderby_id' => $data->orderby_id,
+				'approver_id' => $data->approver_id,
+				'issuer_id' => $data->issuer_id,
+				'indent_status' => $data->indent_status,
+				'indent_note' => $data->indent_note,
+				'indent_item_id' => $data->indent_item_id,
+				'item_id' => $data->indent_itemid,
+				'quantity_indented' => $data->quantity_indented,
+				'quantity_approved' => $data->quantity_approved,
+				'quantity_issued' => $data->quantity_issued,
+				'issue_date' => $data->isdate,
+				'consumption_status' => $data->cstatus,
+				'manufacture_date' => $data->manufacture_date,
+				'expiry_date' => $data->expiry_date,
+				'batch' => $data->batch,
+				'cost' => $data->cost,
+				'item_note' => $data->item_note,
+				'delete_datetime' => date("Y-m-d H:i:s"),
+				'staff_id' => $this->session->userdata('logged_in')['staff_id']
+			);
+        
+        	$this->db->insert('indent_deleted_data', $insert_data);
+		}
+        $this->db->delete('indent',array('indent_id'=> $indent_id));
+        $this->db->delete('indent_item',array('indent_id'=> $indent_id));
+        $this->db->delete('inventory',array('indent_id'=> $indent_id));
+        $this->db->trans_complete();
+        if($this->db->trans_status()===FALSE)
+        {
+			return false;
+		}
+		else return true;
+    }
 }//indent_issue_model
 
 

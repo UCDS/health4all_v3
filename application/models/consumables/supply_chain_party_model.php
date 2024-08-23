@@ -125,6 +125,33 @@ class Supply_chain_party_model extends CI_Model {
         return $query->result();
     }
 
+    function get_scp_parties_count()
+    {
+       
+        $hospital=$this->session->userdata('hospital');   
+        $this->db->select('count(*) as count',false)
+        ->from('supply_chain_party scp')
+        ->join('area', 'area.area_id = scp.area_id', 'left')
+        ->join('vendor', 'vendor.vendor_id = scp.vendor_id', 'left')
+        ->join('department', 'department.department_id = scp.department_id', 'left')
+        ->where('scp.hospital_id', $hospital['hospital_id']);
+
+        if($this->input->post('in_house') === 'in_house'){
+            if($this->input->post('department')){
+                $this->db->where('department.department_id', $this->input->post('department'));
+            }
+            if($this->input->post('area')){
+                $this->db->where('area.area_id', $this->input->post('area'));
+            }
+        }else if($this->input->post('in_house') === 'external'){
+            if($this->input->post('vendor')){
+                $this->db->where('vendor.vendor_id', $this->input->post('vendor'));
+            }
+        }
+        $query = $this->db->get();
+        return $query->result();
+    }
+
     function get_scp($scp_id)
     {
       $hospital=$this->session->userdata('hospital');   
