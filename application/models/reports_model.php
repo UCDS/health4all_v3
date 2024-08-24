@@ -1661,9 +1661,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
 		 ->join('staff','aps.appointment_update_by=staff.staff_id','left')
 		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left');
+		 $this->db->order_by('aps.visit_name_id');
 		 $this->db->order_by('aps.date','ASC');
 		 $this->db->order_by('aps.from_time','ASC');	
-		 $this->db->group_by('aps.slot_id');
 		 $this->db->limit($rows_per_page,$start);		
 		$resource=$this->db->get();
 		return $resource->result();
@@ -2963,7 +2963,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	}
     	
 	function update_appointment($appointment_slot_id_current){
-		
+		//Getting old appointment slot id 
+		$this->db->select("IF(appointment_slot_id IS NULL or appointment_slot_id = '', 0, appointment_slot_id) as appointment_slot_id",false);
+        $this->db->from('patient_visit');
+		$this->db->where('visit_id',$this->input->post('visit_id'));
+        $query = $this->db->get();
+        $result = $query->result_array();
+		$appointment_slot_id_old = $result[0]['appointment_slot_id'];
+		//echo("<script>alert('appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
+		//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
         $appointment_info = array();
         if($this->input->post('department_id')){
             $appointment_info['department_id'] = $this->input->post('department_id');
@@ -2978,13 +2986,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
             $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
         }
 		$appointment_info['appointment_slot_id'] = $appointment_slot_id_current;
-		$appointment_slot_id_old = $this->input->post('appointment_slot_id_old');
+		
 		$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
 		$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
 		if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
+			//echo("<script>alert('call appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
+		    //echo("<script>alert('call appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
 			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$this->input->post('appointment_status_category'),$this->input->post('appointment_status_category')]);
 		}
         $this->db->trans_complete();
