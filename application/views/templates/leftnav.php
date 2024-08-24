@@ -270,6 +270,40 @@
 					}
 				} ?>
 				
+				<?php foreach ($functions as $f) {
+					if ($f->user_function == "Consumables") { ?>
+						<div class="panel panel-default" id="reports_div">
+							<div class="panel-heading">
+								<h4 class="panel-title">
+									<a id="reports" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+										Reports <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("reports"))
+											echo 'glyphicon-chevron-up';
+										else
+											echo 'glyphicon-chevron-down';?>">
+									</a>
+								</h4>
+							</div>
+
+
+							<div id="collapseTwo" class="panel-collapse collapse <?php if(check_if_group_active("reports")) echo 'in'?>">
+							<div class="panel-body">
+									<ul class="list-group">
+										<a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indented
+												Items </span></a>
+										<a class="<?php echo (activate_item("^indents_list^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/indents_list">Indents
+										List </span></a>
+										<a class="<?php echo (activate_item("^get_inventory_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_summary">Inventory 
+										Summary </span></a>
+										<a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
+										Detail </span></a>
+										<a class="<?php echo (activate_item("^get_item_inventory_detail^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_inventory_detail">Inventory 
+										Item Detail </span></a>
+									</ul>
+								</div>
+
+							</div>
+						</div>
+				<?php }	} ?>
 
 				<?php foreach ($functions as $f) {
 					if ($f->user_function == "Masters - Consumables") { ?>
@@ -314,45 +348,6 @@
 						</div>
 				<?php } } ?>
 
-				<?php foreach ($functions as $f) {
-					if ($f->user_function == "Consumables") { ?>
-						<div class="panel panel-default" id="reports_div">
-							<div class="panel-heading">
-								<h4 class="panel-title">
-									<a id="reports" style="display: inline-block;width: 100%;" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-										Reports <span style="margin-left: 50%;" class="glyphicon <?php if (check_if_group_active("reports"))
-											echo 'glyphicon-chevron-up';
-										else
-											echo 'glyphicon-chevron-down';?>">
-									</a>
-								</h4>
-							</div>
-
-
-							<div id="collapseTwo" class="panel-collapse collapse <?php if(check_if_group_active("reports")) echo 'in'?>">
-							<div class="panel-body">
-									<ul class="list-group">
-										<a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indented
-												Items </span></a>
-										<a class="<?php echo (activate_item("^indents_list^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/indents_list">Indents
-										List </span></a>
-										<a class="<?php echo (activate_item("^get_inventory_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_summary">Inventory 
-										Summary </span></a>
-										<a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
-										Detail </span></a>
-										<a class="<?php echo (activate_item("^get_item_inventory_detail^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_inventory_detail">Inventory 
-										Item Detail </span></a>
-									</ul>
-								</div>
-
-							</div>
-						</div>
-
-					
-				<?php
-
-					}
-				} ?>
 				</div>
 				</ul>
 			<ul>

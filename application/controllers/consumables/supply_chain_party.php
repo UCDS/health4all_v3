@@ -177,6 +177,7 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
         } else {
             // fetch search results from model and supply them to view
             $this->data['search_items'] = $this->supply_chain_party_model->get_scp_parties($this->data['rowsperpage']);
+            $this->data['search_items_count'] = $this->supply_chain_party_model->get_scp_parties_count();
             // echo json_encode($this->data['search_items']);
         }
         $this->load->view('pages/consumables/supply_chain_parties_list_view', $this->data);

@@ -388,7 +388,7 @@ $('#to_id').change(function(){
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 ">
 							<div class="form-group">
 							<!--input field item-->
-								<label for="item_type" >Item Type</label>
+								<label for="item_type" >Item Type <font style="color:red">*</font></label>
 									<select name="item_type" id="item_type" class="form-control" required>
 									<option value="">Select</option>
 										<?php

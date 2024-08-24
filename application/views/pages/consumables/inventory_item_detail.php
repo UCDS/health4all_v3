@@ -408,7 +408,7 @@ $('#to_id').change(function(){
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-2">
 							<div class="form-group">
 							<!--input field item-->
-								<label for="item_type" >Item Type</label>
+								<label for="item_type" >Item Type <font style="color:red">*</font></label>
 									<select name="item_type" id="item_type" class="form-control" required>
 									<option value="">Select</option>
 										<?php
@@ -515,7 +515,7 @@ $('#to_id').change(function(){
 						Item : <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name.' - '.$search_inventory_summary[0]->item_form; ?></span> ,
                         Dates : <?php echo date("d M Y", strtotime($this->input->post('from_date')));?> to <?php echo date("d M Y", strtotime($this->input->post('to_date')));?>
 					</h4>
-					<h4 style="text-align:center;">Opening Balance : <?php if($closing_balance){ echo $closing_balance[0]->closing_balance; }else{ echo '0'; } ?></h4>
+					<h4 style="text-align:center;">Opening Balance : <?php echo $balance; ?></h4>
 				<?php } ?>
 			</div>
 			<table class="table table-bordered table-striped" id="table-sort">
@@ -565,10 +565,10 @@ $('#to_id').change(function(){
 							
 							if($inventory_item->inward_outward != "inward"){
 								$outward_total_quantity += $inventory_item->total_quantity;
-								$tot_outward_balance = $closing_balance[0]->closing_balance-$outward_total_quantity;
+								$tot_outward_balance = $balance-$outward_total_quantity;
 							}else if($inventory_item->inward_outward === "inward"){
 								$inward_total_quantity += $inventory_item->total_quantity;
-								$tot_inward_balance = $closing_balance[0]->closing_balance+$inward_total_quantity;
+								$tot_inward_balance = $balance+$inward_total_quantity;
 							}
 							$total_cost += ((float)$inventory_item->cost);
 							$batch = $inventory_item->batch;
@@ -588,7 +588,7 @@ $('#to_id').change(function(){
 								{
 									echo ($tot_inward_balance + $inward_total_quantity);
 								}  else{
-									echo ($inward_total_quantity+$closing_balance[0]->closing_balance-$outward_total_quantity);
+									echo ($inward_total_quantity+$balance-$outward_total_quantity);
 								}
 								?>
 							</td>
@@ -602,12 +602,12 @@ $('#to_id').change(function(){
 						}
 						?>
 						<tfoot>
-							<?php $tot_inward = $inward_total_quantity+$closing_balance[0]->closing_balance; ?>
+							<?php $tot_inward = $inward_total_quantity+$balance; ?>
 							<th></th>
 							<th>Total </th>
 							<th></th>
 							<th></th>
-							<th style="text-align:right;"><?php if($inward_total_quantity){ echo  $inward_total_quantity;} else{ echo  $closing_balance[0]->closing_balance; }?></th>
+							<th style="text-align:right;"><?php if($inward_total_quantity){ echo  $inward_total_quantity;} else{ echo  $balance; }?></th>
 							<th style="text-align:right;"><?php  if($outward_total_quantity){ echo $outward_total_quantity; }?></th>
 							<th style="text-align:right;"><?= $tot_inward-$outward_total_quantity; ?></th>
 							<th style="text-align:right;"><?= $total_cost; ?></th>
