@@ -285,3 +285,38 @@ ALTER TABLE `report_layout` ADD `function` VARCHAR(100) NOT NULL AFTER `width`;
 ALTER TABLE `patient_visit` ADD `appointment_slot_id` INT NULL AFTER `appointment_status_update_time`;
 
 ALTER TABLE `appointment_slot` ADD `appointments_taken` INT NOT NULL AFTER `appointments_limit`, ADD `appointments_checkedin` INT NOT NULL AFTER `appointments_taken`, ADD `appointments_cancelled` INT NOT NULL AFTER `appointments_checkedin`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'delete_indent', 'delete_indent', 'delete_indent');
+
+CREATE TABLE `indent_deleted_data` (
+  `delete_id` int(11) NOT NULL,
+  `indent_id` int(11) NOT NULL,
+  `approve_date_time` datetime NOT NULL,
+  `issue_date_time` datetime NOT NULL,
+  `indent_date` datetime NOT NULL,
+  `from_id` int(11) NOT NULL,
+  `to_id` int(11) NOT NULL,
+  `orderby_id` int(11) NOT NULL,
+  `approver_id` int(11) NOT NULL,
+  `issuer_id` int(11) NOT NULL,
+  `indent_status` varchar(50) NOT NULL,
+  `indent_note` text NOT NULL,
+  `indent_item_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `quantity_indented` int(11) NOT NULL,
+  `quantity_approved` int(11) NOT NULL,
+  `quantity_issued` int(11) NOT NULL,
+  `issue_date` date NOT NULL,
+  `consumption_status` varchar(50) NOT NULL,
+  `manufacture_date` datetime NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  `batch` varchar(10) NOT NULL,
+  `cost` float NOT NULL,
+  `item_note` text NOT NULL,
+  `delete_datetime` datetime NOT NULL,
+  `staff_id` int(11) NOT NULL
+);
+
+ALTER TABLE `indent_deleted_data` ADD PRIMARY KEY (`delete_id`);
+
+ALTER TABLE `indent_deleted_data` MODIFY `delete_id` int(11) NOT NULL AUTO_INCREMENT;

@@ -5,6 +5,7 @@ class Indent_reports extends CI_Controller
 	{ //calling constructor.
 		parent::__construct(); //calling parent constructor.
 		$this->load->model('staff_model');
+		$this->load->model('masters_model');	
 		if ($this->session->userdata('logged_in')) {
 			$userdata = $this->session->userdata('logged_in');
 			$user_id = $userdata['user_id'];
@@ -613,6 +614,15 @@ class Indent_reports extends CI_Controller
         $this->load->view('templates/footer');
 	}
 
+	function delete_indent_id()
+    {
+		$this->load->model('consumables/indent_issue_model');  
+        $indent_id = $this->input->post('indent_id');
+        $original_data = $this->indent_issue_model->get_single_indent_details($indent_id);
+        $result = $this->indent_issue_model->ins_del_indent_id_data($original_data,$indent_id);
+		echo json_encode($result);
+    }
+
 	function save_data() 
 	{
 		$fieldId = $this->input->post('fieldId');
@@ -678,7 +688,18 @@ class Indent_reports extends CI_Controller
 		if(isset($scp_id) && isset($item_id)){
 			$this->data['mode'] = 'search';
 			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_inventory_detail($item_id, $scp_id);
-			$this->data['closing_balance'] = $this->indent_report_model->get_item_closing_balance();
+			$closing_balance = $this->indent_report_model->get_item_closing_balance();
+			foreach ($closing_balance as $cb) 
+			{
+				if ($cb->inward_outward == "outward") {
+					$outward_total_quantity += $cb->quantity;
+				} elseif ($cb->inward_outward == "inward") {
+					$inward_total_quantity += $cb->quantity;
+				}
+			}
+			$this->data['outward_total_quantity'] = $outward_total_quantity;
+        	$this->data['inward_total_quantity'] = $inward_total_quantity;
+        	$this->data['balance'] =  $inward_total_quantity - $outward_total_quantity;
 			$this->load->view('pages/consumables/inventory_item_detail', $this->data);
 		} else if ($this->input->post('search')) {
 			$this->data['mode'] = "search";
@@ -691,5 +712,4 @@ class Indent_reports extends CI_Controller
 		$this->load->view('templates/footer');
 	}
 
-	
 }
