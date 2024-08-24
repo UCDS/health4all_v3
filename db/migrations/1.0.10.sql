@@ -282,6 +282,10 @@ ALTER TABLE `report_layout` ADD `width` INT NOT NULL AFTER `field_name`;
 
 ALTER TABLE `report_layout` ADD `function` VARCHAR(100) NOT NULL AFTER `width`;
 
+ALTER TABLE `patient_visit` ADD `appointment_slot_id` INT NULL AFTER `appointment_status_update_time`;
+
+ALTER TABLE `appointment_slot` ADD `appointments_taken` INT NOT NULL AFTER `appointments_limit`, ADD `appointments_checkedin` INT NOT NULL AFTER `appointments_taken`, ADD `appointments_cancelled` INT NOT NULL AFTER `appointments_checkedin`;
+
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'delete_indent', 'delete_indent', 'delete_indent');
 
 CREATE TABLE `indent_deleted_data` (

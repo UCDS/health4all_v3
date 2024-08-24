@@ -1921,36 +1921,27 @@ $(function(){
 $("#appointment").submit(function(e) {
 
     e.preventDefault(); // avoid to execute the actual submit of the form.
-
+	
     var form = $(this);
     var url = form.attr('action');
     var formdom =  document.getElementById('appointment');
     var data = new FormData(formdom);
-    target = '<?php echo base_url();?>reports/validate_appointment_slot';
     $.ajax({
-		type: "POST",
-		url: target,
-		data: data,
-		processData: false,
-		contentType: false,
-		cache: false,
-		success: function (data) {
-		      $.ajax({
-           		type: "POST",
-           		url: url,
-           		data: form.serialize(), // serializes the form's elements.
-           		success: function(data)
-           		{
-			   	var modal = $('#myModal_appointment');
-			   	document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();; 
-			     	bootbox.alert("Appointment updated successfully");
-			}
-         	     });
-		   },
+        type: "POST",
+        url: url,
+        data: form.serialize(),
+		async:false,
+        cache:false,
+        success: function(data)
+        {
+			var modal = $('#myModal_appointment');
+			document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();; 
+			bootbox.alert("Appointment updated successfully");
+		},
 		error: function (error) {  
-		    bootbox.alert(error.responseJSON.Message);
-		   }
-		});
+			bootbox.alert(error.responseJSON.Message);
+		}
+    });
 });
 function validateInput(event){
       var search_op_number = document.forms[event.target.id]["search_op_number"].value;

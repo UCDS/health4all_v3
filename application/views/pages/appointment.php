@@ -85,32 +85,33 @@ function submit_appointment(e) {
 	e.preventDefault();
 	var event_prop = e;
 	var visitid=$(event_prop.target).data('visitid');
-	var doctor=$(event_prop.target).data('doctor');
 	var formName = "submit_appointment_"+visitid;
-	if (doctor.length ==0 ){		
-		var form =  document.getElementById(formName);
-		var data = new FormData(form);
-		target = '<?php echo base_url();?>reports/validate_appointment_slot';
-		$.ajax({
-			type: "POST",
-			enctype: 'multipart/form-data',
-			url: target,
-			data: data,
-			processData: false,
-			contentType: false,
-			cache: false,
-			success: function (data) {
-				   $('#'+formName).submit();
+	
+	var form = $("#"+formName);
+    var url = form.attr('action');
+	$.ajax({
+		type: "POST",
+		url: url,
+		async:false,
+        cache:false,
+        data: form.serialize(),
+        success: function (data) {
+				bootbox.dialog({
+					message: 'Appointment updated successfully',
+					buttons: {
+						sucess: {
+							label: "Ok",
+							callback: function () {
+								location.reload();
+							}
+						}
+					}
+				});
 			},
 			error: function (error) {  
 				   bootbox.alert(error.responseJSON.Message);
 				}
 			});
-	}else {
-	
-		 $('#'+formName).submit();
-	}
-	
     }
 </script>
 <script type="text/javascript">
@@ -749,7 +750,9 @@ echo "</select></li>";
 			<input type="hidden" name="patientid" value="<?php echo $this->input->post('patientid');?>">
 			<input type="hidden" name="opno" value="<?php echo $this->input->post('opno');?>">
 			<input type="hidden" name="manualid" value="<?php echo $this->input->post('manualid');?>">
-					
+			<input type="hidden" name="appointment_slot_id_old" value="<?php echo $s->appointment_slot_id;?>">
+			<input type="hidden" name="appointment_status_category" value="<?php echo $s->appointment_status_category;?>">
+			
 			<div class="form-group">
 				<label for="department">Department:</label>
 				<select name="department_id" id="department" class="form-control">

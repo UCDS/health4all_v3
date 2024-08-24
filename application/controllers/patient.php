@@ -269,7 +269,9 @@ function update_patient(){
 	    $this->load->helper('form');
         $visit_id = $this->input->post('visit_id');
         $original_data = $this->patient_model->get_patient_visit_id_details($visit_id);
-        $this->patient_model->ins_del_ops_duplicate_data($original_data,$visit_id);
+		//echo("<script>alert('appointment_slot_id: " . $$this->input->post('appointment_slot_id') . "');</script>");
+		//echo("<script>alert('appointment_status_category: " . $$this->input->post('appointment_status_category') . "');</script>");
+        $this->patient_model->ins_del_ops_duplicate_data($original_data,$visit_id,$this->input->post('appointment_slot_id'),$this->input->post('appointment_status_category'));
         //$this->patient_model->delete_from_patient_visit($visit_id);
         $this->load->view('pages/delete_patient_visit_duplicate',$this->data);	
         $this->load->view('templates/footer');
