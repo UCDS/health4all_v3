@@ -3009,6 +3009,14 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	}
     	
     	function update_appointment_status(){
+        $appointment_slot_id = 0;
+		$this->db->select("IF(appointment_slot_id IS NULL or appointment_slot_id = '', 0, appointment_slot_id) as appointment_slot_id",false);
+        $this->db->from('patient_visit');
+		$this->db->where('visit_id',$this->input->post('visit_id'));
+        $query = $this->db->get();
+        $result = $query->result_array();
+		$appointment_slot_id = $result[0]['appointment_slot_id'];
+		//echo("<script>alert('appointment_slot_id: " . $appointment_slot_id . "');</script>");
         $appointment_info = array();
 		$appointment_status = array();
         if($this->input->post('appointment_status_id_val')){
@@ -3026,14 +3034,14 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
-		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$this->input->post('appointment_slot_id'), $this->input->post('appointment_slot_id'),$this->input->post('appointment_status_category_old'),$appointment_status[1]]);
+		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id, $appointment_slot_id,$this->input->post('appointment_status_category_old'),$appointment_status[1]]);
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
         	}
         else{
                 return true;
-        	} 
+        	}
     	}
 	
 	function get_doctor_patient_list(){
