@@ -1807,7 +1807,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,
 		CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,
 		aps.is_default as appointment_status_category,district.district,state.state,
-		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id,pv.appointment_slot_id",false);
+		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
@@ -2471,7 +2471,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->select("p.patient_id, p.address,p.patient_id_manual, hosp_file_no, pv.visit_id, pv.visit_name_id,vs.visit_name, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, department,pv.appointment_time as appointment_date_time,
-pv.appointment_status_update_time,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,pv.appointment_slot_id,aps.is_default appointment_status_category",false);
+pv.appointment_status_update_time,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,aps.is_default appointment_status_category",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('visit_name vs','pv.visit_name_id=vs.visit_name_id','left')
