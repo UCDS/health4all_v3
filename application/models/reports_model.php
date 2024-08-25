@@ -5077,11 +5077,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where('patient_followup.ndps',0);
 			}
 		}
-		if($this->input->post('sort_by_age')==1){
+		/*if($this->input->post('sort_by_age')==1){
 			$this->db->order_by('patient.age_years',ASC);
 		}else{
 			$this->db->order_by('patient.age_years',DESC);
-		}
+		}*/
 		//till here
 
 		if($this->input->post('district'))
@@ -5127,7 +5127,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		followup_update_by.last_name as updated_last_name,
 		state.state,district.state_id as state_id,
 		patient_followup.death_date,
-		patient_followup.death_status")
+		patient_followup.death_status,
+		IF(patient.age_years IS NULL or patient.age_years = '', 0, patient.age_years) as age_years",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
