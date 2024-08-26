@@ -504,7 +504,7 @@ echo "</select></li>";
 						<td>
 							<small><?php echo $call->short_name.'&nbsp;-&nbsp;'.$call->dial_whom_number;?>&nbsp;@&nbsp;<?php echo $call->line_note; ?> - <?php echo $call->to_number;?>
 							<audio controls preload="none">
-								<source src="<?php echo $call->recording_url;?>" type="audio/mpeg">
+								<source src="<?php echo $controller_url.$call->recording_url;?>" type="audio/mpeg">
 								Your browser does not support the audio element.
 							</audio>
 							</small>

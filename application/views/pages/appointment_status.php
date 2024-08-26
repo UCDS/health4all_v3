@@ -101,9 +101,15 @@ function onchange_page_dropdown(dropdownobj){
 
 function submit_appointment_status(e) {
 	e.preventDefault();
+	if(!(!e.detail || e.detail == 1)){ return;}
 	var event_prop = e;
 	var visitid=$(event_prop.target).data('visitid');
 	var formName = "submit_appointment_status_"+visitid;
+	var appointment_status_id = document.getElementById("appointment_status_id_"+visitid);
+	if (appointment_status_id.options[appointment_status_id.selectedIndex].value == ''){
+		bootbox.alert("Appointment status should not be empty");
+		return;
+	}
 	var form = $("#"+formName);
 	var url = form.attr('action');
 	$.ajax({
@@ -622,12 +628,11 @@ echo "</select></li>";
 			<input type="hidden" name="phone" id="phone" value='<?php echo $this->input->post('phone');?>'>		
 			<input type="hidden" name="h4allid" id="h4allid" value='<?php echo $this->input->post('h4allid');?>'>				
 			<input type="hidden" name="opno" id="opno" value='<?php echo $this->input->post('opno');?>'>				
-			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>
-			<input type="hidden" name="appointment_slot_id" value="<?php echo $s->appointment_slot_id;?>">	
+			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>	
 			<input type="hidden" name="appointment_status_category_old" value="<?php echo $s->appointment_status_category;?>">			
 			<div class="form-group">
 				<label for="Appointment Status">Appointment Status*:</label>
-				<select name="appointment_status_id_val" id="appointment_status_id" required class="form-control">
+				<select name="appointment_status_id_val" id="appointment_status_id_<?php echo $s->visit_id; ?>" required class="form-control">
 					<option value="">Select Appointment Status</option>
 					<?php 
 					foreach($all_appointment_status as $status){

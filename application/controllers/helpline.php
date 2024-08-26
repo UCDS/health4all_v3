@@ -55,6 +55,7 @@ class Helpline extends CI_Controller {
 
 		 		}
 			}
+			$this->data['controller_url'] = base_url().'helpline/get_call_recordings/?url=';
 			$this->data['calls']=$this->helpline_model->get_detailed_report($this->data['rowsperpage']);
 			$this->data['calls_count']=$this->helpline_model->get_detailed_report_count();
 			$this->data['all_states']=$this->masters_model->get_data("states");
@@ -619,7 +620,54 @@ class Helpline extends CI_Controller {
 		if(!$results || empty($results)) $results = array();
 		echo json_encode($results);
 	}
+	
+	
+    function get_call_recordings(){
+		
+		$recodring_user_name = $this->config->item('recodring_user_name');
+		$recodring_password = $this->config->item('recodring_password');
 
+		// Initialize cURL session
+		$ch = curl_init($this->input->get('url'));
+
+		// Set cURL options
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects, if any
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Skip SSL verification if needed
+		
+		// Set HTTP Basic Authentication
+		curl_setopt($ch, CURLOPT_USERPWD, "$recodring_user_name:$recodring_password");
+
+		// Execute cURL request
+		$response = curl_exec($ch);
+
+		// Check for cURL errors
+		if(curl_errno($ch)) {
+			header('HTTP/1.1 500 Internal Server Error');
+			echo 'cURL error: ' . curl_error($ch);
+			curl_close($ch);
+			exit;
+		}
+
+		// Get HTTP response code
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($httpCode != 200) {
+			header('HTTP/1.1 404 Not Found');
+			echo 'HTTP error: ' . $httpCode;
+			curl_close($ch);
+			exit;
+		}
+
+		// Close cURL session
+		curl_close($ch);
+
+		// Set the appropriate content type header
+		header('Content-Type: audio/mpeg');
+		header('Content-Length: ' . strlen($response));
+
+		// Output the audio content
+		echo $response;
+	}
 	function initiate_call(){
 
 		$api_key = $this->config->item('exotel_call_api_key');

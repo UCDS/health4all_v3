@@ -7,3 +7,5 @@ $config['exotel_sms_api_token'] = 'sample_exotel_sms_token';
 $config['exotel_account_sid'] = 'sample_exotel_account_sid';
 $config['exotel_account_subdomain'] = 'sample_exotel_account_subdomain';
 $config['exotel_call_type'] = 'sample_exotel_call_type';
+$config['recodring_user_name'] = 'recodring_user_name';
+$config['recodring_password'] = 'recodring_password';

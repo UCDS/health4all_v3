@@ -1660,11 +1660,10 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		 ->join('department as d','aps.department_id=d.department_id','left')
 		 ->join('hospital','d.hospital_id=hospital.hospital_id','left')
 		 ->join('staff','aps.appointment_update_by=staff.staff_id','left')
-		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left')
-		 ->join('patient_visit as pv',"aps.department_id=pv.department_id and pv.hospital_id = hospital.hospital_id and pv.visit_name_id = aps.visit_name_id and date(pv.appointment_time)  = aps.date and time(pv.appointment_time)  between aps.from_time and aps.to_time",'left');
+		 ->join('visit_name vn','aps.visit_name_id=vn.visit_name_id','left');
+		 $this->db->order_by('aps.visit_name_id');
 		 $this->db->order_by('aps.date','ASC');
 		 $this->db->order_by('aps.from_time','ASC');	
-		 $this->db->group_by('aps.slot_id');
 		 $this->db->limit($rows_per_page,$start);		
 		$resource=$this->db->get();
 		return $resource->result();
@@ -1808,7 +1807,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,
 		CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,
 		aps.is_default as appointment_status_category,district.district,state.state,
-		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id,pv.appointment_slot_id",false);
+		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('department as pvd','pv.department_id=pvd.department_id','left')
@@ -2472,7 +2471,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->select("p.patient_id, p.address,p.patient_id_manual, hosp_file_no, pv.visit_id, pv.visit_name_id,vs.visit_name, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, department,pv.appointment_time as appointment_date_time,
-pv.appointment_status_update_time,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,pv.appointment_slot_id,aps.is_default appointment_status_category",false);
+pv.appointment_status_update_time,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,aps.is_default appointment_status_category",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('visit_name vs','pv.visit_name_id=vs.visit_name_id','left')
@@ -2964,7 +2963,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	}
     	
 	function update_appointment($appointment_slot_id_current){
-		
+		//Getting old appointment slot id 
+		$this->db->select("IF(appointment_slot_id IS NULL or appointment_slot_id = '', 0, appointment_slot_id) as appointment_slot_id",false);
+        $this->db->from('patient_visit');
+		$this->db->where('visit_id',$this->input->post('visit_id'));
+        $query = $this->db->get();
+        $result = $query->result_array();
+		$appointment_slot_id_old = $result[0]['appointment_slot_id'];
+		//echo("<script>alert('appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
+		//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
         $appointment_info = array();
         if($this->input->post('department_id')){
             $appointment_info['department_id'] = $this->input->post('department_id');
@@ -2979,13 +2986,15 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
             $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
         }
 		$appointment_info['appointment_slot_id'] = $appointment_slot_id_current;
-		$appointment_slot_id_old = $this->input->post('appointment_slot_id_old');
+		
 		$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
 		$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
 		if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
+			//echo("<script>alert('call appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
+		    //echo("<script>alert('call appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
 			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$this->input->post('appointment_status_category'),$this->input->post('appointment_status_category')]);
 		}
         $this->db->trans_complete();
@@ -3000,6 +3009,14 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	}
     	
     	function update_appointment_status(){
+        $appointment_slot_id = 0;
+		$this->db->select("IF(appointment_slot_id IS NULL or appointment_slot_id = '', 0, appointment_slot_id) as appointment_slot_id",false);
+        $this->db->from('patient_visit');
+		$this->db->where('visit_id',$this->input->post('visit_id'));
+        $query = $this->db->get();
+        $result = $query->result_array();
+		$appointment_slot_id = $result[0]['appointment_slot_id'];
+		//echo("<script>alert('appointment_slot_id: " . $appointment_slot_id . "');</script>");
         $appointment_info = array();
 		$appointment_status = array();
         if($this->input->post('appointment_status_id_val')){
@@ -3017,14 +3034,14 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
-		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$this->input->post('appointment_slot_id'), $this->input->post('appointment_slot_id'),$this->input->post('appointment_status_category_old'),$appointment_status[1]]);
+		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id, $appointment_slot_id,$this->input->post('appointment_status_category_old'),$appointment_status[1]]);
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
         	}
         else{
                 return true;
-        	} 
+        	}
     	}
 	
 	function get_doctor_patient_list(){
@@ -5060,11 +5077,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where('patient_followup.ndps',0);
 			}
 		}
-		if($this->input->post('sort_by_age')==1){
+		/*if($this->input->post('sort_by_age')==1){
 			$this->db->order_by('patient.age_years',ASC);
 		}else{
 			$this->db->order_by('patient.age_years',DESC);
-		}
+		}*/
 		//till here
 
 		if($this->input->post('district'))
@@ -5110,7 +5127,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		followup_update_by.last_name as updated_last_name,
 		state.state,district.state_id as state_id,
 		patient_followup.death_date,
-		patient_followup.death_status")
+		patient_followup.death_status,
+		IF(patient.age_years IS NULL or patient.age_years = '', 0, patient.age_years) as age_years",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')

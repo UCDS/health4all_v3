@@ -83,6 +83,7 @@ $('#to_time').ptTimeSelect();
 });
 function submit_appointment(e) {
 	e.preventDefault();
+	if(!(!e.detail || e.detail == 1)){ return;}
 	var event_prop = e;
 	var visitid=$(event_prop.target).data('visitid');
 	var formName = "submit_appointment_"+visitid;
@@ -750,7 +751,6 @@ echo "</select></li>";
 			<input type="hidden" name="patientid" value="<?php echo $this->input->post('patientid');?>">
 			<input type="hidden" name="opno" value="<?php echo $this->input->post('opno');?>">
 			<input type="hidden" name="manualid" value="<?php echo $this->input->post('manualid');?>">
-			<input type="hidden" name="appointment_slot_id_old" value="<?php echo $s->appointment_slot_id;?>">
 			<input type="hidden" name="appointment_status_category" value="<?php echo $s->appointment_status_category;?>">
 			
 			<div class="form-group">
