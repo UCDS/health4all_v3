@@ -1773,7 +1773,7 @@ function initAppointmentDoctorSelectize(modal_id){
 				       		class="form-control">
 			</div>
 
-			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="submit" id="submit_appointment" class="btn btn-default">Submit</button>
 			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
 			</form> 
@@ -1919,9 +1919,9 @@ $(function(){
 });
 // this is the id of the form
 $("#appointment").submit(function(e) {
-
     e.preventDefault(); // avoid to execute the actual submit of the form.
-	
+	var modal = $('#myModal_appointment');
+	modal.find('#submit_appointment').prop("disabled", true);
     var form = $(this);
     var url = form.attr('action');
     var formdom =  document.getElementById('appointment');
@@ -1934,12 +1934,35 @@ $("#appointment").submit(function(e) {
         cache:false,
         success: function(data)
         {
-			var modal = $('#myModal_appointment');
-			document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();; 
-			bootbox.alert("Appointment updated successfully");
+			document.getElementById('dept_name').innerHTML = modal.find('#department option:selected').text();
+			bootbox.dialog({
+					message: 'Appointment updated successfully',
+					buttons: {
+						sucess: {
+							label: "Ok",
+							callback: function () {
+								modal.find('#submit_appointment').removeAttr('disabled');
+							}
+						}
+					}
+				});
+			
+			
+			
+			
 		},
-		error: function (error) {  
-			bootbox.alert(error.responseJSON.Message);
+		error: function (error) {  	
+			bootbox.dialog({
+					message: error.responseJSON.Message,
+					buttons: {
+						sucess: {
+							label: "Ok",
+							callback: function () {
+								modal.find('#submit_appointment').removeAttr('disabled');
+							}
+						}
+					}
+				});
 		}
     });
 });

@@ -83,6 +83,7 @@ $('#to_time').ptTimeSelect();
 });
 function submit_appointment(e) {
 	e.preventDefault();
+	if(!(!e.detail || e.detail == 1)){ return;}
 	var event_prop = e;
 	var visitid=$(event_prop.target).data('visitid');
 	var formName = "submit_appointment_"+visitid;
