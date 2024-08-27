@@ -290,18 +290,8 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
-			$this->data['results_count']=$this->reports_model->get_count_followups();								
-			$result =  $this->reports_model->search_followups($this->data['rowsperpage']);
-			if($this->input->post('sort_by_age')==1){
-				usort($result, function ($a, $b) {
-																						return $a->age_years <= $b->age_years  ? -1 : 1;
-																					});
-			}else{
-		  	       usort($result, function ($a, $b) {					 												return $a->age_years >= $b->age_years  ? -1 : 1;
-																					});
-																				}		
-			$this->data['results'] = $result;	
-			//$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
+			$this->data['results_count']=$this->reports_model->get_count_followups();									
+			$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
 			if(count($this->data['results']) == 0){
 				$this->data['msg'] = "No Records found";
 			}
