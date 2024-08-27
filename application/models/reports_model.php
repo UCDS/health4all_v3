@@ -5078,11 +5078,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where('patient_followup.ndps',0);
 			}
 		}
-		if($this->input->post('sort_by_age')==1){
-			$this->db->order_by('age_years',ASC);
-		}else{
-			$this->db->order_by('age_years',DESC);
-		}
 		//till here
 
 		if($this->input->post('district'))
