@@ -751,7 +751,6 @@ echo "</select></li>";
 			<input type="hidden" name="patientid" value="<?php echo $this->input->post('patientid');?>">
 			<input type="hidden" name="opno" value="<?php echo $this->input->post('opno');?>">
 			<input type="hidden" name="manualid" value="<?php echo $this->input->post('manualid');?>">
-			<input type="hidden" name="appointment_status_category" value="<?php echo $s->appointment_status_category;?>">
 			
 			<div class="form-group">
 				<label for="department">Department:</label>

@@ -628,8 +628,7 @@ echo "</select></li>";
 			<input type="hidden" name="phone" id="phone" value='<?php echo $this->input->post('phone');?>'>		
 			<input type="hidden" name="h4allid" id="h4allid" value='<?php echo $this->input->post('h4allid');?>'>				
 			<input type="hidden" name="opno" id="opno" value='<?php echo $this->input->post('opno');?>'>				
-			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>	
-			<input type="hidden" name="appointment_status_category_old" value="<?php echo $s->appointment_status_category;?>">			
+			<input type="hidden" name="manualid" id="manualid" value='<?php echo $this->input->post('manualid');?>'>			
 			<div class="form-group">
 				<label for="Appointment Status">Appointment Status*:</label>
 				<select name="appointment_status_id_val" id="appointment_status_id_<?php echo $s->visit_id; ?>" required class="form-control">

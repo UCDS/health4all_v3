@@ -327,21 +327,26 @@ class patient_model extends CI_Model {
     
     function get_patient_visit_id_details($visit_id)
     {
-        $this->db->select('visit_id,hospital_id,admit_id,visit_type,visit_name_id,patient_id,hosp_file_no,admit_date,admit_time,department_id,unit,area,doctor_id,nurse,insurance_case,
+        $this->db->select("visit_id,pv.hospital_id,admit_id,visit_type,visit_name_id,patient_id,hosp_file_no,admit_date,admit_time,department_id,unit,area,doctor_id,nurse,insurance_case,
         insurance_id,insurance_no,presenting_complaints,past_history,family_history,admit_weight,pulse_rate,respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,hb1ac,clinical_findings,
         cvs,rs,pa,cns,cxr,provisional_diagnosis,signed_consultation,final_diagnosis,decision,advise,icd_10,icd_10_ext,discharge_weight,outcome,outcome_date,outcome_time,ip_file_received,
         mlc,arrival_mode,referral_by_hospital_id,insert_by_user_id,update_by_user_id,insert_datetime,update_datetime,appointment_with,appointment_time,appointment_update_by,appointment_update_time,
-        summary_sent_time,temp_visit_id,appointment_status_id,appointment_status_update_by,appointment_status_update_time')
-                ->from('patient_visit')
+        summary_sent_time,temp_visit_id,appointment_status_id,appointment_status_update_by,appointment_status_update_time,
+		IF(aps.is_default IS NULL or aps.is_default = '', 0, aps.is_default) as appointment_status_category,
+		IF(pv.appointment_slot_id IS NULL or pv.appointment_slot_id = '', 0, pv.appointment_slot_id) as appointment_slot_id",false)
+                ->from('patient_visit pv')
+				->join('appointment_status aps','pv.appointment_status_id=aps.id','left')
                 ->where('visit_id', $visit_id);
-        $this->db->order_by('patient_visit.admit_date','DESC');
+        $this->db->order_by('pv.admit_date','DESC');
         $query = $this->db->get();
         $result = $query->result();
         return $result;
     }
 
-    function ins_del_ops_duplicate_data($data,$visit_id,$appointment_slot_id,$appointment_status_category) 
+    function ins_del_ops_duplicate_data($data,$visit_id) 
     {
+		$appointment_slot_id = $data[0]->appointment_slot_id;
+		$appointment_status_category = $data[0]->appointment_status_category;
         $this->db->trans_start();
         $data = array(
             'visit_id' => $data[0]->visit_id,
@@ -412,6 +417,9 @@ class patient_model extends CI_Model {
             'staff_id' => $this->session->userdata('logged_in')['staff_id']
         );
         
+		//echo("<script>alert('appointment_slot_id: " . $appointment_slot_id . "');</script>");
+		//echo("<script>alert('appointment_status_category: " . $appointment_status_category . "');</script>");
+		
         $this->db->insert('patient_visit_duplicate', $data);
         $this->db->delete('patient_visit',array('visit_id'=> $visit_id));
 		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id, 0,$appointment_status_category,0]);

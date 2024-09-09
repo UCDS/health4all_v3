@@ -1806,7 +1806,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		appointment_update_time,
 		pv.signed_consultation as signed,pv.appointment_status_update_by as appointment_status_update_by_id,
 		CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,
-		aps.is_default as appointment_status_category,district.district,state.state,
+		district.district,state.state,
 		IF(pv.signed_consultation=0, sd.department, sd_doctor.department) as doctor_department,vn.visit_name,pv.visit_name_id",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
@@ -2471,7 +2471,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		$this->db->select("p.patient_id, p.address,p.patient_id_manual, hosp_file_no, pv.visit_id, pv.visit_name_id,vs.visit_name, CONCAT(IF(p.first_name=NULL,'',p.first_name),' ',IF(p.last_name=NULL,'',p.last_name)) name,
 		p.gender, IF(p.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
 		p.place, p.phone, department,pv.appointment_time as appointment_date_time,
-pv.appointment_status_update_time,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status,aps.is_default appointment_status_category",false);
+pv.appointment_status_update_time,pv.appointment_status_update_by as appointment_status_update_by_id,CONCAT(appointment_status_update_by_staff.first_name, ' ', appointment_status_update_by_staff.last_name) as appointment_status_update_by_user,pv.appointment_status_id,aps.appointment_status",false);
 		 $this->db->from('patient_visit as pv')
 		 ->join('patient as p','pv.patient_id=p.patient_id')
 		 ->join('visit_name vs','pv.visit_name_id=vs.visit_name_id','left')
@@ -2964,14 +2964,18 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	
 	function update_appointment($appointment_slot_id_current){
 		//Getting old appointment slot id 
-		$this->db->select("IF(appointment_slot_id IS NULL or appointment_slot_id = '', 0, appointment_slot_id) as appointment_slot_id",false);
-        $this->db->from('patient_visit');
+		$this->db->select("IF(pv.appointment_slot_id IS NULL or pv.appointment_slot_id = '', 0, pv.appointment_slot_id) as appointment_slot_id,
+		IF(aps.is_default IS NULL or aps.is_default = '', 0, aps.is_default) as appointment_status_category_old",false);
+		$this->db->join('appointment_status aps','pv.appointment_status_id=aps.id','left');	
+        $this->db->from('patient_visit pv');
 		$this->db->where('visit_id',$this->input->post('visit_id'));
         $query = $this->db->get();
         $result = $query->result_array();
 		$appointment_slot_id_old = $result[0]['appointment_slot_id'];
+		$appointment_status_category_old = $result[0]['appointment_status_category_old']; 
 		//echo("<script>alert('appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
 		//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
+		//echo("<script>alert('appointment_status_category_old: " . $appointment_status_category_old . "');</script>");
         $appointment_info = array();
         if($this->input->post('department_id')){
             $appointment_info['department_id'] = $this->input->post('department_id');
@@ -2995,7 +2999,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
 			//echo("<script>alert('call appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
 		    //echo("<script>alert('call appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$this->input->post('appointment_status_category'),$this->input->post('appointment_status_category')]);
+			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$appointment_status_category_old,$appointment_status_category_old]);
 		}
         $this->db->trans_complete();
 		//echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
@@ -3010,12 +3014,16 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	
     	function update_appointment_status(){
         $appointment_slot_id = 0;
-		$this->db->select("IF(appointment_slot_id IS NULL or appointment_slot_id = '', 0, appointment_slot_id) as appointment_slot_id",false);
-        $this->db->from('patient_visit');
+		$this->db->select("IF(pv.appointment_slot_id IS NULL or pv.appointment_slot_id = '', 0, pv.appointment_slot_id) as appointment_slot_id,
+		IF(aps.is_default IS NULL or aps.is_default = '', 0, aps.is_default) as appointment_status_category_old",false);
+		$this->db->join('appointment_status aps','pv.appointment_status_id=aps.id','left');	
+        $this->db->from('patient_visit pv');
 		$this->db->where('visit_id',$this->input->post('visit_id'));
         $query = $this->db->get();
         $result = $query->result_array();
 		$appointment_slot_id = $result[0]['appointment_slot_id'];
+		$appointment_status_category_old = $result[0]['appointment_status_category_old']; 
+		//echo("<script>alert('appointment_status_category_old: " . $appointment_status_category_old . "');</script>");
 		//echo("<script>alert('appointment_slot_id: " . $appointment_slot_id . "');</script>");
         $appointment_info = array();
 		$appointment_status = array();
@@ -3034,7 +3042,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         $this->db->trans_start();
         $this->db->where('visit_id',$this->input->post('visit_id'));
         $this->db->update('patient_visit', $appointment_info);
-		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id, $appointment_slot_id,$this->input->post('appointment_status_category_old'),$appointment_status[1]]);
+		$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id, $appointment_slot_id,$appointment_status_category_old,$appointment_status[1]]);
         $this->db->trans_complete();
         if($this->db->trans_status()==FALSE){
                 return false;
@@ -4888,9 +4896,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 		
 		if($this->input->post('priority_type')){
+			$this->db->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left');
 			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
 		}
 		if($this->input->post('volunteer')){
+			$this->db->join('staff','patient_followup.volunteer_id=staff.staff_id','left');
 			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
 		}
 		
@@ -4900,13 +4910,14 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 		if($this->input->post('icd_code')){
 			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
-			$this->db->where('icd_code.icd_code',$icd_code);
+			$this->db->where('patient_followup.icd_code',$icd_code);
 		}
 		if($this->input->post('icd_block')){
 			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
+			
 		}
 		if($this->input->post('icd_chapter')){
-			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
+			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));		
 		}
         
 		if($this->input->post('ndps')!=0)
@@ -4917,12 +4928,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where('patient_followup.ndps',0);
 			}
 		}
-		/*if($this->input->post('sort_by_age')==1){
-			$this->db->order_by('patient.age_years',ASC);
-		}else{
-			$this->db->order_by('patient.age_years',DESC);
-		}*/
-		
+
 		if($this->input->post('district'))
 		{
 			$this->db->where('patient.district_id',$this->input->post('district'));
@@ -4930,24 +4936,19 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		
 		if($this->input->post('state'))
 		{
+			
 			$this->db->where('state.state_id',$this->input->post('state'));
 		}
 
         $this->db->select("count(*) as count",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
-		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
-		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
-		//->join('route_primary','patient_followup.route_primary_id=route_primary.route_primary_id','left')
 		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
 		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
-		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
-		->join('route_secondary','patient_followup.route_secondary_id=route_secondary.id','left')
 		->join('district','patient.district_id=district.district_id','left')
 		->join('state','district.state_id=state.state_id','left')
-	        ->where('patient_followup.hospital_id',$hospital['hospital_id']);  
-        //->where($filters);
-        //$this->db->limit($rows_per_page,$start);
+		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
+		->where('patient_followup.hospital_id',$hospital['hospital_id']);  
         $query = $this->db->get();
         $result = $query->result();
         return $result; 
@@ -5077,11 +5078,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where('patient_followup.ndps',0);
 			}
 		}
-		/*if($this->input->post('sort_by_age')==1){
-			$this->db->order_by('patient.age_years',ASC);
-		}else{
-			$this->db->order_by('patient.age_years',DESC);
-		}*/
 		//till here
 
 		if($this->input->post('district'))

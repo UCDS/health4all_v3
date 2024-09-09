@@ -658,15 +658,38 @@ class Helpline extends CI_Controller {
 			exit;
 		}
 
+		// Get the content length
+		$contentLength = strlen($response);
+
+		// Check for HTTP Range request
+		if (isset($_SERVER['HTTP_RANGE'])) {
+			$range = $_SERVER['HTTP_RANGE'];
+			list($unit, $range) = explode('=', $range, 2);
+			if ($unit === 'bytes') {
+				list($start, $end) = explode('-', $range);
+				$start = intval($start);
+				$end = $end ? intval($end) : $contentLength - 1;
+
+				header('HTTP/1.1 206 Partial Content');
+				header('Content-Range: bytes ' . $start . '-' . $end . '/' . $contentLength);
+				header('Content-Length: ' . ($end - $start + 1));
+				header('Content-Type: audio/mpeg');
+				header('Accept-Ranges: bytes');
+
+				echo substr($response, $start, $end - $start + 1);
+				curl_close($ch);
+				exit;
+			}
+		}
+
+		// Default response
+		header('Content-Type: audio/mpeg');
+		header('Content-Length: ' . $contentLength);
+
+		echo $response;
+
 		// Close cURL session
 		curl_close($ch);
-
-		// Set the appropriate content type header
-		header('Content-Type: audio/mpeg');
-		header('Content-Length: ' . strlen($response));
-
-		// Output the audio content
-		echo $response;
 	}
 	function initiate_call(){
 
