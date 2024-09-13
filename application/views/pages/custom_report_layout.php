@@ -1,4 +1,4 @@
-	<style>
+<style>
 	#sortable .control-label{
 		font-size:0.8em;
 	}
@@ -30,8 +30,21 @@
 				$("."+id).hide();				
 			}
 		});
+		$(document).ready(function() 
+		{
+			$("#save-form").attr('disabled', true);
+			$('select[name=from_table]').on('change', function() {
+				var selectedValue = $(this).val();
+				if (selectedValue && selectedValue !== '#') { // Check if a value is selected and not '#'
+					$("#save-form").attr('disabled', false); // Enable the button
+				} else {
+					$("#save-form").attr('disabled', true); // Disable the button if no selection or '#'
+				}
+			});
+    
 		$("#save-form").click(function(e){
 			e.preventDefault();
+			
 			columns = $('input:radio[name=cols]:checked').val();
 			form_id = $('input:hidden[name=form_id]').val();
 			from_table = $('select[name=from_table]').val();
@@ -49,6 +62,7 @@
 			$(".layout-div:visible").each(function(){
 				var cname = $(this).attr('class').replace(/col-md-[0-9]+/, "").replace(/layout-div/, "").trim();
 				fields['field_name'].push(cname);
+				console.log(cname);
 				var widthInput = $(this).find('input[name="' + cname + '_width"]');
 				var width = widthInput.length > 0 ? widthInput.val().trim() : null ;
 				wid['def_width'].push(width);
@@ -101,6 +115,7 @@
 			}
 		});		
 	});
+});
   </script>
 <?php echo form_open('user_panel/form_layout',array('role'=>'form','class'=>'form-custom','id'=>'new-form')); ?>
 			<div class="col-md-12" >
@@ -433,6 +448,14 @@
 						<input type="text" name="visit_name_id_width" value=""  class="form-control" placeholder="width">		
 						</div>
 					</div>	
+					<div class="layout-div col-md-12 hosp_file_no">
+						<div class="form-group">
+						<label class="control-label"> Hospital File No </label>
+						<input type="text" name="hosp_file_no"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="hosp_file_no_width" value=""  class="form-control" placeholder="width">		
+						</div>
+					</div>
 					<div class="layout-div col-md-12 referral_by_hospital_id">
 						<div class="form-group">
 						<label class="control-label">   Referred From   </label>
@@ -583,6 +606,56 @@
 						</select>
 						</div>
 					</div>
+					<div class="layout-div col-md-12 admit_time">
+						<div class="form-group">
+							<label class="control-label">Admit Time</label>
+							<input type="text" name="admit_time"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+							<input type="hidden" name="" value="patient_visit" class="form-control">
+							<input type="text" name="admit_time_width" value=""  class="form-control" placeholder="width">
+						</div>
+					</div>
+					<div class="layout-div col-md-12 insert_datetime">
+						<div class="form-group">
+						<label class="control-label">Insert Datetime</label>
+						<input type="text" name="insert_datetime"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="insert_datetime_width" value=""  class="form-control" placeholder="width">
+						<select name="insert_datetime_funct" class="form-control">
+							<option value="#">Select Function</option>
+							<option value="min">Min</option>
+							<option value="max">Max</option>
+						</select>
+						</div>
+					</div>
+					<div class="layout-div col-md-12 update_datetime">
+						<div class="form-group">
+						<label class="control-label">Update Datetime</label>
+						<input type="text" name="update_datetime"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="update_datetime_width" value=""  class="form-control" placeholder="width">
+						<select name="update_datetime_funct" class="form-control">
+							<option value="#">Select Function</option>
+							<option value="min">Min</option>
+							<option value="max">Max</option>
+						</select>
+						</div>
+					</div>
+					<div class="layout-div col-md-12 insert_by_user_id">
+						<div class="form-group">
+						<label class="control-label">Insert by userid</label>
+						<input type="text" name="insert_by_user_id"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="insert_by_user_id_width" value=""  class="form-control" placeholder="width">
+						</div>
+					</div>
+					<div class="layout-div col-md-12 update_by_user_id">
+						<div class="form-group">
+						<label class="control-label">Update by userid</label>
+						<input type="text" name="update_by_user_id"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="update_by_user_id_width" value=""  class="form-control" placeholder="width">
+						</div>
+					</div>
 					<div class="layout-div col-md-12 discharge_weight ">
 						<div class="form-group">
 						<label class="control-label">Discharge Weight</label>
@@ -695,10 +768,10 @@
 						<input type="text" name="family_history_width" value=""  class="form-control" placeholder="width">
 						</div>
 					</div>
-					<div class="layout-div col-md-12 clinical_finding">
+					<div class="layout-div col-md-12 clinical_findings">
 						<div class="form-group">
 						<label class="control-label">Clinical Finding</label>
-						<input type="text" name="clinical_finding"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="text" name="clinical_findings"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
 						<input type="text" name="clinical_finding_width" value=""  class="form-control" placeholder="width">
 						</div>
@@ -733,6 +806,14 @@
 						<input type="text" name="cns"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
 						<input type="text" name="cns_width" value=""  class="form-control" placeholder="width">
+						</div>
+					</div>
+					<div class="layout-div col-md-12 update_btn">
+						<div class="form-group">
+						<label class="control-label">Update button</label>
+						<input type="text" name="update_btn"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="update_btn_width" value=""  class="form-control" placeholder="width">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 congenital_anomalies">
@@ -861,6 +942,31 @@
 								<input type="text" name="death_status"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
 								<input type="hidden" name="" value="patient_followup" class="form-control">
 								<input type="text" name="death_status_width" value=""  class="form-control" placeholder="width">
+							</div>
+						</div>
+						<!-- Newly added -->
+						<div class="layout-div col-md-12 note">
+							<div class="form-group">
+								<label class="control-label">Folloup Note</label>
+								<input type="text" name="note"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
+								<input type="hidden" name="" value="patient_followup" class="form-control">
+								<input type="text" name="note_width" value=""  class="form-control" placeholder="width">
+							</div>
+						</div>
+						<div class="layout-div col-md-12 volunteer_id">
+							<div class="form-group">
+								<label class="control-label">Volunteer</label>
+								<input type="text" name="volunteer_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
+								<input type="hidden" name="" value="patient_followup" class="form-control">
+								<input type="text" name="volunteer_width" value=""  class="form-control" placeholder="width">
+							</div>
+						</div>
+						<div class="layout-div col-md-12 update_by">
+							<div class="form-group">
+								<label class="control-label">Updated by</label>
+								<input type="text" name="update_by"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
+								<input type="hidden" name="" value="patient_followup" class="form-control">
+								<input type="text" name="update_by_width" value=""  class="form-control" placeholder="width">
 							</div>
 						</div>
 			        </div>
@@ -1056,6 +1162,11 @@
 				</li>
 				<li>  
 					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="hosp_file_no" class="checklist" /> Hospital file no</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="referral_by_hospital_id" class="checklist" />Referred From</label>
 					</div>
 				</li>
@@ -1102,6 +1213,31 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="admit_date" class="checklist" />Admit Date</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="admit_time" class="checklist" />Admit Time</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="insert_datetime" class="checklist" /> Insert Datetime</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="update_datetime" class="checklist" /> Update Datetime</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="insert_by_user_id" class="checklist" /> Insert by userid</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="update_by_user_id" class="checklist" /> Update by userid</label>
 					</div>
 				</li>
 				<li>  
@@ -1176,7 +1312,7 @@
 				</li>
 				<li>  
 					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="clinical_finding" class="checklist" />Clinical Findings</label>
+						<label><input type="checkbox" value="1" id="clinical_findings" class="checklist" />Clinical Findings</label>
 					</div>
 				</li>
 				<li>  
@@ -1197,6 +1333,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="cns" class="checklist" />CNS</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="update_btn" class="checklist" />Update Button</label>
 					</div>
 				</li> 
 
@@ -1311,7 +1452,23 @@
 						<label><input type="checkbox" value="1" id="death_status" class="checklist" /> Death Status</label>
 					</div>
 				</li>
+				<!-- Newly added on 27-08-2024 -->
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="note" class="checklist" /> Followup Note</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="volunteer_id" class="checklist" /> Volunteer </label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="update_by" class="checklist" />  Updated By</label>
+					</div>
+				</li>
 			</div>
-			
+
       </form>
 

@@ -463,6 +463,16 @@ function onchange_page_dropdown(dropdownobj){
 					}
 					?>
 				</select>
+				<select name="visit_name" id="visit_name" class="form-control" style="margin-top:2%;">
+					<option value="">Visit Type</option>
+					<?php 
+					foreach($visit_names as $v){
+					echo "<option value='".$v->visit_name_id."'";
+					if($this->input->post('visit_name') && $this->input->post('visit_name') == $v->visit_name_id)  echo " selected ";
+					echo ">".$v->visit_name."</option>";
+					}
+					?>
+				</select>
 				<select name="route_primary" id="route_primary" class="form-control" onchange='onchange_primary_route_dropdown(this)' style="margin-top:2%;">
 					<option value="">Primary Route</option>
 					<?php foreach($route_primary as $primary){
@@ -746,6 +756,15 @@ function onchange_page_dropdown(dropdownobj){
 				</tr>
 			</thead>
 			<tbody>
+			<?php
+			$access = 0;
+			foreach ($this->data['functions'] as $function) {
+				if ($function->user_function == "Update Patients") {
+					$access = 1;
+					break;
+				}
+			}
+			?>
 				<?php $sno=(($page_no - 1) * $total_records_per_page)+1 ;?>
 				<?php foreach($report as $r): ?>
 					<tr>
@@ -760,13 +779,38 @@ function onchange_page_dropdown(dropdownobj){
 									echo '<td style="text-align:center;">' . $r->visit_name . '</td>';
 									break;
 								case 'area':
-									echo '<td style="text-align:center;">' . $r->area . '</td>';
+									echo '<td style="text-align:center;">' . $r->area_name . '</td>';
 									break;
 								case 'unit':
 									echo '<td style="text-align:center;">' . $r->unit_name . '</td>';
 									break;
 								case 'department_id':
 									echo '<td style="text-align:center;">' . $r->department . '</td>';
+									break;
+								case 'volunteer_id':
+									echo '<td style="text-align:center;">' . $r->first_name . '</td>';
+									break;
+								case 'update_by':
+									echo '<td style="text-align:center;">' . $r->updated_first_name.''.$r->updated_last_name . '</td>';
+									break;
+								case 'insert_by_user_id':
+									echo '<td style="text-align:center;">' . $r->vfirst_name . '</td>';
+									break;
+								case 'update_by_user_id':
+									echo '<td style="text-align:center;">' . $r->vufirst_name . '</td>';
+									break;
+								case 'update_btn':
+									if ($access == 1):
+										echo '<td style="text-align:center;">';
+										echo '<button type="button" class="btn btn-success" onclick="document.getElementById(\'patient_visit_' . $r->visit_id . '\').submit()" autofocus>' . $fd->column_name . '</button>';
+										echo form_open('register/update_patients', array('role' => 'form', 'id' => 'patient_visit_' . $r->visit_id));
+										echo '<input type="hidden" name="selected_patient" value="' . $r->visit_id . '" />';
+										echo '<input type="hidden" name="patient_id" value="' . $s->patient_id . '" />';
+										echo form_close();
+										echo '</td>';
+									else:
+										echo '<td></td>';
+									endif;
 									break;
 								case 'life_status':
 									if ($fd->field_name == 'life_status' && $r->life_status == 1) {

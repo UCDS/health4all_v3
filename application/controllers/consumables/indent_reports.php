@@ -618,8 +618,9 @@ class Indent_reports extends CI_Controller
     {
 		$this->load->model('consumables/indent_issue_model');  
         $indent_id = $this->input->post('indent_id');
+		$indent_status = $this->input->post('indent_status');
         $original_data = $this->indent_issue_model->get_single_indent_details($indent_id);
-        $result = $this->indent_issue_model->ins_del_indent_id_data($original_data,$indent_id);
+		$result = $this->indent_issue_model->ins_del_indent_id_data($original_data,$indent_id,$indent_status);
 		echo json_encode($result);
     }
 
@@ -712,4 +713,65 @@ class Indent_reports extends CI_Controller
 		$this->load->view('templates/footer');
 	}
 
+	function get_deleted_indents()
+	{
+		if($this->session->userdata('logged_in')){                                          
+            $this->data['userdata']=$this->session->userdata('logged_in');                                        
+        }	
+        else{
+            show_404();
+        }
+		$this->data['userdata'] = $this->session->userdata('logged_in');
+		$user_id = $this->data['userdata']['user_id'];
+		$this->load->model('staff_model'); 
+		$this->data['functions'] = $this->staff_model->user_function($user_id);
+		$access = -1;
+		foreach ($this->data['functions'] as $function) {
+			if ($function->user_function == "Consumables") {
+				$access = 1;
+				break;
+			}
+		}
+		if ($access != 1) {
+			show_404();
+		}
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default)
+		{		 
+			if($default->default_id=='pagination'){
+					$this->data['rowsperpage'] = $default->value;
+					$this->data['upper_rowsperpage']= $default->upper_range;
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+				}
+		}
+		$this->data['userdata'] = $this->session->userdata('indent');
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$user = $this->session->userdata('logged_in');
+		$this->data['title'] = "Indent List";
+		$this->load->view('templates/header', $this->data);
+		$this->load->view('templates/leftnav', $this->data);
+		$this->load->model('consumables/indent_report_model');
+		$this->data['parties'] = $this->indent_report_model->get_data("party");
+		$this->data['all_deleted_indent'] = $this->indent_report_model->get_all_deleted_indent($this->data['rowsperpage']);
+		//print_r($this->db->last_query());
+		$this->data['all_deleted_indent_count'] = $this->indent_report_model->get_all_deleted_indent_count();
+		$this->load->view('pages/consumables/deleted_indents_list', $this->data);
+		$this->load->view('templates/footer');
+
+	}
+
+	public function get_items_deleted_indent() 
+	{
+		$indent_id = $this->input->post('indent_id');
+		$this->load->model('consumables/indent_report_model');
+		$items = $this->indent_report_model->get_items_by_deleted_indent($indent_id);
+		
+		if (empty($items)) {
+			echo json_encode(['error' => 'No items found']);
+			return;
+		}
+		echo json_encode(['items' => $items]);
+	}
 }

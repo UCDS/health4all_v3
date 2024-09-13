@@ -496,7 +496,7 @@
 										<td><b><span id=<?php echo "total_cost_$all_int->indent_item_id"; ?>><?= $total_costs[$all_int->indent_item_id]; ?></span></b></td>
 
 										<td></td>
-										<td><?= $all_int->item_note; ?></td>
+										<td></td>
 										<td></td>
 										
 
@@ -746,11 +746,11 @@
 			<?php 
 				foreach ($functions as $f) 
 				  {
-					if ($f->user_function == "delete_indent" && $single_issue->indent_status=="Issued") 
+					if ($f->user_function == "delete_indent") 
 					{ 
 			?>
 					<a data-id="<?php echo $single_issue->indent_id; ?>" class="btn btn-danger" id="del" >Delete Indent</a>
-
+					<input type="hidden" value="<?php echo $single_issue->indent_status; ?>" name="post_indent_status" id="post_indent_status">
 			<?php } } ?>
 
 			</div>
@@ -759,14 +759,14 @@
 				$(document).on("click",'#del',function(){
 					var $btn = $(this);
 					var indent_id = $btn.attr("data-id");
-					//alert(indent_id);
+					var indent_status = $("#post_indent_status").val();
 					conf = confirm('Are you sure you want to delete this indent?');
 					if(conf==true)
 					{
 						$.ajax({
 								type: "POST",
 								url: "<?php echo base_url('consumables/indent_reports/delete_indent_id'); ?>",
-								data: {indent_id:indent_id},
+								data: {indent_id:indent_id,indent_status:indent_status},
 								success: function(response) 
 								{
 									alert("Indent deleted successfully");

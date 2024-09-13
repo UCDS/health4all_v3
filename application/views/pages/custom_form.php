@@ -432,6 +432,20 @@ function initAppointmentDoctorSelectize(modal_id){
 				<input type="text" name="time" class="form-control time" style="width:100px" value="<?php echo $time;?>"  required />
 				</div>
 			</div>
+			<style>
+				@media (max-width: 768px) { .Zebra_DatePicker_Icon_Wrapper { width: 100%; } .Zebra_DatePicker_Icon { left: auto; right: 10px; } }
+				.Zebra_DatePicker_Icon_Wrapper {
+					display: inline-block;
+					position: relative;
+				}
+				.Zebra_DatePicker_Icon {
+					position: absolute;
+					top: 9px;
+					left: 131px;
+					z-index: 10; 
+					pointer-events: auto; 
+				} 
+			</style>
 			<h4><?php echo $form_name; ?></h4>
 		</div>
 		<div class="panel-body">

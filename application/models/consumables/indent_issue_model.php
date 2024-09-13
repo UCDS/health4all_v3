@@ -344,8 +344,9 @@ class Indent_issue_model extends CI_Model{                                      
 		}
 	}
 
-	function ins_del_indent_id_data($original_data,$indent_id) 
+	function ins_del_indent_id_data($original_data,$indent_id,$indent_status) 
     {
+		$hospital=$this->session->userdata('hospital');
         $this->db->trans_start();
 		foreach ($original_data as $data) {
 			$insert_data = array(
@@ -367,20 +368,26 @@ class Indent_issue_model extends CI_Model{                                      
 				'quantity_issued' => $data->quantity_issued,
 				'issue_date' => $data->isdate,
 				'consumption_status' => $data->cstatus,
-				'manufacture_date' => $data->manufacture_date,
-				'expiry_date' => $data->expiry_date,
-				'batch' => $data->batch,
-				'cost' => $data->cost,
 				'item_note' => $data->item_note,
 				'delete_datetime' => date("Y-m-d H:i:s"),
-				'staff_id' => $this->session->userdata('logged_in')['staff_id']
+				'staff_id' => $this->session->userdata('logged_in')['staff_id'],
+				'hospital_id' => $hospital['hospital_id']
 			);
-        
+			if($indent_status=="Issued")
+			{
+				$insert_data['manufacture_date'] = $data->manufacture_date;
+				$insert_data['expiry_date'] = $data->expiry_date;
+				$insert_data['batch'] = $data->batch;
+				$insert_data['cost'] = $data->cost;
+			}
         	$this->db->insert('indent_deleted_data', $insert_data);
 		}
         $this->db->delete('indent',array('indent_id'=> $indent_id));
         $this->db->delete('indent_item',array('indent_id'=> $indent_id));
-        $this->db->delete('inventory',array('indent_id'=> $indent_id));
+		if($indent_status=="Issued")
+		{
+			$this->db->delete('inventory',array('indent_id'=> $indent_id));
+		}
         $this->db->trans_complete();
         if($this->db->trans_status()===FALSE)
         {

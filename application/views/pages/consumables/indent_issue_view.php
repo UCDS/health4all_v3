@@ -366,15 +366,15 @@ $(function(){
 									</div>
 								</div>
 								<div class="span3">
-								<div class="col-md-6"><!-- Date Time label -->
+								<!-- <div class="col-md-6">
 										<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_issue->indent_date));?>
-									</div><!-- End of date time label-->
-								<div class="col-md-6"><!-- Date Time label -->
+									</div>
+								<div class="col-md-6">
 										<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_issue->approve_date_time));?>
-									</div><!-- End of date time label-->
-									<div class="col-md-6"><!-- Date Time label -->
+									</div>
+									<div class="col-md-6">
 										<b>Issue Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_issue->issue_date_time));?>
-									</div><!-- End of date time label-->
+									</div> -->
 								
 								</div>
 								
@@ -426,19 +426,19 @@ $(function(){
 								<div class="span3">
 									<div class="col-md-12"><!-- Indenter name -->
 										<b><?php echo "Indented"." "."by :" ;?></b>
-										<?php echo $single_issue->order_first." ".$single_issue->order_last;?></br></br>
+										<?php echo $single_issue->order_first." ".$single_issue->order_last. " at " . date("d-M-Y g:i A", strtotime($single_issue->indent_date));?></br></br>
 									</div><!-- End of indenter name-->
 								</div>
 								<div class="span3">
 									<div class="col-md-12"><!-- Approver name-->
 										<b><?php echo "Approved"." "."by :" ;?></b>
-										<?php echo $single_issue->approve_first." ".$single_issue->approve_last;?></br></br>
+										<?php echo $single_issue->approve_first." ".$single_issue->approve_last. " at ".date("d-M-Y g:i A",strtotime($single_issue->issue_date_time));?></br></br>
 									</div><!-- End of approver name-->
 								</div>
 								<div class="span3">
 									<div class="col-md-12"><!-- Issuer name-->
 										<b><?php echo $single_issue->indent_status." "."by :" ;?></b>
-										<?php echo $single_issue->issue_first." ".$single_issue->issue_last;?></br></br>
+										<?php echo $single_issue->issue_first." ".$single_issue->issue_last. " at ".date("d-M-Y g:i A",strtotime($single_issue->approve_date_time));?></br></br>
 									</div><!-- End of issuer name-->
 								</div>
 								<div class="span3">

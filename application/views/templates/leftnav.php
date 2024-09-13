@@ -30,7 +30,8 @@
 			|| preg_match("^indents_list^", current_url()) 
 			|| preg_match("^get_inventory_summary^", current_url())
 			|| preg_match("^get_item_summary^", current_url())
-			|| preg_match("^get_item_inventory_detail^", current_url());
+			|| preg_match("^get_item_inventory_detail^", current_url())
+			|| preg_match("^get_deleted_indents^", current_url());
 		}
 	}
 	function activate_item($item_regexp)
@@ -298,6 +299,8 @@
 										Detail </span></a>
 										<a class="<?php echo (activate_item("^get_item_inventory_detail^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_inventory_detail">Inventory 
 										Item Detail </span></a>
+										<a class="<?php echo (activate_item("^get_deleted_indents^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_deleted_indents">Deleted Indents 
+										</span></a>
 									</ul>
 								</div>
 
