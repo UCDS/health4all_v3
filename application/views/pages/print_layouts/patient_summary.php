@@ -78,10 +78,11 @@
 					</tr>
 				<tr>
 				<td colspan="3">
-				<div style="float:middle;text-align:center">
+				<div style="float:middle;text-align:center;margin-top:-4%!important;">
 				<span ><b>
 					<?php if($patient->summary_header == 0) { ?> 
-						<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY</b></span>
+						<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY 
+						<?php if(!empty($patient->visit_name)) { echo ' - '.ucfirst(strtolower($patient->visit_name)); } ?></b></span>
 					
 					<?php  } else {?>
 					
@@ -456,7 +457,13 @@
 					</td>
 				</tr>
 				<?php } ?>
-
+				<style>
+					.print-element p, .print-element ul, .print-element ol {
+						margin: 0;
+						padding: 0;
+						line-height: 1.2; /* Adjust this as needed */
+					}
+				</style>
 				<?php
 					if(isset($print_summary_counseling)) 
 					{

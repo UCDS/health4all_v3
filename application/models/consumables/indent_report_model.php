@@ -723,4 +723,129 @@ class Indent_report_model extends CI_Model
 		// 	$records = $query->result();
 		// 	return $records;
 	}
+
+	function get_all_deleted_indent($default_rowsperpage)
+	{
+	    if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+
+        $hospital=$this->session->userdata('hospital');
+
+		if(!empty($this->input->post('from_id'))) 
+		{
+			$from_party = $this->input->post('from_id');
+			$this->db->where('scp_from.supply_chain_party_id', $from_party);
+		}
+		if (!empty($this->input->post('to_id'))) 
+		{
+			$to_party = $this->input->post('to_id');
+			$this->db->where('scp_to.supply_chain_party_id', $to_party);
+		}
+		// if ($this->input->post('indent_status')) 
+		// {
+		// 	if ($this->input->post('indent_status') == "Approved") {
+		// 		$this->db->where('indent_deleted_data.indent_status', "Approved");
+		// 		$this->db->or_where('indent_deleted_data.indent_status', "Issued");
+		// 	} else if (($this->input->post('indent_status')) == "Issued")
+		// 	$this->db->where('indent_deleted_data.indent_status', "Issued");
+		// }
+		$from_time = "00:00:00"; $to_time = "23:59:00";
+		if(!empty($this->input->post('from_date') && $this->input->post('to_date')))
+		{
+			$from_date = date('Y-m-d',strtotime($this->input->post('from_date')));
+			$to_date = date('Y-m-d',strtotime($this->input->post('to_date')));
+		}else
+		{
+			$from_date = date('Y-m-d');
+			$to_date = $from_date;
+		}
+		$this->db->select("indent_deleted_data.delete_datetime,indent_deleted_data.indent_id,indent_deleted_data.approve_date_time,
+		indent_deleted_data.issue_date_time,indent_deleted_data.indent_date,indent_deleted_data.indent_status,
+		scp_from.supply_chain_party_name as from_party_name,scp_to.supply_chain_party_name as to_party_name,
+		staff_orderer.first_name ordered_by_fname, staff_orderer.last_name ordered_by_lname, 
+		staff_approver.first_name approved_by_fname, staff_approver.last_name approved_by_lname, 
+		staff_deletd_by.first_name deletd_by_fname, staff_deletd_by.last_name deletd_by_lname, 
+		staff_issuer.first_name issued_by_fname, staff_issuer.last_name issued_by_lname,indent_deleted_data.indent_note, indent_deleted_data.item_note ")
+		->from('indent_deleted_data')
+		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent_deleted_data.from_id')
+		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent_deleted_data.to_id')
+		->join("staff staff_orderer", "staff_orderer.staff_id = indent_deleted_data.orderby_id", "left")
+		->join("staff staff_approver", "staff_approver.staff_id = indent_deleted_data.approver_id", "left")
+		->join("staff staff_issuer", "staff_issuer.staff_id = indent_deleted_data.issuer_id", "left")
+		->join("staff staff_deletd_by", "staff_deletd_by.staff_id = indent_deleted_data.staff_id", "left")
+		->where('indent_deleted_data.hospital_id', $hospital['hospital_id'])
+		->where('indent_deleted_data.delete_datetime >=',$from_date.' '.$from_time)
+		->where('indent_deleted_data.delete_datetime <=',$to_date.' '.$to_time);
+		$this->db->group_by('indent_deleted_data.indent_id');
+		$this->db->order_by('indent_deleted_data.indent_date','ASC');
+		$query = $this->db->get();
+		$records = $query->result();
+		return $records;
+	}
+
+	function get_all_deleted_indent_count()
+	{
+        $hospital=$this->session->userdata('hospital');
+		if(!empty($this->input->post('from_id'))) 
+		{
+			$from_party = $this->input->post('from_id');
+			$this->db->where('scp_from.supply_chain_party_id', $from_party);
+		}
+		if (!empty($this->input->post('to_id'))) 
+		{
+			$to_party = $this->input->post('to_id');
+			$this->db->where('scp_to.supply_chain_party_id', $to_party);
+		}
+		$from_time = "00:00:00"; $to_time = "23:59:00";
+		if(!empty($this->input->post('from_date') && $this->input->post('to_date')))
+		{
+			$from_date = date('Y-m-d',strtotime($this->input->post('from_date')));
+			$to_date = date('Y-m-d',strtotime($this->input->post('to_date')));
+		}else
+		{
+			$from_date = date('Y-m-d');
+			$to_date = $from_date;
+		}
+		$this->db->select("count(*) as count",false)
+		->from('indent_deleted_data')
+		->join('supply_chain_party scp_from', 'scp_from.supply_chain_party_id = indent_deleted_data.from_id')
+		->join('supply_chain_party scp_to', 'scp_to.supply_chain_party_id = indent_deleted_data.to_id')
+		->where('indent_deleted_data.hospital_id', $hospital['hospital_id'])
+		->where('indent_deleted_data.delete_datetime >=',$from_date.' '.$from_time)
+		->where('indent_deleted_data.delete_datetime <=',$to_date.' '.$to_time);
+		$this->db->group_by('indent_deleted_data.indent_id');
+		$this->db->order_by('indent_deleted_data.indent_date','ASC');
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function get_items_by_deleted_indent($indent_id) 
+	{
+		$hospital=$this->session->userdata('hospital');
+
+		$this->db->select('item.item_name, idd.quantity_indented, idd.quantity_approved, idd.quantity_issued');
+		$this->db->from('indent_deleted_data as idd');
+		$this->db->join('item', 'item.item_id = idd.item_id');
+		$this->db->where('idd.indent_id', $indent_id);
+		$this->db->where('idd.hospital_id', $hospital['hospital_id']);
+		$this->db->group_by('idd.item_id');
+		$query = $this->db->get(); 
+		return $query->result_array();
+	}
 }

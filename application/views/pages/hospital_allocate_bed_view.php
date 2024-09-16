@@ -423,7 +423,7 @@ display: inline-grid;
                     <input type="hidden" class="form-control" name="" id="address_store_<?php echo $j; ?>" value="<?php echo $patient_details->address; ?>" autocomplete="off">
                     <input type="hidden" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="<?php echo $patient_details->age_gender; ?>" autocomplete="off">
 					<?php if ($patient_details->patient_name != '') { ?>
-						<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="2" cols="12" readonly><?php echo $patient_details->details; ?></textarea>
+						<textarea style="max-width:100%!important;background-color:white!important;font-weight:bold;" name="" class="form-control" id="patient_details_<?php echo $j; ?>" placeholder="Patient Details" rows="2" cols="12" readonly><?php echo $patient_details->details; ?></textarea>
                     <?php } else if ($patient_details->patient_name == '') { ?>
 						<textarea style="max-width:100%!important;background-color:white!important;" name="" class="form-control" id="" placeholder="Patient Diagnosis & Admit Date" rows="2" cols="12" readonly ></textarea>
 					<?php } ?>

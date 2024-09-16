@@ -75,31 +75,37 @@
 		} ?>
 
 		};
-		console.log(current_items);
+		//console.log(current_items);
+
+		let notes = {
+			<?php foreach ($indent_issued as $all_int) {
+				echo "'{$all_int->indent_item_id}': '{$all_int->note}', ";
+			} ?>
+		};
 
 		let quantity_elements = $(`[name = 'quantity_indented[]']`);
 
 		let i = 0;
 		$('#error-alerts').hide();
 		for (const item_name in current_items) {
-			console.log(item_name, current_items[item_name]);
+			//console.log(item_name, current_items[item_name]);
 
 
 			$(`[name=add_${item_name}]`).click((e) => {
 				let proposed_sum = sum_quantities($(`[name="quantity_${item_name}[]"]`), 'value');
-				console.log(proposed_sum);
+				//console.log(proposed_sum);
 				let current_quantity = $(`[name=quantity_issued_${item_name}]`);
-				console.log(current_quantity[0].value);
+				//console.log(current_quantity[0].value);
 				if (proposed_sum >= Number(current_quantity[0].value)) {
-					console.log("Cannot add more quantity than specified");
+					//console.log("Cannot add more quantity than specified");
 					display_message("Cannot add more quantity than specified");
 					return;
 
 				} else {
 					$('#error-alerts').hide();
 				}
-				console.log("clicked");
-				console.log($(`[name=inventory_item_${item_name}]`));
+				//console.log("clicked");
+				//console.log($(`[name=inventory_item_${item_name}]`));
 				let inventory_items = $(`[name=inventory_item_${item_name}]`);
 				let n = inventory_items.length;
 				let selector = `[name=indent_item_${item_name}]`;
@@ -147,7 +153,8 @@
 			  </td>\
 			  <td>\
 				 <div class="col">\
-					<textarea name="note_${item_name}[]" class="form-control" placeholder="Note" maxlength="2000"></textarea>
+					<textarea name="note_${item_name}[]" class="form-control" placeholder="Note" maxlength="2000" readonly>${notes[item_name] || ''}
+					</textarea>\
 				</div>\
 			  </td>\
 			  
@@ -158,14 +165,14 @@
 			  </td>\
 			  
 		  </tr>`);
-				console.log(current_items);
+				//console.log(current_items);
 
 				$(`[name="quantity_${item_name}[]"]`).change((e) => {
 					let proposed_sum = sum_quantities($(`[name="quantity_${item_name}[]"]`), 'value');
 					let current_quantity = $(`[name=quantity_issued_${item_name}]`);
-					console.log(proposed_sum, current_quantity, current_quantity[0].value);
+				//	console.log(proposed_sum, current_quantity, current_quantity[0].value);
 					if (proposed_sum > Number(current_quantity[0].value)) {
-						console.log("Cannot add more quantity than specified");
+					//	console.log("Cannot add more quantity than specified");
 						display_message("Cannot add more quantity than specified");
 						e.target.value = 0;
 
@@ -174,13 +181,13 @@
 					}
 				});
 				$(`[name="remove_${item_name}[]"]`).click((e) => {
-					console.log("clicked danger", `"remove_${item_name}[]"]`);
+				//	console.log("clicked danger", `"remove_${item_name}[]"]`);
 					//   $(e.target).parents('tr').children(`cost_${item_name}`)
 					$(e.target).parents('tr').remove();
 					let proposed_sum = sum_quantities($(`[name="quantity_${item_name}[]"]`), 'value');
 					let current_quantity = $(`[name=quantity_issued_${item_name}]`);
 					if (proposed_sum > Number(current_quantity[0].value)) {
-						console.log("Cannot add more quantity than specified");
+						//console.log("Cannot add more quantity than specified");
 						display_message("Cannot add more quantity than specified");
 						e.target.value = 0;
 
@@ -199,9 +206,9 @@
 			$(`[name=quantity_issued_${item_name}]`).change(e => {
 				let proposed_sum = sum_quantities($(`[name="quantity_${item_name}[]"]`), 'value');
 				let current_quantity = $(`[name=quantity_issued_${item_name}]`);
-				console.log(proposed_sum, current_quantity, current_quantity[0].value);
+			//	console.log(proposed_sum, current_quantity, current_quantity[0].value);
 				if (proposed_sum > Number(current_quantity[0].value)) {
-					console.log("Cannot add more quantity than specified");
+				//	console.log("Cannot add more quantity than specified");
 					display_message("Cannot add more quantity than specified");
 					e.target.value = 0;
 
@@ -227,13 +234,13 @@
 
 		$('#issue_form').submit(e => {
 			
-			console.log("Trying to submit");
+			//console.log("Trying to submit");
 
 			for (const item_name in current_items) {
 				let qty_elements = $(`[name='quantity_${item_name}[]']`);
 				let proposed_sum = sum_quantities(qty_elements, 'value');
 				let current_quantity_issued = $(`[name=quantity_issued_${item_name}]`)[0].value;
-				console.log(current_quantity_issued, proposed_sum);
+				//console.log(current_quantity_issued, proposed_sum);
 				if(proposed_sum !== Number(current_quantity_issued)){
 					display_message("Quantities of different items must match the number that have been issued.")
 					e.preventDefault();
@@ -241,7 +248,7 @@
 				}
 				let costs = $(`[name='cost_${item_name}[]']`);
 				for(let j = 0; j < qty_elements.length; j++){
-					console.log(qty_elements[j].value);
+					//console.log(qty_elements[j].value);
 					if(qty_elements[j].value == 0){
 						display_message("Quantity cannot be 0");
 						e.preventDefault();

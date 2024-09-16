@@ -493,7 +493,7 @@ if ($this->input->post('to_id')) {
 			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
 				<div class="form-group">
 					<!--input field item-->
-					<label for="item_type">Item Type</label>
+					<label for="item_type">Item Type<font color="red">*</font></label>
 					<select name="item_type" id="item_type" class="form-control">
 						<option value="">Select</option>
 						<?php
@@ -511,7 +511,7 @@ if ($this->input->post('to_id')) {
 			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3   col-md-offset-3">
 				<div class="form-group">
 					<!--input field item-->
-					<label for="item">Item</label>
+					<label for="item">Item<font color="red">*</font></label>
 					<select name="item" id="item" class="items">
 						<option value="">Select</option>
 					</select>

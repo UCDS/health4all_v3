@@ -320,3 +320,5 @@ CREATE TABLE `indent_deleted_data` (
 ALTER TABLE `indent_deleted_data` ADD PRIMARY KEY (`delete_id`);
 
 ALTER TABLE `indent_deleted_data` MODIFY `delete_id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `indent_deleted_data` ADD `hospital_id` INT NOT NULL AFTER `indent_id`;

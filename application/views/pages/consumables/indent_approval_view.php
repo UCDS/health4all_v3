@@ -365,16 +365,16 @@ $('#to_id').change(function(){
 													</div><!-- End of to party-->
 												</div>
 											</div>
-												<div class="span3">
-														<div class="col-md-6"><!-- Date time-->
+												<!-- <div class="span3">
+														<div class="col-md-6">
 															<b>Indent Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_approve->indent_date));?>
-														</div><!-- End of date time-->
+														</div>
 												</div>
 												<div class="span3">
-													<div class="col-md-6"><!-- Date time-->
+													<div class="col-md-6">
 														<b>Approval Date Time : </b><?php echo " ".date("d-M-Y g:i A",strtotime($single_approve->approve_date_time));?>
-													</div><!-- End of date time-->
-												</div>
+													</div>
+												</div> -->
 												
 											
 									</div>
@@ -428,7 +428,7 @@ $('#to_id').change(function(){
 									<div class="span3">
 										<div class="col-md-12">
 									   <b><?php echo "Indented"." "."by :" ;?></b><!-- Display indenter name-->
-											<?php echo $all_approve->order_first." ".$all_approve->order_last;?></br></br>
+											<?php echo $all_approve->order_first." ".$all_approve->order_last." at ".date("d-M-Y g:i A",strtotime($single_approve->indent_date));?></br></br>
 										</div>
 									</div>
 										<div class="span3">
@@ -438,7 +438,7 @@ $('#to_id').change(function(){
 										<?php  }else { ?>
 										<b><?php echo "Rejected"." "."by :" ;?></b>
 										<?php } ?> 
-											<?php echo $all_approve->approve_first." ".$all_approve->approve_last;?></br></br><!-- Display approver or rejector name based on status-->
+											<?php echo $all_approve->approve_first." ".$all_approve->approve_last." at ".date("d-M-Y g:i A",strtotime($single_approve->approve_date_time));?></br></br><!-- Display approver or rejector name based on status-->
 										</div>
 										</div>
 										<div class="span3">

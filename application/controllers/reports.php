@@ -2251,6 +2251,7 @@ class Reports extends CI_Controller {
 					$this->data['route_secondary']=$this->register_model->get_secondary_route();
 					$this->data['priority_types']=$this->register_model->get_priority_type();
 					$this->data['volunteer']=$this->register_model->get_volunteer();
+					$this->data['visit_names']=$this->staff_model->get_visit_name();
 					$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');	
 					$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');
 					if($this->data['fields']!=0)
