@@ -328,7 +328,7 @@ function dateNow(dateObject){
 function formatDate() {
 
 }
-function updateCallData(callData) {   
+function updateCallData(callData,element) {   
     hideUpdateCallStatusMessage();
     console.log(callData);
     $.ajax({
@@ -336,6 +336,7 @@ function updateCallData(callData) {
         data: callData,
         method: 'POST',
         success: (data) => {
+      	$(element).removeAttr('disabled');
             if(data)  {
                 data = JSON.parse(data);
                 if(data.status) {
@@ -349,6 +350,7 @@ function updateCallData(callData) {
             }
         },
         error: (error) => {
+            $(element).removeAttr('disabled');
             console.log("failed");
         }
     })
@@ -362,7 +364,7 @@ function registerOnUpdateFormSubmitted(callData) {
     const modal = $("#updateCallModal");
     modal.find(".submitmodal"+callData.call_id).on("click", function(e) {
         e.preventDefault();
-        $(this).attr('disabled',true);
+        $(this).prop('disabled', true);
         var element = document.getElementById("submitmodal");
         if(element.classList.contains("submitmodal"+callData.call_id)) {
 		const postData = {};
@@ -380,9 +382,8 @@ function registerOnUpdateFormSubmitted(callData) {
 		postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
 		postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
 		postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
-		updateCallData(postData);   
+		updateCallData(postData,this);   
 	}
-	$(this).attr('disabled',false);
     });
     modal.find(".closeUpdateModal").on("click", function(e) {
     	e.preventDefault();
