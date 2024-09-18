@@ -191,22 +191,25 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     var callId = callData.call_id;
     var textareaId = 'testCkeditor_' + callId;
     var textarea = $('#' + textareaId);
+    $("[class*='ck-editor']").remove();
+    $('#' + textareaId).remove();
     var textareaHtml = '<textarea name="note_' + callId + '" class="notes form-control" rows="4" id="' + textareaId + '" style="width:250px">' + callData.note + '</textarea>';
-        $('#container').append(textareaHtml);
-        ClassicEditor
-            .create(document.getElementById(textareaId), {
-                toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
-            })
-            .then(editor => {
-                editor.setData(callData.note);
-                editor.model.document.on('change:data', () => {
-                    $('#' + textareaId).val(editor.getData());
-                });
-                textarea.data('ckeditor', editor);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+    $('#container').append(textareaHtml);
+    ClassicEditor
+	.create(document.getElementById(textareaId), {
+		toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+	})
+        .then(editor => {
+		editor.setData(callData.note);
+	        editor.model.document.on('change:data', () => {
+	        $('#' + textareaId).val(editor.getData());
+	        modal.find(".notes").val(editor.getData());
+	});
+	        textarea.data('ckeditor', editor);
+	})
+	.catch(error => {
+	 console.error(error);
+       });
     
     modal.find(".fromnumber").html(callData.from_number);
     var recievedby = "";
@@ -301,6 +304,8 @@ function setupUpdateCallModalData(callData,hospitalSelect,callCategorySelect,res
     registerHospitalChangeListener();
     var element = document.getElementById("submitmodal");
     element.classList.add("submitmodal"+callData.call_id);
+    $(".submitmodal"+callData.call_id).off('click');     
+    $(".closeUpdateModal").off('click');     
     registerOnUpdateFormSubmitted(callData);
     
 }
@@ -369,7 +374,7 @@ function registerOnUpdateFormSubmitted(callData) {
 		postData[`hospital_${callId}`] = modalData.hospital_id =modal.find(".updateHospitalSelect").val();
 		postData[`visit_type_${callId}`] = modalData.ip_op  = modal.find(".patient_type").val();
 		postData[`visit_id_${callId}`] = modalData.visit_id =modal.find(".visit_id").val();
-		postData[`note_${callId}`] =  modal.find(".notes").val();
+		postData[`note_${callId}`] =  modalData.note = modal.find(".notes").val();
 		postData[`group_${callId}`] = modal.find(".language").val();
 		postData[`district_id_${callId}`] = modalData.district_id =  modal.find("#district_id").val();
 		postData[`resolution_date_time_${callId}`] = modalData.resolution_date_time = modal.find(".resolution_update_date_time").val();
@@ -380,7 +385,6 @@ function registerOnUpdateFormSubmitted(callData) {
     modal.find(".closeUpdateModal").on("click", function(e) {
     	e.preventDefault();
     	var changed = false;
-    	
     	if (modal.find(".notes").val() && (modal.find(".notes").val() !== modalData.note) && !changed){
     		changed = true;
     		console.log("notes");
@@ -464,8 +468,7 @@ function registerOnUpdateFormSubmitted(callData) {
     		changed = true;
     		console.log("updateDepartmentSelect");
     	} 
-    	
-    	
+
     	if(changed){
     		bootbox.confirm({
     		message: "You have not saved changes. Do you want to close this page ? ",
@@ -488,6 +491,7 @@ function registerOnUpdateFormSubmitted(callData) {
     				element.classList.remove("submitmodal"+callData.call_id);
         			if(isupdatedOnce){    
     	 				window.location.reload();
+    	 				
     				}
         		}
     		}
@@ -495,13 +499,12 @@ function registerOnUpdateFormSubmitted(callData) {
     	} else {    		
     		modal.modal('hide');
     		$(this).data('modal', null);
-    		 var element = document.getElementById("submitmodal");
+    		var element = document.getElementById("submitmodal");
     		element.classList.remove("submitmodal"+callData.call_id);
     		if(isupdatedOnce){    
-    	 		window.location.reload();
+    	 		window.location.reload();		
     		}
     	}
-        window.location.reload();
     })
    
 }
