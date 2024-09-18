@@ -337,6 +337,7 @@ function updateCallData(callData,element) {
         method: 'POST',
         success: (data) => {
       	$(element).removeAttr('disabled');
+      	$(element).text('Update');
             if(data)  {
                 data = JSON.parse(data);
                 if(data.status) {
@@ -351,6 +352,7 @@ function updateCallData(callData,element) {
         },
         error: (error) => {
             $(element).removeAttr('disabled');
+            $(element).text('Update');
             console.log("failed");
         }
     })
@@ -365,6 +367,7 @@ function registerOnUpdateFormSubmitted(callData) {
     modal.find(".submitmodal"+callData.call_id).on("click", function(e) {
         e.preventDefault();
         $(this).prop('disabled', true);
+        $(this).text('Wait!');
         var element = document.getElementById("submitmodal");
         if(element.classList.contains("submitmodal"+callData.call_id)) {
 		const postData = {};
