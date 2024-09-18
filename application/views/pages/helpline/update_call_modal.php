@@ -362,6 +362,7 @@ function registerOnUpdateFormSubmitted(callData) {
     const modal = $("#updateCallModal");
     modal.find(".submitmodal"+callData.call_id).on("click", function(e) {
         e.preventDefault();
+        $(this).attr('disabled',true);
         var element = document.getElementById("submitmodal");
         if(element.classList.contains("submitmodal"+callData.call_id)) {
 		const postData = {};
@@ -381,6 +382,7 @@ function registerOnUpdateFormSubmitted(callData) {
 		postData[`department_id_${callId}`] = modalData.department_id = modal.find(".updateDepartmentSelect").val();   
 		updateCallData(postData);   
 	}
+	$(this).attr('disabled',false);
     });
     modal.find(".closeUpdateModal").on("click", function(e) {
     	e.preventDefault();
