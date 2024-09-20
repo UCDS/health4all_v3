@@ -593,20 +593,49 @@ function initDistrictSelectize(){
 	<?php 
         $pic_set = 1;
         if(isset($patients) && count($patients)>1){ ?>
-	<table class="table table-bordered table-hover table-striped" id="table-sort">
+		<?php  echo "| <b>H4A Patient ID</b> : ".$patients[0]->patient_id." | ";
+			if(isset($patients[0]->patient_id_manual) and $patients[0]->patient_id_manual!="")
+			{
+				echo "<b>Manual Patient ID</b> : ".$patients[0]->patient_id_manual." | ";
+			}
+				echo "<b>Patient</b> : ".$patients[0]->first_name.' '.$patients[0]->last_name." | ";
+				echo "<b>Age</b> : ".$patients[0]->age_years."Y ".$patients[0]->age_months."M ".$patients[0]->age_days."D"." | ";
+			if ($patients[0]->gender!="0"){							 
+				echo "<b>Gender</b> : ".$patients[0]->gender." | ";			 
+			}
+				echo "<b>Phone</b> : ".$patients[0]->phone." | ";
+				echo "<b>Address</b> : ".$patients[0]->address. " | ";
+			if(isset($patients[0]->district))
+			{
+				echo "<b>District</b> : ".$patients[0]->district." | ";
+				echo "<b>State</b> : ".$patients[0]->state." | ";
+			}
+				echo "<b>Relative</b> : ".$patients[0]->parent_spouse." | ";
+		?>
+		<br/>
+		<caption><h4 style="text-align:center!important;color:#429ada;"><b>Select Visit</b></h4></caption>
+	<table class="table table-hover table-striped" id="table-sort">
 	<thead>
-		<th style="text-align:center">#</th>
+		<!-- <th style="text-align:center">#</th>
 		<th style="text-align:center">IP/OP No.</th>
 		<th style="text-align:center">Patient</th>
 		<th style="text-align:center">Admit Date</th>
 		<th style="text-align:center">Department</th>
 		<th style="text-align:center">Phone</th>
-		<th style="text-align:center">Parent/Spouse</th>
+		<th style="text-align:center">Parent/Spouse</th> -->
+		<th style="text-align:center">#</th>
+		<th style="text-align:center">Visit Date</th>
+		<th style="text-align:center">Hospital</th>
+		<th style="text-align:center">OP/IP No</th>
+		<th style="text-align:center">Department -- Unit Name</th>
+		<th style="text-align:center">Visit Name</th>
+		<th style="text-align:center">Discharge Date</th>
+		<th style="text-align:center">Appointment Date</th>
 	</thead>
 	<tbody>
 	<?php 
 	$i=1;
-	foreach($patients as $p){
+	foreach($patients as $p){ ;
 		$age="";
 		if($p->age_years!=0) $age.=$p->age_years."Y ";
 		if($p->age_months!=0) $age.=$p->age_months."M ";
@@ -621,12 +650,14 @@ function initDistrictSelectize(){
 			</form>
 			<?php echo $i++;?>
 		</td>
-		<td><?php echo $p->visit_type." #".$p->hosp_file_no;?></td>
-		<td><?php echo $p->first_name." ".$p->last_name." | ".$age." | ".$p->gender;?></td>
-		<td><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
-		<td><?php echo $p->department;?></td>
-		<td><?php echo $p->phone;?></td>
-		<td><?php echo $p->parent_spouse;?></td>
+		<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
+		<td style="text-align:center"><?php echo $p->hospital; ?></td>
+		<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
+		<td style="text-align:center"><?php echo $p->department;?> -- <?php echo $p->unit_name;?></td>
+		<td style="text-align:center"><?php echo $p->visit_name;?></td>
+		<td style="text-align:center"><?php if($p->outcome_date =="0000-00-00" || $p->outcome_date==" "){ echo " "; }else{ echo date("d-M-Y",strtotime($p->outcome_date)); } ?></td>
+		<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
+										
 	</tr>
 	<?php
 	}

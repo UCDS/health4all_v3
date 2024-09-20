@@ -513,12 +513,12 @@
 						<input type="text" name="unit_width" value=""  class="form-control" placeholder="width">	
 						</div>
 					</div>
-					<div class="layout-div col-md-12 mlc">
+					<div class="layout-div col-md-12 mlc_id">
 						<div class="radio ">
 						<label class="control-label" title="Medico Legal Case">MLC</label>
-						<input type="text" name="mlc"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="text" name="mlc_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">
-						<input type="text" name="mlc_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="mlc_id_width" value=""  class="form-control" placeholder="width">	
 						</div>					
 					</div>
 					<div class="layout-div col-md-12 mlc_number_manual">
@@ -773,7 +773,7 @@
 						<label class="control-label">Clinical Finding</label>
 						<input type="text" name="clinical_findings"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="clinical_finding_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="clinical_findings_width" value=""  class="form-control" placeholder="width">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 cvs">
@@ -814,6 +814,14 @@
 						<input type="text" name="update_btn"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
 						<input type="text" name="update_btn_width" value=""  class="form-control" placeholder="width">
+						</div>
+					</div>
+					<div class="layout-div col-md-12 followup_upd_btn">
+						<div class="form-group">
+						<label class="control-label">Followup Update button</label>
+						<input type="text" name="followup_upd_btn"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_followup" class="form-control">
+						<input type="text" name="followup_upd_btn_width" value=""  class="form-control" placeholder="width">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 congenital_anomalies">
@@ -1346,7 +1354,7 @@
 			  <ul class="nav nav-sidebar">
 				<li>  
 					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="mlc" class="checklist" />MLC</label>
+						<label><input type="checkbox" value="1" id="mlc_id" class="checklist" />MLC</label>
 					</div>
 				</li>
 				<li>  
@@ -1466,6 +1474,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="update_by" class="checklist" />  Updated By</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="followup_upd_btn" class="checklist" /> Followup Update Button</label>
 					</div>
 				</li>
 			</div>

@@ -2584,13 +2584,29 @@ else if($type=="dosage"){
 		$columns_string = implode(', ', $selected_columns);
 		if ($main_table == 'patient_followup') 
 		{
-			$this->db->select("$columns_string,icd_code.code_title,staff.first_name,followup_update_by.first_name as updated_first_name,
-			followup_update_by.last_name as updated_last_name");
+			$columns_string = str_replace('patient_followup.followup_upd_btn', '', $columns_string);
+			if($columns_string!='patient_followup.patient_id')
+			{
+				$this->db->select("$columns_string,icd_code.code_title,staff.first_name,followup_update_by.first_name as updated_first_name,
+				followup_update_by.last_name as updated_last_name,patient_followup.patient_id");
+			}else
+			{
+				$this->db->select("$columns_string,icd_code.code_title,staff.first_name,followup_update_by.first_name as updated_first_name,
+				followup_update_by.last_name as updated_last_name");
+			}
 		} elseif ($main_table == 'patient_visit') {
 			$columns_string = str_replace('patient_visit.update_btn', '', $columns_string);
-			$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
-			visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
-			patient_visit.visit_id");
+			if($columns_string!='patient_visit.patient_id')
+			{
+				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
+				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
+				patient_visit.visit_id,patient_visit.patient_id");
+
+			}else{
+				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
+				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
+				patient_visit.visit_id");
+			}
 		} elseif ($main_table == 'patient') {
 			$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
 			visit_name.visit_name, icd_code.code_title");
@@ -2612,6 +2628,7 @@ else if($type=="dosage"){
 			$this->db->join('route_primary','route_secondary.route_primary_id=route_primary.route_primary_id','left');
 			$this->db->join('district','patient.district_id=district.district_id','left');
 			$this->db->join('state','district.state_id=state.state_id','left');
+			$this->db->join('mlc','mlc.visit_id=patient_visit.visit_id','left');
 			$this->db->join('staff','patient_followup.volunteer_id=staff.staff_id','left');
 			$this->db->join('staff as followup_update_by','patient_followup.update_by=followup_update_by.staff_id','left');
 			$this->db->where("(patient_followup.add_time BETWEEN '$from_date $from_time' AND '$to_date $to_time')");
@@ -2642,6 +2659,7 @@ else if($type=="dosage"){
 			$this->db->join('icd_block','icd_code.block_id=icd_block.block_id','left');
 			$this->db->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left');
 			$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');	
+			$this->db->join('mlc','mlc.visit_id=patient_visit.visit_id','left');
 			$this->db->join('user as volunteer_user','patient_visit.insert_by_user_id = volunteer_user.user_id','left');
 			$this->db->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
 			$this->db->join('user as volunteer_user_updated','patient_visit.insert_by_user_id = volunteer_user_updated.user_id','left');
@@ -2674,7 +2692,8 @@ else if($type=="dosage"){
 			$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
 			$this->db->join('icd_block','icd_code.block_id=icd_block.block_id','left');
 			$this->db->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left');
-			$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');	
+			$this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
+			$this->db->join('mlc','mlc.visit_id=patient_visit.visit_id','left');	
 			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
 			$this->db->where("(patient.insert_datetime BETWEEN '$from_date.$from_time' AND '$to_date.$to_time')");
 			$this->db->limit($rows_per_page,$start);	
