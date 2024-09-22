@@ -708,7 +708,7 @@ echo "</select></li>";
 	if(!!$s->age_days) $age.=$s->age_days."D ";
 	if($s->age_days==0 && $s->age_months==0 && $s->age_years==0) $age.="0D"; ?>
 
-<div class="modal fade" id="myModal_<?php echo $sno; ?>" role="dialog">
+<div class="modal fade" id="myModal_<?php echo $sno; ?>" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-dialog">
 	<!-- Modal content-->
 	<div class="modal-content">

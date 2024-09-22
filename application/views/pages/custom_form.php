@@ -1711,7 +1711,7 @@ function initAppointmentDoctorSelectize(modal_id){
 	 </div>
 	</div>
 </div>
-<div class="modal fade" id="myModal_appointment" role="dialog">
+<div class="modal fade" id="myModal_appointment" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-dialog">
 	<!-- Modal content-->
 	<div class="modal-content">
