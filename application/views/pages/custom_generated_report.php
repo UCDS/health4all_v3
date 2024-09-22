@@ -757,10 +757,19 @@ function onchange_page_dropdown(dropdownobj){
 			</thead>
 			<tbody>
 			<?php
-			$access = 0;
-			foreach ($this->data['functions'] as $function) {
+			$access_1 = 0;
+			$access_2 = 0;
+			foreach ($this->data['functions'] as $function) { 
 				if ($function->user_function == "Update Patients") {
-					$access = 1;
+					$access_1 = 1;
+					if ($function->edit==1) $edit_access=1;
+					break;
+				}
+			}
+			foreach ($this->data['functions'] as $f) {
+				if($f->user_function=="patient_follow_up"){
+					$access_2 = 1;
+					if ($f->edit==1) $edit_access_1=1;
 					break;
 				}
 			}
@@ -799,8 +808,19 @@ function onchange_page_dropdown(dropdownobj){
 								case 'update_by_user_id':
 									echo '<td style="text-align:center;">' . $r->vufirst_name . '</td>';
 									break;
+								case 'death_status':
+									echo '<td style="text-align:center;">';
+									if($r->death_status == 1) {
+										echo 'Centre';
+									}if($r->death_status == 2) {
+										echo 'Other Centre';
+									}if($r->death_status == 3) {
+										echo 'Home';
+									}
+									echo '</td>';
+									break;
 								case 'update_btn':
-									if ($access == 1):
+									if ($edit_access == 1):
 										echo '<td style="text-align:center;">';
 										echo '<button type="button" class="btn btn-success" onclick="document.getElementById(\'patient_visit_' . $r->visit_id . '\').submit()" autofocus>' . $fd->column_name . '</button>';
 										echo form_open('register/update_patients', array('role' => 'form', 'id' => 'patient_visit_' . $r->visit_id));
@@ -812,11 +832,25 @@ function onchange_page_dropdown(dropdownobj){
 										echo '<td></td>';
 									endif;
 									break;
+								case 'followup_upd_btn':
+									if ($edit_access_1 == 1):
+										echo '<td style="text-align:center;">';
+										echo '<button type="button" class="btn btn-success" onclick="$(\'#followup_patient' . $r->patient_id . '\').submit()" autofocus>' . $fd->column_name . '</button>';
+										echo form_open('register/patient_follow_up', array('role' => 'form', 'id' => 'followup_patient' . $r->patient_id)); 
+										echo '<input type="text" class="sr-only" hidden value="' . $r->patient_id . '" name="healthforall_id" />';
+										echo form_close();
+										echo '</td>';
+									else:
+										echo '<td></td>';
+									endif;
+									break;
 								case 'life_status':
 									if ($fd->field_name == 'life_status' && $r->life_status == 1) {
 										echo '<td style="text-align:center;">Alive</td>';
-									} elseif ($fd->field_name == 'life_status' && $r->life_status == 2) {
+									} elseif ($fd->field_name == 'life_status' && $r->life_status == 0) {
 										echo '<td style="text-align:center;">Not Alive</td>';
+									} else {
+										echo '<td style="text-align:center;">Not Followup</td>';
 									}
 									break;
 								default:
