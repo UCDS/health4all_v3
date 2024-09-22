@@ -234,8 +234,8 @@ $(function(){
 					<option <?php if($this->input->post('call_type') == "call-attempt") echo " selected "; ?> value="call-attempt">Call Attempt</option>
 			</select>
 			
-			<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" />
-			<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" />
+			<input type="text" class="form-control" placeholder="From Number" style="width:120px"  value="<?php echo $this->input->post('from_number');?>" name="from_number" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" />
+			<input type="text" class="form-control" placeholder="To Number"  style="width:120px"  value="<?php echo $this->input->post('to_number');?>" name="to_number" onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 46 || (event.charCode >= 48 && event.charCode <= 57)))" />
 			<select name="caller_type" style="width:120px" class="form-control">
 				<option value="">Caller</option>
 				<?php foreach($caller_type as $ct){ ?>
