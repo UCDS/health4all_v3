@@ -322,3 +322,9 @@ ALTER TABLE `indent_deleted_data` ADD PRIMARY KEY (`delete_id`);
 ALTER TABLE `indent_deleted_data` MODIFY `delete_id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `indent_deleted_data` ADD `hospital_id` INT NOT NULL AFTER `indent_id`;
+
+ALTER TABLE `report_layout` ADD `concate` TEXT NOT NULL AFTER `sequence_id`;
+
+ALTER TABLE `report_layout` ADD `fields_sep` VARCHAR(20) NOT NULL AFTER `concate`;
+
+ALTER TABLE `report_layout` ADD `align_value` VARCHAR(100) NOT NULL AFTER `fields_sep`;

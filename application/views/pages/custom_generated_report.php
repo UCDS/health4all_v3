@@ -750,9 +750,23 @@ function onchange_page_dropdown(dropdownobj){
 						foreach($fields as $fd) 
 						{ 
 							$column_width = ($fd->width != 0) ? $fd->width.'px' : 'auto';
+							$concateString = $fd->concate;
+							$concateFields = explode(',', $concateString);
+							$processedFields = array_map(function($field) {
+								$field = trim($field);
+								if (strpos($field, '.') !== false) {
+									return substr($field, strpos($field, '.') + 1);
+								}
+								return $field;
+							}, $concateFields);
+							$imp = implode(' / ', $processedFields);
+							if($fd->concate!='')
+							{
 					?>
-						<th style="text-align:center;width: <?php echo $column_width; ?>"><?php echo $fd->column_name?></th>
-					<?php } ?>
+						<th style="text-align:center;width: <?php echo $column_width; ?>"><?php echo $fd->column_name . ' / ' . $imp; ?></th>
+					<?php } else { ?>
+            			<th style="text-align:center;width: <?php echo $column_width; ?>"><?php echo $fd->column_name; ?></th>
+            		<?php 	} } ?>
 				</tr>
 			</thead>
 			<tbody>
@@ -825,7 +839,7 @@ function onchange_page_dropdown(dropdownobj){
 										echo '<button type="button" class="btn btn-success" onclick="document.getElementById(\'patient_visit_' . $r->visit_id . '\').submit()" autofocus>' . $fd->column_name . '</button>';
 										echo form_open('register/update_patients', array('role' => 'form', 'id' => 'patient_visit_' . $r->visit_id));
 										echo '<input type="hidden" name="selected_patient" value="' . $r->visit_id . '" />';
-										echo '<input type="hidden" name="patient_id" value="' . $s->patient_id . '" />';
+										echo '<input type="hidden" name="patient_id" value="' . $r->patient_id . '" />';
 										echo form_close();
 										echo '</td>';
 									else:
@@ -854,7 +868,26 @@ function onchange_page_dropdown(dropdownobj){
 									}
 									break;
 								default:
-									echo '<td style="text-align:center;">' . $r->{$fd->field_name} . '</td>';
+									if($fd->concate!='')
+									{
+										$selected_columns = [];
+										$concat_fields = explode(',', $fd->concate); 
+										foreach ($concat_fields as $concat_field) {
+											$field = trim($concat_field);
+											$field = strstr($field, '.', true) ? substr(strstr($field, '.'), 1) : $field; 
+											$selected_columns[] = $field; 
+										}
+										$output = $r->{$fd->field_name}; 
+										foreach ($selected_columns as $selected_column) {
+											if (isset($r->{$selected_column})) {
+												$output .= ' '.$fd->fields_sep.' ' . $r->{$selected_column}; 
+											}
+										}
+										echo '<td style="text-align:' . $fd->align_value . ';">' . $output . '</td>';
+										
+									}else{
+										echo '<td style="text-align:center;">' . $r->{$fd->field_name} . '</td>';
+									}
 									break;
 							} ?>
 						<?php endforeach; ?>

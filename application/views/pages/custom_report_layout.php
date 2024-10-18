@@ -15,6 +15,7 @@
 	<script src="<?php echo base_url(); ?>assets/js/jquery.ui.widget.min.js"></script>
 	<script src="<?php echo base_url(); ?>assets/js/jquery.ui.mouse.min.js"></script>
 	<script src="<?php echo base_url(); ?>assets/js/jquery.ui.sortable.min.js"></script>
+	<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
 
 	<script>
 	$(function() {
@@ -58,11 +59,17 @@
 			wid['def_width'] = [];
 			funct = {};
 			funct['get_function'] = [];
+			txtarea = {};
+			txtarea['concatination_fields']=[];
+			separator = {};
+			separator['fields_separator']=[];
+			align = {};
+			align['alignment'] = [];
 
 			$(".layout-div:visible").each(function(){
 				var cname = $(this).attr('class').replace(/col-md-[0-9]+/, "").replace(/layout-div/, "").trim();
 				fields['field_name'].push(cname);
-				console.log(cname);
+				//console.log(cname);
 				var widthInput = $(this).find('input[name="' + cname + '_width"]');
 				var width = widthInput.length > 0 ? widthInput.val().trim() : null ;
 				wid['def_width'].push(width);
@@ -76,11 +83,22 @@
 				table['table_name'].push(ctable);
 				//var ctable = $(this).find('.table_name').val().trim(); // Assuming .table_name is the class
         		//table['table_name'].push(ctable);
+				var textareaInput = $(this).find('textarea[name="' + cname + '_concatination_fields"]');
+				//alert(textareaInput);
+				txtarea['concatination_fields'].push(textareaInput.val());
+				
+				var separatorInput = $(this).find('input[name="' + cname + '_separator"]').val();
+				separator['fields_separator'].push(separatorInput);
+
+				var alignInput = $(this).find('input[name="' + cname + '_alignment"]').val();
+				align['alignment'].push(alignInput);
 			});
 			$.ajax({
 				type: "POST",
 				async: true,
-				data: {form_id: form_id,from_table:from_table,columns: columns, fields: JSON.stringify(fields),wid: JSON.stringify(wid),funct: JSON.stringify(funct), field_value: JSON.stringify(field_value), table: JSON.stringify(table)},
+				data: {form_id: form_id,from_table:from_table,columns: columns, fields: JSON.stringify(fields),wid: JSON.stringify(wid),
+					funct: JSON.stringify(funct), field_value: JSON.stringify(field_value), table: JSON.stringify(table), 
+					txtarea: JSON.stringify(txtarea),separator: JSON.stringify(separator),align: JSON.stringify(align)},
 				url: "<?php echo base_url().'user_panel/save_custom_form'; ?>",
 				success: function(returnData){
 					//debugger;
@@ -179,7 +197,12 @@
 							<label class="control-label"> Patient ID </label>
 							<input type="text" name="patient_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">	
-							<input type="text" name="patient_id" value="" class="form-control" placeholder="width">	
+							<input type="text" name="patient_id" value="" class="form-control" placeholder="width" style="width:8%;">	
+							<input type="text" class="concatenatebtn btn btn-primary" name="patient_id_concate"  data-field-name="patient_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">
+							<textarea name="patient_id_concatination_fields" rows="2" cols="20" readonly style="height:32px;"></textarea>
+							<input type="text" name="patient_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+							<input type="text" name="patient_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
                     <div class="layout-div col-md-12 patient_id_manual">
@@ -187,7 +210,12 @@
 							<label class="control-label">   Patient ID Manual  </label>
 							<input type="text" name="patient_id_manual" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">	
-							<input type="text" name="patient_id_manual_width" value="" class="form-control" placeholder="width">	
+							<input type="text" name="patient_id_manual_width" value="" class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="patient_id_manual_concate"  data-field-name="patient_id_manual"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">
+							<textarea name="patient_id_manual_concatination_fields" rows="2" cols="30" readonly></textarea>	
+							<input type="text" name="patient_id_manual_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="patient_id_manual_alignment" class="form-control" placeholder="alignment" style="width:10%;" 	autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 first_name">
@@ -195,15 +223,243 @@
 							<label class="control-label">   First Name  </label>
 							<input type="text" name="first_name" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">	
-							<input type="text" name="first_name_width" value="" class="form-control" placeholder="width">	
+							<input type="text" name="first_name_width" value="" class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="first_name_concate"  data-field-name="first_name"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">
+							<textarea name="first_name_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="first_name_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="first_name_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
+					<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+						<div class="modal-dialog" role="document">
+							<div class="modal-content" style="width:max-content!important;">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">Select Fields</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px;">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body" >
+									<div class="row col-md-12">
+										<div class="col-md-3" id="checkboxesContainer"></div>
+										<div class="col-md-3" id="checkboxesContainer_one"></div>
+										<div class="col-md-3" id="checkboxesContainer_two"></div>
+										<div class="col-md-3" id="checkboxesContainer_three"></div>
+										<div  class="col-md-3" id="checkboxesContainer_four"></div>
+									</div>
+								</div>
+								<div class="modal-footer" style="border-top:none!important;">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-primary" id="saveChanges">Save changes</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<script>
+						$(document).ready(function() {
+
+							$('.concatenatebtn').on('click', function() {
+								var fieldName = $(this).data('field-name');
+								//alert(fieldName);
+								$('#exampleModal').data('currentField', fieldName);
+								$('#exampleModal').modal('show');
+							});
+
+							$('#exampleModal').on('show.bs.modal', function () {
+								$('#checkboxesContainer').empty();
+								$('#checkboxesContainer_one').empty();
+								$('#checkboxesContainer_two').empty();
+								$('#checkboxesContainer_three').empty();
+								$('#checkboxesContainer_four').empty();
+
+								$('.checkboxesList li').each(function() {
+									var checkbox = $(this).find('input').clone(); 
+									var newId = $(this).find('input').attr('id') + '_concate'; 
+									checkbox.attr('id', newId); 
+									checkbox.prop('checked', false); 
+									var label = $('<label></label>').append(checkbox).append($(this).text().trim());
+									$('#checkboxesContainer').append(label).append('<br>'); 
+								});
+								$('.checkboxesList_one li').each(function() {
+									var checkbox = $(this).find('input').clone(); 
+									var newId = $(this).find('input').attr('id') + '_concate'; 
+									checkbox.attr('id', newId); 
+									checkbox.prop('checked', false); 
+									var label = $('<label></label>').append(checkbox).append($(this).text().trim());
+									$('#checkboxesContainer_one').append(label).append('<br>'); 
+								});
+								$('.checkboxesList_two li').each(function() {
+									var checkbox = $(this).find('input').clone(); 
+									var newId = $(this).find('input').attr('id') + '_concate'; 
+									checkbox.attr('id', newId); 
+									checkbox.prop('checked', false); 
+									var label = $('<label></label>').append(checkbox).append($(this).text().trim());
+									$('#checkboxesContainer_two').append(label).append('<br>'); 
+								});
+								$('.checkboxesList_three li').each(function() {
+									var checkbox = $(this).find('input').clone(); 
+									var newId = $(this).find('input').attr('id') + '_concate'; 
+									checkbox.attr('id', newId); 
+									checkbox.prop('checked', false); 
+									var label = $('<label></label>').append(checkbox).append($(this).text().trim());
+									$('#checkboxesContainer_three').append(label).append('<br>'); 
+								});
+								$('.checkboxesList_four li').each(function() {
+									var checkbox = $(this).find('input').clone(); 
+									var newId = $(this).find('input').attr('id') + '_concate'; 
+									checkbox.attr('id', newId); 
+									checkbox.prop('checked', false); 
+									var label = $('<label></label>').append(checkbox).append($(this).text().trim());
+									$('#checkboxesContainer_four').append(label).append('<br>'); 
+								});
+								
+							});
+
+							$('#saveChanges').on('click', function() {
+								var selectedFields = [];
+								
+								$('#checkboxesContainer input:checked').each(function() {
+									var originalId = $(this).attr('id').replace('_concate', '');
+									//selectedFields.push(originalId);
+									var $matchingDiv = $('.' + originalId);
+									if ($matchingDiv.length) {
+										var hiddenInput = $matchingDiv.find('input[type="hidden"]');
+										if (hiddenInput.length) {
+											var hiddenValue = hiddenInput.val();
+											//alert("Hidden Input Value for " + originalId + ": " + hiddenValue);
+											//selectedFields.push(originalId + "." + hiddenValue);
+											selectedFields.push(hiddenValue + "." + originalId);
+										} else {
+											selectedFields.push(originalId);
+										}
+									} else {
+										selectedFields.push(originalId);
+									}
+								});
+
+								$('#checkboxesContainer_one input:checked').each(function() {
+									var originalId = $(this).attr('id').replace('_concate', '');
+									//selectedFields.push(originalId);
+									var $matchingDiv = $('.' + originalId);
+									if ($matchingDiv.length) {
+										var hiddenInput = $matchingDiv.find('input[type="hidden"]');
+										if (hiddenInput.length) {
+											var hiddenValue = hiddenInput.val();
+											//alert("Hidden Input Value for " + originalId + ": " + hiddenValue);
+											//selectedFields.push(originalId + "." + hiddenValue);
+											selectedFields.push(hiddenValue + "." + originalId);
+										} else {
+											selectedFields.push(originalId);
+										}
+									} else {
+										selectedFields.push(originalId);
+									}
+								});
+
+								$('#checkboxesContainer_two input:checked').each(function() {
+									var originalId = $(this).attr('id').replace('_concate', '');
+									//selectedFields.push(originalId);
+									var $matchingDiv = $('.' + originalId);
+									if ($matchingDiv.length) {
+										var hiddenInput = $matchingDiv.find('input[type="hidden"]');
+										if (hiddenInput.length) {
+											var hiddenValue = hiddenInput.val();
+											//alert("Hidden Input Value for " + originalId + ": " + hiddenValue);
+											//selectedFields.push(originalId + "." + hiddenValue);
+											selectedFields.push(hiddenValue + "." + originalId);
+										} else {
+											selectedFields.push(originalId);
+										}
+									} else {
+										selectedFields.push(originalId);
+									}
+								});
+
+								$('#checkboxesContainer_three input:checked').each(function() {
+									var originalId = $(this).attr('id').replace('_concate', '');
+									//selectedFields.push(originalId);
+									var $matchingDiv = $('.' + originalId);
+									if ($matchingDiv.length) {
+										var hiddenInput = $matchingDiv.find('input[type="hidden"]');
+										if (hiddenInput.length) {
+											var hiddenValue = hiddenInput.val();
+											//alert("Hidden Input Value for " + originalId + ": " + hiddenValue);
+											//selectedFields.push(originalId + "." + hiddenValue);
+											selectedFields.push(hiddenValue + "." + originalId);
+										} else {
+											selectedFields.push(originalId);
+										}
+									} else {
+										selectedFields.push(originalId);
+									}
+								});
+
+								$('#checkboxesContainer_four input:checked').each(function() {
+									var originalId = $(this).attr('id').replace('_concate', '');
+									//selectedFields.push(originalId);
+									var $matchingDiv = $('.' + originalId);
+									if ($matchingDiv.length) {
+										var hiddenInput = $matchingDiv.find('input[type="hidden"]');
+										if (hiddenInput.length) {
+											var hiddenValue = hiddenInput.val();
+											//alert("Hidden Input Value for " + originalId + ": " + hiddenValue);
+											//selectedFields.push(originalId + "." + hiddenValue);
+											selectedFields.push(hiddenValue + "." + originalId);
+										} else {
+											selectedFields.push(originalId);
+										}
+									} else {
+										selectedFields.push(originalId);
+									}
+								});
+								
+								var fieldNameorg = $('#exampleModal').data('currentField');
+								//alert(fieldNameorg);
+								//alert("Selected Fields: " + selectedFields.join(', '));
+
+								// Update the textarea with the selected fields
+    							$('textarea[name="' + fieldNameorg + '_concatination_fields"]').val(selectedFields.join(', '));
+
+								//disable the concatenate button
+								//$('input[name="' + fieldNameorg + '_concate"]').prop('disabled', true);
+
+								// Hide the concatenate button
+								$('input[name="' + fieldNameorg + '_concate"]').hide();
+
+								$.ajax({
+									url: 'your_controller/updateSelectedFields',
+									type: 'POST',
+									data: {
+										fields: selectedFields,
+										fieldName: fieldNameorg
+									},
+									success: function(response) {
+										//console.log("Selected fields updated successfully:");
+										//const inputString = fields;
+										//const charactersToRemove = /[!@#$%]/g; 
+										//const resultString = inputString.replace(charactersToRemove, "");
+										//console.log(resultString); 
+										$('#exampleModal').modal('hide');
+									},
+									error: function(jqXHR, textStatus, errorThrown) {
+										console.error("Error updating fields:", textStatus, errorThrown);
+									}
+								});
+							});
+						});
+					</script>
 					<div class="layout-div col-md-12 last_name">
 						<div class="form-group">
 						<label class="control-label">  Last Name    </label>
 							<input type="text" name="last_name" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">	
-							<input type="text" name="last_name_width" value="" class="form-control" placeholder="width">	
+							<input type="text" name="last_name_width" value="" class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="last_name_concate" data-field-name="last_name"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="last_name_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="last_name_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+							<input type="text" name="last_name_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 dob">
@@ -211,7 +467,12 @@
 						<label class="control-label">   Date of Birth          </label>
 							<input type="text" name="dob" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">
-							<input type="text" name="dob_width" value="" class="form-control" placeholder="width">		
+							<input type="text" name="dob_width" value="" class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="dob_concate" data-field-name="dob"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="dob_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="dob_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+							<input type="text" name="dob_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">		
 						</div>
 					</div>
 					<div class="layout-div col-md-12 age_years">
@@ -219,7 +480,12 @@
 						<label class="control-label">   Age </label>
 							<input type="text" name="age_years" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">
-							<input type="text" name="age_years_width" value="" class="form-control" placeholder="width">	
+							<input type="text" name="age_years_width" value="" class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="age_years_concate" data-field-name="age_years"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="age_years_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="age_years_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="age_years_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">				
 						</div>
 					</div>
 					<div class="layout-div col-md-12 gender">
@@ -227,7 +493,12 @@
 						<label class="control-label">Gender</label>
 						<input type="text" name="gender" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="gender_width" value="" class="form-control" placeholder="width">
+						<input type="text" name="gender_width" value="" class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="gender_concate" data-field-name="gender"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="gender_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="gender_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+						<input type="text" name="gender_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>					
 					</div>
                     <div class="layout-div col-md-12 address">
@@ -235,7 +506,12 @@
 						<label class="control-label">    Address    </label>
 						<input type="text" name="address"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="address_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="address_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="address_concate" data-field-name="address"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="address_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="address_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="address_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 place">
@@ -243,7 +519,12 @@
 						<label class="control-label">   Place      </label>
 							<input type="text" name="place"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">	
-							<input type="text" name="place_width" value=""  class="form-control" placeholder="width">
+							<input type="text" name="place_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="place_concate" data-field-name="place"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="place_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="place_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="place_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 country">
@@ -251,7 +532,12 @@
 						<label class="control-label">   Country   </label>
 						<input type="text" name="country_code"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="country_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="country_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="country_code_concate" data-field-name="country_code"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="country_code_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="country_code_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="country_code_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 state">
@@ -259,7 +545,12 @@
 						<label class="control-label">   State   </label>
 						<input type="text" name="state_code"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="state_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="state_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="state_code_concate" data-field-name="state_code"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="state_code_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="state_code_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="state_code_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 district_id">
@@ -267,7 +558,12 @@
 						<label class="control-label">   District   </label>
 						<input type="text" name="district_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="district_id_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="district_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="district_id_concate" data-field-name="district_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="district_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="district_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="district_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 phone">
@@ -275,7 +571,12 @@
 						<label class="control-label">    Phone    </label>
 						<input type="text" name="phone"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="phone_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="phone_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="phone_concate" data-field-name="phone"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="phone_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="phone_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="phone_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 alt_phone">
@@ -283,7 +584,12 @@
 						<label class="control-label">    Alternate Phone    </label>
 						<input type="text" name="alt_phone"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="alt_phone_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="alt_phone_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="alt_phone" data-field-name="alt_phone"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="alt_phone_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="alt_phone_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="alt_phone_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<!-- here we use input type for obtaining textbox for father_name,mother_name-->
@@ -292,7 +598,12 @@
 						<label class="control-label"> Father Name </label>
 						<input type="text" name="father_name"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="father_name_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="father_name_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="father_name" data-field-name="father_name"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="father_name_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="father_name_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="father_name_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 mother_name">
@@ -300,7 +611,12 @@
 						<label class="control-label"> Mother Name  </label>
 						<input type="text" name="mother_name"  autocomplete="off"  class="form-control" placeholder="Enter Column Name" />
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="mother_name_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="mother_name_width" value=""  class="form-control" placeholder="width" style="width:8%;">		
+						<input type="text" class="concatenatebtn btn btn-primary" name="mother_name" data-field-name="mother_name"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="mother_name_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="mother_name_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="mother_name_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 					</div>
 					</div>
 					<!-- here spouse_name is display only if the patient is female -->
@@ -309,7 +625,12 @@
 						<label class="control-label"> Spouse Name </label>
 						<input type="text" name="spouse_name"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="spouse_name_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="spouse_name_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="spouse_name" data-field-name="spouse_name"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="spouse_name_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="spouse_name_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="spouse_name_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 id_proof_type_id">
@@ -317,7 +638,12 @@
 						<label class="control-label"> ID Proof Type</label>
 						<input type="text" name="id_proof_type_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="id_proof_type_id_width" value=""  class="form-control" placeholder="width">  
+						<input type="text" name="id_proof_type_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">  
+						<input type="text" class="concatenatebtn btn btn-primary" name="id_proof_type_id" data-field-name="id_proof_type_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="id_proof_type_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="id_proof_type_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="id_proof_type_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 					</div>
 					</div>
 					<div class="layout-div col-md-12 id_proof_number">
@@ -325,21 +651,36 @@
 				         <label class="control-label">ID proof No.</label>
 							<input type="text" name="id_proof_number" style="width:170px" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient" class="form-control">
-							<input type="text" name="id_proof_number_width" value=""  class="form-control" placeholder="width">	
+							<input type="text" name="id_proof_number_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="id_proof_number" data-field-name="id_proof_number"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="id_proof_number_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="id_proof_number_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+							<input type="text" name="id_proof_number_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 						<div class="layout-div col-md-12 occupation_id">
 						<label class="control-label"> Occupation: </label>
 						<input type="text" name="occupation_id" style="width:170px" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="occupation_id_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="occupation_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="occupation_id" data-field-name="occupation_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="occupation_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="occupation_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+						<input type="text" name="occupation_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					<div class="layout-div col-md-12 education_level">
 						<div class="form-group">
 						<label class="control-label"> Education Level </label>
 					    <input type="text" name="education_level"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="education_level_width" value=""  class="form-control" placeholder="width">			
+						<input type="text" name="education_level_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="education_level" data-field-name="education_level"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="education_level_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="education_level_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="education_level_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">		
 						</div>
 					</div>
 					<!-- here we use select class in order to obtain a drop-down box for Education Qualification -->
@@ -348,7 +689,12 @@
 						<label class="control-label">Education Qualification</label>
 						<input type="text" name="education_qualification" style="width: 150px" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="education_qualification_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="education_qualification_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="education_qualification" data-field-name="education_qualification"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="education_qualification_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="education_qualification_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="education_qualification_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<!-- here we use select class in order to obtain a drop-down box for Blood Group -->
@@ -357,7 +703,12 @@
 						<label class="control-label">Blood Group</label>
 						<input type="text" name="blood_group"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="blood_group_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="blood_group_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="blood_group" data-field-name="blood_group"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="blood_group_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="blood_group_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="blood_group_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 birth_information">
@@ -371,7 +722,12 @@
 						<label class="control-label">Gestation</label>
 						<input type="text" name="gestation"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="gestation_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="gestation_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="gestation" data-field-name="gestation"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="gestation_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="gestation_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="gestation_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<!-- here we use select class in order to obtain a drop-down box for Gestation Type -->
@@ -380,7 +736,12 @@
 						<label class="control-label"> Gestation Type </label>
 						<input type="text" name="gestation_type"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="gestation_type_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="gestation_type_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="gestation_type" data-field-name="gestation_type"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="gestation_type_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="gestation_type_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="gestation_type_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<!-- here we use select class in order to obtain a drop-down box for Delivery Mode -->
@@ -389,7 +750,12 @@
 						<label class="control-label">Delivery Mode</label>
 						<input type="text" name="delivery_mode"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="delivery_mode_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="delivery_mode_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="delivery_mode" data-field-name="delivery_mode"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="delivery_mode_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="delivery_mode_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="delivery_mode_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 delivery_place">
@@ -397,7 +763,12 @@
 						<label class="control-label"> Delivery Place </label>
 						<input type="text" name="delivery_place"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="delivery_place_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="delivery_place_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="delivery_place" data-field-name="delivery_place"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="delivery_place_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="delivery_place_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="delivery_place_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 delivery_location">
@@ -405,7 +776,12 @@
 						<label class="control-label"> Delivery Location </label>
 						<input type="text" name="delivery_location"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="delivery_location_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="delivery_location_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="delivery_location" data-field-name="delivery_location"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="delivery_location_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="delivery_location_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="delivery_location_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 delivery_location_type">
@@ -413,7 +789,12 @@
 						<label class="control-label">Delivery Location Type</label>
 						<input type="text" name="delivery_location_type" style="width: 150px" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">	
-						<input type="text" name="delivery_location_type_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="delivery_location_type_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="delivery_location_type" data-field-name="delivery_location_type"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="delivery_location_type_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="delivery_location_type_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="delivery_location_type_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 delivery_plan">
@@ -421,7 +802,12 @@
 						<label class="control-label">  Delivery Plan   </label>
 						<input type="text" name="delivery_plan"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="delivery_plan_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="delivery_plan_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="delivery_plan" data-field-name="delivery_plan"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="delivery_plan_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="delivery_plan_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="delivery_plan_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 birth_weight">
@@ -429,7 +815,12 @@
 						<label class="control-label">   Birth Weight  </label>
 						<input type="text" name="birth_weight"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="birth_weight_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="birth_weight_width" value=""  class="form-control" placeholder="width"  >	
+						<input type="text" class="concatenatebtn btn btn-primary" name="birth_weight" data-field-name="birth_weight"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="birth_weight_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="birth_weight_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="birth_weight_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
                     <div class="layout-div col-md-12 visit_type">
@@ -437,7 +828,12 @@
 						<label class="control-label"> Visit Type </label>
 						<input type="text" name="visit_type"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="visit_type_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="visit_type_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="visit_type" data-field-name="visit_type"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="visit_type_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="visit_type_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">		
+						<input type="text" name="visit_type_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 visit_name_id">
@@ -445,7 +841,12 @@
 						<label class="control-label"> Visit Name </label>
 						<input type="text" name="visit_name_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="visit_name_id_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="visit_name_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="visit_name_id" data-field-name="visit_name_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="visit_name_id_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="visit_name_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="visit_name_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>	
 					<div class="layout-div col-md-12 hosp_file_no">
@@ -453,7 +854,12 @@
 						<label class="control-label"> Hospital File No </label>
 						<input type="text" name="hosp_file_no"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="hosp_file_no_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="hosp_file_no_width" value=""  class="form-control" placeholder="width" style="width:8%;"> 
+						<input type="text" class="concatenatebtn btn btn-primary" name="hosp_file_no" data-field-name="hosp_file_no"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="hosp_file_no_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="hosp_file_no_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="hosp_file_no_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">		
 						</div>
 					</div>
 					<div class="layout-div col-md-12 referral_by_hospital_id">
@@ -461,7 +867,12 @@
 						<label class="control-label">   Referred From   </label>
 						<input type="text" name="referral_by_hospital_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="referral_by_hospital_id_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="referral_by_hospital_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="referral_by_hospital_id" data-field-name="referral_by_hospital_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="referral_by_hospital_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="referral_by_hospital_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="referral_by_hospital_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>				
 					<div class="layout-div col-md-12 department_id">
@@ -469,7 +880,12 @@
 						<label class="control-label">  Department   </label>
 						<input type="text" name="department_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>	
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="department_id_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="department_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="referral_by_hospital_id" data-field-name="referral_by_hospital_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="referral_by_hospital_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="department_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="department_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 area">
@@ -477,7 +893,12 @@
 						<label class="control-label">   Area   </label>
 						<input type="text" name="area"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>		
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="area_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="area_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="area" data-field-name="area"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="area_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="area_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="area_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 insurance_case">
@@ -485,7 +906,12 @@
 						<label class="control-label">Insurance Case</label>
 						<input type="text" name="insurance_case"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>		
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="insurance_case_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="insurance_case_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="insurance_case" data-field-name="insurance_case"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="insurance_case_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="insurance_case_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+						<input type="text" name="insurance_case_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>					
 					</div>
 					
@@ -494,7 +920,12 @@
 						<label class="control-label">Insurance Number</label>
 						<input type="text" name="insurance_no"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="insurance_no_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="insurance_no_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="insurance_no" data-field-name="insurance_no"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="insurance_no_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="insurance_no_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="insurance_no_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">			
 						</div>
 					</div>
 					<div class="layout-div col-md-12 hospital_type">
@@ -502,7 +933,12 @@
 						<label class="control-label">Hospital Type</label>
 						<input type="text" name="hospital_type"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="hospital_type_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="hospital_type_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="hospital_type" data-field-name="hospital_type"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="hospital_type_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="hospital_type_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="hospital_type_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 unit">
@@ -510,7 +946,12 @@
 						<label class="control-label">Unit</label>
 						<input type="text" name="unit"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="unit_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="unit_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="unit" data-field-name="unit"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="unit_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="unit_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="unit_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 mlc_id">
@@ -518,7 +959,12 @@
 						<label class="control-label" title="Medico Legal Case">MLC</label>
 						<input type="text" name="mlc_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">
-						<input type="text" name="mlc_id_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="mlc_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="mlc_id" data-field-name="mlc_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="mlc_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="mlc_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+						<input type="text" name="mlc_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>					
 					</div>
 					<div class="layout-div col-md-12 mlc_number_manual">
@@ -526,7 +972,12 @@
 						<label class="control-label">Manual MLC Number</label>
 						<input type="text" name="mlc_number_manual" style="width: 150px" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">
-						<input type="text" name="mlc_number_manual_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="mlc_number_manual_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="mlc_number_manual" data-field-name="mlc_number_manual"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="mlc_number_manual_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="mlc_number_manual_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="mlc_number_manual_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">		
 						</div>
 					</div>
 					<div class="layout-div col-md-12 ps_name">
@@ -534,7 +985,12 @@
 						<label class="control-label">PS Name</label>
 						<input type="text" name="ps_name"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">	
-						<input type="text" name="ps_name_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="ps_name_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="ps_name" data-field-name="ps_name"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="ps_name_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="ps_name_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="ps_name_manual_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
 					<div class="layout-div col-md-12 pc_number">
@@ -542,7 +998,12 @@
 						<label class="control-label">Constable #</label>
 						<input type="text" name="pc_number"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">
-						<input type="text" name="pc_number_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="pc_number_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="pc_number" data-field-name="pc_number"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="pc_number_concatination_fields" rows="2" cols="30" readonly></textarea>	
+						<input type="text" name="pc_number_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">	
+						<input type="text" name="pc_number_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
 					<div class="layout-div col-md-12 brought_by">
@@ -550,7 +1011,12 @@
 						<label class="control-label">Brought By</label>
 						<input type="text" name="brought_by"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">
-						<input type="text" name="brought_by_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="brought_by_width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="brought_by" data-field-name="brought_by"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="brought_by_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="brought_by_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="brought_by_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 police_intimation">
@@ -558,7 +1024,12 @@
 						<label class="control-label" title="Medico Legal Case">Police Intimation</label>
 						<input type="text" name="police_intimation"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="mlc" class="form-control">
-						<input type="text" name="police_intimation_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="police_intimation_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="police_intimation" data-field-name="police_intimation"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="police_intimation_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="police_intimation_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="police_intimation_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>					
 					</div>
 					<div class="layout-div col-md-12 identification_marks">
@@ -566,7 +1037,12 @@
 						<label class="control-label">Identification Marks</label>
 						<input type="text" name="identification_marks"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="identification_marks_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="identification_marks_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="identification_marks" data-field-name="identification_marks"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="identification_marks_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="identification_marks_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="identification_marks_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
 					<div class="layout-div col-md-12 presenting_complaints">
@@ -574,7 +1050,12 @@
 						<label class="control-label">Complaint</label>
 						<input type="text" name="presenting_complaints"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="presenting_complaints_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="presenting_complaints_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="identification_marks" data-field-name="identification_marks"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="identification_marks_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="presenting_complaints_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="presenting_complaints_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 past_history">
@@ -582,7 +1063,12 @@
 						<label class="control-label">Past history</label>
 						<input type="text" name="past_hsitory" class="form-control" autocomplete="off" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="past_history_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="past_history_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="past_hsitory" data-field-name="past_hsitory"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="past_hsitory_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="past_hsitory_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="past_hsitory_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 admit_weight">
@@ -590,7 +1076,12 @@
 						<label class="control-label">Admit Weight</label>
 						<input type="text" name="admit_weight"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="admit_weight_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="admit_weight_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="admit_weight" data-field-name="admit_weight"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="admit_weight_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="admit_weight_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="admit_weight_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 admit_date">
@@ -598,12 +1089,17 @@
 						<label class="control-label">Admit Date</label>
 						<input type="text" name="admit_date"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="admit_date_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="admit_date_width" value=""  class="form-control" placeholder="width" style="width:8%;">
 						<select name="admit_date_funct" class="form-control">
 							<option value="#">Select Function</option>
 							<option value="min">Min</option>
 							<option value="max">Max</option>
 						</select>
+						<input type="text" class="concatenatebtn btn btn-primary" name="admit_date" data-field-name="admit_date"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="admit_date_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="admit_date_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="admit_date_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 admit_time">
@@ -611,7 +1107,12 @@
 							<label class="control-label">Admit Time</label>
 							<input type="text" name="admit_time"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient_visit" class="form-control">
-							<input type="text" name="admit_time_width" value=""  class="form-control" placeholder="width">
+							<input type="text" name="admit_time_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="admit_time" data-field-name="admit_time"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="admit_time_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="admit_time_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="admit_time_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 insert_datetime">
@@ -619,12 +1120,17 @@
 						<label class="control-label">Insert Datetime</label>
 						<input type="text" name="insert_datetime"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="insert_datetime_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="insert_datetime_width" value=""  class="form-control" placeholder="width" style="width:8%;">
 						<select name="insert_datetime_funct" class="form-control">
 							<option value="#">Select Function</option>
 							<option value="min">Min</option>
 							<option value="max">Max</option>
 						</select>
+						<input type="text" class="concatenatebtn btn btn-primary" name="insert_datetime" data-field-name="insert_datetime"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="insert_datetime_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="insert_datetime_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="insert_datetime_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 update_datetime">
@@ -632,12 +1138,17 @@
 						<label class="control-label">Update Datetime</label>
 						<input type="text" name="update_datetime"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="update_datetime_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="update_datetime_width" value=""  class="form-control" placeholder="width" style="width:8%;">
 						<select name="update_datetime_funct" class="form-control">
 							<option value="#">Select Function</option>
 							<option value="min">Min</option>
 							<option value="max">Max</option>
 						</select>
+						<input type="text" class="concatenatebtn btn btn-primary" name="update_datetime" data-field-name="update_datetime"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="update_datetime_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="update_datetime_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="update_datetime_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 insert_by_user_id">
@@ -645,7 +1156,12 @@
 						<label class="control-label">Insert by userid</label>
 						<input type="text" name="insert_by_user_id"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="insert_by_user_id_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="insert_by_user_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="insert_by_user_id" data-field-name="insert_by_user_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="insert_by_user_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="insert_by_user_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="insert_by_user_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 update_by_user_id">
@@ -653,7 +1169,12 @@
 						<label class="control-label">Update by userid</label>
 						<input type="text" name="update_by_user_id"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="update_by_user_id_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="update_by_user_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="update_by_user_id" data-field-name="update_by_user_id"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="update_by_user_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="update_by_user_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="update_by_user_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 discharge_weight ">
@@ -661,15 +1182,25 @@
 						<label class="control-label">Discharge Weight</label>
 						<input type="text" name="discharge_weight"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="discharge_weight_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="discharge_weight_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="discharge_weight" data-field-name="discharge_weight"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="discharge_weight_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="discharge_weight_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="discharge_weight_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 					</div>
 					</div>
 					<div class="layout-div col-md-12 pulse_rate">
 						<div class="form-group">
 						<label class="control-label">Pulse Rate</label>
 						<input type="text" name="pulse_rate"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
-						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="pulse_rate_width" value=""  class="form-control" placeholder="width">
+						<input type="hidden" name="" value="patient_visit" class="form-control">  
+						<input type="text" name="pulse_rate_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="pulse_rate" data-field-name="pulse_rate"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="pulse_rate_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="pulse_rate_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="pulse_rate_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 respiratory_rate">
@@ -677,7 +1208,12 @@
 						<label class="control-label">Respiratory Rate</label>
 						<input type="text" name="respiratory_rate"  class="form-control" placeholder="Enter Column Name" />
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="respiratory_rate_width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="respiratory_rate_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="respiratory_rate" data-field-name="respiratory_rate"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="respiratory_rate_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="respiratory_rate_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="respiratory_rate_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
 					<div class="layout-div col-md-12 temperature">
@@ -685,7 +1221,12 @@
 						<label class="control-label">Temperature</label>
 					    <input type="text" name="temperature"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="temperature_width" value=""  class="form-control" placeholder="width">		
+						<input type="text" name="temperature_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="temperature" data-field-name="temperature"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="temperature_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="temperature_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="temperature_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">			
 						</div>
 					</div>
 					<div class="layout-div col-md-12 spo2">
@@ -693,7 +1234,12 @@
 						<label class="control-label">SpO2</label>
 						<input type="text" name="spo2"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="spo2__width" value=""  class="form-control" placeholder="width">	
+						<input type="text" name="spo2__width" value=""  class="form-control" placeholder="width" style="width:8%;">	
+						<input type="text" class="concatenatebtn btn btn-primary" name="spo2" data-field-name="spo2"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="spo2_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="spo2_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="spo2_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 						</div>
 					</div>
 					<div class="layout-div col-md-12 provisional_diagnosis">
@@ -701,7 +1247,12 @@
 						<label class="control-label">Provisional Diag.</label>
 							<input type="text" name="provisional_diagnosis" autocomplete="off"  class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient_visit" class="form-control">
-							<input type="text" name="temperature_width" value=""  class="form-control" placeholder="width">
+							<input type="text" name="temperature_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="provisional_diagnosis" data-field-name="provisional_diagnosis"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="provisional_diagnosis_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="provisional_diagnosis_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="provisional_diagnosis_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">	
 							</div>
 					</div>
 					<div class="layout-div col-md-12 outcome">
@@ -709,7 +1260,12 @@
 						<label class="control-label">Outcome</label>
 							<input type="text" name="outcome"  autocomplete="off" placeholder="Enter Column Name" class="form-control">
 							<input type="hidden" name="" value="patient_visit" class="form-control">
-							<input type="text" name="outcome_width" value=""  class="form-control" placeholder="width">
+							<input type="text" name="outcome_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="outcome" data-field-name="outcome"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="outcome_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="outcome_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="outcome_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>					
 					</div>
 					<div class="layout-div col-md-12 outcome_date">
@@ -717,7 +1273,12 @@
 						<label class="control-label">Outcome Date</label>
 							<input type="text" name="outcome_date"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 							<input type="hidden" name="" value="patient_visit" class="form-control">
-							<input type="text" name="outcome_date_width" value=""  class="form-control" placeholder="width">
+							<input type="text" name="outcome_date_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+							<input type="text" class="concatenatebtn btn btn-primary" name="outcome_date" data-field-name="outcome_date"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="outcome_date_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="outcome_date_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="outcome_date_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 outcome_time">
@@ -725,7 +1286,12 @@
 						<label class="control-label">Outcome Time</label>
 						<input type="text" name="outcome_time"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="outcome_time_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="outcome_time_width" value=""  class="form-control" placeholder="width" style="width:8%;"> 
+						<input type="text" class="concatenatebtn btn btn-primary" name="outcome_time" data-field-name="outcome_time"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="outcome_time_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="outcome_time_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="outcome_time_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 final_diagnosis">
@@ -733,7 +1299,12 @@
 						<label class="control-label">Final Diagnosis</label>
 						<input type="text" name="final_diagnosis"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="final_diagnosis_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="final_diagnosis_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="final_diagnosis" data-field-name="final_diagnosis"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="final_diagnosis_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="final_diagnosis_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="final_diagnosis_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 decision">
@@ -741,7 +1312,12 @@
 						<label class="control-label">Decision</label>
 						<input type="text" name="decision"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="decision_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="decision_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="decision" data-field-name="decision"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="decision_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="decision_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="decision_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 advise">
@@ -749,7 +1325,12 @@
 						<label class="control-label">Advise</label>
 						<input type="text" name="advise"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="advise_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="advise_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="advise" data-field-name="advise"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="advise_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="advise_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="advise_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 blood_sugar">
@@ -757,7 +1338,12 @@
 						<label class="control-label">Blood Sugar</label>
 						<input type="text" name="blood_sugar"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="blood_sugar_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="blood_sugar_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="blood_sugar" data-field-name="blood_sugar"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="blood_sugar_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="blood_sugar_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="blood_sugar_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 family_history">
@@ -765,7 +1351,12 @@
 						<label class="control-label">Family History</label>
 						<input type="text" name="family_history"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="family_history_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="family_history_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="family_history" data-field-name="family_history"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="family_history_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="family_history_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="family_history_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 clinical_findings">
@@ -773,7 +1364,12 @@
 						<label class="control-label">Clinical Finding</label>
 						<input type="text" name="clinical_findings"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="clinical_findings_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="clinical_findings_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="clinical_findings" data-field-name="clinical_findings"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="clinical_findings_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="clinical_findings_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="clinical_findings_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 cvs">
@@ -781,7 +1377,12 @@
 						<label class="control-label">CVS</label>
 						<input type="text" name="cvs"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="cvs_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="cvs_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="cvs" data-field-name="cvs"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="cvs_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="cvs_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="cvs_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 rs">
@@ -789,7 +1390,12 @@
 						<label class="control-label">RS</label>
 						<input type="text" name="rs"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="RS_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="RS_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="rs" data-field-name="rs"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="rs_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="rs_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="rs_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 pa">
@@ -797,7 +1403,12 @@
 						<label class="control-label">PA</label>
 						<input type="text" name="pa"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="pa_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="pa_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="pa" data-field-name="pa"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="pa_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="pa_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="pa_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 cns">
@@ -805,7 +1416,12 @@
 						<label class="control-label">CNS</label>
 						<input type="text" name="cns"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient_visit" class="form-control">
-						<input type="text" name="cns_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="cns_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="cns" data-field-name="cns"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="cns_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="cns_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="cns_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 					<div class="layout-div col-md-12 update_btn">
@@ -829,7 +1445,12 @@
 						<label class="control-label">Congenital anomalies</label>
 						<input type="text" name="congenital_anomalies"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 						<input type="hidden" name="" value="patient" class="form-control">
-						<input type="text" name="congenital_anomalies_width" value=""  class="form-control" placeholder="width">
+						<input type="text" name="congenital_anomalies_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="congenital_anomalies" data-field-name="congenital_anomalies"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="congenital_anomalies_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="congenital_anomalies_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="congenital_anomalies_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
 						<div class="layout-div col-md-12 longitude">
@@ -837,7 +1458,12 @@
 								<label class="control-label">Longitude</label>
 								<input type="text" name="longitude"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="longitude_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="longitude_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="longitude" data-field-name="longitude"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="longitude_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="longitude_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="longitude_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 latitude">
@@ -845,7 +1471,12 @@
 								<label class="control-label">Latitude</label>
 								<input type="text" name="latitude"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="latitude_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="latitude_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="latitude" data-field-name="latitude"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="latitude_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="latitude_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="latitude_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 life_status">
@@ -853,7 +1484,12 @@
 								<label class="control-label">Life Status</label>
 								<input type="text" name="life_status"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="life_status_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="life_status_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="life_status" data-field-name="life_status"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="life_status_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="life_status_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="life_status_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 icd_code">
@@ -861,7 +1497,12 @@
 								<label class="control-label">ICD Code</label>
 								<input type="text" name="icd_code"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="icd_code_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="icd_code_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="icd_code" data-field-name="icd_code"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="icd_code_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="icd_code_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="icd_code_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 diagnosis">
@@ -869,7 +1510,12 @@
 								<label class="control-label">Diagnosis</label>
 								<input type="text" name="diagnosis"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="diagnosis_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="diagnosis_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="diagnosis" data-field-name="diagnosis"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="diagnosis_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="diagnosis_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="diagnosis_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 priority_type_id">
@@ -877,7 +1523,12 @@
 								<label class="control-label">Priority Type</label>
 								<input type="text" name="priority_type_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="priority_type_id_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="priority_type_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="priority_type_id" data-field-name="priority_type_id"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="priority_type_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="priority_type_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="priority_type_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 route_secondary_id">
@@ -885,7 +1536,12 @@
 								<label class="control-label">Route Secondary</label>
 								<input type="text" name="route_secondary_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="route_secondary_id_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="route_secondary_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="route_secondary_id" data-field-name="route_secondary_id"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="route_secondary_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="route_secondary_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="route_secondary_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 ndps">
@@ -893,7 +1549,12 @@
 								<label class="control-label">NDPS</label>
 								<input type="text" name="ndps"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="ndps_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="ndps_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="ndps" data-field-name="ndps"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="ndps_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="ndps_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="ndps_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 drug">
@@ -901,7 +1562,12 @@
 								<label class="control-label">Drug</label>
 								<input type="text" name="drug"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="drug_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="drug_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="drug" data-field-name="drug"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="drug_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="drug_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="drug_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 dose">
@@ -909,7 +1575,12 @@
 								<label class="control-label">Dose</label>
 								<input type="text" name="dose"  class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="dose_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="dose_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="dose" data-field-name="dose"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="dose_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="dose_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="dose_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 last_dispensed_date">
@@ -917,7 +1588,12 @@
 								<label class="control-label">Last Dispense Date</label>
 								<input type="text" name="last_dispensed_date"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="last_dispensed_date_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="last_dispensed_date_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="last_dispensed_date" data-field-name="last_dispensed_date"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="last_dispensed_date_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="last_dispensed_date_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="last_dispensed_date_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 last_dispensed_quantity">
@@ -925,7 +1601,12 @@
 								<label class="control-label">Last Dispense Quantity</label>
 								<input type="text" name="last_dispensed_quantity" style="width: 150px" autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="last_dispensed_quantity_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="last_dispensed_quantity_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="last_dispensed_quantity" data-field-name="last_dispensed_quantity"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="last_dispensed_quantity_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="last_dispensed_quantity_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="last_dispensed_quantity_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 map_link">
@@ -933,7 +1614,12 @@
 								<label class="control-label">Map Link</label>
 								<input type="text" name="map_link"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="map_link_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="map_link_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="map_link" data-field-name="map_link"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="map_link_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="map_link_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="map_link_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 death_date">
@@ -941,7 +1627,12 @@
 								<label class="control-label">Death Date</label>
 								<input type="text" name="death_date"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="death_date_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="death_date_width" value=""  class="form-control" placeholder="width" style="width:8%;"> 
+								<input type="text" class="concatenatebtn btn btn-primary" name="death_date" data-field-name="death_date"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="death_date_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="death_date_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="map_link_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 death_status">
@@ -949,7 +1640,12 @@
 								<label class="control-label">Death Status</label>
 								<input type="text" name="death_status"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="death_status_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="death_status_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="death_status" data-field-name="death_status"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="death_status_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="death_status_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="death_status_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<!-- Newly added -->
@@ -958,7 +1654,12 @@
 								<label class="control-label">Folloup Note</label>
 								<input type="text" name="note"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="note_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="note_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="note" data-field-name="note"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="note_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="note_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="note_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 volunteer_id">
@@ -966,7 +1667,12 @@
 								<label class="control-label">Volunteer</label>
 								<input type="text" name="volunteer_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="volunteer_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="volunteer_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="volunteer_id" data-field-name="volunteer_id"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="volunteer_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="volunteer_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="volunteer_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 						<div class="layout-div col-md-12 update_by">
@@ -974,7 +1680,12 @@
 								<label class="control-label">Updated by</label>
 								<input type="text" name="update_by"  autocomplete="off" class="form-control" placeholder="Enter Column Name" />
 								<input type="hidden" name="" value="patient_followup" class="form-control">
-								<input type="text" name="update_by_width" value=""  class="form-control" placeholder="width">
+								<input type="text" name="update_by_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="volunteer_id" data-field-name="volunteer_id"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="volunteer_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="update_by_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="update_by_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
 			        </div>
@@ -992,9 +1703,9 @@
 			</div>
 			
 			
-			<div class="col-sm-3 col-md-2 sidebar">
+		<div class="col-sm-3 col-md-2 sidebar">
 			<strong>Patient Information</strong>
-			  <ul class="nav nav-sidebar">
+			  <ul class="nav nav-sidebar checkboxesList">
 			  <!--here we are labelling the field_name on the left side of the form-->
 			  	<li>  
 					<div class="checkbox">
@@ -1104,7 +1815,7 @@
 				</li>
 			</ul>
 			<strong>Birth Information</strong>
-			  <ul class="nav nav-sidebar">
+			  <ul class="nav nav-sidebar checkboxesList_one">
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="gestation" class="checklist" />Gestation</label>
@@ -1157,7 +1868,7 @@
 				</li>     
 			  </ul>
 			<strong>Visit Information</strong>
-			  <ul class="nav nav-sidebar">
+			  <ul class="nav nav-sidebar checkboxesList_two">
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="visit_type" class="checklist" />Visit Type</label>
@@ -1351,7 +2062,7 @@
 
 			</ul>
 			<strong>MLC Information</strong>
-			  <ul class="nav nav-sidebar">
+			  <ul class="nav nav-sidebar checkboxesList_three">
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="mlc_id" class="checklist" />MLC</label>
@@ -1384,7 +2095,7 @@
 				</li>
 			  </ul>
 			  		<strong>Patient Followup Information</strong>
-			  <ul class="nav nav-sidebar">
+			  <ul class="nav nav-sidebar checkboxesList_four">
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="longitude" class="checklist" /> Longitude</label>

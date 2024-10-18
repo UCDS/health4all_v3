@@ -248,6 +248,92 @@ class Indent_reports extends CI_Controller
 		$this->load->view('templates/footer');
 	} //ending of get indent summary method.
 
+	function get_inventory_item_summary()
+	{
+		error_reporting(1);
+		if($this->session->userdata('logged_in')){                                                
+			$this->data['userdata']=$this->session->userdata('logged_in');                                           
+        }	
+        else{
+            show_404();                                                                          
+        }
+		$this->data['userdata'] = $this->session->userdata('logged_in');
+		$user_id = $this->data['userdata']['user_id'];
+		$this->load->model('staff_model');
+		$this->data['functions'] = $this->staff_model->user_function($user_id);
+		$access = -1;
+		//var_dump($item_type_id);
+		foreach ($this->data['functions'] as $function) {
+			if ($function->user_function == "Consumables") {
+				$access = 1;
+				break;
+			}
+		}
+		if ($access != 1) {
+			show_404();
+		}
+
+		$this->data['userdata'] = $this->session->userdata('indent');
+		$this->load->helper('form');
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('item', 'required');
+		$user = $this->session->userdata('logged_in');
+		$this->data['title'] = "Inventory Item Summary Report";
+		$this->load->view('templates/header', $this->data);
+		$this->load->view('templates/leftnav', $this->data);
+		$this->load->model('consumables/indent_report_model');
+		$this->data['all_item_type'] = $this->indent_report_model->get_data("item_type");
+		$this->data['all_item'] = $this->indent_report_model->get_data("item", 20);
+		$this->data['parties'] = $this->indent_report_model->get_data("party");
+		$this->load->model('consumables/item_model');
+		$this->data['generic_item']=$this->item_model->get_data("generic_name");
+		$this->data['item_form']=$this->item_model->get_data("item_form");
+		$validations = array(
+			array(
+				'field' => 'item',
+				'label' => 'Item',
+				'rules' => 'trim|xss_clean'
+			), 
+			array(
+				'field' => 'indent_id', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			array(
+				'field' => 'item_type', 
+				'rules' => 'trim|xss_clean', 
+			), 
+			// more validations
+			
+
+		);
+		$this->form_validation->set_rules($validations);
+		$this->form_validation->set_message('message', 'Please input missing details.');
+		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+		foreach($this->data['defaultsConfigs'] as $default){		 
+			if($default->default_id=='pagination'){
+				$this->data['rowsperpage'] = $default->value;
+				$this->data['upper_rowsperpage']= $default->upper_range;
+				$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+			}
+		}
+		if ($this->form_validation->run() === FALSE) {
+			$this->data['rowsperpage'] = 25;
+			$this->data['lower_rowsperpage'] = 1;
+			$this->data['upper_rowsperpage'] = 30;
+			$this->load->view('pages/consumables/inventory_item_summary_view_new', $this->data);
+		} else if ($this->input->post('search')) 
+		{
+			$this->data['mode'] = "search";
+			$this->load->model('consumables/inventory_summary_model');
+			$this->data['search_inventory_summary'] = $this->inventory_summary_model->show_inventory_item_summary($this->data['rowsperpage']);
+			$this->load->view('pages/consumables/inventory_item_summary_view_new', $this->data);
+		} else {
+			show_404();
+		}
+		$this->load->view('templates/footer');
+	}
+
 	function search_selectize_items()
 	{
 		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
@@ -646,8 +732,9 @@ class Indent_reports extends CI_Controller
 		echo "Data saved successfully!";
 	}
 	
-	function get_item_inventory_detail()
+	function get_item_inventory_detail($item, $scp, $redir)
 	{
+		
 		if($this->session->userdata('logged_in')){                                                
             $this->data['userdata']=$this->session->userdata('logged_in');                                        
         }	
@@ -684,9 +771,30 @@ class Indent_reports extends CI_Controller
 		$this->load->model('consumables/item_model');
 		$this->data['generic_item']=$this->item_model->get_data("generic_name");
 		$this->data['item_form']=$this->item_model->get_data("item_form");
-		$item_id = $this->input->post('item');
-		$scp_id = $this->input->post('scp_id');
-		if(isset($scp_id) && isset($item_id)){
+		if(empty($redir))
+		{
+			$item_id = $this->input->post('item');
+			$scp_id = $this->input->post('scp_id');
+		}
+		if(!empty($redir))
+		{
+			$this->data['mode'] = 'search';
+			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_summary($item, $scp);
+			$closing_balance = $this->indent_report_model->get_item_closing_balance($item, $scp, $redir);
+			foreach ($closing_balance as $cb) 
+			{
+				if ($cb->inward_outward == "outward") {
+					$outward_total_quantity += $cb->quantity;
+				} elseif ($cb->inward_outward == "inward") {
+					$inward_total_quantity += $cb->quantity;
+				}
+			}
+			$this->data['outward_total_quantity'] = $outward_total_quantity;
+        	$this->data['inward_total_quantity'] = $inward_total_quantity;
+        	$this->data['balance'] =  $inward_total_quantity - $outward_total_quantity;
+			$this->load->view('pages/consumables/inventory_item_detail', $this->data);
+		}else if(isset($scp_id) && isset($item_id))
+		{
 			$this->data['mode'] = 'search';
 			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_inventory_detail($item_id, $scp_id);
 			$closing_balance = $this->indent_report_model->get_item_closing_balance();

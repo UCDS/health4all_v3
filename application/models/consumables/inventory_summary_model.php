@@ -298,6 +298,86 @@ class Inventory_summary_model extends CI_Model
 
         return array('summary_count' => count($final_balance_records), 'res' => array_slice($final_balance_records, $res_offset, $rows_per_page));
     }
+
+    function show_inventory_item_summary($default_rowsperpage)
+    {
+        $this->db->trans_start();
+
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+		if ($default_rowsperpage !=0){
+			$this->db->limit($rows_per_page,$start);
+		}
+
+        $from_date = null;
+        $to_date = null;
+
+        if ($this->input->post('from_date')) {
+            $f_date = date('Y-m-d', strtotime($this->input->post('from_date')));
+            $from_date = date('Y-m-d H:i:s', strtotime($f_date . ' +00 hour 00 min 00 second'));
+        }
+
+        if ($this->input->post('to_date')) {
+            $too_date = date('Y-m-d', strtotime($this->input->post('to_date')));
+            $to_date = date('Y-m-d H:i:s', strtotime($too_date . ' +23 hour 59 min 59 second'));
+        }
+
+        $scp_id = $this->input->post('scp_id');
+        $hospital = $this->session->userdata('hospital');
+
+        $this->db->select('
+            inventory.item_id,inventory.date_time,
+            item.item_name,
+            item_type.item_type, 
+            scp.supply_chain_party_name, inventory.supply_chain_party_id,
+            SUM(CASE WHEN inventory.inward_outward = "inward" THEN inventory.quantity ELSE 0 END) AS total_inward,
+            SUM(CASE WHEN inventory.inward_outward = "outward" THEN inventory.quantity ELSE 0 END) AS total_outward,
+            (SELECT SUM(quantity) FROM inventory as inv WHERE inv.item_id = inventory.item_id AND inv.inward_outward = "inward" AND inv.date_time <= "' . $from_date . '") AS opening_balance,
+            SUM(CASE WHEN inventory.inward_outward = "inward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) -
+            SUM(CASE WHEN inventory.inward_outward = "outward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) AS closing_balance    ')
+        ->from('inventory')
+        ->join('item', 'inventory.item_id = item.item_id')
+        ->join('item_form', 'item_form.item_form_id = item.item_form_id')
+        ->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
+        ->join('item_type', 'item_type.item_type_id = generic_item.item_type_id')
+        ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
+        ->where('scp.supply_chain_party_id', $scp_id)
+        ->where('scp.hospital_id', $hospital['hospital_id'])
+        ->where("inventory.date_time >=", $from_date)
+        ->where("inventory.date_time <=", $to_date)
+        ->group_by('inventory.item_id');
+
+        if ($this->input->post('item')) {
+            $this->db->where('inventory.item_id', $this->input->post('item'));
+        }
+        if ($this->input->post('item_type')) {
+            $this->db->where('generic_item.item_type_id', $this->input->post('item_type'));
+        }
+        if ($this->input->post('generic_item')) {
+            $this->db->where('item.generic_item_id', $this->input->post('generic_item'));
+        }
+        if ($this->input->post('item_form')) {
+            $this->db->where('item_form.item_form_id', $this->input->post('item_form'));
+        }
+        $query = $this->db->get();
+        $latest_summary = $query->result_array();
+        $this->db->trans_complete();
+
+        return $latest_summary;
+    }
+
     public function get_inventory_records()
     {
         $this->db->select('*')

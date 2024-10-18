@@ -438,12 +438,18 @@
 </script>
 <?php
 $from_date = 0;
+
+if ($this->input->post('from_date'))
+	$from_date = date("d-M-Y", strtotime($this->input->post('from_date')));
+else
+	$from_date = date("Y-m-d");
+
 $to_date = 0;
 
 if ($this->input->post('to_date'))
 	$to_date = date("d-M-Y", strtotime($this->input->post('to_date')));
 else
-	$to_date = date("Y-m-d");
+	$to_date = date("d-M-Y", strtotime("+30 days"));
 //     $from_time=0;$to_time=0;
 // if($this->input->post('from_time')) $from_time=date("H:i",strtotime($this->input->post('from_time'))); else $from_time = date("00:00");
 // if($this->input->post('to_time')) $to_time=date("H:i",strtotime($this->input->post('to_time'))); else $to_time = date("23:59");
@@ -459,21 +465,27 @@ if ($this->input->post('to_id')) {
 }
 ?>
 <div class="text-center">
-	<h2>Inventory Summary</h2>
-	<?php echo form_open('consumables/indent_reports/get_inventory_summary', array('class' => 'form-group', 'role' => 'form', 'id' => 'inventory_summary_search')); ?>
+	<h2 class="col-md-offset-3">Inventory Item Summary</h2>
+	<?php echo form_open('consumables/indent_reports/get_inventory_item_summary', array('class' => 'form-group', 'role' => 'form', 'id' => 'inventory_summary_search')); ?>
 	<div class="container">
 		<div class="row">
 			
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
+			<div class="col-md-3 col-md-offset-3">
 				<div class="form-group">
+					<label for="from_date">From Date </label>
+					<input class="form-control" type="text" value="<?php echo date("d-M-Y", strtotime($from_date)); ?>"
+						name="from_date" id="from_date" size="15" />
+				</div>
+			</div>
 
-					<!--input field to date-->
-					<label for="to_date">Inventory Date </label>
+			<div class="col-md-3">
+				<div class="form-group">
+					<label for="to_date">To Date </label>
 					<input class="form-control" type="text" value="<?php echo date("d-M-Y", strtotime($to_date)); ?>"
 						name="to_date" id="to_date" size="15" />
 				</div>
 			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
+			<div class="col-md-3">
 				<div class="form-group">
 					<!--input field from party-->
 					<label for="scp_id">Supply Chain Party<font color="red">*</font></label>
@@ -490,7 +502,7 @@ if ($this->input->post('to_id')) {
 					</select>
 				</div>
 			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3">
+			<div class="col-md-3  col-md-offset-3">
 				<div class="form-group">
 					<!--input field item-->
 					<label for="item_type">Item Type<font color="red">*</font></label>
@@ -508,7 +520,7 @@ if ($this->input->post('to_id')) {
 					</select>
 				</div>
 			</div>
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3   col-md-offset-3">
+			<div class="col-lg-3">
 				<div class="form-group">
 					<!--input field item-->
 					<label for="item">Item<font color="red">*</font></label>
@@ -517,7 +529,7 @@ if ($this->input->post('to_id')) {
 					</select>
 				</div>
 			</div>
-			<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+			<div class = "col-lg-3">
 				<div class="form-group">
 					<label for="item_form" >Item Form</label>
 						<select name="item_form" id="item_form" class="form-control">
@@ -533,7 +545,7 @@ if ($this->input->post('to_id')) {
 						</select>
 				</div>
 			</div>
-			<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3">
+			<div class = "col-lg-3 col-md-offset-3">
 				<div class="form-group">
 				<label for="generic_item" >Generic Item</label>
 					<select name="generic_item" id="generic_item" class="form-control" placeholder="Select">
@@ -548,11 +560,7 @@ if ($this->input->post('to_id')) {
 					</select>
 				</div>
 			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12 col-sm-12 col-md-2 col-lg-3 col-md-offset-3">
-
-				<!--Input field To party-->
+			<div class="col-lg-3">
 				Rows per page :
 				<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page"
 					id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max=<?php echo $upper_rowsperpage; ?>
@@ -561,9 +569,9 @@ if ($this->input->post('to_id')) {
 					} else {
 						echo $rowsperpage;
 					} ?> />
-
 			</div>
 		</div>
+		
 	</div>
 	<div class="container">
 		<div class="row">
@@ -594,7 +602,7 @@ if ($this->input->post('to_id')) {
 		<!--filters for Add Service Issues view form --->
 	<!--when filter is clicked this form will load --->
 	<div class="container">
-		<?php if (count($search_inventory_summary) > 0) {
+		<?php if (count($search_inventory_summary) > 0) { ;
 			//echo json_encode($search_inventory_summary[0]->supply_chain_party_name);
 			if ($this->input->post('rows_per_page')) {
 				$total_records_per_page = $this->input->post('rows_per_page');
@@ -607,8 +615,7 @@ if ($this->input->post('to_id')) {
 				$page_no = 1;
 			}
 
-			$total_records = isset($summary_count) ? $summary_count: 10000;
-			
+			$total_records = count($search_inventory_summary) ;
 			$total_no_of_pages = ceil($total_records / $total_records_per_page);
 			if ($total_no_of_pages == 0)
 				$total_no_of_pages = 1;
@@ -713,7 +720,7 @@ if ($this->input->post('to_id')) {
 			<div id="print-container">
 				<?php if(count($search_inventory_summary) > 0) { ?>
 					<h3>Showing balance as on 
-				<?= $to_date; ?>
+				<?= $from_date; ?> to <?= $to_date; ?>
 			 for SCP: <span style="color: green;">
 				<?= $search_inventory_summary[0]['supply_chain_party_name']; ?>
 			</span></h3>
@@ -724,57 +731,54 @@ if ($this->input->post('to_id')) {
 					<th>#</th>
 					<th>Item Type</th>
 					<th>Item Name</th>
-					<!-- <th>Supply Chain Party</th> -->
-						<th>Current balance</th>
-						<!-- <th></th> -->
-						<!-- <th></th> -->
-						<!-- <th>Quantity Inward</th>
-							<th>Quantity Outward</th>
-							<th>Difference</th> -->
-						<!-- <th>Item id</th> -->
+					<th>Opening balance</th>
+					<th>Total Inward</th>
+					<th>Total Outward</th>
+					<th>Closing balance</th>
 					<th></th>
 					</thead>
 					<tbody>
 						<?php
-
-
 						$i = $offset + 1;
-
-
-						// $outward = $search
-						log_message("info", "SAIRAM VERSION " . $CI_VERSION);
-						log_message("info", "SAIRAM WARNING " . json_encode($search_inventory_summary));
-						// echo '<h1>'.json_encode($search_inventory_summary).'</h1>';
-						foreach ($search_inventory_summary as $inventory_item) { ?>
-
+						foreach ($search_inventory_summary as $inventory_item) {  ?>
 							<tr>
 								<?php
-								// echo $i++; 
-								//$sub_url = "consumables/indent_reports/get_item_inventory_detail";
-								$quantity = $inventory_item['closing_balance'];
-
-
-								// $item_type_id = '0';
-								$item_id = $inventory_item['item_id'];
-								$item_name = $inventory_item['item_name'];
-								$redir = 1;
-								$scp_id = $inventory_item['supply_chain_party_id'];
-								log_message("info", "SAIRAM LKDJJLDJ " . $inventory_item);
+									//$sub_url = "consumables/indent_reports/get_item_inventory_detail";
+									$quantity = $inventory_item['closing_balance'];
+									$redir = 1;
+									$item_id = $inventory_item['item_id'];
+									$item_name = $inventory_item['item_name'];
+									$scp_id = $inventory_item['supply_chain_party_id'];
 								?>
 
-
-
-								<!-- <td><?php //echo $inventory_item['inward'] ? $inventory_item['inward']->item_type: $inventory_item['outward']->item_type;?></td> -->
 								<td>
 									<?= $i++; ?>
 								</td>
-								<td style="width: 20%;">
+								<td >
 									<?= $inventory_item['item_type']; ?>
 								</td>
-								<td><b>
+								<td>
+									<b>
 										<?php echo $item_name; ?>
-									</b></td>
-
+									</b>
+								</td>
+								<td>
+									<?php 
+										if($inventory_item['opening_balance']!='')
+										{
+											echo $inventory_item['opening_balance'];
+										}else
+										{
+											echo '0';
+										}
+									?>
+								</td>
+								<td>
+									<?php echo $inventory_item['total_inward']; ?>
+								</td>
+								<td>
+									<?php echo $inventory_item['total_outward']; ?>
+								</td>
 								<td style="width: 15%;">
 									<center>
 										<?php echo $quantity; ?>
@@ -785,7 +789,6 @@ if ($this->input->post('to_id')) {
 										<button class="btn btn-primary" type="button">View Detailed</button>
 									</a>
 								</td>
-
 							</tr>
 							<?php
 
@@ -793,18 +796,12 @@ if ($this->input->post('to_id')) {
 						}
 						?>
 					<tfoot>
-						<!-- <th>Total </th>
-					<th> </th> -->
-						<!-- <th> </th> -->
-
-
-
+						
 					</tfoot>
 					<?php echo form_close(); ?>
-					<!--ending of isset method-->
 					<?php
-	}
-	?>
+						}
+					?>
 				</tbody>
 			</table>
 		</div>
