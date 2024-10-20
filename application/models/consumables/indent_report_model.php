@@ -666,19 +666,30 @@ class Indent_report_model extends CI_Model
 		
 	}
 
-	function get_item_closing_balance()
+	function get_item_closing_balance($item, $scp, $redir)
 	{
-		$from_date = date("Y-m-d",strtotime($this->input->post('from_date')));
-		$scp_id = $this->input->post('scp_id');
-		$item_id = $this->input->post('item');
+		//print_r($item.' '.$scp.' '.$redir);
+		if($this->input->post('from_date'))
+		{
+			$from_date = date("Y-m-d",strtotime($this->input->post('from_date')));
+		}else{
+			$from_date = date("Y-m-d");
+		}
+
+		if(empty($redir))
+		{
+			$scp = $this->input->post('scp_id');
+			$item = $this->input->post('item');
+		}
 
 		$this->db->select("inventory_id,supply_chain_party_id,inward_outward,item_id,quantity,date_time,inward_outward_type,
 		manufacture_date,expiry_date,batch,cost,patient_id,indent_id,note,gtin_code")
 		->from('inventory')
-		->where('supply_chain_party_id', $scp_id)
-		->where('item_id', $item_id)
+		->where('supply_chain_party_id', $scp)
+		->where('item_id', $item)
 		->where('date_time <', $from_date);
 		$query = $this->db->get();
+		//echo $this->db->last_query();
 		$records = $query->result();
 		return $records;
 

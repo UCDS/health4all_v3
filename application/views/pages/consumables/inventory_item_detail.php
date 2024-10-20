@@ -513,8 +513,25 @@ $('#to_id').change(function(){
 					?>
 					<h4 style="text-align:center;">
 						Item : <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name.' - '.$search_inventory_summary[0]->item_form; ?></span> ,
-                        Dates : <?php echo date("d M Y", strtotime($this->input->post('from_date')));?> to <?php echo date("d M Y", strtotime($this->input->post('to_date')));?>
-					</h4>
+						<?php
+							$from_date = $this->input->post('from_date');
+							$to_date = $this->input->post('to_date');
+
+							// Check if from_date is empty, if so set to current date
+							if (empty($from_date)) {
+								$from_date_display = date("d M Y");
+							} else {
+								$from_date_display = date("d M Y", strtotime($from_date));
+							}
+
+							// Check if to_date is empty, if so set to current date
+							if (empty($to_date)) {
+								$to_date_display = date("d M Y");
+							} else {
+								$to_date_display = date("d M Y", strtotime($to_date));
+							}
+						?>
+						Dates : <?php echo $from_date_display; ?> to <?php echo $to_date_display; ?></h4>
 					<h4 style="text-align:center;">Opening Balance : <?php echo $balance; ?></h4>
 				<?php } ?>
 			</div>

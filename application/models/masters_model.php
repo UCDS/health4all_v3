@@ -2392,6 +2392,9 @@ else if($type=="dosage"){
 		$ft = json_decode($this->input->post('funct'));
 		$field_value = json_decode($this->input->post('field_value'));
 		$table = json_decode($this->input->post('table'));
+		$concat_fields = json_decode($this->input->post('txtarea'));
+		$sep = json_decode($this->input->post('separator'));
+		$aligns = json_decode($this->input->post('align'));
 		$report_id = $this->input->post('form_id');
 		$from_table = $this->input->post('from_table');
 		$columns = $this->input->post('columns');
@@ -2410,8 +2413,11 @@ else if($type=="dosage"){
 				'report_id' => $report_id,
 				'table_name' => $table->table_name[$i], 
 				'field_name' => $fields->field_name[$i],
+				'concate' => $concat_fields->concatination_fields[$i],
+				'fields_sep' => $sep->fields_separator[$i],
+				'align_value' => $aligns->alignment[$i],
 				'width' => $width->def_width[$i],
-				'function' => $ft->get_function[$i],
+				'function' => !empty($ft->get_function[$i]) ? $ft->get_function[$i] : '',
 				'column_name' => $field_value->field_values[$i],
 				'sequence_id' => $i + 1,
 			);
@@ -2432,7 +2438,7 @@ else if($type=="dosage"){
 	{
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("rl.report_id,rl.table_name,rl.field_name,rl.column_name,rl.sequence_id,
-		cr.report_name,rl.width,cr.main_table")
+		cr.report_name,rl.width,cr.main_table,rl.concate,rl.fields_sep,rl.align_value")
 		->from("report_layout rl")
 		->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
@@ -2463,7 +2469,7 @@ else if($type=="dosage"){
 		$start = ($page_no -1 )  * $rows_per_page;
 
 		$hospital=$this->session->userdata('hospital');
-		$this->db->select("rl.table_name,rl.field_name,rl.sequence_id,cr.main_table,rl.function")
+		$this->db->select("rl.table_name,rl.field_name,rl.sequence_id,cr.main_table,rl.function,rl.concate,rl.align_value")
 		->from("report_layout rl")
 		->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
@@ -2574,7 +2580,14 @@ else if($type=="dosage"){
 		$admit_date = "MAX(admit_date)";
 		foreach($fields_columns as $fc)
 		{
-			$selected_columns[] = $fc->table_name.'.'.$fc->field_name;
+			//print_r($fc);
+			$selected_columns[] = $fc->table_name.'.'.$fc->field_name; 
+			if (!empty($fc->concate)) {
+				$concat_fields = explode(',', $fc->concate);
+				foreach ($concat_fields as $concat_field) {
+					$selected_columns[] = trim($concat_field);
+				}
+			}
 			if($fc->field_name=="admit_date" && $fc->function=="min")
 			{
 				$admit_date = "MIN(admit_date)";

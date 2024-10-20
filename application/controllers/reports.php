@@ -2180,7 +2180,7 @@ class Reports extends CI_Controller {
 			}
 			if($access==1){     
 				                             
-				$this->data['title']="Issue Summary";                       //Getting values to populate the selection fields in the query form.
+				$this->data['title']="Issue Summary";                       
 				$this->data['all_departments']=$this->staff_model->get_department();
 				$this->data['units']=$this->staff_model->get_unit();
 				$this->data['areas']=$this->staff_model->get_area();
@@ -2257,7 +2257,7 @@ class Reports extends CI_Controller {
 					if($this->data['fields']!=0)
 					{
 						$this->data['report']=$this->masters_model->get_customised_report_data($this->data['rowsperpage']);
-						//print_r($this->db->last_query()); echo '</br></br>';
+						//print_r($this->data['report']); echo '</br></br>';
 						$this->data['report_count']=$this->masters_model->get_customised_report_data_count();
 						//print_r($this->data['report_count']);
 					}

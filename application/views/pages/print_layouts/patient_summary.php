@@ -82,9 +82,9 @@
 				<span ><b>
 					<?php if($patient->summary_header == 0) { ?> 
 						<?php if($patient->visit_type == "OP") echo "CONSULTATION"; else echo "DISCHARGE";?> SUMMARY 
-						<?php if(!empty($patient->visit_name)) { echo ' - '.ucfirst(strtolower($patient->visit_name)); } ?></b></span>
+						<?php if(!empty($patient->visit_name)) { echo ' - '.$patient->visit_name; } ?></b></span>
 					
-					<?php  } else {?>
+					<?php  } else { ?>
 					
 					<?php  echo $patient->visit_name;?></b></span>
 					 
