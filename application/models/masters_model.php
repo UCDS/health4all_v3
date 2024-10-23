@@ -2388,6 +2388,14 @@ else if($type=="dosage"){
 		$hospital = $this->session->userdata('hospital');
 
 		$fields = json_decode($this->input->post('fields'));
+		//print_r($fields);die;
+		foreach($fields->field_name as $key => $value)
+		{
+			if ($value =='p_insert_datetime') 
+			{
+				$fields->field_name[$key] = str_replace('p_', '', $value);
+			}
+		}
 		$width = json_decode($this->input->post('wid'));
 		$ft = json_decode($this->input->post('funct'));
 		$field_value = json_decode($this->input->post('field_value'));
@@ -2416,7 +2424,7 @@ else if($type=="dosage"){
 				'concate' => $concat_fields->concatination_fields[$i],
 				'fields_sep' => $sep->fields_separator[$i],
 				'align_value' => $aligns->alignment[$i],
-				'width' => $width->def_width[$i],
+				'width' => !empty($width->def_width[$i]) ? $width->def_width[$i] : '',
 				'function' => !empty($ft->get_function[$i]) ? $ft->get_function[$i] : '',
 				'column_name' => $field_value->field_values[$i],
 				'sequence_id' => $i + 1,
@@ -2598,17 +2606,23 @@ else if($type=="dosage"){
 		if ($main_table == 'patient_followup') 
 		{
 			$columns_string = str_replace('patient_followup.followup_upd_btn', '', $columns_string);
+			$columns_string = str_replace('patient_followup.route_primary_id', '', $columns_string);
+			$columns_string = str_replace('patient_visit.update_btn', '', $columns_string);
 			if($columns_string!='patient_followup.patient_id')
 			{
 				$this->db->select("$columns_string,icd_code.code_title,staff.first_name,followup_update_by.first_name as updated_first_name,
-				followup_update_by.last_name as updated_last_name,patient_followup.patient_id");
+				followup_update_by.last_name as updated_last_name,patient_followup.patient_id,route_secondary.route_secondary as rsroute,
+				route_primary.route_primary as rproute,priority_type.priority_type as ptype");
 			}else
 			{
 				$this->db->select("$columns_string,icd_code.code_title,staff.first_name,followup_update_by.first_name as updated_first_name,
-				followup_update_by.last_name as updated_last_name");
+				followup_update_by.last_name as updated_last_name,route_secondary.route_secondary as rsroute,
+				route_primary.route_primary as rproute,priority_type.priority_type as ptype");
 			}
 		} elseif ($main_table == 'patient_visit') {
 			$columns_string = str_replace('patient_visit.update_btn', '', $columns_string);
+			$columns_string = str_replace('patient_followup.route_primary_id', '', $columns_string);
+			$columns_string = str_replace('patient_followup.followup_upd_btn', '', $columns_string);
 			if($columns_string!='patient_visit.patient_id')
 			{
 				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
@@ -2621,6 +2635,9 @@ else if($type=="dosage"){
 				patient_visit.visit_id");
 			}
 		} elseif ($main_table == 'patient') {
+			$columns_string = str_replace('patient_visit.update_btn', '', $columns_string);
+			$columns_string = str_replace('patient_followup.route_primary_id', '', $columns_string);
+			$columns_string = str_replace('patient_followup.followup_upd_btn', '', $columns_string);
 			$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
 			visit_name.visit_name, icd_code.code_title");
 		}
