@@ -1151,6 +1151,42 @@
 						<input type="text" name="update_datetime_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 						</div>
 					</div>
+					<div class="layout-div col-md-12 update_time">
+						<div class="form-group">
+						<label class="control-label">Update Datetime</label>
+						<input type="text" name="update_time"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_followup" class="form-control">
+						<input type="text" name="update_time_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<select name="update_time_funct" class="form-control">
+							<option value="#">Select Function</option>
+							<option value="min">Min</option>
+							<option value="max">Max</option>
+						</select>
+						<input type="text" class="concatenatebtn btn btn-primary" name="update_time" data-field-name="update_time"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="update_time_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="update_time_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="update_time_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+						</div>
+					</div>
+					<div class="layout-div col-md-12 p_insert_datetime">
+						<div class="form-group">
+						<label class="control-label">Insert Datetime</label>
+						<input type="text" name="insert_datetime"   autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient" class="form-control">
+						<input type="text" name="p_insert_datetime_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<select name="p_insert_datetime_funct" class="form-control">
+							<option value="#">Select Function</option>
+							<option value="min">Min</option>
+							<option value="max">Max</option>
+						</select>
+						<input type="text" class="concatenatebtn btn btn-primary" name="p_insert_datetime" data-field-name="p_insert_datetime"
+							value="Concatenate Fields" style="font-size:12px;width:16%;">	
+							<textarea name="p_insert_datetime_concatination_fields" rows="2" cols="30" readonly></textarea>
+							<input type="text" name="p_insert_datetime_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+							<input type="text" name="insert_datetime_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+						</div>
+					</div>
 					<div class="layout-div col-md-12 insert_by_user_id">
 						<div class="form-group">
 						<label class="control-label">Insert by userid</label>
@@ -1531,6 +1567,21 @@
 								<input type="text" name="priority_type_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
 							</div>
 						</div>
+
+						<div class="layout-div col-md-12 route_primary_id">
+							<div class="form-group">
+								<label class="control-label">Route Primary</label>
+								<input type="text" name="route_primary_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+								<input type="hidden" name="" value="patient_followup" class="form-control">
+								<input type="text" name="route_primary_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+								<input type="text" class="concatenatebtn btn btn-primary" name="route_primary_id" data-field-name="route_primary_id"
+									value="Concatenate Fields" style="font-size:12px;width:16%;">	
+								<textarea name="route_primary_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+								<input type="text" name="route_primary_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+								<input type="text" name="route_primary_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+							</div>
+						</div>
+
 						<div class="layout-div col-md-12 route_secondary_id">
 							<div class="form-group">
 								<label class="control-label">Route Secondary</label>
@@ -1811,6 +1862,18 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="blood_group" class="checklist" />Blood Group</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="insert_datetime" class="checklist" />Insert datetime
+						</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="p_insert_datetime" class="checklist" />Registered Datetime
+						</label>
 					</div>
 				</li>
 			</ul>
@@ -2098,16 +2161,6 @@
 			  <ul class="nav nav-sidebar checkboxesList_four">
 				<li>  
 					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="longitude" class="checklist" /> Longitude</label>
-					</div>
-				</li>
-				<li>  
-					<div class="checkbox">
-						<label><input type="checkbox" value="1" id="latitude" class="checklist" /> Latitude</label>
-					</div>
-				</li>
-				<li>  
-					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="life_status" class="checklist" /> Life Status</label>
 					</div>
 				</li>
@@ -2124,6 +2177,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="priority_type_id" class="checklist" /> Priority type id</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="route_primary_id" class="checklist" /> Route primary id</label>
 					</div>
 				</li>
 				<li>  
@@ -2163,6 +2221,16 @@
 				</li>
 				<li>  
 					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="longitude" class="checklist" /> Longitude</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="latitude" class="checklist" /> Latitude</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="death_date" class="checklist" /> Death Date</label>
 					</div>
 				</li>
@@ -2185,6 +2253,11 @@
 				<li>  
 					<div class="checkbox">
 						<label><input type="checkbox" value="1" id="update_by" class="checklist" />  Updated By</label>
+					</div>
+				</li>
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="update_time" class="checklist" /> Update Datetime</label>
 					</div>
 				</li>
 				<li>  

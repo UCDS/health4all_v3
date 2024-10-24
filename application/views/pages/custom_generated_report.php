@@ -402,8 +402,8 @@ function onchange_page_dropdown(dropdownobj){
 	<CENTER>
 		<?php echo $fields[0]->report_name; ?>
 	  </CENTER></h3><br>
-	 
-	<div class="row col-md-offset-2">
+<div class="col-md-offset-1">	 
+	<div class="row ">
 		<div class="col-md-12">
 		<?php
 			$from_date=0;$to_date=0;
@@ -599,7 +599,7 @@ function onchange_page_dropdown(dropdownobj){
 		</div>
 	</div><br/>
 <?php if(!empty($report) && count($report)>0){ ?>
-	<div class="row col-md-offset-2">
+	<div class="row">
 		
 		<div style='padding: 0px 2px;' id="print-container">
             <h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
@@ -741,7 +741,7 @@ function onchange_page_dropdown(dropdownobj){
             </button>
         </a><br><br>
 	
-		<table class="table table-bordered table-striped col-md-12" id="table-sort">
+		<table class="table table-bordered table-striped col-md-12" id="table-sort" >
 			<thead>
 				<tr>
 					<th style="text-align:center;">S.no</th>
@@ -789,7 +789,7 @@ function onchange_page_dropdown(dropdownobj){
 			}
 			?>
 				<?php $sno=(($page_no - 1) * $total_records_per_page)+1 ;?>
-				<?php foreach($report as $r): ?>
+				<?php foreach($report as $r):?>
 					<tr>
 						<td style="text-align:right;"><?php echo $sno; ?></td>
 						<!--<td style="text-align:center;"><?php echo $r->patient_id; ?></td>-->
@@ -821,6 +821,23 @@ function onchange_page_dropdown(dropdownobj){
 									break;
 								case 'update_by_user_id':
 									echo '<td style="text-align:center;">' . $r->vufirst_name . '</td>';
+									break;
+								case 'route_secondary_id':
+									echo '<td style="text-align:center;">' . $r->rsroute . '</td>';
+									break;
+								case 'route_primary_id':
+									echo '<td style="text-align:center;">' . $r->rproute . '</td>';
+									break;
+								case 'priority_type_id':
+									echo '<td style="text-align:center;">' . $r->ptype . '</td>';
+									break;
+								case 'update_time':
+									echo '<td style="text-align:center;">' . ($r->update_time != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->update_time)) : '') . '</td>';
+									break;
+								case 'update_datetime':
+									echo '<td style="text-align:center;">' . 
+											($r->update_datetime != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->update_datetime)) : '') . 
+											'</td>';
 									break;
 								case 'death_status':
 									echo '<td style="text-align:center;">';
@@ -897,10 +914,10 @@ function onchange_page_dropdown(dropdownobj){
 			</tbody>
 		</table>
 	</div>
-	<h5 class="row col-md-offset-2">Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
-	<div class="col-md-offset-2">
+	<h5 class="row ">Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>
+	<div >
 		<ul class="pagination" style="margin-top: 0px;
-				margin-right: 0px;
+				margin-right: 20px;
 				margin-bottom: 20px;
 				margin-left: 0px;">
 			<?php if($page_no > 1){
@@ -998,6 +1015,7 @@ function onchange_page_dropdown(dropdownobj){
 			} ?>
 		</ul>
 	</div>
+</div>
 	<?php } else { ?>
-			<p class="col-md-offset-2"> No custom layout had been added for this report. </p>
+			<p > No custom layout had been added for this report. </p>
 	<?php } ?>
