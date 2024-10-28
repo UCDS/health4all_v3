@@ -760,13 +760,13 @@ function onchange_page_dropdown(dropdownobj){
 								return $field;
 							}, $concateFields);
 							$imp = implode(' / ', $processedFields);
-							if($fd->concate!='')
+						/*	if($fd->concate!='')
 							{
 					?>
 						<th style="text-align:center;width: <?php echo $column_width; ?>"><?php echo $fd->column_name . ' / ' . $imp; ?></th>
-					<?php } else { ?>
+					<?php } else { */ ?>
             			<th style="text-align:center;width: <?php echo $column_width; ?>"><?php echo $fd->column_name; ?></th>
-            		<?php 	} } ?>
+            		<?php  } ?>
 				</tr>
 			</thead>
 			<tbody>

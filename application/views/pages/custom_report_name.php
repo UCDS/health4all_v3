@@ -433,13 +433,19 @@ echo "</select></li>";
 					$.each(response, function(index, data) {
 						rows += '<tr>' +
 									'<td>' + data.column_name + '</td>' +
-									'<td>' + data.table_name + '.' + data.field_name + '</td>' +
-									'<td>' + data.function + '</td>';
+									'<td style="width:20px;">' + data.table_name + '.' + data.field_name;
+						if (data.concate) {
+							rows += '<br>,' + data.concate;
+						}
+						rows += '</td>' +
+								'<td>' + data.function + '</td>';
+						
 						if (data.width != 0) {
 							rows += '<td>' + data.width + '</td>';
 						} else {
 							rows += '<td></td>';
 						}
+
 						rows += '</tr>';
 						mainTableSet.add(data.main_table);
 					});
