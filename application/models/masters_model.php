@@ -2761,7 +2761,7 @@ else if($type=="dosage"){
 	function get_saved_custom_layout()
 	{
 		$report_id = $this->input->post('report_id');
-		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table,rl.concate');
+		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table,rl.concate,rl.id');
 		$this->db->from('report_layout rl');
 		$this->db->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('rl.report_id', $report_id);
@@ -2978,5 +2978,15 @@ else if($type=="dosage"){
 		
 		return $final_result;
 	}
+
+	public function update_cst_field_column($id, $report_id, $column_name,$concate) 
+	{
+		$this->db->set('column_name', $column_name);
+		$this->db->set('concate', $concate);
+		$this->db->where('id', $id);
+		$this->db->where('report_id', $report_id);
+		return $this->db->update('report_layout');
+	}
+	
 }
 ?>

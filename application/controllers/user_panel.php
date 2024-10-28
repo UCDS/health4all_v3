@@ -1262,4 +1262,23 @@ class User_panel extends CI_Controller {
 	}
 	// Custom form layout end here
 
+	public function update_custom_field_col_name() 
+	{
+		$id = $this->input->post('id');
+		$report_id = $this->input->post('report_id');
+		$column_name = $this->input->post('column_name');
+		$concate = $this->input->post('concate');
+	
+		if (empty($id) || empty($report_id) || empty($column_name) || empty($concate)) {
+			echo json_encode(['success' => false, 'message' => 'Invalid input']);
+			return;
+		}
+		$update = $this->masters_model->update_cst_field_column($id, $report_id, $column_name, $concate);
+		if ($update) {
+			echo json_encode(['success' => true]);
+		} else {
+			echo json_encode(['success' => false, 'message' => 'Update failed']);
+		}
+	}
+	
 }
