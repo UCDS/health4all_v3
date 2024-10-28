@@ -422,46 +422,79 @@ echo "</select></li>";
 			$('.btn-warning').click(function() {
 				var report_id = $(this).data('view-id');
 				$.ajax({
-				url: '<?php echo base_url('user_panel/fetch_saved_custom_layout'); ?>',
-				type: 'post',
-				data: {report_id: report_id},
-				dataType: 'json',
-				success: function(response) {
-					$('#dataBody').empty();
-					var rows = '';
-					var mainTableSet = new Set();
-					$.each(response, function(index, data) {
-						rows += '<tr>' +
-									'<td>' + data.column_name + '</td>' +
-									'<td style="width:20px;">' + data.table_name + '.' + data.field_name;
-						if (data.concate) {
-							rows += '<br>,' + data.concate;
+					url: '<?php echo base_url('user_panel/fetch_saved_custom_layout'); ?>',
+					type: 'post',
+					data: {report_id: report_id},
+					dataType: 'json',
+					success: function(response) {
+						$('#dataBody').empty();
+						var rows = '';
+						var mainTableSet = new Set();
+						$.each(response, function(index, data) {
+							rows += '<tr>' +
+										'<td>' + data.column_name + '</td>' +
+										'<td style="width:20px;">' + data.table_name + '.' + data.field_name;
+							if (data.concate) {
+								rows += '<br>,' + data.concate;
+							}
+							rows += '</td>' +
+									'<td>' + data.function + '</td>';
+							
+							if (data.width != 0) {
+								rows += '<td>' + data.width + '</td>';
+							} else {
+								rows += '<td></td>';
+							}
+							rows += '<td><button class="btn btn-edits btn-success" data-id="' + data.id + '" data-report-id="' + report_id + '" data-concate="' + data.concate + '">Edit</button></td>';
+							rows += '</tr>';
+							mainTableSet.add(data.main_table);
+						});
+						$('#dataBody').html(rows); 
+						var modalTitle = 'Layout Fields';
+						if (mainTableSet.size > 0) {
+							modalTitle += ' - primary table : ' + Array.from(mainTableSet).join(', ');
 						}
-						rows += '</td>' +
-								'<td>' + data.function + '</td>';
-						
-						if (data.width != 0) {
-							rows += '<td>' + data.width + '</td>';
-						} else {
-							rows += '<td></td>';
-						}
-
-						rows += '</tr>';
-						mainTableSet.add(data.main_table);
-					});
-					$('#dataBody').html(rows); 
-					var modalTitle = 'Layout Fields';
-					if (mainTableSet.size > 0) {
-						modalTitle += ' - primary table : ' + Array.from(mainTableSet).join(', ');
+						$('#dataModalLabel').html(modalTitle);
+						$('#dataModal').modal('show');
+					},
+					error: function() {
+						alert('Error fetching data.');
 					}
-					$('#dataModalLabel').html(modalTitle);
-					$('#dataModal').modal('show');
-				},
-				error: function() {
-					alert('Error fetching data.');
-				}
 				});
 			});
+		});
+
+		$(document).on('click', '.btn-edits', function() {
+			var id = $(this).data('id');
+			var reportId = $(this).data('report-id');
+			var newColumnName = prompt('Enter new column name:');
+			var currentConcate = $(this).data('concate');
+			var newConcate = prompt('Enter new concate value ( leave empty if no fileds to update ) :', currentConcate); 
+
+			if (newColumnName && newConcate !== null) { 
+				$.ajax({
+					url: '<?php echo base_url('user_panel/update_custom_field_col_name'); ?>',
+					type: 'post',
+					data: {
+						id: id,
+						report_id: reportId,
+						column_name: newColumnName,
+						concate: newConcate 
+					},
+					dataType: 'json',
+					success: function(response) {
+						if (response.success) {
+							alert('Column name and concate updated successfully!');
+							location.reload();
+						} else {
+							alert('Error updating column name: ' + response.message);
+						}
+					},
+					error: function() {
+						alert('Error during the update request.');
+					}
+				});
+			}
 		});
 	</script>
 	</table>
