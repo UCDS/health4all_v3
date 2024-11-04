@@ -445,7 +445,7 @@ echo "</select></li>";
 							} else {
 								rows += '<td></td>';
 							}
-							rows += '<td><button class="btn btn-edits btn-success" data-id="' + data.id + '" data-report-id="' + report_id + '" data-concate="' + data.concate + '">Edit</button></td>';
+							rows += '<td><button class="btn btn-edits btn-success" data-id="' + data.id + '" data-report-id="' + report_id + '" data-concate="' + data.concate + '" data-column-name="' + data.column_name + '">Edit</button></td>';		
 							rows += '</tr>';
 							mainTableSet.add(data.main_table);
 						});
@@ -467,33 +467,49 @@ echo "</select></li>";
 		$(document).on('click', '.btn-edits', function() {
 			var id = $(this).data('id');
 			var reportId = $(this).data('report-id');
-			var newColumnName = prompt('Enter new column name:');
+			var existcolumn = $(this).data('column-name'); 
 			var currentConcate = $(this).data('concate');
-			var newConcate = prompt('Enter new concate value ( leave empty if no fileds to update ) :', currentConcate); 
-
-			if (newColumnName && newConcate !== null) { 
+			var newColumnName = prompt('Enter new column name (leave empty to keep existing):', existcolumn || '');
+			var newConcate = prompt('Enter new concate value (leave empty to keep existing):', currentConcate || '');
+			var finalColumnName = existcolumn;
+			var finalConcate = currentConcate;
+			if (newColumnName !== null) {
+				finalColumnName = newColumnName.trim() !== '' ? newColumnName : existcolumn;
+			} else {
+				alert('Column name update cancelled.');
+			}
+			if (newConcate !== null) {
+				finalConcate = newConcate.trim() !== '' ? newConcate : currentConcate;
+			} else {
+				alert('Concatenation update cancelled.');
+			}
+			//console.log('Updating column:', finalColumnName, 'with concate:', finalConcate);
+			if (finalColumnName !== existcolumn || finalConcate !== currentConcate) {
 				$.ajax({
 					url: '<?php echo base_url('user_panel/update_custom_field_col_name'); ?>',
 					type: 'post',
 					data: {
 						id: id,
 						report_id: reportId,
-						column_name: newColumnName,
-						concate: newConcate 
+						column_name: finalColumnName,
+						concate: finalConcate
 					},
 					dataType: 'json',
 					success: function(response) {
 						if (response.success) {
-							alert('Column name and concate updated successfully!');
+							alert('Column name and/or concate updated successfully!');
 							location.reload();
 						} else {
 							alert('Error updating column name: ' + response.message);
 						}
 					},
-					error: function() {
+					error: function(xhr, status, error) {
+						console.error('AJAX request failed:', status, error);
 						alert('Error during the update request.');
 					}
 				});
+			} else {
+				alert('No changes made to column name or concatenation.');
 			}
 		});
 	</script>

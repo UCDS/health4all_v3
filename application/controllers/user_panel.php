@@ -1269,7 +1269,7 @@ class User_panel extends CI_Controller {
 		$column_name = $this->input->post('column_name');
 		$concate = $this->input->post('concate');
 	
-		if (empty($id) || empty($report_id) || empty($column_name) || empty($concate)) {
+		if (empty($id) || empty($report_id)) {
 			echo json_encode(['success' => false, 'message' => 'Invalid input']);
 			return;
 		}
