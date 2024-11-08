@@ -2401,6 +2401,13 @@ else if($type=="dosage"){
 		$field_value = json_decode($this->input->post('field_value'));
 		$table = json_decode($this->input->post('table'));
 		$concat_fields = json_decode($this->input->post('txtarea'));
+		foreach ($concat_fields->concatination_fields as $key => $acf) 
+		{
+			if (strpos($acf, 'p_insert_datetime') !== false) 
+			{
+				$concat_fields->concatination_fields[$key] = str_replace('p_insert_datetime', 'insert_datetime', $acf);
+			}
+		}
 		$sep = json_decode($this->input->post('separator'));
 		$aligns = json_decode($this->input->post('align'));
 		$report_id = $this->input->post('form_id');
