@@ -18,7 +18,7 @@ class department extends CI_Controller{         // 28 October 2016 -- gokulakris
             $this->data['departments']=$this->staff_model->user_department($user_id);
             $this->data['op_forms']=$this->staff_model->get_forms("OP");
             $this->data['ip_forms']=$this->staff_model->get_forms("IP");
-            
+            $this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
             $this->logged_in = 1;
         }else{
             show_404();

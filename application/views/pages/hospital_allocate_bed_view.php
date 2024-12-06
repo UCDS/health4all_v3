@@ -384,7 +384,8 @@ display: inline-grid;
 						$patient_details->details = implode("\n", $output_lines);
 					}
 			?>
-			<div class="col-md-4" style="max-height:800px!important;overflow-y:auto;margin-bottom:80px;">
+			<div class="col-md-4" 
+				style="max-height:800px!important;overflow-y:auto;<?php if($patient_details->patient_name == '' && $patient_details->reservation_details!= '' ) echo 'margin-bottom:80px;'; ?>">
             <div class="form-group">
                 <label for="inputhospital_name" style="color:red;font-weight:bold;"></label>
                 <input type="hidden" name="bed_id_<?php echo $j; ?>" value="<?php echo $abc->hospital_bed_id; ?>">

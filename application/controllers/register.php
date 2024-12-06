@@ -54,7 +54,7 @@ class Register extends CI_Controller {
 			//The OP and IP forms in the application are loaded into a data variable for the menu.
 			$this->data['op_forms'] = $this->staff_model->get_forms("OP");
 			$this->data['ip_forms'] = $this->staff_model->get_forms("IP");
-				
+			$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
 		}
 	}
 	//sairam
@@ -1289,4 +1289,213 @@ class Register extends CI_Controller {
 	{
 		unlink('assets/patient_documents/'.$document_link);
 	}
+
+	function update_patient_customised($form_id='')
+	{		
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Update Patient Custom";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+			foreach($this->data['functions'] as $function)
+			{
+				if($function->user_function=="update_patient_customised"){
+					$access=1;break;
+				}
+			}
+			
+			if($access==1)
+			{
+				$this->data['form_id'] = $form_id;
+				$this->data['requested_form_id']= $this->input->post('sent_form_id');
+				if(!empty($this->input->post('search_patient_id')) || !empty($this->input->post('search_patient_number')) ||
+						!empty($this->input->post('search_phone')) || !empty($this->input->post('search_patient_id_manual')))
+				{
+					$this->data['patients']=$this->register_model->search();
+				}
+				
+			}
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/update_patients_custom',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function generate_table_checkboxes($form_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Select Fields";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+			foreach($this->data['functions'] as $function)
+			{
+				if($function->user_function=="update_patient_customised"){
+					$access=1;break;
+				}
+			}
+			if($access==1)
+			{
+				$this->data['form_id'] = $form_id ;
+				$selected_patient = $this->input->post('selected_patient'); 
+				$this->session->set_userdata('selected_visit_id', $selected_patient);
+				$table_names = ['patient', 'patient_visit', 'patient_followup'];
+				$columns = $this->register_model->get_columns_for_multiple_tables($table_names);
+				$data['columns'] = $columns;
+			}
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->$data);
+				$this->load->view('pages/generated_column_checkboxes',$data);
+				$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}
+	}
+
+	public function submit_columns() 
+	{
+		$form_name = $this->input->post('form_name');
+		$selected_columns = $this->input->post('selected_columns');
+		if ($form_name && !empty($selected_columns)) 
+		{
+			$data = [
+				'form_name' => $form_name,
+				'selected_columns' => json_encode($selected_columns)
+			];
+			
+			$form_id = $this->register_model->save_sel_cols_update_patients($form_name, $selected_columns);
+			if ($form_id) 
+			{
+				echo json_encode(['status' => 'success', 'message' => 'Form Created Successfully!']);
+			} else 	{
+				echo json_encode(['status' => 'error', 'message' => 'Failed to save columns.']);
+			}
+		} else {
+			echo json_encode(['status' => 'error', 'message' => 'Form name or columns not selected.']);
+		}
+	}
+
+	public function saved_update_patient_custom_form() 
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Update Patient Custom";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			$this->data['all_departments']=$this->staff_model->get_department();
+			$this->data['units']=$this->staff_model->get_unit();
+			$this->data['areas']=$this->staff_model->get_area();
+			$this->data['districts']=$this->staff_model->get_district();
+			$this->data['states']=$this->masters_model->get_data('states');
+			$this->data['priority_types']=$this->register_model->get_priority_type();
+			$this->data['route_primary']=$this->register_model->get_primary_route();
+			$this->data['route_secondary']=$this->register_model->get_secondary_route();
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+			foreach($this->data['functions'] as $function)
+			{
+				if($function->user_function=="update_patient_customised"){
+					$access=1;break;
+				}
+			}
+			if($access==1)
+			{
+				$this->data['visit_id'] = $this->input->post('visit_id');
+				$this->data['patient_id'] = $this->input->post('patient_id');
+				$sent_form_id = $this->input->post('sent_form_id');
+				if ($sent_form_id) {
+					$this->data['saved_form_id'] = $this->register_model->get_saved_fields_data_up($sent_form_id);
+					$combined_array = array();
+					foreach ($this->data['saved_form_id'] as $entry) 
+					{
+						$combined_value = $entry->table_name. '.' .$entry->selected_columns ;
+						$combined_array[] = $combined_value;
+					}
+					$this->data['db_values'] = $this->register_model->get_db_values_selected_fields($combined_array,$this->data['visit_id']);
+					//print_r($this->data['db_values']);
+				} else {
+					$this->data['saved_form_id'] = '';
+				}
+			}
+			$this->load->view('templates/header', $this->data);
+			$this->load->view('templates/leftnav', $this->data);
+			$this->load->view('pages/saved_update_patient_custom_form', $this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+			show_404();
+		}
+	}
+
+	public function save_custom_patient_visit_details() 
+	{
+		$post_data = $_POST;
+		$patient_id = $this->input->post('patient_id');
+		$visit_id = $this->input->post('visit_id');
+
+		// echo '<pre>';
+		// print_r($post_data);
+		// echo '</pre>';
+	
+		$fields_to_update = [];
+		foreach ($post_data as $field_name => $new_value) 
+		{
+			$field_name = str_replace('__DOT__', '.', $field_name);
+			$dot_position = strpos($field_name, '.');
+			if ($dot_position !== false) 
+			{
+				$column_name = substr($field_name, 0, $dot_position);
+				$table_name = substr($field_name, $dot_position + 1);
+				$fields_to_update[] = [
+					'column_name' => $column_name,
+					'table_name'  => $table_name,
+					'new_value'   => $new_value
+				];
+			}
+		}
+		// echo '<pre>';
+		// print_r($fields_to_update);
+		// echo '</pre>';
+		$update_status = $this->register_model->update_patient_visit_data_cus($fields_to_update,$patient_id,$visit_id);
+		if ($update_status) {
+			$this->session->set_flashdata('success', 'Patient visit details updated successfully.');
+		} else {
+			$this->session->set_flashdata('error', 'No changes were made or an error occurred.');
+		}
+		redirect('register/update_patients');
+	}
+
 }

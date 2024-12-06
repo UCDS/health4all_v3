@@ -21,6 +21,7 @@ class Hospital extends CI_Controller {
             $this->data['departments']=$this->staff_model->user_department($user_id);
             $this->data['op_forms']=$this->staff_model->get_forms("OP");
             $this->data['ip_forms']=$this->staff_model->get_forms("IP");
+			$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
             $this->data['user_id']=$user['user_id'];
             $this->load->model('gen_rep_model');
 		}

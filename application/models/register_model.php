@@ -1993,5 +1993,148 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 		$query=$this->db->get();
 		return $query->result();
 	}
+
+	function get_columns_for_multiple_tables($table_names)
+	{
+		if (!empty($table_names) && is_array($table_names)) 
+		{
+            foreach ($table_names as $table) 
+			{
+                if ($this->db->table_exists($table)) 
+				{
+                    $columns[$table] = $this->db->list_fields($table);
+                } else 
+				{
+                    $columns[$table] = null;
+                }
+            }
+        }
+        return $columns;
+	}
+
+	public function save_sel_cols_update_patients($form_name,$selected_columns) 
+	{
+		$insert_data = [];
+		foreach ($selected_columns as $column) {
+			$column_parts = explode('.', $column);
+			if (count($column_parts) == 2) 
+			{
+				$column_name = $column_parts[0];
+				$table_name = $column_parts[1];
+				$insert_data[] = [
+					'form_id' => $form_name,
+					'selected_columns' => $column_name,
+					'table_name' => $table_name
+				];
+			}
+		}
+		if (!empty($insert_data)) 
+		{
+			$this->db->insert_batch('update_patient_custom_form_fields', $insert_data);
+			if ($this->db->affected_rows() > 0) {
+				return 1;
+			}
+		}
+		return 0; 
+	}
+
+	public function get_saved_fields_data_up($saved_form_id)
+	{
+		$this->db->select('upcf.form_name,upcf.no_of_cols,upcff.selected_columns,upcff.table_name,upcf.id,upcff.label');   
+		$this->db->from('update_patient_custom_form as upcf');   
+		$this->db->join('update_patient_custom_form_fields as upcff','upcff.form_id = upcf.id','left');	
+		$this->db->where('upcff.form_id',$saved_form_id);	
+		$this->db->order_by('upcff.sequence_id', 'ASC');
+		$query=$this->db->get();   
+		return $query->result();   
+	}
+	
+	public function get_db_values_selected_fields($combined_array,$visit_id)
+	{
+		if (in_array('patient_visit.department_id', $combined_array)) 
+		{
+			$combined_array[] = 'patient_visit.area';
+			$combined_array[] = 'patient_visit.unit';
+			$combined_array[] = 'patient.state_code';
+		}
+		$this->db->select($combined_array);
+		$this->db->from('patient_visit'); 
+		$this->db->join('patient','patient.patient_id = patient_visit.patient_id','left');	
+		$this->db->join('patient_followup','patient_followup.patient_id = patient_visit.patient_id','left');
+		$this->db->where('patient_visit.visit_id',$visit_id);	
+		$this->db->order_by('patient_visit.visit_id', 'DESC');
+		$query=$this->db->get();   
+		return $query->result();	
+	}
+
+	public function update_patient_visit_data_cus($post_data, $patient_id, $visit_id) 
+	{
+		$update_status = false;
+		$this->db->trans_start();
+
+		$user_data=$this->session->userdata('logged_in');
+
+		$static_patient_data = array(
+			'update_datetime' => date("Y-m-d H:i:s"),
+			'update_by_user_id' => $user_data['staff_id']
+		);
+	
+		$static_followup_data = array(
+			'update_by' => $this->session->userdata('logged_in')['staff_id'],
+			'update_time' => date("Y-m-d H:i:s")
+		);
+
+		foreach ($post_data as $field_data) 
+		{
+			$column_name = $field_data['column_name'];
+			$table_name = $field_data['table_name'];
+			$new_value = $field_data['new_value'];
+	
+			$this->db->select($column_name);
+			$this->db->from($table_name);
+	
+			if ($table_name == 'patient') {
+				$this->db->where('patient_id', $patient_id);
+			} elseif ($table_name == 'patient_followup') {
+				$this->db->where('patient_id', $patient_id);
+			} elseif ($table_name == 'patient_visit') {
+				$this->db->where('visit_id', $visit_id);
+			}
+	
+			$query = $this->db->get();
+			$old_value = $query->row()->$column_name;
+	
+			if ($new_value != $old_value) 
+			{
+				$this->db->set($column_name, $new_value);
+			}
+
+			if ($table_name == 'patient' || $table_name == 'patient_visit') {
+				foreach ($static_patient_data as $key => $value) {
+					$this->db->set($key, $value);
+				}
+			}
+
+			if ($table_name == 'patient_followup') {
+				foreach ($static_followup_data as $key => $value) {
+					$this->db->set($key, $value);
+				}
+			}
+
+			if ($table_name == 'patient') {
+				$this->db->where('patient_id', $patient_id);
+			} elseif ($table_name == 'patient_followup') {
+				$this->db->where('patient_id', $patient_id);
+			} elseif ($table_name == 'patient_visit') {
+				$this->db->where('visit_id', $visit_id);
+			}
+			$this->db->update($table_name);
+			$update_status = true;
+			
+		}
+		$this->db->trans_complete();
+		return $update_status;
+	}
+	
 }
 ?>

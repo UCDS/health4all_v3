@@ -2994,6 +2994,130 @@ else if($type=="dosage"){
 		$this->db->where('report_id', $report_id);
 		return $this->db->update('report_layout');
 	}
-	
+
+	function check_custom_patient_form($hospital_id, $report_name) 
+    {
+        $hospital=$this->session->userdata('hospital');
+        $this->db->where('hospital_id', $hospital['hospital_id']);
+        $this->db->where('form_name', $report_name);
+        $query = $this->db->get('update_patient_custom_form');
+        return $query->num_rows() > 0;
+    }
+
+	function insert_cust_patient_visit($data) 
+    {
+        $this->db->insert('update_patient_custom_form', $data);
+    }
+
+	function get_all_custom_visit_patient_form()
+    {
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("h.hospital as hname,staff.first_name,updated_by.first_name as updated_by_name,
+		cr.form_name,cr.created_date_time,cr.updated_date_time,cr.id,h.hospital_id,cr.no_of_cols")
+		->from("update_patient_custom_form cr")
+		->join('staff','staff.staff_id=cr.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=cr.updated_by','left')
+		->join('hospital as h','h.hospital_id=cr.hospital_id','left');
+		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+	function get_all_custom_visit_patient_form_count()
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("count(*) as count",false)
+		->from("update_patient_custom_form cr")
+		->join('staff','staff.staff_id=cr.created_by','left')
+		->join('staff as updated_by','updated_by.staff_id=cr.updated_by','left')
+		->join('hospital as h','h.hospital_id=cr.hospital_id','left');
+		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function custom_visit_patient_id_count()
+	{
+		$this->db->distinct();
+		$this->db->select('form_id');
+		$this->db->from('update_patient_custom_form_fields');
+		$res = $this->db->get()->result_array();
+		return $res;
+	}
+
+	function get_edit_custom_visit_patient_id($record_id) 
+	{
+		$this->db->select('id,form_name,no_of_cols,hospital_id,created_by,updated_by,created_date_time,updated_date_time');
+        $query = $this->db->get_where('update_patient_custom_form', array('id' => $record_id));
+        return $query->row_array();
+    }
+
+	function update_cust_patient_visit($record_id, $data) 
+	{
+		$this->db->where('id', $record_id);
+		$this->db->update('update_patient_custom_form', $data);
+   	}
+
+	   function delete_custom_patient_visit_id()
+	   {
+		   $layout_delt_id = $this->input->post('layout_id');        
+		   $this->db->where('form_id', $layout_delt_id);
+		   $result = $this->db->delete('update_patient_custom_form_fields');
+		   if($result)
+		   {
+			   $this->db->where('id', $layout_delt_id);
+			   $this->db->delete('update_patient_custom_form');
+		   }
+		   return $this->db->affected_rows() > 0;
+	   }
+
+	function get_saved_custom_patient_visit()
+	{
+		$report_id = $this->input->post('report_id');
+		$this->db->select('upcf.id,upcff.selected_columns,upcff.table_name,upcff.id as main_id,upcff.label,upcff.sequence_id');
+		$this->db->from('update_patient_custom_form upcf');
+		$this->db->join('update_patient_custom_form_fields upcff','upcff.form_id=upcf.id','left');
+		$this->db->where('upcf.id', $report_id);
+		$res = $this->db->get()->result_array();
+		return $res;
+	}
+
+	function get_cust_patient_visit_forms()
+	{
+		$hospital = $this->session->userdata('hospital');
+		// Perform a JOIN with the update_patient_custom_form_fields table on form_id
+		$this->db->select('DISTINCT(upcf.id),upcf.form_name,upcf.no_of_cols')
+				->from('update_patient_custom_form upcf')
+				->join('update_patient_custom_form_fields upcff', 'upcf.id = upcff.form_id', 'inner')  // Inner join on form_id
+				->where('upcf.hospital_id', $hospital['hospital_id']);
+
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function update_label_seqeunce($id, $data)
+	{
+		$this->db->where('id', $id);
+		return $this->db->update('update_patient_custom_form_fields', $data);
+	}
+
+	public function update_row_db($main_id, $data) 
+	{
+        $this->db->where('id', $main_id);
+        return $this->db->update('update_patient_custom_form_fields', $data);
+    }
+
+    public function get_table_name($main_id) 
+	{
+        $this->db->select('table_name');
+        $this->db->from('update_patient_custom_form_fields');
+        $this->db->where('id', $main_id);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->row()->table_name;
+        }
+        return null;
+    }
 }
 ?>

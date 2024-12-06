@@ -14,6 +14,7 @@ class Supply_chain_party extends CI_Controller {		//creating controller with nam
 		}
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");		//calling the get_forms method store the data into the data array with the index of op_forms.
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");
+        $this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
         $this->load->model('consumables/supply_chain_party_model');					
 	}
 
