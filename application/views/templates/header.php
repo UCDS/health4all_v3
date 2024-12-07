@@ -130,6 +130,18 @@ break;
 								break;
 								} 
 							} 
+
+							foreach($functions as $f)
+							{
+								if($f->user_function=="update_patient_customised"){ ?>
+									<?php foreach($custom_patient_visit_form as $form){  ?>
+										<li><a href="<?php echo base_url()."register/update_patient_customised/$form->id"; ?>">
+										<?php echo $form->form_name;?></a></li>
+									<?php }
+									//When the match is found, break the loop.
+									break;
+								}
+							}
 ?>
 							</ul>
 						  </li>

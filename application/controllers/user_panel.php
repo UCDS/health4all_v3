@@ -18,6 +18,7 @@ class User_panel extends CI_Controller {
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");  
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");
 		$this->data['ip_forms']=$this->staff_model->get_forms("IP");	
+		$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
 	}
 
 	function form_layout(){
@@ -1281,4 +1282,194 @@ class User_panel extends CI_Controller {
 		}
 	}
 	
+	function add_patient_visit_custom($record_id='')
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Custom Patient Visit Form";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				if ($this->input->post()) 
+				{
+					$hospital = $this->session->userdata('hospital');
+					$report_name = $this->input->post('report_name');
+					$no_of_cols = $this->input->post('no_of_cols');
+					$added_by = $this->input->post('added_by');
+					$insert_datetime = $this->input->post('insert_datetime');
+
+					if($this->masters_model->check_custom_patient_form($hospital['hospital_id'], $report_name)) 
+					{
+					 	$this->data['error'] = 'Custom Patient Visit name already exists with this hospital';
+					}
+					else
+					{
+						$data_to_insert = array(
+							'hospital_id' => $hospital['hospital_id'],
+							'form_name' => $report_name,
+							'no_of_cols' => $no_of_cols,
+							'created_by' => $added_by,
+					 		'created_date_time' => $insert_datetime,
+						);
+						$this->masters_model->insert_cust_patient_visit($data_to_insert);
+						$this->data['success'] = 'Custom Patient Visit Added Successfully';
+					}
+				}
+				//Fetch all records from primary table
+				$this->data['all_report_name'] = $this->masters_model->get_all_custom_visit_patient_form($this->data['rowsperpage']);
+				$this->data['all_report_name_count'] = $this->masters_model->get_all_custom_visit_patient_form_count();
+				$this->data['report_layout_report_id_count'] = $this->masters_model->custom_visit_patient_id_count();
+				//Fetch record to edit
+				$this->data['edit_report_name'] = $this->masters_model->get_edit_custom_visit_patient_id($record_id);
+
+				$this->load->view('templates/header',$this->data);
+				$this->load->view('templates/leftnav',$this->data);
+				$this->load->view('pages/custom_patient_visit',$this->data);
+				$this->load->view('templates/footer');		
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function update_custom_patient_visit()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Custom Patient Visit Form";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+
+					}
+				}
+				$hospital = $this->session->userdata('hospital');
+				$update_record_id = $this->input->post('record_id');
+				$report_name = $this->input->post('report_name');
+				$no_of_cols = $this->input->post('no_of_cols');
+				$updated_by = $this->input->post('updated_by');
+				$update_datetime = $this->input->post('updated_datetime');
+
+				if($this->masters_model->check_custom_patient_form($hospital['hospital_id'], $report_name)) 
+				{
+					$this->data['error'] = 'Custom Patient Visit name already exists with this hospital';
+				}else
+				{
+					$update_data = array(
+						'form_name' => $report_name,
+						'no_of_cols' => $no_of_cols,
+						'updated_by' => $updated_by,
+						'updated_date_time' => $update_datetime,
+					);
+					$this->masters_model->update_cust_patient_visit($update_record_id,$update_data);
+					$this->data['success'] = 'Custom Patient Visit Name Updated Successfully';
+				}
+			//Fetch all records from primary table
+			$this->data['all_report_name'] = $this->masters_model->get_all_custom_visit_patient_form($this->data['rowsperpage']);
+			$this->data['all_report_name_count'] = $this->masters_model->get_all_custom_visit_patient_form_count();
+
+			$this->load->view('templates/header',$this->data);
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/custom_patient_visit',$this->data);
+			if (isset($this->data['success'])) {
+				echo '<script type="text/javascript">
+						alert("' . $this->data['success'] . '");
+						window.location.href = "' . base_url('user_panel/add_patient_visit_custom') . '"; 
+					  </script>';
+			}
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+	function custom_patient_visit_layout_delt()
+	{
+		$layout_delt_id = $this->input->post('layout_id');
+        $deleted = $this->masters_model->delete_custom_patient_visit_id($layout_delt_id);
+        if($deleted) 
+        {
+            echo json_encode(['status' => 'success', 'message' => 'Custom Patient visit deleted successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete bed']);
+        }
+	}
+
+	public function fetch_saved_custom_patient_visit() 
+	{
+		$report_id = $this->input->post('report_id');
+		$data = $this->masters_model->get_saved_custom_patient_visit($report_id);
+		echo json_encode($data);
+	}
+
+	public function save_updated_label_seqeunce()
+	{
+		$updates = $this->input->post('updates');
+		$updates = json_decode($updates, true);
+
+		$success = true;
+		foreach ($updates as $update) {
+			$data = [
+				'label' => $update['label'],
+				'sequence_id' => $update['sequence']
+			];
+			$result = $this->masters_model->update_label_seqeunce($update['id'], $data);
+			//echo $this->db->last_query();
+			if (!$result) {
+				$success = false;
+				break;
+			}
+		}
+		if ($success) {
+			echo json_encode(['success' => true]);
+		} else {
+			echo json_encode(['success' => false]);
+		}
+	}
+	
+	public function update_row_cutom_layout() 
+	{
+		$main_id = $this->input->post('main_id');
+		$selected_columns = $this->input->post('selected_columns');
+		$label = $this->input->post('label');
+		$sequence_id = $this->input->post('sequence_id');
+
+		if ( empty($label) ) {
+			echo json_encode(['success' => false, 'message' => 'All fields are required.']);
+			return;
+		}
+
+		$data = [
+			'selected_columns' => $selected_columns,
+			'label' => $label,
+			'sequence_id' => $sequence_id
+		];
+
+		$update_result = $this->masters_model->update_row_db($main_id, $data);
+		if ($update_result) 
+		{
+			echo json_encode(['success' => true, 'message' => 'Data updated successfully.']);
+		} else {
+			echo json_encode(['success' => false, 'message' => 'Failed to update row.']);
+		}
+	}
+	
+	
+
 }

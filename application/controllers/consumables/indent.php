@@ -1,8 +1,10 @@
 <?php
 class Indent extends CI_Controller {		
     function __construct() {				
-        parent::__construct();					
+        parent::__construct();	
+        error_reporting(1);				
         		$this->load->model('staff_model');
+                $this->load->model('masters_model');
 		//$this->load->model('consumables/list_departments');	
 		if($this->session->userdata('logged_in')){		
                     $userdata=$this->session->userdata('logged_in');   
@@ -12,7 +14,8 @@ class Indent extends CI_Controller {
                     $this->data['departments']=$this->staff_model->user_department($user_id);	
 		}
 		$this->data['op_forms']=$this->staff_model->get_forms("OP");		
-		$this->data['ip_forms']=$this->staff_model->get_forms("IP");					
+		$this->data['ip_forms']=$this->staff_model->get_forms("IP");		
+        $this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();			
 	}
     function authorized_party($party_id)
     {

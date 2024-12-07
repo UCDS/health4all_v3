@@ -328,3 +328,39 @@ ALTER TABLE `report_layout` ADD `concate` TEXT NOT NULL AFTER `sequence_id`;
 ALTER TABLE `report_layout` ADD `fields_sep` VARCHAR(20) NOT NULL AFTER `concate`;
 
 ALTER TABLE `report_layout` ADD `align_value` VARCHAR(100) NOT NULL AFTER `fields_sep`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'update_patient_customised', 'update_patient_customised', 'update patient customised');
+
+CREATE TABLE `update_patient_custom_form` (
+  `id` int(11) NOT NULL,
+  `form_name` varchar(300) NOT NULL,
+  `no_of_cols` smallint(6) NOT NULL,
+  `hospital_id` int(11) NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `created_date_time` datetime DEFAULT NULL,
+  `updated_date_time` datetime DEFAULT NULL
+);
+
+ALTER TABLE `update_patient_custom_form` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `update_patient_custom_form` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+CREATE TABLE `update_patient_custom_form_fields` (
+  `id` int(11) NOT NULL,
+  `form_id` int(11) NOT NULL,
+  `selected_columns` varchar(300) NOT NULL,
+  `table_name` varchar(200) NOT NULL,
+  `label` varchar(150) NOT NULL,
+  `sequence_id` int(11) NOT NULL
+);
+
+ALTER TABLE `update_patient_custom_form_fields` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `update_patient_custom_form_fields` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `update_patient_custom_form` ADD `created_by` INT NOT NULL AFTER `hospital_id`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NOT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NOT NULL AFTER `created_date_time`;
+
+ALTER TABLE `update_patient_custom_form` CHANGE `created_date_time` `created_date_time` DATETIME NULL DEFAULT NULL;
+
+ALTER TABLE `update_patient_custom_form` CHANGE `updated_date_time` `updated_date_time` DATETIME NULL DEFAULT NULL;
