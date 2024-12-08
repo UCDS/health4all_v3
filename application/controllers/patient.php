@@ -9,6 +9,7 @@ class Patient extends CI_Controller {
         $user_id=$this->data['userdata']['user_id'];
         $this->load->model('bloodbank/donation_model');
 	$this->load->model('staff_model');
+	$this->load->model('masters_model');
         $this->load->model('bloodbank/register_model');
         $this->data['hospitals']=$this->staff_model->user_hospital($user_id);
         $this->data['functions']=$this->staff_model->user_function($user_id);
