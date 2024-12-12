@@ -389,18 +389,24 @@ echo "</select></li>";
 			{
 		?>
 		<td style="text-align:center">
-			<a class="btn btn-success" href="<?php echo base_url('user_panel/add_patient_visit_custom/'.$arn->id); ?>" style="color:white!important;">Edit</a>
+			<a class="btn btn-success" href="<?php echo base_url('user_panel/add_patient_visit_custom/'.$arn->id); ?>" style="color:white!important;">Edit Label</a>
 			<?php $report_id_exists = false; ?>
 			<?php foreach ($report_layout_report_id_count as $rl): ?>
 				<?php if ($rl['form_id'] == $arn->id): ?>
 					<?php $report_id_exists = true; ?>
-					<a class="btn btn-danger" data-layout-id="<?php echo $arn->id; ?>" style="color:white!important;">Delete Layout</a>
-					<a class="btn btn-warning" data-toggle="modal" data-target="#dataModal" data-view-id="<?php echo $arn->id; ?>" style="color:white!important;">View Layout</a>
+					<a class="btn btn-danger" data-layout-id="<?php echo $arn->id; ?>" style="color:white!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Layout">
+						<i class="fa fa-trash"></i>
+					</a>
+					<a class="btn btn-warning" data-toggle="modal" data-target="#dataModal" data-view-id="<?php echo $arn->id; ?>" style="color:white!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="View Layout">
+						<i class="fa fa-eye"></i>
+					</a>
 					<?php break; ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
 			<?php if (!$report_id_exists): ?>
-				<a class="btn btn-info" href="<?php echo base_url('register/generate_table_checkboxes/'.$arn->id); ?>" style="color:white!important;">Add Layout</a>
+				<a class="btn btn-info" href="<?php echo base_url('register/generate_table_checkboxes/'.$arn->id); ?>" style="color:white!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Layout">
+					<i class="fa fa-plus"></i>
+				</a>
 			<?php endif; ?>
 		</td>
 		<?php } ?>
@@ -448,6 +454,7 @@ echo "</select></li>";
 						var mainTableSet = new Set();
 						var showUpdateButton = false;
 						var allValidData = true;
+						var editButton = false;
 
 						$.each(response, function(index, data) {
 							var sequenceValue = (data.sequence_id == 0 || data.sequence_id === null) ? '' : data.sequence_id;
@@ -488,14 +495,16 @@ echo "</select></li>";
 
 						updateSequenceNumbers();
 
-						$('#dataBody').sortable({
-							items: 'tr.sortable-row',
-							update: function(event, ui) {
-								updateSequenceNumbers();
-							}
-						});
-
-						if (showUpdateButton) {
+						if(showUpdateButton)
+						{
+							$('#dataBody').sortable({
+								items: 'tr.sortable-row',
+								update: function(event, ui) {
+									updateSequenceNumbers();
+								}
+							});
+						}
+						if (showUpdateButton && !editButton) {
 							$('#updateButton').show();
 						} else {
 							$('#updateButton').hide();
@@ -544,6 +553,26 @@ echo "</select></li>";
 				row.find('td').eq(3).html('<input type="number" class="form-control sequence-input" value="' + sequence + '" data-id="' + main_id + '" readonly>');
 				
 				$(this).removeClass('btn-warning').addClass('btn-success').text('Save').removeClass('edit-row').addClass('save-row');
+				row.find('td:last').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
+			});
+
+			$(document).on('click', '.cancel-column', function() {
+				var row = $(this).closest('tr');
+				var selectedColumns = row.find('.selected-columns-input').val();
+				var label = row.find('.label-input').val();
+				var sequence = row.find('.sequence-input').val();
+				
+				row.find('td').eq(1).text(selectedColumns);
+				row.find('td').eq(2).text(label);
+				row.find('td').eq(3).text(sequence);
+				
+				row.find('.save-row')
+					.removeClass('btn-success')
+					.addClass('btn-warning')
+					.text('Edit')
+					.removeClass('save-row')
+					.addClass('edit-row');
+				row.find('.cancel-column').remove();
 			});
 
 			$(document).on('click', '.save-row', function() {
