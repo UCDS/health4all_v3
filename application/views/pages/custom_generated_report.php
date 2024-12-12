@@ -884,6 +884,12 @@ function onchange_page_dropdown(dropdownobj){
 										echo '<td style="text-align:center;">Not Followup</td>';
 									}
 									break;
+								case 'appointment_update_by':
+									echo '<td style="text-align:center;">' . $r->appointment_update_by . '</td>';
+									break;
+								case 'appointment_status_id':
+									echo '<td style="text-align:center;">' . $r->appointment_status . '</td>';
+									break;
 								default:
 									if($fd->concate!='')
 									{

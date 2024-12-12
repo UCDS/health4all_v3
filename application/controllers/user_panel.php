@@ -1268,13 +1268,16 @@ class User_panel extends CI_Controller {
 		$id = $this->input->post('id');
 		$report_id = $this->input->post('report_id');
 		$column_name = $this->input->post('column_name');
-		$concate = $this->input->post('concate');
-	
+		$table_name_field = $this->input->post('table_name_field');
+		$function_name = $this->input->post('function_name');
+		$width = $this->input->post('width');
+		$fields_sep = $this->input->post('fields_sep');
+
 		if (empty($id) || empty($report_id)) {
-			echo json_encode(['success' => false, 'message' => 'Invalid input']);
+			echo json_encode(['success' => false, 'message' => 'Invalid input: ID or Report ID missing']);
 			return;
 		}
-		$update = $this->masters_model->update_cst_field_column($id, $report_id, $column_name, $concate);
+		$update = $this->masters_model->update_cst_field_column($id,$report_id,$column_name,$table_name_field,$function_name,$width,$fields_sep);
 		if ($update) {
 			echo json_encode(['success' => true]);
 		} else {

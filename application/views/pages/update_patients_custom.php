@@ -267,6 +267,8 @@ pri.print();
 			<input type="text" class="sr-only" hidden value="<?php echo $p->visit_id; ?>" form="select_patient_<?php echo $p->visit_id; ?>" name="visit_id" />
 			<input type="text" class="sr-only" hidden value="<?php echo $p->patient_id; ?>" name="patient_id" />
 			<input type="text" name="sent_form_id" hidden value="<?php echo $requested_form_id; ?>" name="form_id">
+			<input type="text" class="sr-only" hidden value="<?php echo $p->hosp_file_no; ?>" name="hosp_file_no" />
+			<input type="text" class="sr-only" hidden value="<?php echo $p->visit_type; ?>" name="visit_type" />
 			</form>
 			<?php echo $i++; ?>
 		</td>

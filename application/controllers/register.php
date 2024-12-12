@@ -1434,6 +1434,9 @@ class Register extends CI_Controller {
 			{
 				$this->data['visit_id'] = $this->input->post('visit_id');
 				$this->data['patient_id'] = $this->input->post('patient_id');
+				$this->data['file_no'] = $this->input->post('hosp_file_no');
+				$this->data['visit_type_name'] = $this->input->post('visit_type');
+
 				$sent_form_id = $this->input->post('sent_form_id');
 				if ($sent_form_id) {
 					$this->data['saved_form_id'] = $this->register_model->get_saved_fields_data_up($sent_form_id);

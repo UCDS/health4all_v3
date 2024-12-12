@@ -372,19 +372,26 @@ echo "</select></li>";
 			if($arn->hospital_id==$hospital['hospital_id'])
 			{
 		?>
-		<td style="text-align:center">
-			<a class="btn btn-success" href="<?php echo base_url('user_panel/custom_report_name/'.$arn->report_id); ?>" style="color:white!important;">Edit</a>
+		<td style="text-align:center" >
+			<a class="btn btn-primary" href="<?php echo base_url('user_panel/custom_report_name/'.$arn->report_id); ?>" style="color:white!important;">Edit Label</a>
+			
 			<?php $report_id_exists = false; ?>
 			<?php foreach ($report_layout_report_id_count as $rl): ?>
 				<?php if ($rl['report_id'] == $arn->report_id): ?>
 					<?php $report_id_exists = true; ?>
-					<a class="btn btn-danger" data-layout-id="<?php echo $arn->report_id; ?>" style="color:white!important;">Delete Layout</a>
-					<a class="btn btn-warning" data-toggle="modal" data-target="#dataModal" data-view-id="<?php echo $arn->report_id; ?>" style="color:white!important;">View Layout</a>
+					<a class="btn btn-danger" data-layout-id="<?php echo $arn->report_id; ?>" style="color:white!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Layout">
+						<i class="fa fa-trash"></i>
+					</a>
+					<a class="btn btn-warning" data-toggle="modal" data-target="#dataModal" data-view-id="<?php echo $arn->report_id; ?>" style="color:white!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="View Layout">
+						<i class="fa fa-eye"></i>
+					</a>
 					<?php break; ?>
 				<?php endif; ?>
 			<?php endforeach; ?>
 			<?php if (!$report_id_exists): ?>
-				<a class="btn btn-info" href="<?php echo base_url('user_panel/custom_report_layout/'.$arn->report_id); ?>" style="color:white!important;">Add Layout</a>
+				<a class="btn btn-info" href="<?php echo base_url('user_panel/custom_report_layout/'.$arn->report_id); ?>" style="color:white!important;" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Layout">
+					Add Layout
+				</a>
 			<?php endif; ?>
 		</td>
 		<?php } ?>
@@ -424,32 +431,29 @@ echo "</select></li>";
 				$.ajax({
 					url: '<?php echo base_url('user_panel/fetch_saved_custom_layout'); ?>',
 					type: 'post',
-					data: {report_id: report_id},
+					data: { report_id: report_id },
 					dataType: 'json',
 					success: function(response) {
 						$('#dataBody').empty();
 						var rows = '';
 						var mainTableSet = new Set();
 						$.each(response, function(index, data) {
-							rows += '<tr>' +
-										'<td>' + data.column_name + '</td>' +
-										'<td style="width:20px;">' + data.table_name + '.' + data.field_name;
-							if (data.concate) {
-								rows += '<br>,' + data.concate;
+							var concate = data.concate;
+							if (concate) {
+								concate = concate.split(',').join('<br>');
 							}
-							rows += '</td>' +
-									'<td>' + data.function + '</td>';
-							
-							if (data.width != 0) {
-								rows += '<td>' + data.width + '</td>';
-							} else {
-								rows += '<td></td>';
-							}
-							rows += '<td><button class="btn btn-edits btn-success" data-id="' + data.id + '" data-report-id="' + report_id + '" data-concate="' + data.concate + '" data-column-name="' + data.column_name + '">Edit</button></td>';		
-							rows += '</tr>';
+							rows += '<tr data-id="' + data.id + '">' +
+									'<td class="column-name">' + data.column_name + '</td>' +
+									'<td class="table-name-field">' + data.table_name + '.' + data.field_name + 
+									(data.concate ? ', ' + data.concate.replace(/,/g, ',<br>') : '') + '</td>' + 
+									'<td class="function">' + data.function + '</td>' +
+									'<td class="width">' + (data.width != 0 ? data.width : '') + '</td>' +
+									'<td class="field-sep">' + data.fields_sep + '</td>' +
+									'<td><button class="btn btn-edits btn-warning edit-column" data-report-id="' + report_id + '">Edit</button></td>' +
+								'</tr>';
 							mainTableSet.add(data.main_table);
 						});
-						$('#dataBody').html(rows); 
+						$('#dataBody').html(rows);
 						var modalTitle = 'Layout Fields';
 						if (mainTableSet.size > 0) {
 							modalTitle += ' - primary table : ' + Array.from(mainTableSet).join(', ');
@@ -464,58 +468,122 @@ echo "</select></li>";
 			});
 		});
 
-		$(document).on('click', '.btn-edits', function() {
-			var id = $(this).data('id');
-			var reportId = $(this).data('report-id');
-			var existcolumn = $(this).data('column-name'); 
-			var currentConcate = $(this).data('concate');
-			var newColumnName = prompt('Enter new column name (leave empty to keep existing):', existcolumn || '');
-			var newConcate = prompt('Enter new concate value (leave empty to keep existing):', currentConcate || '');
-			var finalColumnName = existcolumn;
-			var finalConcate = currentConcate;
-			if (newColumnName !== null) {
-				finalColumnName = newColumnName.trim() !== '' ? newColumnName : existcolumn;
+		$(document).on('click', '.btn-warning.edit-column', function() {
+			var row = $(this).closest('tr');
+			var columnNameCell = row.find('.column-name');
+			var tableNameFieldCell = row.find('.table-name-field');
+			var functionCell = row.find('.function');
+			var widthCell = row.find('.width');
+			var fieldsSepCell = row.find('.field-sep');
+
+			var columnName = columnNameCell.text();
+			var tableNameField = tableNameFieldCell.text();
+			var functionName = functionCell.text();
+			var width = widthCell.text();
+			var fieldsSep = fieldsSepCell.text();
+
+			row.data('original-column-name', columnName);
+			row.data('original-table-name-field', tableNameField);
+			row.data('original-function', functionName);
+			row.data('original-width', width);
+			row.data('original-fields-sep', fieldsSep);
+
+			columnNameCell.html('<input type="text" class="form-control" value="' + columnName + '" />');
+			tableNameFieldCell.html('<input type="text" class="form-control" value="' + tableNameField + '" />');
+
+			widthCell.html('<input type="text" class="form-control" value="' + width + '" />');
+			fieldsSepCell.html('<input type="text" class="form-control" value="' + fieldsSep + '" />');
+
+			if (functionName === '#') {
+				functionCell.html('<select class="form-control"><option value="Selection" ' + (functionName === 'Selection' ? 'selected' : '') + '>Select</option><option value="min" ' + (functionName === 'min' ? 'selected' : '') + '>Min</option><option value="max" ' + (functionName === 'max' ? 'selected' : '') + '>Max</option></select>');
+			} else if (functionName) {
+				functionCell.html('<input type="text" class="form-control" value="' + functionName + '" />');
 			} else {
-				alert('Column name update cancelled.');
+				functionCell.html('');
 			}
-			if (newConcate !== null) {
-				finalConcate = newConcate.trim() !== '' ? newConcate : currentConcate;
-			} else {
-				alert('Concatenation update cancelled.');
-			}
-			//console.log('Updating column:', finalColumnName, 'with concate:', finalConcate);
-			if (finalColumnName !== existcolumn || finalConcate !== currentConcate) {
-				$.ajax({
-					url: '<?php echo base_url('user_panel/update_custom_field_col_name'); ?>',
-					type: 'post',
-					data: {
-						id: id,
-						report_id: reportId,
-						column_name: finalColumnName,
-						concate: finalConcate
-					},
-					dataType: 'json',
-					success: function(response) {
-						if (response.success) {
-							alert('Column name and/or concate updated successfully!');
-							location.reload();
-						} else {
-							alert('Error updating column name: ' + response.message);
-						}
-					},
-					error: function(xhr, status, error) {
-						console.error('AJAX request failed:', status, error);
-						alert('Error during the update request.');
-					}
-				});
-			} else {
-				alert('No changes made to column name or concatenation.');
-			}
+
+			$(this).replaceWith('<button class="btn btn-success save-column" data-report-id="' + $(this).data('report-id') + '">Save</button>');
+			row.find('td:last').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;margin-left:20px;"></i>');
 		});
+
+		$(document).on('click', '.btn-success', function() {
+			var row = $(this).closest('tr');
+			var id = row.data('id');
+			var reportId = $(this).data('report-id');
+			var columnName = row.find('.column-name input').val();
+			var tableNameField = row.find('.table-name-field input').val();
+			var functionName = row.find('.function select').val() || row.find('.function input').val();  // Get selected value from dropdown or input
+			var width = row.find('.width input').val();
+			var fieldsSep = row.find('.field-sep input').val();
+			var btn = $(this);
+
+			$.ajax({
+				url: '<?php echo base_url('user_panel/update_custom_field_col_name'); ?>',
+				type: 'post',
+				data: {
+					id: id,
+					report_id: reportId,
+					column_name: columnName,
+					table_name_field: tableNameField,
+					function_name: functionName,
+					width: width,
+					fields_sep: fieldsSep
+				},
+				dataType: 'json',
+				success: function(response) {
+					if (response.success) {
+						row.find('.column-name').text(columnName);
+						row.find('.table-name-field').html(tableNameField);
+						row.find('.function').html(functionName);
+						row.find('.width').html(width);
+						row.find('.field-sep').html(fieldsSep);
+
+						btn.removeClass('btn-success').addClass('btn-warning').text('Edit');
+						row.find('.cancel-column').remove();
+						alert('Data updated successfully.');
+
+						location.reload();
+
+						$('#dataModal').modal('hide');
+					} else {
+						alert('Error updating the record.');
+					}
+				},
+				error: function() {
+					alert('Error sending data to the server.');
+				}
+			});
+		});
+
+		$(document).on('click', '.btn.btn-primary[data-dismiss="modal"]', function() {
+			location.reload();
+		});
+		
+		$(document).on('click', '.cancel-column', function() {
+			var row = $(this).closest('tr');
+			var columnNameCell = row.find('.column-name');
+			var tableNameFieldCell = row.find('.table-name-field');
+			var functionCell = row.find('.function');
+			var widthCell = row.find('.width');
+			var fieldsSepCell = row.find('.field-sep');
+
+			columnNameCell.text(row.data('original-column-name'));
+			tableNameFieldCell.text(row.data('original-table-name-field'));
+			functionCell.text(row.data('original-function'));
+			widthCell.text(row.data('original-width'));
+			fieldsSepCell.text(row.data('original-fields-sep'));
+
+			row.find('.btn-success').remove();
+			row.find('.cancel-column').remove();
+
+			var editButton = '<button class="btn btn-warning edit-column" data-report-id="' + row.find('.edit-column').data('report-id') + '">Edit</button>';
+			row.find('td:last').append(editButton);
+		});
+
 	</script>
 	</table>
-	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
+	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true" >
+		<div class="modal-dialog" role="document" style="width:55%;">
 			<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="dataModalLabel"></h5>
@@ -531,6 +599,7 @@ echo "</select></li>";
 					<th>Field Name</th>
 					<th>Function</th>
 					<th>Width</th>
+					<th>Separator</th>
 					</tr>
 				</thead>
 				<tbody id="dataBody">
