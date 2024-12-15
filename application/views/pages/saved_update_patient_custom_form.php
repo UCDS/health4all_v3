@@ -30,7 +30,8 @@
                  <h4> Patient id - <span style="font-weight:bold;"><?php echo $patient_id; ?></span></h4>
               </div>
               <div class="col-md-3">
-                 <h4> Visit id - <span style="font-weight:bold;"><?php echo $visit_id; ?></span></h4>
+                 <!-- <h4> Visit id - <span style="font-weight:bold;"><?php echo $visit_id; ?></span></h4> -->
+                 <h4> <span style="font-weight:bold;"><?php echo $visit_type_name; ?></span> - <span style="font-weight:bold;"><?php echo $file_no; ?></span></h4>
               </div>
             </div>
         </div>
@@ -130,16 +131,16 @@
                                                  $value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
                                     ?>
                                     <input type="date" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off">
+                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='0000-00-00') { echo "readonly"; } ?>>
                                 <?php } else if (strpos($sfi->selected_columns, 'time') !== false) {
                                         $column_name = $sfi->selected_columns;
                                         $value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
                                     ?>
                                     <input type="time" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off">
+                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='00:00') { echo "readonly"; }?>>
                                 <?php } else {  $column_name = $sfi->selected_columns?>
                                     <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $db_values[0]->$column_name ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" 
+                                        value="<?php if(!empty($db_values[0]->$column_name) || $db_values[0]->$column_name!='0') { echo $db_values[0]->$column_name; }?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" 
                                             autocomplete="off" <?php if(!empty($db_values[0]->$column_name)) { echo "readonly"; } ?>>
                                 <?php } ?>
                                 

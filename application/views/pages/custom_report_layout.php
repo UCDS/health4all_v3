@@ -1468,6 +1468,61 @@
 						<input type="text" name="update_btn_width" value=""  class="form-control" placeholder="width">
 						</div>
 					</div>
+					<div class="layout-div col-md-12 appointment_time">
+						<div class="form-group">
+						<label class="control-label">Appointment time</label>
+						<input type="text" name="appointment_time"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="appointment_time_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="appointment_time" data-field-name="appointment_time"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+						<textarea name="appointment_time_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="appointment_time_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="appointment_time_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+						</div>
+					</div>
+
+					<div class="layout-div col-md-12 appointment_update_by">
+						<div class="form-group">
+						<label class="control-label">Appointment update by</label>
+						<input type="text" name="appointment_update_by"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="appointment_update_by_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="appointment_update_by" data-field-name="appointment_update_by"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+						<textarea name="appointment_update_by_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="appointment_update_by_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="appointment_update_by_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+						</div>
+					</div>
+
+					<div class="layout-div col-md-12 appointment_status_id">
+						<div class="form-group">
+						<label class="control-label">Appointment Status</label>
+						<input type="text" name="appointment_status_id"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="appointment_status_id_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="appointment_status_id" data-field-name="appointment_status_id"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+						<textarea name="appointment_status_id_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="appointment_status_id_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="appointment_status_id_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+						</div>
+					</div>
+
+					<div class="layout-div col-md-12 appointment_status_update_by">
+						<div class="form-group">
+						<label class="control-label">Appointment Status Update by</label>
+						<input type="text" name="appointment_status_update_by"  autocomplete="off" class="form-control" placeholder="Enter Column Name"/>
+						<input type="hidden" name="" value="patient_visit" class="form-control">
+						<input type="text" name="appointment_status_update_by_width" value=""  class="form-control" placeholder="width" style="width:8%;">
+						<input type="text" class="concatenatebtn btn btn-primary" name="appointment_status_update_by" data-field-name="appointment_status_update_by"
+								value="Concatenate Fields" style="font-size:12px;width:16%;">	
+						<textarea name="appointment_status_update_by_concatination_fields" rows="2" cols="30" readonly></textarea>
+						<input type="text" name="appointment_status_update_by_separator" class="form-control" placeholder="separator" style="width:10%;" autocomplete="off">
+						<input type="text" name="appointment_status_update_by_alignment" class="form-control" placeholder="alignment" style="width:10%;" autocomplete="off">
+						</div>
+					</div>
 					<div class="layout-div col-md-12 followup_upd_btn">
 						<div class="form-group">
 						<label class="control-label">Followup Update button</label>
@@ -2122,7 +2177,26 @@
 						<label><input type="checkbox" value="1" id="update_btn" class="checklist" />Update Button</label>
 					</div>
 				</li> 
-
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="appointment_time" class="checklist" />Appointment time</label>
+					</div>
+				</li> 
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="appointment_update_by" class="checklist" />Appointment update by</label>
+					</div>
+				</li> 
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="appointment_status_id" class="checklist" />Appointment status</label>
+					</div>
+				</li> 
+				<li>  
+					<div class="checkbox">
+						<label><input type="checkbox" value="1" id="appointment_status_update_by" class="checklist" />Appointment status update by</label>
+					</div>
+				</li> 
 			</ul>
 			<strong>MLC Information</strong>
 			  <ul class="nav nav-sidebar checkboxesList_three">

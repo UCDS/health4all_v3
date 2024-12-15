@@ -2636,7 +2636,12 @@ else if($type=="dosage"){
 				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
 				patient_visit.visit_id,patient_visit.patient_id");
 
-			}else{
+			}else if(($columns_string!='patient_visit.patient_id') && ($columns_string!='patient_visit.appointment_update_by' || $columns_string!='patient_visit.appointment_status_id')){
+				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
+				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
+				patient_visit.visit_id,patient_visit.patient_id, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by,aps.appointment_status");
+			}
+			else{
 				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
 				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
 				patient_visit.visit_id");
@@ -2701,6 +2706,8 @@ else if($type=="dosage"){
 			$this->db->join('staff as volunteer','volunteer_user.staff_id=volunteer.staff_id','left');
 			$this->db->join('user as volunteer_user_updated','patient_visit.insert_by_user_id = volunteer_user_updated.user_id','left');
 			$this->db->join('staff as volunteer_updated','volunteer_user_updated.staff_id=volunteer_updated.staff_id','left');
+			$this->db->join('staff as appointment_update_by','patient_visit.appointment_update_by=appointment_update_by.staff_id','left');
+			$this->db->join('appointment_status aps','patient_visit.appointment_status_id=aps.id','left');
 			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
 			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
 			$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
@@ -2768,7 +2775,7 @@ else if($type=="dosage"){
 	function get_saved_custom_layout()
 	{
 		$report_id = $this->input->post('report_id');
-		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table,rl.concate,rl.id');
+		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table,rl.concate,rl.id,rl.fields_sep');
 		$this->db->from('report_layout rl');
 		$this->db->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('rl.report_id', $report_id);
@@ -2986,13 +2993,45 @@ else if($type=="dosage"){
 		return $final_result;
 	}
 
-	public function update_cst_field_column($id, $report_id, $column_name,$concate) 
+	public function update_cst_field_column($id, $report_id, $column_name, $table_name_field, $function_name, $width, $fields_sep) 
 	{
+		if (empty($column_name)) {
+			$column_name = null;
+		}
+		if (empty($table_name_field)) {
+			$table_name_field = null;
+		}
+		if (empty($function_name)) {
+			$function_name = null;
+		}
+		if (empty($width)) {
+			$width = null;
+		}
+		if (empty($fields_sep)) {
+			$fields_sep = null;
+		}
+
+		if ($table_name_field) 
+		{
+			$field_parts = explode(',', $table_name_field);
+			array_shift($field_parts);
+			$table_name_field = implode(',', $field_parts);
+		}
+
 		$this->db->set('column_name', $column_name);
-		$this->db->set('concate', $concate);
+		$this->db->set('concate', $table_name_field);
+		$this->db->set('function', $function_name);
+		$this->db->set('width', $width);
+		$this->db->set('fields_sep', $fields_sep);
 		$this->db->where('id', $id);
 		$this->db->where('report_id', $report_id);
-		return $this->db->update('report_layout');
+		$update = $this->db->update('report_layout');
+		if ($update) {
+			return true;
+		} else {
+			log_message('error', 'Failed to update report_layout for id: ' . $id . ' and report_id: ' . $report_id);
+			return false;
+		}
 	}
 
 	function check_custom_patient_form($hospital_id, $report_name) 
