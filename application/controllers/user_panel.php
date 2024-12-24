@@ -214,6 +214,7 @@ class User_panel extends CI_Controller {
 			}else if(!$this->input->post('select')){
 				$this->data['report_count'] = $this->staff_model->get_user_count();
 				$this->data['user'] = $this->staff_model->get_user($this->data['rowsperpage']);
+				$this->data['assigned_hospitals'] = $this->staff_model->gat_all_assigned_hosp($this->data['user'][0]->user_id);
 				$this->data['hptls']= false;
 			}else {
 				$this->data['hptls'] = $this->staff_model->get_hospital();
@@ -1197,14 +1198,7 @@ class User_panel extends CI_Controller {
 					$this->masters_model->update_report_name($update_record_id,$update_data);
 					$this->data['success'] = 'Report Name Updated Successfully';
 				}
-			//Fetch all records from primary table
-			$this->data['all_report_name'] = $this->masters_model->get_all_report_name($this->data['rowsperpage']);
-			$this->data['all_report_name_count'] = $this->masters_model->get_all_report_name_count();
-
-			$this->load->view('templates/header',$this->data);
-			$this->load->view('templates/leftnav',$this->data);
-			$this->load->view('pages/custom_report_name',$this->data);
-			$this->load->view('templates/footer');
+			redirect('user_panel/custom_report_name');
 		}
 		else
 		{
@@ -1473,6 +1467,43 @@ class User_panel extends CI_Controller {
 		}
 	}
 	
-	
+	public function delete_custom_field_cols() 
+	{
+        if ($this->input->post('action') == 'delete') {
+			$id = $this->input->post('id');
+			$result = $this->masters_model->delete_custom_field_cols_name($id);
+			if ($result) {
+				echo json_encode(['success' => true]);
+			} else {
+				echo json_encode(['success' => false, 'message' => 'Database deletion failed']);
+			}
+			exit; 
+		}
+    }
 
+	public function update_sequence_custom_report() 
+	{
+		$sequence = $this->input->post('sequence');
+		if ($sequence) {
+			$result = $this->masters_model->update_field_sequence($sequence);
+			if ($result) {
+				echo json_encode(['status' => 'success']);
+			} else {
+				echo json_encode(['status' => 'error']);
+			}
+		} else {
+			echo json_encode(['status' => 'error']);
+		}
+	}
+
+	public function delete_custom_patient_visit_row() 
+	{
+		$main_id = $this->input->post('main_id'); 
+		if ($this->masters_model->delete_row_custom_patient_visit($main_id)) {
+			echo json_encode(['success' => true]);
+		} else {
+			echo json_encode(['success' => false]);
+		}
+	}
+		
 }

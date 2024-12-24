@@ -93,7 +93,9 @@ function onchange_page_dropdown(dropdownobj){
         <thead>
             <th>#</th>
             <th>Hospital Name</th>
-            <th>Description</th>
+            <th>Short Name</th>
+            <th>Full Name</th>
+            <!-- <th>Description</th> -->
         </thead>
         <tbody>
         <?php
@@ -110,9 +112,11 @@ function onchange_page_dropdown(dropdownobj){
                         <?php echo !!$hptls[$j]->hospital_short_name ? $hptls[$j]->hospital_short_name : $hptls[$j]->hospital; ?>
                     </label>
                 </td>
-                <td>
+                <td><?php echo $hptls[$j]->hospital_short_name; ?></td>
+                <td><?php echo $hptls[$j]->hospital; ?></td>
+                <!-- <td>
                     <?php echo $hptls[$j]->description; ?>
-                </td>                
+                </td>                 -->
             </tr>
         <?php } ?>
         <tr>
@@ -276,7 +280,7 @@ echo "</select></li>";
     $i=(($page_no - 1) * $total_records_per_page)+1 ;
    
     foreach($user as $a){ ?>
-    <tr onclick="$('#select_user_edit_form_<?php echo $a->user_id;?>').submit();" >
+    <tr>
         <td>	
             <?php echo form_open('user_panel/user_hospital_link',array('id'=>'select_user_edit_form_'.$a->user_id,'role'=>'form')); ?>
             <?php echo $i++; ?>
@@ -290,6 +294,9 @@ echo "</select></li>";
         <td>
             <?php echo $a->phone;?>
             </form>
+        </td>
+        <td>
+            <i class="fa fa-edit" onclick="$('#select_user_edit_form_<?php echo $a->user_id;?>').submit();" style="cursor: pointer;" ></i>
         </td>
     </tr>
     <?php } ?>
@@ -399,6 +406,29 @@ for ($counter = 1; $counter <= $total_no_of_pages; $counter++){
 echo "</select></li>";
 } ?>
 </ul>
+
+<?php if(!empty($assigned_hospitals)) { ?>
+    <h3>Current User Hospitals</h3>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <th style="text-align:center">S.no</th>
+            <th style="text-align:center">Hospital</th>
+            <th style="text-align:center">Hospital Short Name</th>                       
+        </thead>
+        <tbody>
+        <?php 
+            $jk=1 ;
+            foreach($assigned_hospitals as $aha){  
+        ?>
+            <tr>
+                <td><?php echo $jk; ?></td>
+                <td><?php echo $aha->hp_name; ?></td>
+                <td><?php echo $aha->hospital_short_name; ?></td>
+            </tr>
+        <?php $jk++; } ?>
+        </tbody>
+    </table>
+<?php } ?>
 </div>
 <?php } ?>
 

@@ -474,8 +474,12 @@ echo "</select></li>";
 
 							var selectedColumnsColumn = data.selected_columns || '';
 
-							var editButton = labelValue !== '' ? '<td><button class="btn btn-warning btn-sm edit-row" data-id="' + data.main_id + '">Edit</button></td>' : '<td></td>';
-
+							var editButton = labelValue !== '' 
+								? '<td>' + 
+									'<button class="btn btn-warning btn-sm edit-row" data-id="' + data.main_id + '"><i class="fa fa-edit"></i></button>' +'&nbsp;' + 
+									'<button class="btn btn-danger btn-sm delete-row" data-id="' + data.main_id + '"><i class="fa fa-trash"></i></button>' +
+									'</td>' 
+								: '<td></td>';
 							rows += '<tr class="sortable-row" data-id="' + data.main_id + '">' +
 										'<td>' + data.table_name + '</td>' +
 										'<td>' + selectedColumnsColumn + '</td>' +
@@ -525,6 +529,30 @@ echo "</select></li>";
 					}
 				});
 			});
+			$(document).on('click', '.delete-row', function() {
+				var row = $(this).closest('tr');
+				var main_id = $(this).data('id');
+
+				if (confirm('Are you sure you want to delete this row?')) {
+					$.ajax({
+						url: '<?php echo base_url('user_panel/delete_custom_patient_visit_row'); ?>',
+						type: 'post',
+						data: { main_id: main_id },
+						dataType: 'json',
+						success: function(response) {
+							if (response.success) {
+								alert('Deleted row successfully');
+								row.remove();
+							} else {
+								alert('Error deleting row. Please try again.');
+							}
+						},
+						error: function() {
+							alert('Error deleting data.');
+						}
+					});
+				}
+			});
 
 			function updateSequenceNumbers() {
 				var sequence = 1;
@@ -532,7 +560,7 @@ echo "</select></li>";
 					var sequenceInput = $(this).find('.sequence-input');
 					if (sequenceInput.length) {
 						sequenceInput.val(sequence);
-						sequenceInput.prop('readonly', true);
+						//sequenceInput.prop('readonly', true);
 					}
 					sequence++;
 				});
@@ -550,10 +578,10 @@ echo "</select></li>";
 				
 				row.find('td').eq(1).html('<input type="text" class="form-control selected-columns-input" value="' + selectedColumns + '" data-id="' + main_id + '">');
 				row.find('td').eq(2).html('<input type="text" class="form-control label-input" value="' + label + '" data-id="' + main_id + '">');
-				row.find('td').eq(3).html('<input type="number" class="form-control sequence-input" value="' + sequence + '" data-id="' + main_id + '" readonly>');
+				row.find('td').eq(3).html('<input type="number" class="form-control sequence-input" value="' + sequence + '" data-id="' + main_id + '">');
 				
-				$(this).removeClass('btn-warning').addClass('btn-success').text('Save').removeClass('edit-row').addClass('save-row');
-				row.find('td:last').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
+				$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fa fa-check"></i>').removeClass('edit-row').addClass('save-row');
+				row.find('td:last').addClass('icon-container').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
 			});
 
 			$(document).on('click', '.cancel-column', function() {
@@ -569,7 +597,7 @@ echo "</select></li>";
 				row.find('.save-row')
 					.removeClass('btn-success')
 					.addClass('btn-warning')
-					.text('Edit')
+					.html('<i class="fa fa-edit"></i>')
 					.removeClass('save-row')
 					.addClass('edit-row');
 				row.find('.cancel-column').remove();
@@ -577,7 +605,6 @@ echo "</select></li>";
 
 			$(document).on('click', '.save-row', function() {
 				var main_id = $(this).data('id');
-				
 				var selectedColumns = $(this).closest('tr').find('.selected-columns-input').val();
 				var label = $(this).closest('tr').find('.label-input').val();
 				var sequence = $(this).closest('tr').find('.sequence-input').val();
@@ -642,6 +669,16 @@ echo "</select></li>";
 		});
 
 	</script>
+	<style>
+		.icon-container {
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+		}
+		.icon-container .cancel-column {
+			margin-left: 10px;
+		}
+	</style>
 	</table>
 	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">

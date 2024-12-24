@@ -879,5 +879,14 @@ class Staff_model extends CI_Model{
 		} 
 	}
 
+	function gat_all_assigned_hosp($user_id)
+	{
+		$this->db->select('uhl.user_id, hospital.hospital as hp_name, hospital.hospital_short_name')
+		->from("user_hospital_link as uhl")
+		->join("hospital", "hospital.hospital_id = uhl.hospital_id")
+		->where('uhl.user_id', $user_id);
+		$query=$this->db->get();
+		return $query->result();
+	}
 }
 ?>

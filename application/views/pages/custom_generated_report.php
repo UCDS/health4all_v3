@@ -834,6 +834,9 @@ function onchange_page_dropdown(dropdownobj){
 								case 'update_time':
 									echo '<td style="text-align:center;">' . ($r->update_time != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->update_time)) : '') . '</td>';
 									break;
+								case 'appointment_time':
+									echo '<td style="text-align:center;">' . ($r->appointment_time != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->appointment_time)) : '') . '</td>';
+									break;
 								case 'update_datetime':
 									echo '<td style="text-align:center;">' . 
 											($r->update_datetime != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->update_datetime)) : '') . 
