@@ -418,7 +418,7 @@ display: inline-grid;
 						</div>
 					</div>
 					<textarea type="text" class="form-control patient_name" name="" id="patient_name_<?php echo $j; ?>" 
-						value="" rows="2" cols="12" style="background-color:white!important;"
+						value="" rows="1" cols="12" style="background-color:white!important;"
 						autocomplete="off" readonly placeholder="Patient Details"><?php if($patient_details->patient_id!=0) { echo $patient_details->patient_name .' , '. $patient_details->address; } ?></textarea>
 					<input type="hidden" class="form-control" name="" id="patient_name_store_<?php echo $j; ?>" value="<?php echo $patient_details->patient_name; ?>" autocomplete="off">
                     <input type="hidden" class="form-control" name="" id="address_store_<?php echo $j; ?>" value="<?php echo $patient_details->address; ?>" autocomplete="off">

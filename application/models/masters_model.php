@@ -2775,10 +2775,11 @@ else if($type=="dosage"){
 	function get_saved_custom_layout()
 	{
 		$report_id = $this->input->post('report_id');
-		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table,rl.concate,rl.id,rl.fields_sep');
+		$this->db->select('rl.field_name,rl.column_name,rl.function,rl.table_name,rl.width,cr.main_table,rl.concate,rl.id,rl.fields_sep,rl.sequence_id');
 		$this->db->from('report_layout rl');
 		$this->db->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('rl.report_id', $report_id);
+		$this->db->order_by('rl.sequence_id','ASC');
 		$res = $this->db->get()->result_array();
 		return $res;
 	}
@@ -3117,6 +3118,7 @@ else if($type=="dosage"){
 		$this->db->from('update_patient_custom_form upcf');
 		$this->db->join('update_patient_custom_form_fields upcff','upcff.form_id=upcf.id','left');
 		$this->db->where('upcf.id', $report_id);
+		$this->db->order_by('upcff.sequence_id', 'ASC');
 		$res = $this->db->get()->result_array();
 		return $res;
 	}
@@ -3158,5 +3160,32 @@ else if($type=="dosage"){
         }
         return null;
     }
+
+	public function delete_custom_field_cols_name($id) 
+	{
+        $this->db->where('id', $id);
+        return $this->db->delete('report_layout');
+    }
+
+	public function update_field_sequence($sequence)
+	{
+		$this->db->trans_start();
+		foreach ($sequence as $item) {
+			$this->db->where('id', $item['id']);
+			$this->db->update('report_layout', ['sequence_id' => $item['sequence_id']]);
+		}
+		$this->db->trans_complete();
+		if ($this->db->trans_status() === FALSE) {
+			log_message('error', 'Database transaction failed.');
+			return false;
+		}
+		return true;
+	}
+
+	public function delete_row_custom_patient_visit($main_id) 
+	{
+		$this->db->where('id', $main_id);
+		return $this->db->delete('update_patient_custom_form_fields'); // Adjust to your table name
+	}
 }
 ?>

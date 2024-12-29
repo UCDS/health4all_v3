@@ -401,6 +401,65 @@ echo "</select></li>";
 	<script>
 		$(document).ready(function() {
 			$('#dataModal').modal('hide');
+			$('#updateSequenceBtn').hide();
+			$('#enableSortingCheckbox').change(function() {
+				if ($(this).prop('checked')) {
+					$('#dataBody').sortable({
+						items: 'tr',
+						update: function(event, ui) {
+							$('#dataBody tr').each(function(index) {
+								$(this).find('.sequence-id').text(index + 1); 
+								$(this).data('sequence-id', index + 1);
+							});
+						}
+					});
+					$('#updateSequenceBtn').show();
+				} else {
+					$('#dataBody').sortable('destroy');
+					$('#updateSequenceBtn').hide();
+				}
+			});
+			if ($('#enableSortingCheckbox').prop('checked')) {
+				$('#dataBody').sortable({
+					items: 'tr',
+					update: function(event, ui) {
+						$('#dataBody tr').each(function(index) {
+							$(this).find('.sequence-id').text(index + 1); 
+							$(this).data('sequence-id', index + 1);
+						});
+					}
+				});
+				$('#updateSequenceBtn').show(); 
+			}
+			$('#updateSequenceBtn').click(function() {
+				var newSequence = [];
+
+				$('#dataBody tr').each(function() {
+					var id = $(this).data('id');
+					var sequenceId = $(this).data('sequence-id');
+					newSequence.push({ id: id, sequence_id: sequenceId });
+				});
+
+				$.ajax({
+					url: '<?php echo base_url('user_panel/update_sequence_custom_report'); ?>',
+					type: 'POST',
+					data: { sequence: newSequence },
+					dataType: 'json',
+					success: function(response) {
+						console.log("Response from server:", response);
+						if (response.status == 'success') {
+							alert('Sequence updated successfully!');
+							location.reload();
+						} else {
+							alert('Error updating sequence: ' + response.message);
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error("AJAX Error:", error);
+						alert('An error occurred while updating the sequence.');
+					}
+				});
+			});
 			$('.btn-danger').on('click', function(e) 
 			{
 				e.preventDefault();
@@ -449,8 +508,16 @@ echo "</select></li>";
 									'<td class="function">' + data.function + '</td>' +
 									'<td class="width">' + (data.width != 0 ? data.width : '') + '</td>' +
 									'<td class="field-sep">' + data.fields_sep + '</td>' +
-									'<td><button class="btn btn-edits btn-warning edit-column" data-report-id="' + report_id + '">Edit</button></td>' +
-								'</tr>';
+									'<td class="sequence-id">' + data.sequence_id + '</td>' +
+									'<td>' +
+											'<button class="btn btn-edits btn-warning edit-column" data-report-id="' + report_id + '" title="Edit">' +
+												'<i class="fa fa-edit"></i>' +
+											'</button>' +
+											'&nbsp;' +  // Adds space between icons
+											'<button class="btn btn-danger delete-column" data-id="' + data.id + '" title="Delete">' +
+												'<i class="fa fa-trash"></i>' +
+											'</button>' +
+										'</td>' + '</tr>';
 							mainTableSet.add(data.main_table);
 						});
 						$('#dataBody').html(rows);
@@ -470,6 +537,9 @@ echo "</select></li>";
 
 		$(document).on('click', '.btn-warning.edit-column', function() {
 			var row = $(this).closest('tr');
+
+			row.find('.delete-column').hide();
+
 			var columnNameCell = row.find('.column-name');
 			var tableNameFieldCell = row.find('.table-name-field');
 			var functionCell = row.find('.function');
@@ -502,11 +572,11 @@ echo "</select></li>";
 				functionCell.html('');
 			}
 
-			$(this).replaceWith('<button class="btn btn-success save-column" data-report-id="' + $(this).data('report-id') + '">Save</button>');
-			row.find('td:last').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;margin-left:20px;"></i>');
+			$(this).replaceWith('<button class="btn btn-success save-column" data-report-id="' + $(this).data('report-id') + '"><i class="fa fa-check"></i></button>');
+			row.find('td:last').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
 		});
 
-		$(document).on('click', '.btn-success', function() {
+		$(document).on('click', '.save-column', function() {
 			var row = $(this).closest('tr');
 			var id = row.data('id');
 			var reportId = $(this).data('report-id');
@@ -576,17 +646,54 @@ echo "</select></li>";
 			row.find('.btn-success').remove();
 			row.find('.cancel-column').remove();
 
-			var editButton = '<button class="btn btn-warning edit-column" data-report-id="' + row.find('.edit-column').data('report-id') + '">Edit</button>';
+			var editButton = '<button class="btn btn-warning edit-column" data-report-id="' + row.find('.edit-column').data('report-id') + '" title="Edit"><i class="fa fa-edit"></i></button>';
+			
+			var deleteButton = '<button class="btn btn-danger delete-column" data-id="' + row.find('.delete-column').data('id') + '" title="Delete"><i class="fa fa-trash"></i></button>';
+
 			row.find('td:last').append(editButton);
+			row.find('td:last').append('&nbsp;');     
+    		row.find('td:last').append(deleteButton);
+			
 		});
 
+		$(document).on('click', '.delete-column', function() {
+			var row = $(this).closest('tr');
+			var reportId = $(this).data('id');
+			if (confirm('Are you sure you want to delete this item?')) {
+				$.ajax({
+					url: '<?php echo base_url('user_panel/delete_custom_field_cols'); ?>',
+					method: 'POST',
+					data: {
+						id: reportId,
+						action: 'delete'
+					},
+					dataType: 'json',
+					success: function(response) {
+						console.log(response);
+						console.log("Success value: ", response.success);
+						if (response.success === true) {
+							row.remove();
+							alert('Item deleted successfully!');
+						} else {
+							alert('Error deleting item!');
+						}
+					},
+					error: function() {
+						alert('An error occurred while deleting.');
+					}
+				});
+			}
+		});
+		
 	</script>
 	</table>
 	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true" >
 		<div class="modal-dialog" role="document" style="width:55%;">
 			<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="dataModalLabel"></h5>
+				<h5 class="modal-title" id="dataModalLabel"></h5><br/>
+				<input type="checkbox" id="enableSortingCheckbox" style="margin-left: 10px;">
+                <label for="enableSortingCheckbox" style="margin-left: 5px;">Enable Sorting</label>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-19px!important;">
 				<span aria-hidden="true">&times;</span>
 				</button>
@@ -600,6 +707,7 @@ echo "</select></li>";
 					<th>Function</th>
 					<th>Width</th>
 					<th>Separator</th>
+					<th>Sequence</th>
 					</tr>
 				</thead>
 				<tbody id="dataBody">
@@ -607,6 +715,7 @@ echo "</select></li>";
 				</table>
 			</div>
 			<div class="modal-footer">
+				<button type="button" class="btn btn-link" id="updateSequenceBtn"><strong>Update Sequence</strong></button>
 				<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 			</div>
 			</div>
