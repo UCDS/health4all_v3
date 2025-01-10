@@ -429,6 +429,15 @@ function onchange_page_dropdown(dropdownobj){
 				<input type="radio" name="life_status" class ="form-control" value="4" <?php if(!empty($this->input->post('life_status')) && $this->input->post('life_status') == 4) {echo "checked" ;} ?>  > <label> All</label>
 				<?php } ?>
 				<br/>
+
+				<select class="form-control" name="cust_dates" id="cust_dates">
+					<option value="#">Select Custom Date</option>
+					<option value="1">Patient Registration</option>
+					<option value="2">Visit Registration</option>
+					<option value="3">Visit Appointment</option>
+					<option value="4">Follow Registration</option>
+				</select>&nbsp;&nbsp;
+
 				From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 				To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 				From Time:<input  class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("h:i A",strtotime($from_time)); ?>" name="from_time" id="from_time" size="7px"/>
@@ -835,12 +844,28 @@ function onchange_page_dropdown(dropdownobj){
 									echo '<td style="text-align:center;">' . ($r->update_time != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->update_time)) : '') . '</td>';
 									break;
 								case 'appointment_time':
-									echo '<td style="text-align:center;">' . ($r->appointment_time != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->appointment_time)) : '') . '</td>';
+									echo '<td style="text-align:center;">' . 
+										(empty($r->appointment_time) || $r->appointment_time == '0000-00-00 00:00:00' ? '' : date('j M Y h:i A', strtotime($r->appointment_time))) . 
+									'</td>';
 									break;
 								case 'update_datetime':
 									echo '<td style="text-align:center;">' . 
 											($r->update_datetime != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->update_datetime)) : '') . 
 											'</td>';
+									break;
+								case 'admit_date':
+									echo '<td style="text-align:center;">' . 
+											($r->admit_date != '0000-00-00 00:00:00' ? date('j M Y h:i A', strtotime($r->admit_date)) : '') . 
+											'</td>';
+									break;
+								case 'address':
+									echo '<td style="text-align:left;">' . $r->address . '</td>';
+									break;
+								case 'first_name':
+									echo '<td style="text-align:left;">' . $r->first_name . '</td>';
+									break;
+								case 'last_name':
+									echo '<td style="text-align:left;">' . $r->last_name . '</td>';
 									break;
 								case 'death_status':
 									echo '<td style="text-align:center;">';

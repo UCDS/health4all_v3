@@ -2458,6 +2458,7 @@ else if($type=="dosage"){
 		->join('custom_report cr','cr.report_id=rl.report_id','left');
 		$this->db->where('cr.hospital_id', $hospital['hospital_id']);
 		$this->db->where('rl.report_id', $form_id);
+		$this->db->order_by('rl.sequence_id','ASC');
 		$query = $this->db->get();
 		if(empty($query->result()))
 		{
