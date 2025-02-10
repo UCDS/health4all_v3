@@ -17,7 +17,40 @@
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.widget.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.mouse.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.sortable.min.js"></script>
- 
+<script type="text/javascript">
+function printDiv(i)
+{
+var content = document.getElementById(i);
+var pri = document.getElementById("ifmcontentstoprint").contentWindow;
+pri.document.open();
+pri.document.write(content.innerHTML);
+pri.document.close();
+pri.focus();
+pri.print();
+}
+
+function printDiv_2(i)
+{
+var content = document.getElementById(i);
+var pri = document.getElementById("ifmcontentstoprint_2").contentWindow;
+pri.document.open();
+pri.document.write(content.innerHTML);
+pri.document.close();
+pri.focus();
+pri.print();
+}
+
+</script>
+
+<?php if ($this->session->flashdata('success')): ?>
+    <div class="alert alert-success">
+        <?php echo $this->session->flashdata('success'); ?>
+    </div>
+<?php elseif ($this->session->flashdata('error')): ?>
+    <div class="alert alert-danger">
+        <?php echo $this->session->flashdata('error'); ?>
+    </div>
+<?php endif; ?>
 
 <div class="row" style="overflow-x:hidden;">
     <div class="panel panel-default">
@@ -37,9 +70,17 @@
         </div>
         <?php echo form_open('register/save_custom_patient_visit_details',array('role'=>'form','class'=>'','id'=>'')); ?>
 
-        <input type="hidden" name="patient_id" value="<?php echo $patient_id; ?>" class="form-control" readonly>
+        <input type="hidden" name="patient_id" id="patient_id" value="<?php echo $patient_id; ?>" class="form-control" readonly>
         <input type="hidden" name="visit_id" value="<?php echo $visit_id; ?>" class="form-control" readonly>
+        <input type="hidden" name="form_id" value="<?php echo $saved_form_id[0]->id; ?>" class="form-control" readonly>
+        <input type="hidden" name="search_patient_id" value="<?php echo $patient_id; ?>" class="form-control" readonly>
 
+        <div class="form-group row ">
+            <div class="col-md-4" style="padding-left:50px;"></br>
+                <label> Form Header </label>
+                <input type="text" name="form_header" class="form-control" value="">
+            </div>
+        </div>
         <div class="panel-body">
         <?php if (!empty($saved_form_id)) { ?>
                 <!-- <div class="sortable-container" style="width: 100%; padding: 15px 0;"> --> <!-- If needed activate sortable container -->
@@ -56,7 +97,6 @@
                             $col = '4';
                         }
                     ?>
-                   
                     <div class="col-md-<?php echo $col; ?> sortable-item" >
                         <div class="form-group row" style="padding-top:5px;padding-bottom:5px;">
                             <input type="hidden" name="sequence[]" class="sequence-input" value="<?php echo $counter; ?>" data-counter="<?php echo $counter; ?>" />
@@ -297,10 +337,61 @@
                 </div>
             <?php } ?>
         </div>
-        <div class="panel-footer">
-            <button type="submit" class="btn btn-primary btn-md col-md-offset-5" name="search_patients" value="1" >Update</button>
+        <iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;" class="sr-only"></iframe>
+        <div class="sr-only" id="print-div"> 
+			<?php $this->load->view('pages/print_layouts/patient_summary');?>
+		</div>
+        <iframe id="ifmcontentstoprint_2" style="height: 0px; width: 0px; position: absolute;" class="sr-only"></iframe>
+        <div class="sr-only" id="print-div-2"> 
+			<?php $this->load->view('pages/print_layouts/patient_summary_custom');?>
+		</div>
+        <div class="panel-footer" style="display: flex;justify-content: center; align-items: center; gap: 10px;">
+            <button type="submit" class="btn btn-primary btn-md" name="search_patients" value="1">Update</button>
+            <button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div')">Print Summary</button>
+            <button type="button" class="btn btn-md btn-warning" id="printButton">Print Selected Format</button>
+            <select class="form-control" name="add_on_print_layout_id" id="add_on_print_layout_id" style="width: 265px;">
+                <option value="Select">Select Format</option>
+                <?php foreach($hosp_all_print_layouts as $layout_name) { ?>
+                    <option value="<?php echo $layout_name->add_on_print_layout_id; ?>"><?php echo $layout_name->print_layout_name; ?></option>
+                <?php } ?>
+            </select>
+            <button class="btn btn-md btn-warning" value="Print" type="button" id="printButtonsss">Print Custom</button>
         </div>
         </form>
+        <script>
+            $(document).ready(function() {
+                $('#printButtonsss').click(function() {
+                    window.open("<?php echo site_url('register/print_custom_layout'); ?>", "_blank");
+                });
+            });
+        </script>
+        <script>
+			$(document).ready(function(){
+				$('#printButton').click(function(){
+					var selectedValue = $('#add_on_print_layout_id').val();
+					var patientId = $('#patient_id').val(); // Get the patient_id value
+					if(selectedValue != 'Select') {
+						$.ajax({
+							url: '<?php echo base_url();?>register/print_add_on_layouts',
+							type: 'POST',
+							data: {selectedValue: selectedValue, patientId: patientId},
+							success: function(response) {
+								var printWindow = window.open('', '_blank');
+								printWindow.document.write('<style>.row { height: 20% !important; } body { padding-left: 20px; }</style>');								printWindow.document.write(response);
+								printWindow.document.close();
+								printWindow.print();
+								printWindow.close();
+							},
+							error: function(xhr, status, error) {
+								console.log(xhr.responseText);
+							}
+						});
+					} else {
+						alert("Please select a format.");
+					}
+				});
+			});
+		</script>
         <script>
             document.querySelector('form').addEventListener('submit', function(event) {
                 // Loop through all the form inputs

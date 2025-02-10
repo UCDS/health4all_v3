@@ -379,12 +379,12 @@ $('#to_id').change(function(){
 					<div class="row">
 						<div class = "col-md-3 col-md-offset-2">
 							<div class="form-group">
-								From Date<input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+								From Date<input class="form-control" type="text" value="<?php if(!empty($redirect_from_date)){ echo date("d-M-Y",strtotime($redirect_from_date)); }else{ echo date("d-M-Y",strtotime($from_date)); } ?>" name="from_date" id="from_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-md-3">
 							<div class="form-group">
-								To Date<input class="form-control" type="text" value="<?php  echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+								To Date<input class="form-control" type="text" value="<?php  if(!empty($redirect_from_date)){ echo date("d-M-Y",strtotime($redirect_to_date)); }else{ echo date("d-M-Y",strtotime($to_date)); } ?>" name="to_date" id="to_date" size="15" />
 							</div>
 						</div>
 						<div class = "col-xs-12 col-sm-12 col-md-2 col-lg-3 ">
@@ -531,7 +531,17 @@ $('#to_id').change(function(){
 								$to_date_display = date("d M Y", strtotime($to_date));
 							}
 						?>
-						Dates : <?php echo $from_date_display; ?> to <?php echo $to_date_display; ?></h4>
+						<?php 
+						if(!empty($redirect_from_date))
+						{
+						?>
+						Dates : <?php echo date("d M Y", strtotime($redirect_from_date)); ?> to <?php echo date("d M Y", strtotime($redirect_to_date)); ?></h4>
+						<?php
+						}else{ ?>
+							Dates : <?php echo $from_date_display; ?> to <?php echo $to_date_display; ?></h4>
+						<?php
+						}
+						?>
 					<h4 style="text-align:center;">Opening Balance : <?php echo $balance; ?></h4>
 				<?php } ?>
 			</div>

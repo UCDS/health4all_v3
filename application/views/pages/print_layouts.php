@@ -63,7 +63,7 @@
 						<div class="form-group">
 						<label class="control-label">Update Print Layout Name</label>
 							<input type="text" class="form-control" name="print_layout_new_name" value="" 
-							placeholder="New Print Layout Name" id="print_layout_new_name" autocomplete="off">
+							placeholder="New Print Layout Name" id="print_layout_new_name" autocomplete="off" required>
 						</div>
 					</div>
 					<div class="col-md-4">

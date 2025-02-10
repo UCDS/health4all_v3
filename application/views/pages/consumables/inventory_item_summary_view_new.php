@@ -785,7 +785,7 @@ if ($this->input->post('to_id')) {
 									</center>
 								</td>
 								<td style="width: 15%;">
-									<a href="<?php echo base_url("consumables/indent_reports/get_item_inventory_detail/$item_id/$scp_id/$redir"); ?>">
+									<a href="<?php echo base_url("consumables/indent_reports/get_item_inventory_detail/$item_id/$scp_id/$redir/$from_date/$to_date"); ?>">
 										<button class="btn btn-primary" type="button">View Detailed</button>
 									</a>
 								</td>

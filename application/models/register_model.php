@@ -2136,5 +2136,15 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 		return $update_status;
 	}
 	
+	public function get_pat_details_custom_print($patient_id,$visit_id)
+	{
+		$this->db->select('patient_id,visit_type,vn.visit_name,appointment_time,admit_date,admit_time,outcome,outcome_date,outcome_time');
+		$this->db->from('patient_visit');
+		$this->db->join('visit_name vn','patient_visit.visit_name_id = vn.visit_name_id','left');
+		$this->db->where('patient_id',$patient_id);
+		$this->db->where('visit_id',$visit_id);
+		$query=$this->db->get();   
+		return $query->result();
+	}
 }
 ?>
