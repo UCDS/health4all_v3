@@ -1416,6 +1416,11 @@ class Register extends CI_Controller {
 			$this->data['priority_types']=$this->register_model->get_priority_type();
 			$this->data['route_primary']=$this->register_model->get_primary_route();
 			$this->data['route_secondary']=$this->register_model->get_secondary_route();
+			$this->data['patients']=$this->register_model->search();
+
+			$hospital=$this->session->userdata('hospital');
+			$hospital_id=$hospital['hospital_id'];
+			$this->data['hosp_all_print_layouts']=$this->register_model->get_hosp_all_print_layouts($hospital_id);
 			foreach($this->data['defaultsConfigs'] as $default){		 
 				if($default->default_id=='pagination'){
 						$this->data['rowsperpage'] = $default->value;
@@ -1465,14 +1470,17 @@ class Register extends CI_Controller {
 
 	public function save_custom_patient_visit_details() 
 	{
+		$this->load->library('session');
+		$form_data = $this->input->post();
+		$this->session->set_userdata('form_data', $form_data);
+
 		$post_data = $_POST;
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('visit_id');
+		
+		$this->data['patient_details'] = $this->register_model->get_pat_details_custom_print($patient_id,$visit_id);
+		$this->session->set_userdata('patient_details', $this->data['patient_details']);
 
-		// echo '<pre>';
-		// print_r($post_data);
-		// echo '</pre>';
-	
 		$fields_to_update = [];
 		foreach ($post_data as $field_name => $new_value) 
 		{
@@ -1489,16 +1497,20 @@ class Register extends CI_Controller {
 				];
 			}
 		}
-		// echo '<pre>';
-		// print_r($fields_to_update);
-		// echo '</pre>';
+		
 		$update_status = $this->register_model->update_patient_visit_data_cus($fields_to_update,$patient_id,$visit_id);
 		if ($update_status) {
 			$this->session->set_flashdata('success', 'Patient visit details updated successfully.');
 		} else {
 			$this->session->set_flashdata('error', 'No changes were made or an error occurred.');
 		}
-		redirect('register/update_patients');
+		redirect('register/saved_update_patient_custom_form');
 	}
 
+	public function print_custom_layout() 
+	{
+		$form_data = $this->session->userdata('form_data');
+		$data['form_data'] = $form_data;
+		$this->load->view('pages/print_layouts/patient_summary_custom', $data);
+	}
 }

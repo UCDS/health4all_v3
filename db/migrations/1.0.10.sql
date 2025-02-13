@@ -259,7 +259,7 @@ ALTER TABLE `custom_report` ADD PRIMARY KEY (`report_id`);
 
 ALTER TABLE `custom_report` MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `custom_report` ADD `created_by` INT NOT NULL AFTER `report_name`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;
+/*ALTER TABLE `custom_report` ADD `created_by` INT NOT NULL AFTER `report_name`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;*/
 
 ALTER TABLE `custom_report` ADD `main_table` VARCHAR(150) NOT NULL AFTER `updated_date_time`;
 

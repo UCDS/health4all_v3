@@ -251,7 +251,6 @@ class Indent_reports extends CI_Controller
 
 	function get_inventory_item_summary()
 	{
-		error_reporting(1);
 		if($this->session->userdata('logged_in')){                                                
 			$this->data['userdata']=$this->session->userdata('logged_in');                                           
         }	
@@ -328,6 +327,7 @@ class Indent_reports extends CI_Controller
 			$this->data['mode'] = "search";
 			$this->load->model('consumables/inventory_summary_model');
 			$this->data['search_inventory_summary'] = $this->inventory_summary_model->show_inventory_item_summary($this->data['rowsperpage']);
+			//print_r($this->db->last_query());die;
 			$this->load->view('pages/consumables/inventory_item_summary_view_new', $this->data);
 		} else {
 			show_404();
@@ -733,7 +733,7 @@ class Indent_reports extends CI_Controller
 		echo "Data saved successfully!";
 	}
 	
-	function get_item_inventory_detail($item, $scp, $redir)
+	function get_item_inventory_detail($item, $scp, $redir,$from_date="",$to_date="")
 	{
 		
 		if($this->session->userdata('logged_in')){                                                
@@ -779,6 +779,8 @@ class Indent_reports extends CI_Controller
 		}
 		if(!empty($redir))
 		{
+			$this->data['redirect_from_date'] = $from_date;
+			$this->data['redirect_to_date'] = $to_date;
 			$this->data['mode'] = 'search';
 			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_summary($item, $scp);
 			$closing_balance = $this->indent_report_model->get_item_closing_balance($item, $scp, $redir);
