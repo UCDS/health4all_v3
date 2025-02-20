@@ -1,28 +1,32 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
-		<script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
-		<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
-		<script type="text/javascript">
-	$(function(){
-		var settings = {
-		barHeight: 20,
-		fontSize: 20
-		};
-		$("#patient_barcode").barcode(
-			"<?php echo $patient->patient_id;?>",
-			"code128",
-			settings
-		);
-	});
-</script>
-
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
 
 		<?php $pat_val=$this->session->userdata('patient_details'); 
 				$patient = $pat_val[0];
+			  $hosp_data = $this->session->userdata('hospitals');
+				$hospitals = $hosp_data[0];
 		?>
+
+		<script type="text/javascript">
+			$(function(){
+				var settings = {
+				barHeight: 20,
+				fontSize: 20
+				};
+				$("#patient_barcode").barcode(
+					"<?php echo $patient->patient_id;?>",
+					"code128",
+					settings
+				);
+			});
+		</script>
 		<script>
 			let patient = <?php echo json_encode($patient); ?>;
-			console.log(patient);
+			//console.log(patient);
+			let details = <?php echo json_encode($hospitals); ?>;
+			//console.log(details);
 		</script>
 
 		<style>
@@ -62,11 +66,11 @@
 					<tr>
 						<td colspan="3"> 
 						<div style="float:left;text-align:left;left:auto;width:75%;">
-							<?php if ($hospital['telehealth'] == "0") {?>
-							<font size="4"><?php echo $hospital['hospital'];?></font><br />
-								<?php if(!empty($hospital['description'])){ echo $hospital['description']."<br />"; }?>
-								<!--<?php echo $hospital['place']; ?>, 
-								<?php echo $hospital['district']; ?>-->
+							<?php if ($hospitals->telehealth == "0") {?>
+							<font size="4"><?php echo $hospitals->hospital;?></font><br />
+								<?php if(!empty($hospitals->description)){ echo $hospitals->description."<br />"; }?>
+								<!--<?php echo $hospitals->place; ?>, 
+								<?php echo $hospitals->district; ?>-->
 							<br />
 							<?php } else {?>
 							<?php if(!!$patient->doctor_name) {?> 
@@ -75,12 +79,12 @@
 							<font size="4">Teleconsultation with Doctor</font><br />
 							<?php } ?>
 							
-									<?php echo "Facilitated by  ".$hospital['hospital']."<br />";?>
-								<?php if(!!$hospital['description']) echo $hospital['description']."<br />";?>
+									<?php echo "Facilitated by  ".$hospitals->hospital."<br />";?>
+								<?php if(!!$hospitals->description) echo $hospitals->description."<br />";?>
 							<?php } ?>
 						</div>			
 						<div style="float:right;margin-right:10;margin-top:5px;">			
-							<img src="<?php echo base_url()."assets/logos/".$hospital['logo'];?>" width="65px" height="65px" />
+							<img src="<?php echo base_url()."assets/logos/".$hospitals->logo;?>" width="65px" height="65px" />
 						</div>
 						</td>
 					</tr>
@@ -149,58 +153,58 @@
 						</div>							
 						<div style="float:right;">
 						
-						<!-- <span  id="patient_barcode"></span>
+						<span  id="patient_barcode"></span>
 						<div id="barcode"></div>
 						</div>
 						<div style="float:right;">
-						<b> Person ID: </b>
-						</div> -->
+						<b> Person ID: <?php echo $patient->patient_id ?></b>
+						</div>
 					</td>
 				</tr>
 				</tbody>
 				<tbody height="10%">
-						<?php if (!empty($form_data)) : ?>
-							<?php 
-							$form_data_keys = array_keys($form_data);
-							$total_data = count($form_data_keys);
-							
-							for ($i = 0; $i < $total_data; $i += 2) :
-								$key1 = $form_data_keys[$i];
-								$value1 = $form_data[$key1];
-								$key2 = ($i + 1 < $total_data) ? $form_data_keys[$i + 1] : '';
-								$value2 = ($i + 1 < $total_data) ? $form_data[$key2] : '';
+					<?php if (!empty($form_data)) : ?>
+						<?php 
+						$form_data_keys = array_keys($form_data);  // Get the keys of the form data
+						$total_data = count($form_data_keys); // Total number of data fields
+						for ($i = 0; $i < $total_data; $i += 2) :
+							$key1 = $form_data_keys[$i];  // First key
+							$value1 = $form_data[$key1];  // First value
 
-								// Skip unwanted keys (Form Header, sequence, Search patient id)
-								if (in_array($key1, ['Form Header', 'sequence', 'Search patient id','form_id'])) {
-									continue;
-								}
-								if (in_array($key2, ['Form Header', 'sequence', 'Search patient id'])) {
-									continue;
-								}
+							$key2 = ($i + 1 < $total_data) ? $form_data_keys[$i + 1] : '';  // Second key
+							$value2 = ($i + 1 < $total_data) ? $form_data[$key2] : '';  // Second value
 
-								// Format the key names
-								$key1 = strtok($key1, ' DOT');
-								$key1 = ucfirst(str_replace('_', ' ', $key1));
-								$key2 = strtok($key2, ' DOT');
-								$key2 = ucfirst(str_replace('_', ' ', $key2)); 
-								
-								// Skip if the value is empty or has placeholder '#'
-								if (empty($value1) || $value1 === '#' || empty($value2) || $value2 === '#') {
-									continue;
-								}
-							?>
-								<tr width="90%">
-									<td><strong><?php echo $key1; ?></strong></td>
-									<td><?php echo htmlspecialchars($value1); ?></td>
-									<?php if ($key2) : ?>
-										<td><strong><?php echo $key2; ?></strong></td>
-										<td><?php echo htmlspecialchars($value2); ?></td>
-									<?php endif; ?>
-								</tr>
-							<?php endfor; ?>
-						<?php endif; ?>
-					</tbody>
+							// Skip unwanted keys (Form Header, sequence, Search patient id, form_id)
+							if (in_array($key1, ['Form header','sequence', 'Search patient id', 'form_id'])) {
+								continue;
+							}
+							if (in_array($key2, ['sequence', 'Search patient id','Form header'])) {
+								continue;
+							}
 
+							// Format the key names
+							$key1 = strtok($key1, ' DOT');
+							$key1 = ucfirst(str_replace('_', ' ', $key1));
+							$key2 = strtok($key2, ' DOT');
+							$key2 = ucfirst(str_replace('_', ' ', $key2)); 
+
+						
+						?>
+							<tr width="90%">
+								<td><strong><?php echo $key1; ?></strong></td>
+								<td><?php echo htmlspecialchars($value1); ?></td>
+								<?php if ($key2) : ?>
+									<td><strong><?php echo $key2; ?></strong></td>
+									<td><?php echo htmlspecialchars($value2); ?></td>
+								<?php endif; ?>
+							</tr>
+						<?php endfor; ?>
+					<?php else: ?>
+						<tr>
+							<td colspan="4">No form data available</td>
+						</tr>
+					<?php endif; ?>
+				</tbody>
 					<style>
 						.print-element p, .print-element ul, .print-element ol {
 							margin: 0;
@@ -218,7 +222,7 @@
 <p>Note: This is a Healthcare IT System generated document and does not need a signature. <br>Report generated on <?php echo date("j-M-Y h:i A"); ?>.</p>
 <style>
      
-        .btn {
+	 .btns {
             background-color: #007bff;
             color: white;
             border: none;
@@ -231,13 +235,13 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s;
         }
-        .btn:hover {
+        .btns:hover {
             background-color: #0056b3;
         }
 		@media print {
-            .btn {
+            .btns {
                 display: none;
             }
         }
     </style>
-<button class="btn" onclick="window.print()">Print</button>
+<button class="btns" onclick="window.print()">Print</button>

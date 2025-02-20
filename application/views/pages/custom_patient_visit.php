@@ -180,6 +180,13 @@ display: inline-grid;
 						value="<?php echo $edit_report_name['form_name'] ?>" autocomplete="off" required>
 				</div>
 			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label for="inputrouteprimary ">Enter Form Header</label>
+					<input type="text" name="form_headers" class="form-control" placeholder="Enter Form Header" 
+						value="<?php echo $edit_report_name['form_header'] ?>" autocomplete="off" >
+				</div>
+			</div>
 			<div class="col-md-2">
 				<div class="form-group">
 					<label>Select Columns</label><br/>
@@ -361,6 +368,7 @@ echo "</select></li>";
 	<thead>
 		<th style="text-align:center">#</th>
 		<th style="text-align:center">Form Name</th>
+		<th style="text-align:center">Form Header</th>
 		<th style="text-align:center">Selected Cols</th>
 		<th style="text-align:center">Created by</th>
 		<th style="text-align:center">Created Datetime</th>
@@ -378,6 +386,7 @@ echo "</select></li>";
 	<tr>
 		<td style="text-align:right"><?php echo $sno;?></td>
 		<td style="text-align:center"><?php echo $arn->form_name;?></td>	
+		<td style="text-align:center"><?php echo $arn->form_header;?></td>	
 		<td style="text-align:center"><?php echo $arn->no_of_cols;?></td>	
 		<td style="text-align:center"><?php echo $arn->first_name;?></td>	
 		<td style="text-align:center"><?php echo date("j M Y h:i A.", strtotime("$arn->created_date_time")); ?></td>	
@@ -389,7 +398,7 @@ echo "</select></li>";
 			{
 		?>
 		<td style="text-align:center">
-			<a class="btn btn-success" href="<?php echo base_url('user_panel/add_patient_visit_custom/'.$arn->id); ?>" style="color:white!important;">Edit Label</a>
+			<a class="btn btn-success" href="<?php echo base_url('user_panel/add_patient_visit_custom/'.$arn->id); ?>" style="color:white!important;"><i class="fa fa-edit"></i></a>
 			<?php $report_id_exists = false; ?>
 			<?php foreach ($report_layout_report_id_count as $rl): ?>
 				<?php if ($rl['form_id'] == $arn->id): ?>

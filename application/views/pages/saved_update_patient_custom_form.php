@@ -74,13 +74,7 @@ pri.print();
         <input type="hidden" name="visit_id" value="<?php echo $visit_id; ?>" class="form-control" readonly>
         <input type="hidden" name="form_id" value="<?php echo $saved_form_id[0]->id; ?>" class="form-control" readonly>
         <input type="hidden" name="search_patient_id" value="<?php echo $patient_id; ?>" class="form-control" readonly>
-
-        <div class="form-group row ">
-            <div class="col-md-4" style="padding-left:50px;"></br>
-                <label> Form Header </label>
-                <input type="text" name="form_header" class="form-control" value="">
-            </div>
-        </div>
+        <input type="hidden" name="form_header" class="form-control" value="<?php echo $saved_form_id[0]->form_header ?>">
         <div class="panel-body">
         <?php if (!empty($saved_form_id)) { ?>
                 <!-- <div class="sortable-container" style="width: 100%; padding: 15px 0;"> --> <!-- If needed activate sortable container -->
@@ -98,7 +92,7 @@ pri.print();
                         }
                     ?>
                     <div class="col-md-<?php echo $col; ?> sortable-item" >
-                        <div class="form-group row" style="padding-top:5px;padding-bottom:5px;">
+                        <div class="form-group row myrow" style="padding-top:5px;padding-bottom:5px;">
                             <input type="hidden" name="sequence[]" class="sequence-input" value="<?php echo $counter; ?>" data-counter="<?php echo $counter; ?>" />
                             <!-- <label for="<?php echo $sfi->selected_columns; ?>" class="col-md-5 col-form-label">
                                 <?php echo str_replace('_', ' ', $sfi->selected_columns); ?>
@@ -204,7 +198,7 @@ pri.print();
                         </div>
                         <div class="col-md-4" style="margin-left:5px;">
                             <div class="row container" id="area-container" >
-                                <label for="area" class="col-md-1 col-form-label">
+                                <label for="area_con" class="col-md-1 col-form-label">
                                     Area
                                 </label>
                                 <div class="col-md-3">
@@ -223,7 +217,7 @@ pri.print();
                         </div>
                         <div class="col-md-4">
                             <div class="row container" id="unit-container">
-                                <label for="unit" class="col-md-1 col-form-label">
+                                <label for="unit_con" class="col-md-1 col-form-label">
                                     Unit
                                 </label>
                                 <div class="col-md-3">
@@ -361,7 +355,81 @@ pri.print();
         <script>
             $(document).ready(function() {
                 $('#printButtonsss').click(function() {
-                    window.open("<?php echo site_url('register/print_custom_layout'); ?>", "_blank");
+                    var formData = {};
+                    $('.form-group.row.myrow').each(function() {
+                        var label = $(this).find('label').text().trim();
+                        var field = $(this).find('input[type="text"], select, textarea');
+                        var value = '';
+                        if (field.is('input[type="text"]') || field.is('textarea')) {
+                            value = field.val().trim();
+                        } else if (field.is('select')) {
+                            value = field.find('option:selected').text().trim();
+                        }
+                        //alert("Label: " + label + "\nValue: " + value);
+                        if (field.is('input[type="hidden"]')) {
+                            return true;
+                        }
+                        label = label.replace(/[^a-zA-Z0-9]/g, '_');
+                        value = value.replace(/[^a-zA-Z0-9]/g, '_');
+                        formData[label] = value;
+                        
+                    });
+                    var patientId = $('#patient_id').val().trim();
+                    var visitId = $('input[name="visit_id"]').val().trim();
+                    var form_header_value = $('input[name="form_header"]').val().trim();
+                    if(form_header_value)
+                    {
+                        formData['form_header'] = form_header_value;
+                    }
+                    if (patientId) {
+                        formData['patient_id'] = patientId;
+                    }
+                    if (visitId) {
+                        formData['visit_id'] = visitId;
+                    }
+                    // var formHeaderValue = $('input[name="form_header"]').val().trim();
+                    // if (formHeaderValue) {
+                    //     var formHeaderLabel = 'form_header'; 
+                    //     formHeaderValue = formHeaderValue.replace(/[^a-zA-Z0-9]/g, '_');
+                    //     formData[formHeaderLabel] = formHeaderValue;
+                    // }
+                    var stateValue = $('#state').find('option:selected').text().trim();
+                    if (stateValue && stateValue !== 'Select State') {
+                        var stateLabel = 'state';
+                        stateValue = stateValue.replace(/[^a-zA-Z0-9]/g, '_');
+                        formData[stateLabel] = stateValue;
+                    }
+                    var areaValue = $('#area_con').find('option:selected').text().trim();
+                    if (areaValue && areaValue !== 'Select Area') {
+                        var areaLabel = 'area';
+                        areaValue = areaValue.replace(/[^a-zA-Z0-9]/g, '_');
+                        formData[areaLabel] = areaValue;
+                    }
+                    var unitValue = $('#unit_con').find('option:selected').text().trim();
+                    if (unitValue && unitValue !== 'Select Unit') {
+                        var unitLabel = 'unit';
+                        unitValue = unitValue.replace(/[^a-zA-Z0-9]/g, '_');
+                        formData[unitLabel] = unitValue;
+                    }
+                    console.log("Processed Form Data:", formData);
+                    $.ajax({
+                        url: "<?php echo site_url('register/store_form_data'); ?>", 
+                        type: "POST",
+                        data: { formData: formData },
+                        dataType: 'json',
+                        success: function(response) {
+                            //console.log("Server Response:", response);
+                            if (response.status === 'success') {
+                                window.open("<?php echo site_url('register/print_custom_layout'); ?>", "_blank");
+                            } else {
+                                alert("There was an error saving the form data.");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            //console.log("AJAX Error:", xhr.responseText);
+                            alert('Error: ' + error);
+                        }
+                    });
                 });
             });
         </script>

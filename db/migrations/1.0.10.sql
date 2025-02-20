@@ -259,8 +259,6 @@ ALTER TABLE `custom_report` ADD PRIMARY KEY (`report_id`);
 
 ALTER TABLE `custom_report` MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT;
 
-/*ALTER TABLE `custom_report` ADD `created_by` INT NOT NULL AFTER `report_name`, ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `created_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `created_date_time`;*/
-
 ALTER TABLE `custom_report` ADD `main_table` VARCHAR(150) NOT NULL AFTER `updated_date_time`;
 
 INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'custom_report', 'custom_report', 'custom report');
@@ -364,3 +362,5 @@ ALTER TABLE `update_patient_custom_form` ADD `created_by` INT NOT NULL AFTER `ho
 ALTER TABLE `update_patient_custom_form` CHANGE `created_date_time` `created_date_time` DATETIME NULL DEFAULT NULL;
 
 ALTER TABLE `update_patient_custom_form` CHANGE `updated_date_time` `updated_date_time` DATETIME NULL DEFAULT NULL;
+
+ALTER TABLE `update_patient_custom_form` ADD `form_header` VARCHAR(100) NOT NULL AFTER `form_name`;

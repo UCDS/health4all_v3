@@ -344,7 +344,7 @@ class Inventory_summary_model extends CI_Model
             scp.supply_chain_party_name, inventory.supply_chain_party_id,
             SUM(CASE WHEN inventory.inward_outward = "inward" THEN inventory.quantity ELSE 0 END) AS total_inward,
             SUM(CASE WHEN inventory.inward_outward = "outward" THEN inventory.quantity ELSE 0 END) AS total_outward,
-            (SELECT SUM(quantity) FROM inventory as inv WHERE inv.item_id = inventory.item_id AND inv.inward_outward = "inward" AND inv.date_time >= "' . $from_date . '" AND inv.date_time<="'.$to_date.'") AS opening_balance,
+            (SELECT SUM(quantity) FROM inventory as inv WHERE inv.item_id = inventory.item_id AND inv.inward_outward = "inward" AND inv.date_time <= "' . $from_date . '") AS opening_balance,
             SUM(CASE WHEN inventory.inward_outward = "inward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) -
             SUM(CASE WHEN inventory.inward_outward = "outward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) AS closing_balance    ')
         ->from('inventory')
