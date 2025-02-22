@@ -2040,7 +2040,7 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 
 	public function get_saved_fields_data_up($saved_form_id)
 	{
-		$this->db->select('upcf.form_name,upcf.no_of_cols,upcff.selected_columns,upcff.table_name,upcf.id,upcff.label');   
+		$this->db->select('upcf.form_name,upcf.form_header,upcf.no_of_cols,upcff.selected_columns,upcff.table_name,upcf.id,upcff.label');   
 		$this->db->from('update_patient_custom_form as upcf');   
 		$this->db->join('update_patient_custom_form_fields as upcff','upcff.form_id = upcf.id','left');	
 		$this->db->where('upcff.form_id',$saved_form_id);	

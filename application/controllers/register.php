@@ -1507,10 +1507,28 @@ class Register extends CI_Controller {
 		redirect('register/saved_update_patient_custom_form');
 	}
 
+	public function store_form_data()
+	{
+		$formData = $this->input->post('formData');
+		$fff = $this->session->set_userdata('form_data', $formData);
+		echo json_encode(['status' => 'success']);
+	}
+	
 	public function print_custom_layout() 
 	{
-		$form_data = $this->session->userdata('form_data');
-		$data['form_data'] = $form_data;
+		$formData = $this->session->userdata('form_data');
+		$data['form_data'] = $formData;
+
+		$userdata=$this->session->userdata('logged_in');
+		$user_id = $userdata['user_id'];
+		$data['hospitals'] = $this->staff_model->user_hospital($user_id);
+		$this->session->set_userdata('hospitals', $data['hospitals']);
+
+		$patient_id = $data['form_data']['patient_id'];
+		$visit_id = $data['form_data']['visit_id'];
+		$data['patient_details'] = $this->register_model->get_pat_details_custom_print($patient_id,$visit_id);
+		$this->session->set_userdata('patient_details', $data['patient_details']);
+
 		$this->load->view('pages/print_layouts/patient_summary_custom', $data);
 	}
 }

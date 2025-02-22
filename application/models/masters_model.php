@@ -3054,7 +3054,7 @@ else if($type=="dosage"){
     {
 		$hospital=$this->session->userdata('hospital');
 		$this->db->select("h.hospital as hname,staff.first_name,updated_by.first_name as updated_by_name,
-		cr.form_name,cr.created_date_time,cr.updated_date_time,cr.id,h.hospital_id,cr.no_of_cols")
+		cr.form_name,cr.form_header,cr.created_date_time,cr.updated_date_time,cr.id,h.hospital_id,cr.no_of_cols")
 		->from("update_patient_custom_form cr")
 		->join('staff','staff.staff_id=cr.created_by','left')
 		->join('staff as updated_by','updated_by.staff_id=cr.updated_by','left')
@@ -3088,7 +3088,7 @@ else if($type=="dosage"){
 
 	function get_edit_custom_visit_patient_id($record_id) 
 	{
-		$this->db->select('id,form_name,no_of_cols,hospital_id,created_by,updated_by,created_date_time,updated_date_time');
+		$this->db->select('id,form_name,form_header,no_of_cols,hospital_id,created_by,updated_by,created_date_time,updated_date_time');
         $query = $this->db->get_where('update_patient_custom_form', array('id' => $record_id));
         return $query->row_array();
     }

@@ -1299,6 +1299,7 @@ class User_panel extends CI_Controller {
 				{
 					$hospital = $this->session->userdata('hospital');
 					$report_name = $this->input->post('report_name');
+					$form_header = $this->input->post('form_headers');
 					$no_of_cols = $this->input->post('no_of_cols');
 					$added_by = $this->input->post('added_by');
 					$insert_datetime = $this->input->post('insert_datetime');
@@ -1312,6 +1313,7 @@ class User_panel extends CI_Controller {
 						$data_to_insert = array(
 							'hospital_id' => $hospital['hospital_id'],
 							'form_name' => $report_name,
+							'form_header' => $form_header,
 							'no_of_cols' => $no_of_cols,
 							'created_by' => $added_by,
 					 		'created_date_time' => $insert_datetime,
@@ -1357,6 +1359,7 @@ class User_panel extends CI_Controller {
 				$hospital = $this->session->userdata('hospital');
 				$update_record_id = $this->input->post('record_id');
 				$report_name = $this->input->post('report_name');
+				$form_header = $this->input->post('form_headers');
 				$no_of_cols = $this->input->post('no_of_cols');
 				$updated_by = $this->input->post('updated_by');
 				$update_datetime = $this->input->post('updated_datetime');
@@ -1368,6 +1371,7 @@ class User_panel extends CI_Controller {
 				{
 					$update_data = array(
 						'form_name' => $report_name,
+						'form_header' => $form_header,
 						'no_of_cols' => $no_of_cols,
 						'updated_by' => $updated_by,
 						'updated_date_time' => $update_datetime,

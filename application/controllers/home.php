@@ -63,6 +63,7 @@ class Home extends CI_Controller {
 						}
 						$this->data['op_forms']=$this->staff_model->get_forms("OP");
 						$this->data['ip_forms']=$this->staff_model->get_forms("IP");
+						$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
 						$this->load->view('templates/header',$this->data);
 						$this->load->view('pages/user_home',$this->data);
 					}
@@ -89,6 +90,7 @@ class Home extends CI_Controller {
 				}
 				$this->data['op_forms']=$this->staff_model->get_forms("OP");
 				$this->data['ip_forms']=$this->staff_model->get_forms("IP");
+				$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
 				$this->load->view('templates/header',$this->data);
 				$this->load->view('pages/user_home',$this->data);
 			}
@@ -136,6 +138,7 @@ class Home extends CI_Controller {
 						}
 						$this->data['op_forms']=$this->staff_model->get_forms("OP");
 						$this->data['ip_forms']=$this->staff_model->get_forms("IP");
+						$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
 						$this->load->view('templates/header',$this->data);
 						$this->load->view('pages/user_home',$this->data);
 					}
@@ -162,6 +165,7 @@ class Home extends CI_Controller {
 				}
 				$this->data['op_forms']=$this->staff_model->get_forms("OP");
 				$this->data['ip_forms']=$this->staff_model->get_forms("IP");
+				$this->data['custom_patient_visit_form'] = $this->masters_model->get_cust_patient_visit_forms();
 				$this->load->view('templates/header',$this->data);
 				$this->load->view('pages/user_home',$this->data);
 			}
