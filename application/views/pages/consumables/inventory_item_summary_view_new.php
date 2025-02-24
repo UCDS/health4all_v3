@@ -743,8 +743,6 @@ if ($this->input->post('to_id')) {
 						foreach ($search_inventory_summary as $inventory_item) {  ?>
 							<tr>
 								<?php
-									//$sub_url = "consumables/indent_reports/get_item_inventory_detail";
-									$quantity = $inventory_item['closing_balance'];
 									$redir = 1;
 									$item_id = $inventory_item['item_id'];
 									$item_name = $inventory_item['item_name'];
@@ -764,13 +762,7 @@ if ($this->input->post('to_id')) {
 								</td>
 								<td>
 									<?php 
-										if($inventory_item['opening_balance']!='')
-										{
-											echo $inventory_item['opening_balance'];
-										}else
-										{
-											echo '0';
-										}
+										echo isset($this->data['balance'][$inventory_item['item_id']]) ? $this->data['balance'][$inventory_item['item_id']] : '0';
 									?>
 								</td>
 								<td>
@@ -781,7 +773,10 @@ if ($this->input->post('to_id')) {
 								</td>
 								<td style="width: 15%;">
 									<center>
-										<?php echo $quantity; ?>
+										<?php 
+											$qty = $this->data['balance'][$inventory_item['item_id']]-$inventory_item['total_outward'];
+											echo $qty; 
+										?>
 									</center>
 								</td>
 								<td style="width: 15%;">
