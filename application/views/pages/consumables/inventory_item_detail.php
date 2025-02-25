@@ -634,7 +634,8 @@ $('#to_id').change(function(){
 							<th>Total </th>
 							<th></th>
 							<th></th>
-							<th style="text-align:right;"><?php if($inward_total_quantity){ echo  $inward_total_quantity;} else{ echo  $balance; }?></th>
+							<!-- <th style="text-align:right;"><?php if($inward_total_quantity){ echo  $inward_total_quantity;} else{ echo  $balance; }?></th> -->
+							<th style="text-align:right;"><?php echo $inward_total_quantity ?: '0'; ?></th>
 							<th style="text-align:right;"><?php  if($outward_total_quantity){ echo $outward_total_quantity; }?></th>
 							<th style="text-align:right;"><?= $tot_inward-$outward_total_quantity; ?></th>
 							<th style="text-align:right;"><?= $total_cost; ?></th>
