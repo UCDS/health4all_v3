@@ -57,7 +57,7 @@ pri.print();
         <div class="panel-heading">
             <div class="row">
               <div class="col-md-6">
-                 <h4> Form name - <span style="font-weight:bold;"><?php echo $saved_form_id[0]->form_name; ?></span></h4>
+              <h4> Form name - <span style="font-weight:bold;"><?php echo $saved_form_id[0]->form_name . (!empty($saved_form_id[0]->form_header) ? ' - ' . $saved_form_id[0]->form_header : ''); ?></span></h4>
               </div>
               <div class="col-md-3">
                  <h4> Patient id - <span style="font-weight:bold;"><?php echo $patient_id; ?></span></h4>

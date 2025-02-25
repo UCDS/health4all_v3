@@ -297,8 +297,8 @@
 											Inventory Status </span></a>
 										<a class="<?php echo (activate_item("^get_inventory_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_item_summary">
 											Inventory Item Summary </span></a>
-										<a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
-										Detail </span></a>
+										<!-- <a class="<?php echo (activate_item("^get_item_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_summary">Inventory 
+										Detail </span></a> -->
 										<a class="<?php echo (activate_item("^get_item_inventory_detail^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_item_inventory_detail">Inventory 
 										Item Detail </span></a>
 										<a class="<?php echo (activate_item("^get_deleted_indents^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_deleted_indents">Deleted Indents 
