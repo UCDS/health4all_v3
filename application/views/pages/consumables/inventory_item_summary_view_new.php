@@ -64,6 +64,7 @@
 		$('.print').click(function () {
 			//$('#table-sort').trigger('printTable');
 			var to_date = "<?php echo $this->input->post('to_date'); ?>";
+			var from_date = "<?php echo $this->input->post('from_date'); ?>";
 			var scp_name = "<?php echo $search_inventory_summary[0]['supply_chain_party_name']; ?>";
 			$('#table-sort').find('.tablesorter-filter-row').hide();
 				var printContent = '<!DOCTYPE html>';
@@ -71,13 +72,15 @@
 				printContent += '<head>';
 				printContent += '<title>Print</title>';
 				printContent += '<style>';
-				printContent += 'table { border-collapse: collapse; width: 95%; }';
+				printContent += 'table { border-collapse: collapse; width: 95%; margin-left:40px; }';
 				printContent += 'th, td { border: 1px solid #ddd; padding: 8px; }';
 				printContent += 'th { background-color: #f2f2f2; }';
+				printContent += 'td:nth-child(8), th:nth-child(8) { display: none; }';
 				printContent += '</style>';
 				printContent += '</head>';
 				printContent += '<body>';
-				printContent += '<h3 style="text-align:center;">Showing balance as on ' + to_date + ' for SCP: <span style="color: green;">' + scp_name + '</span></h3>';				printContent += document.getElementById("table-sort").outerHTML;
+				printContent += '<h3 style="text-align:center;">From ' + from_date + ' to ' + to_date + ' for SCP: <span style="color: green;">' + scp_name + '</span></h3>';
+				printContent += document.getElementById("table-sort").outerHTML;
 				printContent += '</body>';
 				printContent += '</html>';
 				var printWindow = window.open('', '_blank', 'width=800,height=600');
@@ -719,9 +722,10 @@ if ($this->input->post('to_id')) {
 		<div class="col-md-offset-2">
 			<div id="print-container">
 				<?php if(count($search_inventory_summary) > 0) { ?>
-					<h3>Showing balance as on 
-				<?= $from_date; ?> to <?= $to_date; ?>
-			 for SCP: <span style="color: green;">
+					<h4> Item Type : <span style="color: green;"><?php if($this->input->post('item_type')==2){ echo 'Surgical'; }else{ echo 'Drug';} ?></span></h4>
+					<h3>From 
+					<span style="color: green;"><?= $from_date; ?></span> to <span style="color: green;"><?= $to_date; ?></span>
+			 for <span style="color: green;">
 				<?= $search_inventory_summary[0]['supply_chain_party_name']; ?>
 			</span></h3>
 				<?php } ?>
@@ -739,7 +743,7 @@ if ($this->input->post('to_id')) {
 					</thead>
 					<tbody>
 						<?php
-						$i = $offset + 1;
+						$i = 1;
 						foreach ($search_inventory_summary as $inventory_item) {  ?>
 							<tr>
 								<?php
@@ -750,7 +754,7 @@ if ($this->input->post('to_id')) {
 								?>
 
 								<td>
-									<?= $i++; ?>
+									<?= $i; ?>
 								</td>
 								<td >
 									<?= $inventory_item['item_type']; ?>
@@ -774,7 +778,7 @@ if ($this->input->post('to_id')) {
 								<td style="width: 15%;">
 									<center>
 										<?php 
-											$qty = $this->data['balance'][$inventory_item['item_id']]-$inventory_item['total_outward'];
+											$qty = $this->data['balance'][$inventory_item['item_id']]+$inventory_item['total_inward']-$inventory_item['total_outward'];
 											echo $qty; 
 										?>
 									</center>
@@ -787,7 +791,7 @@ if ($this->input->post('to_id')) {
 							</tr>
 							<?php
 
-
+								$i++;
 						}
 						?>
 					<tfoot>
