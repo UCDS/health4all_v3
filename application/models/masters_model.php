@@ -2635,17 +2635,19 @@ else if($type=="dosage"){
 			{
 				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
 				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
-				patient_visit.visit_id,patient_visit.patient_id");
+				patient_visit.visit_id,patient_visit.patient_id,aps.appointment_status");
 
 			}else if(($columns_string!='patient_visit.patient_id') && ($columns_string!='patient_visit.appointment_update_by' || $columns_string!='patient_visit.appointment_status_id')){
 				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
 				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
-				patient_visit.visit_id,patient_visit.patient_id, CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by,aps.appointment_status");
+				patient_visit.visit_id,patient_visit.patient_id, 
+				CONCAT(appointment_update_by.first_name, ' ', appointment_update_by.last_name) AS appointment_update_by
+				,aps.appointment_status");
 			}
 			else{
 				$this->db->select("$columns_string,department.department,unit.unit_name,area.area_name,
 				visit_name.visit_name,icd_code.code_title, volunteer.first_name as vfirst_name, volunteer_updated.first_name as vufirst_name,
-				patient_visit.visit_id");
+				patient_visit.visit_id,aps.appointment_status");
 			}
 		} elseif ($main_table == 'patient') {
 			$columns_string = str_replace('patient_visit.update_btn', '', $columns_string);
@@ -2710,10 +2712,18 @@ else if($type=="dosage"){
 			$this->db->join('staff as appointment_update_by','patient_visit.appointment_update_by=appointment_update_by.staff_id','left');
 			$this->db->join('appointment_status aps','patient_visit.appointment_status_id=aps.id','left');
 			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
-			$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
-			$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
-			$this->db->order_by('patient_visit.admit_date','ASC');
-			$this->db->order_by('patient_visit.admit_time','ASC');
+			if($this->input->post('cust_dates')==3)
+			{
+				$this->db->where("(patient_visit.appointment_time BETWEEN '$from_date $from_time' AND '$to_date $to_time')");
+				$this->db->order_by('patient_visit.appointment_time','ASC');
+			}
+			else
+			{
+				$this->db->where("(patient_visit.admit_date BETWEEN '$from_date' AND '$to_date')");
+				$this->db->where("(patient_visit.admit_time BETWEEN '$from_time' AND '$to_time')");
+				$this->db->order_by('patient_visit.admit_date','ASC');
+				$this->db->order_by('patient_visit.admit_time','ASC');
+			}
 			if($this->input->post('op_ip')==1 || empty($this->input->post('op_ip')))
 			{
 				$this->db->where("patient_visit.visit_type","OP");
