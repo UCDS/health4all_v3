@@ -735,6 +735,9 @@ if ($this->input->post('to_id')) {
 			 for <span style="color: green;">
 				<?= $search_inventory_summary[0]['supply_chain_party_name']; ?>
 			</span></h3>
+				<?php }else { ?>
+				<h3>Opening balance :<span style="color:green;"> <?php echo $balance; ?></span></h3>
+					<h4><span style="color:black;">No outward transactions were found</span></h4>
 				<?php } ?>
 			</div>
 			<table class="table table-bordered table-striped" id="table-sort">
