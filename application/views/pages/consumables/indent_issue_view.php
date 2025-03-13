@@ -409,7 +409,7 @@ $(function(){
 														<td align="right"><?php echo $all_issue->quantity_indented ?></td>
 														<td align="right"><?php echo $all_issue->quantity_approved ?></td>
 														<td align="right"><?php echo $all_issue->quantity_issued ?></td>
-														<td align="right"><?php echo $all_issue->item_note ?></td>
+														<td align="right"><?php echo $all_issue->note ?></td>
 													</tr>
 												<?php 
 														}
