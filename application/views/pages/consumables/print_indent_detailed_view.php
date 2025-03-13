@@ -124,7 +124,7 @@
 
                             <td style="border:2px solid black;  padding: 3px;"></td>
                             <td style="border:2px solid black;  padding: 3px;">
-                                <?= $all_issue->item_note; ?>
+                                <?= $all_issue->note; ?>
                             </td>
                             <td style="border:2px solid black;  padding: 3px;"></td>
 
@@ -157,7 +157,7 @@
                             </td>
 
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id == 0 ? "": $all_issue->patient_id; ?></td>
-                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->item_note; ?></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->note; ?></td>
                             <!-- <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->gtin_code; ?></td> -->
 
 
@@ -190,7 +190,7 @@
                             </td>
 
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id == 0 ? "": $all_issue->patient_id; ?></td>
-                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->item_note; ?></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->note; ?></td>
                             <!-- <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->gtin_code; ?></td> -->
 
 
@@ -214,7 +214,7 @@
                     <th style="text-align:center;border:2px solid black;">Note</th>
                 </thead>
             <tbody>
-                <?php foreach ($details as $all_issue) {
+                <?php foreach ($details as $all_issue) { 
                     ?>
 
                     <tr>
@@ -236,7 +236,7 @@
                             <?php echo $all_issue->quantity_issued ?>
                         </td>
                         <td align="right" style="border:2px solid black;  padding: 10px;">
-                            <?php echo $all_issue->item_note ?>
+                            <?php echo $all_issue->note ?>
                         </td>
 
                     </tr>
