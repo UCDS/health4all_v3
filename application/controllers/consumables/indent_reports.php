@@ -328,10 +328,10 @@ class Indent_reports extends CI_Controller
 			$this->load->model('consumables/inventory_summary_model');
 			$this->data['search_inventory_summary'] = $this->inventory_summary_model->show_inventory_item_summary($this->data['rowsperpage']);
 			$sis_data = $this->data['search_inventory_summary']; 
-			foreach($sis_data as $dt)
+			if(empty($sis_data))
 			{
-				$item = $dt['item_id'];
-				$scp = $dt['supply_chain_party_id'];
+				$item = $this->input->post('item');
+				$scp = $this->input->post('scp_id');
 				$redir = 1;
 
 				$outward_total_quantity = 0;
@@ -346,9 +346,32 @@ class Indent_reports extends CI_Controller
 					}
 				}
 				$balance = $inward_total_quantity - $outward_total_quantity;
-				$this->data['outward_total_quantity'][$item] = $outward_total_quantity;
-				$this->data['inward_total_quantity'][$item] = $inward_total_quantity;
-				$this->data['balance'][$item] = $balance;
+				$this->data['balance']= $balance;
+			}
+			else
+			{
+				foreach($sis_data as $dt)
+				{
+					$item = $dt['item_id'];
+					$scp = $dt['supply_chain_party_id'];
+					$redir = 1;
+
+					$outward_total_quantity = 0;
+					$inward_total_quantity = 0; 
+					$closing_balance = $this->indent_report_model->get_item_closing_balance($item, $scp, $redir);
+					foreach ($closing_balance as $cb) 
+					{
+						if ($cb->inward_outward == "outward") {
+							$outward_total_quantity += $cb->quantity;
+						} elseif ($cb->inward_outward == "inward") {
+							$inward_total_quantity += $cb->quantity;
+						}
+					}
+					$balance = $inward_total_quantity - $outward_total_quantity;
+					$this->data['outward_total_quantity'][$item] = $outward_total_quantity;
+					$this->data['inward_total_quantity'][$item] = $inward_total_quantity;
+					$this->data['balance'][$item] = $balance;
+				}
 			}
 			
 			$this->load->view('pages/consumables/inventory_item_summary_view_new', $this->data);

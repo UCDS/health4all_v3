@@ -357,7 +357,8 @@ class Inventory_summary_model extends CI_Model
         ->where('scp.hospital_id', $hospital['hospital_id'])
         ->where("inventory.date_time >=", $from_date)
         ->where("inventory.date_time <=", $to_date)
-        ->group_by('inventory.item_id');
+        ->group_by('inventory.item_id')
+        ->order_by('item.item_name', 'ASC');
 
         if ($this->input->post('item')) {
             $this->db->where('inventory.item_id', $this->input->post('item'));

@@ -432,10 +432,10 @@ function onchange_page_dropdown(dropdownobj){
 
 				<select class="form-control" name="cust_dates" id="cust_dates">
 					<option value="#">Select Custom Date</option>
-					<option value="1">Patient Registration</option>
-					<option value="2">Visit Registration</option>
-					<option value="3">Visit Appointment</option>
-					<option value="4">Follow Registration</option>
+					<option <?php if($this->input->post('cust_dates')==1){ echo "selected";} ?> value="1">Patient Registration</option>
+					<option <?php if($this->input->post('cust_dates') == 2) { echo "selected"; } ?> value="2">Visit Registration</option>
+					<option <?php if($this->input->post('cust_dates') == 3) { echo "selected"; } ?> value="3">Visit Appointment</option>
+					<option <?php if($this->input->post('cust_dates') == 4) { echo "selected"; } ?> value="4">Follow Registration</option>
 				</select>&nbsp;&nbsp;
 
 				From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
