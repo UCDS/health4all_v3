@@ -303,26 +303,18 @@ class Inventory_summary_model extends CI_Model
     {
         $this->db->trans_start();
 
-        if ($this->input->post('page_no')) {
-			$page_no = $this->input->post('page_no');
-		}
-		else{
-			$page_no = 1;
-		}
-		if($this->input->post('rows_per_page')) {
-			$rows_per_page = $this->input->post('rows_per_page');
-		}
-		else{
-			$rows_per_page = $default_rowsperpage;
-		}
-		$start = ($page_no -1 )  * $rows_per_page;
+        $page_no = $this->input->post('page_no') ? $this->input->post('page_no') : 1;
+        $rows_per_page = $this->input->post('rows_per_page') ? $this->input->post('rows_per_page') : $default_rowsperpage;
+        $start = ($page_no - 1) * $rows_per_page;
 
-		if ($default_rowsperpage !=0){
-			$this->db->limit($rows_per_page,$start);
-		}
+        if ($default_rowsperpage != 0) {
+            $this->db->limit($rows_per_page, $start);
+        }
 
         $from_date = null;
         $to_date = null;
+        $one_month_back_start = null;
+        $one_month_back_end = null;
 
         if ($this->input->post('from_date')) {
             $f_date = date('Y-m-d', strtotime($this->input->post('from_date')));
@@ -334,11 +326,16 @@ class Inventory_summary_model extends CI_Model
             $to_date = date('Y-m-d H:i:s', strtotime($too_date . ' +23 hour 59 min 59 second'));
         }
 
+        if ($from_date) {
+            $one_month_back_start = date('Y-m-d H:i:s', strtotime($from_date . ' -1 month'));
+            $one_month_back_end = date('Y-m-d H:i:s', strtotime($to_date . ' -1 month'));
+        }
+
         $scp_id = $this->input->post('scp_id');
         $hospital = $this->session->userdata('hospital');
 
         $this->db->select('
-            inventory.item_id,inventory.date_time,
+            inventory.item_id, inventory.date_time,
             item.item_name,
             item_type.item_type, 
             scp.supply_chain_party_name, inventory.supply_chain_party_id,
@@ -346,7 +343,8 @@ class Inventory_summary_model extends CI_Model
             SUM(CASE WHEN inventory.inward_outward = "outward" THEN inventory.quantity ELSE 0 END) AS total_outward,
             (SELECT SUM(quantity) FROM inventory as inv WHERE inv.item_id = inventory.item_id AND inv.inward_outward = "inward" AND inv.date_time <= "' . $from_date . '") AS opening_balance,
             SUM(CASE WHEN inventory.inward_outward = "inward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) -
-            SUM(CASE WHEN inventory.inward_outward = "outward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) AS closing_balance    ')
+            SUM(CASE WHEN inventory.inward_outward = "outward" AND inventory.date_time >= "' . $from_date . '" AND inventory.date_time <= "' . $to_date . '" THEN inventory.quantity ELSE 0 END) AS closing_balance
+        ')
         ->from('inventory')
         ->join('item', 'inventory.item_id = item.item_id')
         ->join('item_form', 'item_form.item_form_id = item.item_form_id')
@@ -354,11 +352,12 @@ class Inventory_summary_model extends CI_Model
         ->join('item_type', 'item_type.item_type_id = generic_item.item_type_id')
         ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
         ->where('scp.supply_chain_party_id', $scp_id)
-        ->where('scp.hospital_id', $hospital['hospital_id'])
-        ->where("inventory.date_time >=", $from_date)
-        ->where("inventory.date_time <=", $to_date)
-        ->group_by('inventory.item_id')
-        ->order_by('item.item_name', 'ASC');
+        ->where('scp.hospital_id', $hospital['hospital_id']);
+
+        if ($from_date && $to_date) {
+            $this->db->where("inventory.date_time >=", $from_date)
+                ->where("inventory.date_time <=", $to_date);
+        }
 
         if ($this->input->post('item')) {
             $this->db->where('inventory.item_id', $this->input->post('item'));
@@ -372,11 +371,61 @@ class Inventory_summary_model extends CI_Model
         if ($this->input->post('item_form')) {
             $this->db->where('item_form.item_form_id', $this->input->post('item_form'));
         }
-        $query = $this->db->get();
-        $latest_summary = $query->result_array();
+
+        $this->db->group_by('inventory.item_id')
+            ->order_by('item.item_name', 'ASC');
+        
+        $query_current_month = $this->db->get();
+        $current_month_data = $query_current_month->result_array();
+       
+        $this->db->select('
+        inventory.item_id, inventory.date_time,
+        item.item_name,
+        item_type.item_type, 
+        scp.supply_chain_party_name, inventory.supply_chain_party_id,
+        ')
+
+        ->from('inventory')
+        ->join('item', 'inventory.item_id = item.item_id')
+        ->join('item_form', 'item_form.item_form_id = item.item_form_id')
+        ->join('generic_item', 'item.generic_item_id = generic_item.generic_item_id')
+        ->join('item_type', 'item_type.item_type_id = generic_item.item_type_id')
+        ->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id')
+        ->where('scp.supply_chain_party_id', $scp_id)
+        ->where('scp.hospital_id', $hospital['hospital_id']);
+
+        if ($this->input->post('item')) {
+            $this->db->where('inventory.item_id', $this->input->post('item'));
+        }
+        if ($this->input->post('item_type')) {
+            $this->db->where('generic_item.item_type_id', $this->input->post('item_type'));
+        }
+        if ($this->input->post('generic_item')) {
+            $this->db->where('item.generic_item_id', $this->input->post('generic_item'));
+        }
+        if ($this->input->post('item_form')) {
+            $this->db->where('item_form.item_form_id', $this->input->post('item_form'));
+        }
+
+        $this->db->group_by('inventory.item_id')
+            ->order_by('item.item_name', 'ASC');
+        
+        $query_one_month_back = $this->db->get();
+        $one_month_back_data = $query_one_month_back->result_array();
+
         $this->db->trans_complete();
 
-        return $latest_summary;
+        $current_month_items = array_column($current_month_data, 'item_id');
+        $one_month_back_items = array_column($one_month_back_data, 'item_id');
+
+        $items_not_in_current_month = array_diff($one_month_back_items, $current_month_items);
+        $additional_items = array_filter($one_month_back_data, function($item) use ($items_not_in_current_month) {
+            return in_array($item['item_id'], $items_not_in_current_month);
+        });
+
+        $final_result = array_merge($current_month_data, $additional_items);
+
+        return $final_result;
     }
 
     public function get_inventory_records()

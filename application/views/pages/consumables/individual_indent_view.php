@@ -419,7 +419,7 @@
 										<?php echo $all_issue->quantity_issued ?>
 									</td>
 									<td align="right">
-										<?php echo $all_issue->item_note ?>
+										<?php echo $all_issue->note ?>
 									</td>
 								</tr>
 							<?php } ?>
@@ -556,7 +556,7 @@
 										<td><?= $all_int->patient_id ? $all_int->patient_id: " ";?></td>
 										<td>
 											<span id="note_<?php echo $all_int->indent_item_id; ?>_<?php echo $all_int->item_id; ?>">
-												<?php echo $all_int->item_note;?>
+												<?php echo !empty($all_int->item_note) ? $all_int->item_note : $all_int->note; ?>
 											</span>
 											<?php if($access==1)
 											{

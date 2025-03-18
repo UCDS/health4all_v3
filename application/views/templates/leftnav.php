@@ -29,6 +29,7 @@
 			return preg_match("^get_indent_summary^", current_url()) 
 			|| preg_match("^indents_list^", current_url()) 
 			|| preg_match("^get_inventory_summary^", current_url())
+			|| preg_match("^get_inventory_item_summary^", current_url())
 			|| preg_match("^get_item_summary^", current_url())
 			|| preg_match("^get_item_inventory_detail^", current_url())
 			|| preg_match("^get_deleted_indents^", current_url());
@@ -289,8 +290,8 @@
 							<div id="collapseTwo" class="panel-collapse collapse <?php if(check_if_group_active("reports")) echo 'in'?>">
 							<div class="panel-body">
 									<ul class="list-group">
-										<a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indented
-												Items </span></a>
+										<!-- <a class="<?php echo (activate_item("^get_indent_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_indent_summary">Indented
+												Items </span></a> -->
 										<a class="<?php echo (activate_item("^indents_list^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/indents_list">Indents
 										List </span></a>
 										<a class="<?php echo (activate_item("^get_inventory_summary^"))?>" href="<?php echo base_url(); ?>consumables/indent_reports/get_inventory_summary">

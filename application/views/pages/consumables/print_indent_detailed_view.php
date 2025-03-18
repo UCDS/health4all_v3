@@ -157,7 +157,7 @@
                             </td>
 
                             <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->patient_id == 0 ? "": $all_issue->patient_id; ?></td>
-                            <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->note; ?></td>
+                            <td style="border:2px solid black;  padding: 3px;"><?php echo !empty($all_issue->note) ? $all_issue->note : $all_issue->item_note; ?></td>
                             <!-- <td style="border:2px solid black;  padding: 3px;"><?= $all_issue->gtin_code; ?></td> -->
 
 
@@ -236,7 +236,7 @@
                             <?php echo $all_issue->quantity_issued ?>
                         </td>
                         <td align="right" style="border:2px solid black;  padding: 10px;">
-                            <?php echo $all_issue->note ?>
+                            <?php echo $all_issue->item_note ?>
                         </td>
 
                     </tr>
