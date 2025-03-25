@@ -251,6 +251,9 @@ class Indent_reports extends CI_Controller
 
 	function get_inventory_item_summary()
 	{
+		//ini_set('display_errors', 1);
+		//ini_set('display_startup_errors', 1);
+		//error_reporting(E_ALL);
 		if($this->session->userdata('logged_in')){                                                
 			$this->data['userdata']=$this->session->userdata('logged_in');                                           
         }	
@@ -332,6 +335,16 @@ class Indent_reports extends CI_Controller
 			{
 				$item = $this->input->post('item');
 				$scp = $this->input->post('scp_id');
+				$supplier_name = '';
+				foreach ($this->data['parties'] as $party) 
+				{
+					if ($party->supply_chain_party_id == $scp) { 
+						$supplier_name = $party->supply_chain_party_name;
+						break;
+					}
+				}
+
+				$this->data['supplier_name'] = $supplier_name;
 				$redir = 1;
 
 				$outward_total_quantity = 0;

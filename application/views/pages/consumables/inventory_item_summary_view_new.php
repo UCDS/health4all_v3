@@ -780,10 +780,10 @@ if ($this->input->post('to_id')) {
 									?>
 								</td>
 								<td>
-									<?php echo $inventory_item['total_inward']; ?>
+									<?php echo !empty($inventory_item['total_inward']) ? $inventory_item['total_inward'] : 0; ?>
 								</td>
 								<td>
-									<?php echo $inventory_item['total_outward']; ?>
+									<?php echo !empty($inventory_item['total_outward']) ? $inventory_item['total_outward'] : 0; ?>
 								</td>
 								<td style="width: 15%;">
 									<center>

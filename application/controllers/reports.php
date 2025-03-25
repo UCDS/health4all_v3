@@ -1837,6 +1837,7 @@ class Reports extends CI_Controller {
     
     public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital)
 	{
+		$this->data['post_from_date'] = $from_date;
 	       if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;

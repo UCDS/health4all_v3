@@ -224,7 +224,7 @@ display: inline-grid;
 					}
 					?>
 				</select>
-					From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+					From Date : <input class="form-control" type="text" value="<?php if(!empty($post_from_date) || $post_from_date!='0000-00-00'){ echo date("d-M-Y",strtotime($post_from_date)); }else{ echo date("d-M-Y",strtotime($from_date)); } ?>" name="from_date" id="from_date" size="15" />
 					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
