@@ -107,6 +107,7 @@ input[type=number] {
 	if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
 	if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
 	?>
+	<?php $userdata=$this->session->userdata('hospital'); ?>
 	<div class="row">
 		<h4><b>Login Activities</b></h4>	
 		<?php echo form_open("reports/login_report",array('role'=>'form','class'=>'form-custom')); ?>
@@ -117,10 +118,15 @@ input[type=number] {
             <select name="hospital" id="hospital" class="form-control">
 				<option value="">Hospital</option>
 				<?php 
-				foreach($hospitals as $hosp){
-				echo "<option value='".$hosp->hospital_id."'";
-				if($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) echo " selected ";
-				echo ">".$hosp->hospital_short_name."</option>";
+				foreach($hospitals as $hosp) {
+					$selected = '';
+					if ($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) {
+						$selected = 'selected';
+					} 
+					elseif (empty($this->input->post('hospital')) && isset($userdata['hospital_id']) && $userdata['hospital_id'] == $hosp->hospital_id) {
+						$selected = 'selected';
+					}
+					echo "<option value='" . $hosp->hospital_id . "' $selected>" . $hosp->hospital_short_name . "</option>";
 				}
 				?>
 			</select>

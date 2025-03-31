@@ -216,17 +216,22 @@ display: inline-grid;
 				<select name="hospital" id="hospital" class="form-control">
 					<option value="">Hospital</option>
 					<?php 
-					foreach($hospitals as $hosp){ 
-					echo "<option value='".$hosp->hospital_id."'";
-					if($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id || 
-					$report[0]->hospital == $hosp->hospital_short_name) echo " selected ";
-					echo ">".$hosp->hospital_short_name."</option>";
+					foreach ($hospitals as $hosp) { 
+						$selected = '';
+						if ($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) {
+							$selected = 'selected';
+						}
+						elseif (empty($this->input->post('hospital')) && isset($report[0]->hospital) && $report[0]->hospital == $hosp->hospital_short_name) {
+							$selected = 'selected';
+						}
+						echo "<option value='" . $hosp->hospital_id . "' $selected>" . $hosp->hospital_short_name . "</option>";
 					}
 					?>
 				</select>
-					From Date : <input class="form-control" type="text" value="<?php if(!empty($post_from_date) || $post_from_date!='0000-00-00'){ echo date("d-M-Y",strtotime($post_from_date)); }else{ echo date("d-M-Y",strtotime($from_date)); } ?>" name="from_date" id="from_date" size="15" />
+					From Date : <input class="form-control" type="text" value="<?php if(empty($post_from_date)){ echo date("d-M-Y",strtotime($from_date)); }else{ echo date("d-M-Y",strtotime($post_from_date));} ?>" name="from_date" id="from_date" size="15" />
 					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
 					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+					<input type="hidden" value="1" name="filter">
 					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>	
 		<br/>	
@@ -259,7 +264,7 @@ display: inline-grid;
 	$next_page = $page_no + 1;
 	$adjacents = "2";	
 ?>
-<?php if(isset($report) && count($report)>0) { ?>
+<?php if(isset($report) && count($report)>0 || isset($filter_report) && count($filter_report)>0) { ?>
 <ul class="pagination" style="margin:0">
 <?php if($page_no > 1){
 echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
@@ -440,7 +445,7 @@ echo "</select></li>";
 	</table>
    <?php } ?>
 
-   <?php if(isset($report) && count($report)>0) { ?>
+   <?php if(isset($report) && count($report)>0 || isset($filter_report) && count($filter_report)>0) { ?>
 <div style='padding: 0px 2px;'>
 
 <h5>Page <?php echo $page_no." of ".$total_no_of_pages." (Total ".$total_records.")" ; ?></h5>

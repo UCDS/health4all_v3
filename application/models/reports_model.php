@@ -4168,6 +4168,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                
 		if($this->input->post('hospital')){
 			$this->db->where("hospital.hospital_id",$this->input->post('hospital'));
+		}else{
+			$hospital=$this->session->userdata('hospital');
+			$this->db->where("hospital.hospital_id",$hospital['hospital_id']);
 		}
 		
 		$from_timestamp = $from_date." ".$from_time;
