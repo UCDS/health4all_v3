@@ -550,7 +550,7 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 								<label for="input_latitude">Latitude</label>
-								<input class="form-control" name="input_latitude"  id="input_latitude"  placeholder="Enter Latitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->latitude;  ?>" align="middle">
+								<input class="form-control" name="input_latitude" min="-90" max="90"  id="input_latitude"  placeholder="Enter Latitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->latitude;  ?>" align="middle">
 						</div> 
 						</div>
 						
@@ -558,7 +558,7 @@ $patient = $patients[0];
 						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
 						<div class="form-group">
 								<label for="input_longitude">Longitude</label>
-								<input class="form-control" name="input_longitude"  id="input_longitude"  placeholder="Enter Longitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->longitude;  ?>" align="middle">
+								<input class="form-control" name="input_longitude" min="-180" max="180"  id="input_longitude"  placeholder="Enter Longitude"  type="number" step="any" value="<?php if($patient_followup) echo $patient_followup->longitude;  ?>" align="middle">
 						</div> 
 						</div>					
 						
