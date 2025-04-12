@@ -5,6 +5,7 @@ class Dashboard extends CI_Controller {
 		parent::__construct();
 		$this->dashboard_access=0;
 		$this->load->model('staff_model');
+		$this->load->model('masters_model');
 		if($this->session->userdata('logged_in')){
 		$userdata=$this->session->userdata('logged_in');
 			$user_id=$userdata['user_id'];
