@@ -2868,7 +2868,6 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     	
 	function update_appointment(){
 		//Slot validation
-
 		if(empty($this->input->post('department_id')) || empty($this->input->post('visit_name_id')) || empty($this->input->post('appointment_time'))){
 			if (empty($this->input->post('department_id'))) {
 				return -4;
