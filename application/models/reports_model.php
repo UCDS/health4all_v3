@@ -2763,102 +2763,6 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		return $resource->result();
 	}
 	
-		
-	function validate_appointment_slot(){
-        
-		if(empty($this->input->post('department_id')) || empty($this->input->post('visit_name_id')) || empty($this->input->post('appointment_time'))){
-			if (empty($this->input->post('department_id'))) {
-				return -4;
-			}
-			
-			if (empty($this->input->post('visit_name_id'))) {
-				return 0;
-			}
-			
-			if (empty($this->input->post('appointment_time'))) {
-				return -5;
-			}
-		}
-		
-       
-        $this->db->where('department_id',$this->input->post('department_id'));
-        $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-        $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-        $this->db->where('date',$date);
-       
-        $this->db->select('count(*) as count');
-        $this->db->from('appointment_slot');
-        $query = $this->db->get();
-        $result = $query->result_array();
-        if ($result[0]['count'] > 0){
-        	$this->db->select('slot_id as slot_id,appointments_limit as appointments_limit,from_time as from_time,to_time as to_time,(appointments_taken-appointments_cancelled) as effective_appointments');
-        	$this->db->from('appointment_slot');
-        
-		$this->db->where('department_id',$this->input->post('department_id'));
-		
-		
-		$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-		
-		
-		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-		$time = date("H:i:s", strtotime($this->input->post('appointment_time')));
-		$this->db->where('date',$date);
-		$this->db->where('from_time <=',$time);
-		$this->db->where('to_time >=',$time);
-		
-		$query = $this->db->get();
-        	$result = $query->result_array();
-        	if (count($result)==1){
-        		$appointments_limit = $result[0]['appointments_limit'];
-				$slot_id = $result[0]['slot_id'];
-        		$from_time = $result[0]['from_time'];
-        		$to_time = $result[0]['to_time'];
-        		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-				$from_timestamp = $date." ".$from_time;
-				$to_timestamp = $date." ".$to_time;
-        		$effective_appointments = $result[0]['effective_appointments'];
-        		$operation="add";
-        		$curr_appointment_time="";
-        		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
-        		$this->db->from('patient_visit');
-        		$this->db->where('visit_id',$this->input->post('visit_id'));
-        		$query = $this->db->get();
-        		$result = $query->result_array();
-        		if (count($result) > 0) {
-				$curr_appointment_time = $result[0]['appointment_time'];
-				$department_id = $result[0]['department_id'];
-				$visit_name_id = $result[0]['visit_name_id'];
-				if($curr_appointment_time!=""){
-					if( strtotime($curr_appointment_time) >= strtotime($from_timestamp) && strtotime($curr_appointment_time)<= strtotime($to_timestamp) && $department_id==$this->input->post('department_id') && $visit_name_id==$this->input->post('visit_name_id'))
-					{
-						$operation="update";	
-					}
-				}
-        		}
-        		
-        		if($effective_appointments < $appointments_limit) {
-        			return $slot_id;
-        		}
-        		else{
-        			if ($operation=="update"){
-        				return $slot_id;
-        			}
-        			else {
-        				return -3;
-        			}
-        		}
-        	}
-        	else {
-        		return -2;
-        	}
-      		
-      	}
-       else{
-       
-        	return 0;
-        }
-        
-    	}
 	function add_appointment_slot(){
 	
 	$this->db->select('count(*) as count');
@@ -2962,7 +2866,82 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         	} 
     	}
     	
-	function update_appointment($appointment_slot_id_current){
+	function update_appointment(){
+		//Slot validation
+
+		if(empty($this->input->post('department_id')) || empty($this->input->post('visit_name_id')) || empty($this->input->post('appointment_time'))){
+			if (empty($this->input->post('department_id'))) {
+				return -4;
+			}
+			
+			if (empty($this->input->post('appointment_time'))) {
+				return -5;
+			}
+		}
+			
+		$operation="add";
+		$current_slot_id = 0;
+        $this->db->where('department_id',$this->input->post('department_id'));
+        $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+        $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+        $this->db->where('date',$date);
+       
+        $this->db->select('count(*) as count');
+        $this->db->from('appointment_slot');
+        $query = $this->db->get();
+        $result = $query->result_array();
+        if ($result[0]['count'] > 0){
+        	$this->db->select('slot_id as slot_id,from_time as from_time,to_time as to_time');
+        	$this->db->from('appointment_slot');
+        
+			$this->db->where('department_id',$this->input->post('department_id'));
+		
+		
+			$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+		
+		
+			$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+			$time = date("H:i:s", strtotime($this->input->post('appointment_time')));
+			$this->db->where('date',$date);
+			$this->db->where('from_time <=',$time);
+			$this->db->where('to_time >=',$time);
+		
+			$query = $this->db->get();
+        	$result = $query->result_array();
+        	if (count($result)==1){
+				$current_slot_id = $result[0]['slot_id'];
+        		$from_time = $result[0]['from_time'];
+        		$to_time = $result[0]['to_time'];
+        		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+				$from_timestamp = $date." ".$from_time;
+				$to_timestamp = $date." ".$to_time;
+        		
+        		$curr_appointment_time="";
+        		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
+        		$this->db->from('patient_visit');
+        		$this->db->where('visit_id',$this->input->post('visit_id'));
+        		$query = $this->db->get();
+        		$result = $query->result_array();
+        		if (count($result) > 0) {
+				$curr_appointment_time = $result[0]['appointment_time'];
+				$department_id = $result[0]['department_id'];
+				$visit_name_id = $result[0]['visit_name_id'];
+				if($curr_appointment_time!=""){
+						if( strtotime($curr_appointment_time) >= strtotime($from_timestamp) && strtotime($curr_appointment_time)<= strtotime($to_timestamp) && $department_id==$this->input->post('department_id') && $visit_name_id==$this->input->post('visit_name_id'))
+						{
+							$operation="update";	
+						}
+					}
+        		}
+        	}
+        	else {
+        		return -2;
+        	}
+		}
+
+
+
+
 		//Getting old appointment slot id 
 		$this->db->select("IF(pv.appointment_slot_id IS NULL or pv.appointment_slot_id = '', 0, pv.appointment_slot_id) as appointment_slot_id,
 		IF(aps.is_default IS NULL or aps.is_default = '', 0, aps.is_default) as appointment_status_category_old",false);
@@ -2973,44 +2952,83 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         $result = $query->result_array();
 		$appointment_slot_id_old = $result[0]['appointment_slot_id'];
 		$appointment_status_category_old = $result[0]['appointment_status_category_old']; 
-		//echo("<script>alert('appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
-		//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-		//echo("<script>alert('appointment_status_category_old: " . $appointment_status_category_old . "');</script>");
-        $appointment_info = array();
-        if($this->input->post('department_id')){
-            $appointment_info['department_id'] = $this->input->post('department_id');
-        }
-        if($this->input->post('appointment_with')){
-            $appointment_info['appointment_with'] = $this->input->post('appointment_with');
-        }
-        if($this->input->post('appointment_time')){
-            $appointment_info['appointment_time'] = $this->input->post('appointment_time');
-        }
-         if($this->input->post('summary_sent_time')){
-            $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
-        }
-		$appointment_info['appointment_slot_id'] = $appointment_slot_id_current;
 		
-		$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
-		$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
-        $this->db->trans_start();
-        $this->db->where('visit_id',$this->input->post('visit_id'));
-        $this->db->update('patient_visit', $appointment_info);
-		if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
-			//echo("<script>alert('call appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
-		    //echo("<script>alert('call appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$appointment_status_category_old,$appointment_status_category_old]);
+		//Acquirung locks
+		$cur_slot_lock_acquired = 1;
+		$cur_lock_name = 'row_' . $current_slot_id . '_lock';
+		$old_lock_name = 'row_' . $appointment_slot_id_old . '_lock';
+		$timeout = 2; 	 // seconds
+		if ($operation=="add" && $current_slot_id != 0) {
+			$query = $this->db->query("SELECT GET_LOCK(?, ?)", [$cur_lock_name, $timeout]);
+			$cur_slot_lock_acquired = $query->row()->{'GET_LOCK(\'' . $cur_lock_name . '\', ' . $timeout . ')'};
 		}
-        $this->db->trans_complete();
-		//echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-        if($this->db->trans_status()==FALSE){
-                return false;
-                
-        	}
-        else{
-                return true;
-        	} 
-    	}
+
+		$old_slot_lock_acquired = 1;
+		if ($appointment_slot_id_old != 0) {
+			$query = $this->db->query("SELECT GET_LOCK(?, ?)", [$old_lock_name, $timeout]);
+			$old_slot_lock_acquired = $query->row()->{'GET_LOCK(\'' . $old_lock_name . '\', ' . $timeout . ')'};
+		}
+		$status = 0;
+		if ($cur_slot_lock_acquired == 1 && $old_slot_lock_acquired == 1) {
+				if ($current_slot_id != 0) {
+					$this->db->select('appointments_limit as appointments_limit,(appointments_taken-appointments_cancelled) as effective_appointments');
+					$this->db->from('appointment_slot');
+					$this->db->where('slot_id',$current_slot_id);
+					$query = $this->db->get();
+					$result = $query->result_array();
+			
+					$effective_appointments = $result[0]['effective_appointments'];
+					$appointments_limit = $result[0]['appointments_limit'];
+
+					if($operation=="add" && $effective_appointments >= $appointments_limit) {
+						$status = -3;
+					}
+				}
+				
+				if ($status == 0) {
+					$appointment_info = array();
+					if($this->input->post('department_id')){
+						$appointment_info['department_id'] = $this->input->post('department_id');
+					}
+					if($this->input->post('appointment_with')){
+						$appointment_info['appointment_with'] = $this->input->post('appointment_with');
+					}
+					if($this->input->post('appointment_time')){
+						$appointment_info['appointment_time'] = $this->input->post('appointment_time');
+					}
+					if($this->input->post('summary_sent_time')){
+						$appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
+					}
+					$appointment_info['appointment_slot_id'] = $current_slot_id;
+						
+					$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+					$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+					$this->db->trans_start();
+					$this->db->where('visit_id',$this->input->post('visit_id'));
+					$this->db->update('patient_visit', $appointment_info);
+					if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
+						$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$appointment_status_category_old,$appointment_status_category_old]);
+					}
+					$this->db->trans_complete();
+					if($this->db->trans_status()==FALSE){
+						$status = 1;
+					}
+				}
+				
+			}
+			else {
+				$status = 1;
+			}
+			//Release locks
+			if ($operation=="add" && $current_slot_id != 0 && $cur_slot_lock_acquired == 1){
+				$this->db->query("SELECT RELEASE_LOCK(?)", [$cur_lock_name]);
+			}
+
+			if ($appointment_slot_id_old != 0 && $old_slot_lock_acquired == 1){
+				$this->db->query("SELECT RELEASE_LOCK(?)", [$old_lock_name]);
+			}
+			return $status;
+		}
     	
     	function update_appointment_status(){
         $appointment_slot_id = 0;

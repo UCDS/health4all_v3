@@ -537,49 +537,6 @@ class Reports extends CI_Controller {
                 }
         }
         
-        private function validate_appointment_slot()
-		{ 
-            $appointment_slot = $this->reports_model->validate_appointment_slot();
-            if ($appointment_slot>=0){               
-					return $appointment_slot;
-		    }
-		    else if ($appointment_slot==-2) {
-		       	header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Selected appointment time is outside of the slot';        
-				echo(json_encode($result));	       
-		    }
-		    else if ($appointment_slot==-3) {
-				header('Content-Type: application/json; charset=UTF-8');
-				header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Appointment limit exceeded';        
-				echo(json_encode($result));	       
-		    }
-		    else if ($appointment_slot==-4) {
-		       	header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Please enter Department';        
-				echo(json_encode($result));	       
-		    }
-		    else if ($appointment_slot==-5) {
-				header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Please enter Appointment time';        
-				echo(json_encode($result));	       
-		    }
-		    else{
-			    header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Error in Appointment slot validation';        
-				echo(json_encode($result));
-			}
-			return $appointment_slot;
-	}
     public function add_appointment_slot()
 	{
 		if($this->session->userdata('logged_in')){
@@ -717,21 +674,52 @@ class Reports extends CI_Controller {
 			}
 		}
 		if($access==1){
-		if($this->input->post('visit_id')){		
-			$appointment_slot_id_current = $this->validate_appointment_slot();
-			$updated = false;
-			if($appointment_slot_id_current >= 0) {
-				//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-				$updated = $this->reports_model->update_appointment($appointment_slot_id_current);
-				if($updated == false){
+		if($this->input->post('visit_id')){	
+			
+			$response = $this->reports_model->update_appointment();
+			//echo("<script>console.log('response: " . $response . "');</script>");
+			switch($response){
+				case 0:
+					return;
+				case -2:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Selected appointment time is outside of the slot';        
+					echo(json_encode($result));	       
+					return;
+				case -3:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Appointment limit exceeded';        
+					echo(json_encode($result));	       
+					return;
+				case -4:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Please enter Department';        
+					echo(json_encode($result));	       
+					return;
+				case -5:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Please enter Appointment time';        
+					echo(json_encode($result));	       
+					return;
+				default:
 					header('Content-Type: application/json; charset=UTF-8');
 					header('HTTP/1.1 500 Internal Server Error');    
 					$result=array();    	
 					$result['Message'] = 'Error in Appointment slot validation';        
 					echo(json_encode($result));
-				}
+					return;
+				
 			}
-			return;
+		
+		
 		}	
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
 		$this->data['title']="Registrations/Appointments";
