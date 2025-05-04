@@ -291,32 +291,50 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
-			$this->data['results_count']=$this->reports_model->get_count_followups();	
-			$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
-			if(count($this->data['results']) == 0){
+			//$this->data['results_count']=$this->reports_model->get_count_followups();	
+			if ($this->input->post('page_no')) {
+				$page_no = $this->input->post('page_no');
+			}
+			else{
+				$page_no = 1;
+			}
+			if($this->input->post('rows_per_page')) {
+				$rows_per_page = $this->input->post('rows_per_page');
+			}
+			else{
+				$rows_per_page = $this->data['rowsperpage'];
+			}
+			$start = ($page_no -1 )  * $rows_per_page;
+			$result =  $this->reports_model->search_followups();
+			$count = count($result);
+			if($count == 0){
 				$this->data['msg'] = "No Records found";
 			}
-			// $filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-			// $filter_values = [];
-			// foreach($filter_names as $filter_name){
-			// 	$filter_value = "";
-			// 	if($this->input->post($filter_name)){
-			// 		$filter_value = $this->input->post($filter_name);
-			// 	}
-			// 	$filter_values[$filter_name] = $filter_value;
-			// }
-			// $this->data['filter_values'] = $filter_values;
+			else{
+				if($this->input->post('sort_by_age')==1){
+					usort($result, function ($a, $b) {
+							return $a->age_years <= $b->age_years  ? -1 : 1;
+					});
+				}else{
+					usort($result, function ($a, $b) {					 
+						return $a->age_years >= $b->age_years  ? -1 : 1;
+						});
+				}	
+				$this->data['results_count'] = $count;
+				$this->data['results'] = array_slice($result, $start, $rows_per_page);
+			}
+			
 		
-	   $this->load->view('pages/followup_details',$this->data);
+	   		$this->load->view('pages/followup_details',$this->data);
 		
-		$this->load->view('templates/footer');
+			$this->load->view('templates/footer');
 		}
 		else{
-		show_404();
+			show_404();
 		}
 		}
 		else{
-		show_404();
+			show_404();
 		}
 		
 	}

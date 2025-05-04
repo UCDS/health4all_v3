@@ -4974,22 +4974,10 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
         return $result; 
 
 	}
-	function search_followups($default_rowsperpage){       
+	function search_followups(){       
         //Function that returns all the details of the Followup table.
 
-        if ($this->input->post('page_no')) {
-			$page_no = $this->input->post('page_no');
-		}
-		else{
-			$page_no = 1;
-		}
-		if($this->input->post('rows_per_page')) {
-			$rows_per_page = $this->input->post('rows_per_page');
-		}
-		else{
-			$rows_per_page = $default_rowsperpage;
-		}
-		$start = ($page_no -1 )  * $rows_per_page;
+        
 		$hospital=$this->session->userdata('hospital');
 
 
@@ -5007,21 +4995,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
 			}
 		}
-        // $filters = array();
-		// $filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id','volunteer' => 'patient_followup.volunteer_id',
-		// 'primary_route' => 'patient_followup.route_primary_id','secondary_route' => 'patient_followup.route_secondary_id'];
-		// $filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-
-		// foreach($filter_names as $filter_name){
-        //     if($this->input->post($filter_name)){
-        //         $filter_name_query = $filter_name;
-        //         if(isset($filter_names_aliases[$filter_name])){
-        //             $filter_name_query =  $filter_names_aliases[$filter_name];
-        //         }
-        //         $filters[$filter_name_query] = $this->input->post($filter_name);
-        //     }
-        // }
-        //$this->db->select("count(*) as count",false);
+      
 		//Selection of Life Status
 		if($this->input->post('life_status')!= 4)
 		{
@@ -5060,10 +5034,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$to_timestamp = $to_date_1.' '.$to_time;
 			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
 		}
-
-		// if($this->input->post('last_visit_type')){
-		// 	$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-		// }
 		
 		if($this->input->post('priority_type')){
 			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
@@ -5097,15 +5067,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			}if($this->input->post('ndps')==2){
 				$this->db->where('patient_followup.ndps',0);
 			}
-		}
-		if($this->input->post('sort_by_age')==1){
-
-			$this->db->order_by('patient.age_years',ASC);
-
-		}else{
-
-			$this->db->order_by('patient.age_years',DESC);
-                }   
+		}  
 
 		//till here
 
@@ -5168,8 +5130,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('state','district.state_id=state.state_id','left')
        // ->where($filters);
 	   ->where('patient_followup.hospital_id',$hospital['hospital_id']);
-
-        $this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
         $result = $query->result();
         return $result;
