@@ -291,7 +291,6 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
-			//$this->data['results_count']=$this->reports_model->get_count_followups();	
 			if ($this->input->post('page_no')) {
 				$page_no = $this->input->post('page_no');
 			}
