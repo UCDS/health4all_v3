@@ -1396,7 +1396,6 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		->join('user','user_signin.username = user.username')
 		->join('staff','user.staff_id = staff.staff_id')
 		->join('hospital','staff.hospital_id = hospital.hospital_id')		
-		->join('department','staff.department_id = department.department_id','left')
 		->join('user_hospital_link','staff.hospital_id = user_hospital_link.hospital_id');
 		$this->db->where("user_hospital_link.user_id", $this->session->userdata('logged_in')['user_id']);
 		$resource=$this->db->get();
