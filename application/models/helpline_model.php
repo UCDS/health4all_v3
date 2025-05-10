@@ -1035,8 +1035,7 @@ SUM(CASE WHEN helpline_call.direction =  'outbound-dial' THEN 1 ELSE 0 END) AS o
 		->join('staff', 'sms_helpline.sent_by_staff = staff.staff_id' )
 		->join('user', 'sms_helpline.sent_by_staff = user.staff_id' )	
 		->join('helpline_receiver', 'helpline_receiver.user_id = user.user_id and staff.staff_id = user.staff_id ' )	
-		->where('user_helpline_link.user_id', $user['user_id'])		
-		->order_by('date_created','desc');
+		->where('user_helpline_link.user_id', $user['user_id']);		
 		$query = $this->db->get();	
 		return $query->result();
 	}

@@ -582,10 +582,7 @@ function onchange_page_dropdown(dropdownobj){
 	else{
 		$page_no = 1;
 	}
-	$total_records = $results_count[0]->count;
-	//$total_records = 63;
-
-	//$total_records = count($results);
+	$total_records = $results_count;
 	$total_no_of_pages = ceil($total_records / $total_records_per_page);
 	if ($total_no_of_pages == 0)
 		$total_no_of_pages = 1;

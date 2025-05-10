@@ -113,12 +113,8 @@ $(document).ready(function(){$("#from_date").datepicker({
 	  form.submit();
 	}
 function doPost(page_no){
-	var pathArray = window.location.pathname.split( '/' );
-		if (pathArray.length > 4){
-			postFromLocation(window.location.pathname,{page_no: page_no});
-		}
-		
-   }
+	postFromLocation(window.location.pathname,{page_no: page_no});	
+}
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
@@ -218,20 +214,17 @@ display: inline-grid;
 					<?php 
 					foreach ($hospitals as $hosp) { 
 						$selected = '';
-						if ($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) {
-							$selected = 'selected';
-						}
-						elseif (empty($this->input->post('hospital')) && isset($report[0]->hospital) && $report[0]->hospital == $hosp->hospital_short_name) {
+						if ($post_to_hospital == $hosp->hospital_id) {
 							$selected = 'selected';
 						}
 						echo "<option value='" . $hosp->hospital_id . "' $selected>" . $hosp->hospital_short_name . "</option>";
 					}
 					?>
 				</select>
-					From Date : <input class="form-control" type="text" value="<?php if(empty($post_from_date)){ echo date("d-M-Y",strtotime($from_date)); }else{ echo date("d-M-Y",strtotime($post_from_date));} ?>" name="from_date" id="from_date" size="15" />
-					To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+
+					From Date : <input class="form-control" type="text" value="<?php if(empty($post_from_date)){ echo date("d-M-Y"); }else{ echo date("d-M-Y",strtotime($post_from_date));} ?>" name="from_date" id="from_date" size="15" />
+					To Date : <input class="form-control" type="text" value="<?php if(empty($post_to_date)){ echo date("d-M-Y"); }else{ echo date("d-M-Y",strtotime($post_to_date));} ?>" name="to_date" id="to_date" size="15" />
 					Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-					<input type="hidden" value="1" name="filter">
 					<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>	
 		<br/>	
@@ -264,7 +257,7 @@ display: inline-grid;
 	$next_page = $page_no + 1;
 	$adjacents = "2";	
 ?>
-<?php if(isset($report) && count($report)>0 || isset($filter_report) && count($filter_report)>0) { ?>
+<?php if(isset($report) && count($report)>0) { ?>
 <ul class="pagination" style="margin:0">
 <?php if($page_no > 1){
 echo "<li><a href=# onclick=doPost(1)>First Page</a></li>";
@@ -368,45 +361,8 @@ echo "</select></li>";
 </div>
 <?php } ?>
 
-	<?php if(!empty($filter_report))
-	{
-	?>
-		<table class="table table-bordered table-striped" id="table-sort">
-			<thead>
-				<th>SNo</th>
-				<th>User Name</th>
-				<th>Name</th>
-				<th>Gender</th>		
-				<th>Hospital</th>
-				<th>Department</th>
-				<th>Date Time</th> 
-					<th>Status</th>
-					<th>Details</th>		
-			</thead>
-			<tbody>
-			<?php 
-			$sno=(($page_no - 1) * $total_records_per_page)+1 ; 
-			
-			foreach($filter_report as $s){
-				
-			?>
-			<tr>
-				<td><?php echo $sno;?></td>
-				<td><?php echo $s->username;?></td>
-				<td><?php echo $s->name;?></td>
-				<td><?php echo $s->gender;?></td>		
-				<td><?php echo $s->hospital;?></td>
-				<td><?php echo $s->department;?></td>
-				<td><?php echo date("j M Y", strtotime("$s->signin_date_time")).", ".date("h:i A.", strtotime("$s->signin_date_time"));
-				?></td>
-				<td><?php echo $s->status;?></td>
-				<td><?php echo $s->details;?></td>		
-			</tr>
-			<?php $sno++;}	?>
-			</tbody>
-		</table>
-	<?php
-	} else { 
+	<?php if(!empty($report))
+	{ 
 	?>
 
 	<table class="table table-bordered table-striped" id="table-sort">

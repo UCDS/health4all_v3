@@ -1396,8 +1396,8 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		->join('user','user_signin.username = user.username')
 		->join('staff','user.staff_id = staff.staff_id')
 		->join('hospital','staff.hospital_id = hospital.hospital_id')		
-		->join('department','staff.department_id = department.department_id','left');
-		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");			
+		->join('user_hospital_link','staff.hospital_id = user_hospital_link.hospital_id');
+		$this->db->where("user_hospital_link.user_id", $this->session->userdata('logged_in')['user_id']);
 		$resource=$this->db->get();
 		return $resource->result();
 	}
@@ -1414,6 +1414,7 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		else{
 			$rows_per_page = $default_rowsperpage;
 		}
+		
 		$start = ($page_no -1 )  * $rows_per_page;
 		
 		if($login_status != -1){
@@ -1469,100 +1470,9 @@ sum(case when patient_sub.gender='F' then 1 else 0 end) as female  from ".$inner
 		->join('user','user_signin.username = user.username')
 		->join('staff','user.staff_id = staff.staff_id')
 		->join('hospital','staff.hospital_id = hospital.hospital_id')		
-		->join('department','staff.department_id = department.department_id','left');
-		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
-		$this->db->limit($rows_per_page,$start);
-		$this->db->order_by('UNIX_TIMESTAMP(signin_date_time)','ASC');			
-		$resource=$this->db->get();
-		return $resource->result();
-	}
-	
-	function get_login_activity_filter_data()
-	{
-		if ($this->input->post('page_no')) {
-			$page_no = $this->input->post('page_no');
-		}
-		else{
-			$page_no = 1;
-		}
-		if($this->input->post('rows_per_page')) {
-			$rows_per_page = $this->input->post('rows_per_page');
-		}
-		else{
-			$rows_per_page = $default_rowsperpage;
-		}
-		$start = ($page_no -1 )  * $rows_per_page;	
-	   	
-	   	//Report for day or month or year.
-		if($this->input->post('trend_type'))
-		{
-			if($this->input->post('trend_type')=="Month")
-			{
-				
-				$current_date = date("Y-m-d");
-    			$future_date = date("Y-m-d", strtotime("+30 days"));
-					$to_time = '23:59';
-					$from_time = '00:00';
-					$from_timestamp = $current_date." ".$from_time;
-					$to_timestamp = $future_date." ".$to_time;
-				$this->db->where("signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp'");
-			}
-			else if($this->input->post('trend_type')=="Year")
-			{
-				$current_date = date("Y-m-d");
-   				$one_year_future = date("Y-m-d", strtotime("+1 year"));
-				   $to_time = '23:59';
-				   $from_time = '00:00';
-				   $from_timestamp = $current_date." ".$from_time;
-				   $to_timestamp = $one_year_future." ".$to_time;
-				$this->db->where("signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp'");
-			}
-			else{
-				$from_date = date("Y-m-d");
-				$to_date=$from_date;
-				$to_time = '23:59';
-				$from_time = '00:00';
-				$from_timestamp = $from_date." ".$from_time;
-				$to_timestamp = $to_date." ".$to_time;
-				$this->db->where("signin_date_time >=",$from_timestamp);
-				$this->db->where("signin_date_time <=",$to_timestamp);
-			}
-		}else
-		{
-			$from_date_param = $this->input->post('from_date');
-			$to_date_param = $this->input->post('to_date');
-		
-			if($from_date_param && $to_date_param){
-				$from_date=date("Y-m-d",strtotime($from_date_param));
-				$to_date=date("Y-m-d",strtotime($to_date_param));
-			}
-			else if($from_date_param || $to_date_param){
-				$from_date_param?$from_date=$from_date_param:$from_date=$to_date_param;
-				$to_date=$from_date;
-			}
-			else{
-				$from_date=date("Y-m-d");
-				$to_date=$from_date;
-			}
-
-			$to_time = '23:59';
-			$from_time = '00:00';
-			$from_timestamp = $from_date." ".$from_time;
-			$to_timestamp = $to_date." ".$to_time;
-			$this->db->where("(signin_date_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
-		}
-	   		
-	   	if($this->input->post('hospital')!=''){
-			$this->db->where("hospital.hospital_id",$this->input->post('hospital'));
-		}
-				
-		$this->db->select("user_signin.username as username,CONCAT(staff.first_name,'  ',staff.last_name) as name, (case when staff.gender = 'M' then 'Male' when staff.gender = 'F' then 'Female' when staff.gender = 'O' then 'Others' end) as gender,hospital.hospital_short_name as hospital,department.department,signin_date_time,(case when is_success = 1 then 'Success' else 'Failed' end) as status,details",false);
-		$this->db->from("user_signin")
-		->join('user','user_signin.username = user.username')
-		->join('staff','user.staff_id = staff.staff_id')
-		->join('hospital','staff.hospital_id = hospital.hospital_id')		
-		->join('department','staff.department_id = department.department_id','left');
-		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
+		->join('department','staff.department_id = department.department_id','left')
+		->join('user_hospital_link','staff.hospital_id = user_hospital_link.hospital_id');
+		$this->db->where("user_hospital_link.user_id", $this->session->userdata('logged_in')['user_id']);
 		$this->db->limit($rows_per_page,$start);
 		$this->db->order_by('UNIX_TIMESTAMP(signin_date_time)','ASC');			
 		$resource=$this->db->get();
@@ -2763,102 +2673,6 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		return $resource->result();
 	}
 	
-		
-	function validate_appointment_slot(){
-        
-		if(empty($this->input->post('department_id')) || empty($this->input->post('visit_name_id')) || empty($this->input->post('appointment_time'))){
-			if (empty($this->input->post('department_id'))) {
-				return -4;
-			}
-			
-			if (empty($this->input->post('visit_name_id'))) {
-				return 0;
-			}
-			
-			if (empty($this->input->post('appointment_time'))) {
-				return -5;
-			}
-		}
-		
-       
-        $this->db->where('department_id',$this->input->post('department_id'));
-        $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-        $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-        $this->db->where('date',$date);
-       
-        $this->db->select('count(*) as count');
-        $this->db->from('appointment_slot');
-        $query = $this->db->get();
-        $result = $query->result_array();
-        if ($result[0]['count'] > 0){
-        	$this->db->select('slot_id as slot_id,appointments_limit as appointments_limit,from_time as from_time,to_time as to_time,(appointments_taken-appointments_cancelled) as effective_appointments');
-        	$this->db->from('appointment_slot');
-        
-		$this->db->where('department_id',$this->input->post('department_id'));
-		
-		
-		$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
-		
-		
-		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-		$time = date("H:i:s", strtotime($this->input->post('appointment_time')));
-		$this->db->where('date',$date);
-		$this->db->where('from_time <=',$time);
-		$this->db->where('to_time >=',$time);
-		
-		$query = $this->db->get();
-        	$result = $query->result_array();
-        	if (count($result)==1){
-        		$appointments_limit = $result[0]['appointments_limit'];
-				$slot_id = $result[0]['slot_id'];
-        		$from_time = $result[0]['from_time'];
-        		$to_time = $result[0]['to_time'];
-        		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
-				$from_timestamp = $date." ".$from_time;
-				$to_timestamp = $date." ".$to_time;
-        		$effective_appointments = $result[0]['effective_appointments'];
-        		$operation="add";
-        		$curr_appointment_time="";
-        		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
-        		$this->db->from('patient_visit');
-        		$this->db->where('visit_id',$this->input->post('visit_id'));
-        		$query = $this->db->get();
-        		$result = $query->result_array();
-        		if (count($result) > 0) {
-				$curr_appointment_time = $result[0]['appointment_time'];
-				$department_id = $result[0]['department_id'];
-				$visit_name_id = $result[0]['visit_name_id'];
-				if($curr_appointment_time!=""){
-					if( strtotime($curr_appointment_time) >= strtotime($from_timestamp) && strtotime($curr_appointment_time)<= strtotime($to_timestamp) && $department_id==$this->input->post('department_id') && $visit_name_id==$this->input->post('visit_name_id'))
-					{
-						$operation="update";	
-					}
-				}
-        		}
-        		
-        		if($effective_appointments < $appointments_limit) {
-        			return $slot_id;
-        		}
-        		else{
-        			if ($operation=="update"){
-        				return $slot_id;
-        			}
-        			else {
-        				return -3;
-        			}
-        		}
-        	}
-        	else {
-        		return -2;
-        	}
-      		
-      	}
-       else{
-       
-        	return 0;
-        }
-        
-    	}
 	function add_appointment_slot(){
 	
 	$this->db->select('count(*) as count');
@@ -2962,7 +2776,81 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         	} 
     	}
     	
-	function update_appointment($appointment_slot_id_current){
+	function update_appointment(){
+		//Slot validation
+		if(empty($this->input->post('department_id')) || empty($this->input->post('visit_name_id')) || empty($this->input->post('appointment_time'))){
+			if (empty($this->input->post('department_id'))) {
+				return -4;
+			}
+			
+			if (empty($this->input->post('appointment_time'))) {
+				return -5;
+			}
+		}
+			
+		$operation="add";
+		$current_slot_id = 0;
+        $this->db->where('department_id',$this->input->post('department_id'));
+        $this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+        $date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+        $this->db->where('date',$date);
+       
+        $this->db->select('count(*) as count');
+        $this->db->from('appointment_slot');
+        $query = $this->db->get();
+        $result = $query->result_array();
+        if ($result[0]['count'] > 0){
+        	$this->db->select('slot_id as slot_id,from_time as from_time,to_time as to_time');
+        	$this->db->from('appointment_slot');
+        
+			$this->db->where('department_id',$this->input->post('department_id'));
+		
+		
+			$this->db->where('visit_name_id',$this->input->post('visit_name_id'));
+		
+		
+			$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+			$time = date("H:i:s", strtotime($this->input->post('appointment_time')));
+			$this->db->where('date',$date);
+			$this->db->where('from_time <=',$time);
+			$this->db->where('to_time >=',$time);
+		
+			$query = $this->db->get();
+        	$result = $query->result_array();
+        	if (count($result)==1){
+				$current_slot_id = $result[0]['slot_id'];
+        		$from_time = $result[0]['from_time'];
+        		$to_time = $result[0]['to_time'];
+        		$date = date("Y-m-d", strtotime($this->input->post('appointment_time')));
+				$from_timestamp = $date." ".$from_time;
+				$to_timestamp = $date." ".$to_time;
+        		
+        		$curr_appointment_time="";
+        		$this->db->select("ifnull(appointment_time,'') as appointment_time,ifnull(department_id,'') as department_id,ifnull(visit_name_id,'') as visit_name_id",false);
+        		$this->db->from('patient_visit');
+        		$this->db->where('visit_id',$this->input->post('visit_id'));
+        		$query = $this->db->get();
+        		$result = $query->result_array();
+        		if (count($result) > 0) {
+				$curr_appointment_time = $result[0]['appointment_time'];
+				$department_id = $result[0]['department_id'];
+				$visit_name_id = $result[0]['visit_name_id'];
+				if($curr_appointment_time!=""){
+						if( strtotime($curr_appointment_time) >= strtotime($from_timestamp) && strtotime($curr_appointment_time)<= strtotime($to_timestamp) && $department_id==$this->input->post('department_id') && $visit_name_id==$this->input->post('visit_name_id'))
+						{
+							$operation="update";	
+						}
+					}
+        		}
+        	}
+        	else {
+        		return -2;
+        	}
+		}
+
+
+
+
 		//Getting old appointment slot id 
 		$this->db->select("IF(pv.appointment_slot_id IS NULL or pv.appointment_slot_id = '', 0, pv.appointment_slot_id) as appointment_slot_id,
 		IF(aps.is_default IS NULL or aps.is_default = '', 0, aps.is_default) as appointment_status_category_old",false);
@@ -2973,44 +2861,83 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
         $result = $query->result_array();
 		$appointment_slot_id_old = $result[0]['appointment_slot_id'];
 		$appointment_status_category_old = $result[0]['appointment_status_category_old']; 
-		//echo("<script>alert('appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
-		//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-		//echo("<script>alert('appointment_status_category_old: " . $appointment_status_category_old . "');</script>");
-        $appointment_info = array();
-        if($this->input->post('department_id')){
-            $appointment_info['department_id'] = $this->input->post('department_id');
-        }
-        if($this->input->post('appointment_with')){
-            $appointment_info['appointment_with'] = $this->input->post('appointment_with');
-        }
-        if($this->input->post('appointment_time')){
-            $appointment_info['appointment_time'] = $this->input->post('appointment_time');
-        }
-         if($this->input->post('summary_sent_time')){
-            $appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
-        }
-		$appointment_info['appointment_slot_id'] = $appointment_slot_id_current;
 		
-		$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
-		$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
-        $this->db->trans_start();
-        $this->db->where('visit_id',$this->input->post('visit_id'));
-        $this->db->update('patient_visit', $appointment_info);
-		if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
-			//echo("<script>alert('call appointment_slot_id_old: " . $appointment_slot_id_old . "');</script>");
-		    //echo("<script>alert('call appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-			$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$appointment_status_category_old,$appointment_status_category_old]);
+		//Acquirung locks
+		$cur_slot_lock_acquired = 1;
+		$cur_lock_name = 'row_' . $current_slot_id . '_lock';
+		$old_lock_name = 'row_' . $appointment_slot_id_old . '_lock';
+		$timeout = 2; 	 // seconds
+		if ($operation=="add" && $current_slot_id != 0) {
+			$query = $this->db->query("SELECT GET_LOCK(?, ?)", [$cur_lock_name, $timeout]);
+			$cur_slot_lock_acquired = $query->row()->{'GET_LOCK(\'' . $cur_lock_name . '\', ' . $timeout . ')'};
 		}
-        $this->db->trans_complete();
-		//echo("<script>console.log('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-        if($this->db->trans_status()==FALSE){
-                return false;
-                
-        	}
-        else{
-                return true;
-        	} 
-    	}
+
+		$old_slot_lock_acquired = 1;
+		if ($appointment_slot_id_old != 0) {
+			$query = $this->db->query("SELECT GET_LOCK(?, ?)", [$old_lock_name, $timeout]);
+			$old_slot_lock_acquired = $query->row()->{'GET_LOCK(\'' . $old_lock_name . '\', ' . $timeout . ')'};
+		}
+		$status = 0;
+		if ($cur_slot_lock_acquired == 1 && $old_slot_lock_acquired == 1) {
+				if ($current_slot_id != 0) {
+					$this->db->select('appointments_limit as appointments_limit,(appointments_taken-appointments_cancelled) as effective_appointments');
+					$this->db->from('appointment_slot');
+					$this->db->where('slot_id',$current_slot_id);
+					$query = $this->db->get();
+					$result = $query->result_array();
+			
+					$effective_appointments = $result[0]['effective_appointments'];
+					$appointments_limit = $result[0]['appointments_limit'];
+
+					if($operation=="add" && $effective_appointments >= $appointments_limit) {
+						$status = -3;
+					}
+				}
+				
+				if ($status == 0) {
+					$appointment_info = array();
+					if($this->input->post('department_id')){
+						$appointment_info['department_id'] = $this->input->post('department_id');
+					}
+					if($this->input->post('appointment_with')){
+						$appointment_info['appointment_with'] = $this->input->post('appointment_with');
+					}
+					if($this->input->post('appointment_time')){
+						$appointment_info['appointment_time'] = $this->input->post('appointment_time');
+					}
+					if($this->input->post('summary_sent_time')){
+						$appointment_info['summary_sent_time'] = $this->input->post('summary_sent_time');
+					}
+					$appointment_info['appointment_slot_id'] = $current_slot_id;
+						
+					$appointment_info['appointment_update_by'] = $this->session->userdata('logged_in')['staff_id'];
+					$appointment_info['appointment_update_time'] = date("Y-m-d H:i:s");
+					$this->db->trans_start();
+					$this->db->where('visit_id',$this->input->post('visit_id'));
+					$this->db->update('patient_visit', $appointment_info);
+					if ($appointment_slot_id_old != $appointment_info['appointment_slot_id']) {
+						$this->db->query('CALL sp_update_appointment_count_for_slot(?,?,?,?)',[$appointment_slot_id_old, $appointment_info['appointment_slot_id'],$appointment_status_category_old,$appointment_status_category_old]);
+					}
+					$this->db->trans_complete();
+					if($this->db->trans_status()==FALSE){
+						$status = 1;
+					}
+				}
+				
+			}
+			else {
+				$status = 1;
+			}
+			//Release locks
+			if ($operation=="add" && $current_slot_id != 0 && $cur_slot_lock_acquired == 1){
+				$this->db->query("SELECT RELEASE_LOCK(?)", [$cur_lock_name]);
+			}
+
+			if ($appointment_slot_id_old != 0 && $old_slot_lock_acquired == 1){
+				$this->db->query("SELECT RELEASE_LOCK(?)", [$old_lock_name]);
+			}
+			return $status;
+		}
     	
     	function update_appointment_status(){
         $appointment_slot_id = 0;
@@ -4168,9 +4095,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
                
 		if($this->input->post('hospital')){
 			$this->db->where("hospital.hospital_id",$this->input->post('hospital'));
-		}else{
-			$hospital=$this->session->userdata('hospital');
-			$this->db->where("hospital.hospital_id",$hospital['hospital_id']);
 		}
 		
 		$from_timestamp = $from_date." ".$from_time;
@@ -4186,8 +4110,9 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('user','user_signin.username = user.username')
 		->join('staff','user.staff_id = staff.staff_id')
 		->join('hospital','staff.hospital_id = hospital.hospital_id')		
-		->join('department','staff.department_id = department.department_id','left');
-		$this->db->where("staff.hospital_id in (select us1.hospital_id from user_hospital_link as us1 where us1.user_id='". $this->session->userdata('logged_in')['user_id']."')");
+		->join('department','staff.department_id = department.department_id','left')
+		->join('user_hospital_link','staff.hospital_id = user_hospital_link.hospital_id');
+		$this->db->where("user_hospital_link.user_id", $this->session->userdata('logged_in')['user_id']);
 		$this->db->from('user_signin');
 		$resource=$this->db->get();
 		return $resource->result();
@@ -4825,154 +4750,10 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 	}
 
-	function get_count_followups(){  
-		/*$filters = array();
-		$filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id','volunteer' => 'patient_followup.volunteer_id',
-		'primary_route' => 'patient_followup.route_primary_id','secondary_route' => 'patient_followup.route_secondary_id'];
-		$filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-
-		foreach($filter_names as $filter_name){
-            if($this->input->post($filter_name)){
-                $filter_name_query = $filter_name;
-                if(isset($filter_names_aliases[$filter_name])){
-                    $filter_name_query =  $filter_names_aliases[$filter_name];
-                }
-                $filters[$filter_name_query] = $this->input->post($filter_name);
-            }
-        }*/
-                $hospital=$this->session->userdata('hospital');  
-		if($this->input->post('route_primary') && empty($this->input->post('route_secondary')))
-		{
-			$secondary=array();
-			$this->db->select('id');
-			$this->db->from('route_secondary');
-			$this->db->where('route_primary_id',$this->input->post('route_primary'));
-			$query = $this->db->get();
-			$res = $query->result_array();
-			foreach ($res as $row){ $secondary[] = $row['id']; }
-			if(!empty($secondary))
-			{
-				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
-			}
-		}
-
-		if($this->input->post('life_status')!= 4)
-		{
-			if($this->input->post('life_status') == 1 || empty($this->input->post('life_status'))){
-				$this->db->where('patient_followup.life_status',1);
-			}
-			else if($this->input->post('life_status')== 2){
-				$this->db->where('patient_followup.life_status',0);
-			}
-			else if($this->input->post('life_status')== 3){
-				$this->db->where('patient_followup.life_status',2);
-			}	
-		}
-			
-		if($this->input->post('from_date') && $this->input->post('to_date'))
-		{
-			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
-			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));   
-			$this->db->where("(patient_followup.death_date BETWEEN '$from_date' AND '$to_date')");         
-		}
-		else if($this->input->post('from_date') || $this->input->post('to_date'))
-		{
-			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
-			$to_date=$from_date;
-			$this->db->where('patient_followup.death_date >=',$from_date); 
-		}
-		
-		if ($this->input->post('from_date_1') && $this->input->post('to_date_1')) 
-		{
-			$from_date_1 = date("Y-m-d", strtotime($this->input->post('from_date_1')));
-			$to_date_1 = date("Y-m-d", strtotime($this->input->post('to_date_1')));
-			$from_time = '00:00';
-			$to_time = '23:59';
-			
-			$from_timestamp = $from_date_1.' '.$from_time;
-			$to_timestamp = $to_date_1.' '.$to_time;
-			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
-		}
-		
-		if($this->input->post('last_visit_type')){
-			$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-		}
-		
-		if($this->input->post('priority_type')){
-			$this->db->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left');
-			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
-		}
-		if($this->input->post('volunteer')){
-			$this->db->join('staff','patient_followup.volunteer_id=staff.staff_id','left');
-			$this->db->where('patient_followup.volunteer_id',$this->input->post('volunteer'));
-		}
-		
-							
-		if($this->input->post('route_secondary')){
-			$this->db->where('patient_followup.route_secondary_id',$this->input->post('route_secondary'));
-		}
-		if($this->input->post('icd_code')){
-			$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
-			$this->db->where('patient_followup.icd_code',$icd_code);
-		}
-		if($this->input->post('icd_block')){
-			$this->db->where('icd_block.block_id',$this->input->post('icd_block'));
-			
-		}
-		if($this->input->post('icd_chapter')){
-			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));		
-		}
-        
-		if($this->input->post('ndps')!=0)
-		{
-			if($this->input->post('ndps')==1){
-				$this->db->where('patient_followup.ndps',1);
-			}if($this->input->post('ndps')==2){
-				$this->db->where('patient_followup.ndps',0);
-			}
-		}
-
-		if($this->input->post('district'))
-		{
-			$this->db->where('patient.district_id',$this->input->post('district'));
-		}
-		
-		if($this->input->post('state'))
-		{
-			
-			$this->db->where('state.state_id',$this->input->post('state'));
-		}
-
-        $this->db->select("count(*) as count",false)
-        ->from('patient_followup')
-        ->join('patient','patient_followup.patient_id=patient.patient_id','left')
-		->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left')
-		->join('icd_block','icd_code.block_id=icd_block.block_id','left')
-		->join('district','patient.district_id=district.district_id','left')
-		->join('state','district.state_id=state.state_id','left')
-		->join('icd_chapter','icd_block.chapter_id=icd_chapter.chapter_id','left')
-		->where('patient_followup.hospital_id',$hospital['hospital_id']);  
-        $query = $this->db->get();
-        $result = $query->result();
-        return $result; 
-
-	}
-	function search_followups($default_rowsperpage){       
+	function search_followups(){       
         //Function that returns all the details of the Followup table.
 
-        if ($this->input->post('page_no')) {
-			$page_no = $this->input->post('page_no');
-		}
-		else{
-			$page_no = 1;
-		}
-		if($this->input->post('rows_per_page')) {
-			$rows_per_page = $this->input->post('rows_per_page');
-		}
-		else{
-			$rows_per_page = $default_rowsperpage;
-		}
-		$start = ($page_no -1 )  * $rows_per_page;
+        
 		$hospital=$this->session->userdata('hospital');
 
 
@@ -4990,21 +4771,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 				$this->db->where_in('patient_followup.route_secondary_id', $secondary);
 			}
 		}
-        // $filters = array();
-		// $filter_names_aliases = ['priority_type' => 'patient_followup.priority_type_id','volunteer' => 'patient_followup.volunteer_id',
-		// 'primary_route' => 'patient_followup.route_primary_id','secondary_route' => 'patient_followup.route_secondary_id'];
-		// $filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-
-		// foreach($filter_names as $filter_name){
-        //     if($this->input->post($filter_name)){
-        //         $filter_name_query = $filter_name;
-        //         if(isset($filter_names_aliases[$filter_name])){
-        //             $filter_name_query =  $filter_names_aliases[$filter_name];
-        //         }
-        //         $filters[$filter_name_query] = $this->input->post($filter_name);
-        //     }
-        // }
-        //$this->db->select("count(*) as count",false);
+      
 		//Selection of Life Status
 		if($this->input->post('life_status')!= 4)
 		{
@@ -5043,10 +4810,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$to_timestamp = $to_date_1.' '.$to_time;
 			$this->db->where("(patient_followup.add_time BETWEEN '$from_timestamp' AND '$to_timestamp')");
 		}
-
-		// if($this->input->post('last_visit_type')){
-		// 	$this->db->where('patient_followup.last_visit_type',$this->input->post('last_visit_type'));
-		// }
 		
 		if($this->input->post('priority_type')){
 			$this->db->where('patient_followup.priority_type_id',$this->input->post('priority_type'));
@@ -5080,7 +4843,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			}if($this->input->post('ndps')==2){
 				$this->db->where('patient_followup.ndps',0);
 			}
-		}
+		}  
+
 		//till here
 
 		if($this->input->post('district'))
@@ -5142,8 +4906,6 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		->join('state','district.state_id=state.state_id','left')
        // ->where($filters);
 	   ->where('patient_followup.hospital_id',$hospital['hospital_id']);
-
-        $this->db->limit($rows_per_page,$start);
         $query = $this->db->get();
         $result = $query->result();
         return $result;
