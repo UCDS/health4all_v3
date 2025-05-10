@@ -123,9 +123,6 @@ input[type=number] {
 					if ($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) {
 						$selected = 'selected';
 					} 
-					elseif (empty($this->input->post('hospital')) && isset($userdata['hospital_id']) && $userdata['hospital_id'] == $hosp->hospital_id) {
-						$selected = 'selected';
-					}
 					echo "<option value='" . $hosp->hospital_id . "' $selected>" . $hosp->hospital_short_name . "</option>";
 				}
 				?>

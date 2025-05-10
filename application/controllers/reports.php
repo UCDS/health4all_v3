@@ -1828,22 +1828,12 @@ class Reports extends CI_Controller {
 		}
 	}	
     
-    public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital)
+    public function login_activity_detail($trend_type=-1,$datefilter=-1,$login_status=-1,$from_date=-1,$to_date=-1,$rowsperpage=-1,$hospital=-1)
 	{
-		if(empty($from_date)|| $from_date==0)
-		{
-			$from_date = $this->input->post('from_date');
-			if(empty($this->input->post('to_date')))
-			{
-				$to_date=$from_date;
-			}else{
-				$to_date = $this->input->post('to_date');
-			}
-
-		}else{
-			$this->data['post_from_date'] = $from_date;
-		}
+		
+		
 	       if($this->session->userdata('logged_in')){
+			
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
@@ -1853,8 +1843,37 @@ class Reports extends CI_Controller {
 			}
 		}
 		if($access==1){
-		//if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}	
-    		$this->data['title']="Login Activities - Detail"; 	
+		//if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		
+		if($from_date!=-1){
+			$this->data['post_from_date'] = $from_date;
+		}
+		else {
+			if ($this->input->post("from_date")){
+				$this->data['post_from_date'] = date("Y-m-d",strtotime($this->input->post("from_date")));
+			}
+		}
+		
+		if($to_date!=-1){
+			$this->data['post_to_date'] = $to_date;
+		}	
+		else {
+			if ($this->input->post("to_date")){
+				$this->data['post_to_date'] = date("Y-m-d",strtotime($this->input->post("to_date")));
+			}
+		}
+		$this->data['post_to_hospital'] = -1;
+		if($hospital!=-1){
+			$this->data['post_to_hospital'] = $hospital;
+		}	
+		else {
+			if ($this->input->post("hospital")){
+				$this->data['post_to_hospital'] = $this->input->post("hospital");
+			}
+		}
+
+
+    	$this->data['title']="Login Activities - Detail"; 	
 		$this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
@@ -1867,22 +1886,22 @@ class Reports extends CI_Controller {
 
 				}
 		   }
+		if ($rowsperpage==-1){
+			$rowsperpage = $this->data['rowsperpage'];
+		}
+		else{
+			$this->data['rowsperpage'] = $rowsperpage;
+		}
 		$this->load->view('templates/header',$this->data);
 		$userdata = $this->session->userdata('logged_in');
 		$user_id = $userdata['user_id'];
 		$this->data['hospitals']=$this->staff_model->user_hospital($user_id);
 		//print_r($this->data['report_count']);
-		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital);		
-		//print_r($this->db->last_query());
-		$this->data['filter_report']=$this->reports_model->get_login_activity_filter_data();
-		if(!empty($this->input->post('filter')))
-		{
-			$this->data['report_count'] = [
-				(object) ['count' => count($this->data['filter_report'])]
-			];
-		}else{
-			$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date,$hospital);
-		}
+		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$this->data['post_from_date'],$this->data['post_to_date'],$this->data['post_to_hospital']);
+		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$this->data['post_from_date'],$this->data['post_to_date'],$rowsperpage,$this->data['post_to_hospital']);		
+		
+		
+		
 				
 		//print_r($this->db->last_query());
 		$this->form_validation->set_rules('from_date', 'From Date',
