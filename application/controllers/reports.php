@@ -291,43 +291,49 @@ class Reports extends CI_Controller {
 
 		 		}
 			}
-			$this->data['results_count']=$this->reports_model->get_count_followups();	
-			$result =  $this->reports_model->search_followups($this->data['rowsperpage']);
-			if($this->input->post('sort_by_age')==1){
-				usort($result, function ($a, $b) {
-						return $a->age_years <= $b->age_years  ? -1 : 1;
-				});
-			}else{
-		  	       usort($result, function ($a, $b) {					 
-				      return $a->age_years >= $b->age_years  ? -1 : 1;
-					});
-			}		
-			$this->data['results'] = $result;				
-			//$this->data['results'] = $this->reports_model->search_followups($this->data['rowsperpage']);		
-			if(count($this->data['results']) == 0){
+			if ($this->input->post('page_no')) {
+				$page_no = $this->input->post('page_no');
+			}
+			else{
+				$page_no = 1;
+			}
+			if($this->input->post('rows_per_page')) {
+				$rows_per_page = $this->input->post('rows_per_page');
+			}
+			else{
+				$rows_per_page = $this->data['rowsperpage'];
+			}
+			$start = ($page_no -1 )  * $rows_per_page;
+			$result =  $this->reports_model->search_followups();
+			$count = count($result);
+			if($count == 0){
 				$this->data['msg'] = "No Records found";
 			}
-			// $filter_names=['life_status','last_visit_type','priority_type','volunteer','primary_route','secondary_route'];
-			// $filter_values = [];
-			// foreach($filter_names as $filter_name){
-			// 	$filter_value = "";
-			// 	if($this->input->post($filter_name)){
-			// 		$filter_value = $this->input->post($filter_name);
-			// 	}
-			// 	$filter_values[$filter_name] = $filter_value;
-			// }
-			// $this->data['filter_values'] = $filter_values;
+			else{
+				if($this->input->post('sort_by_age')==1){
+					usort($result, function ($a, $b) {
+							return $a->age_years <= $b->age_years  ? -1 : 1;
+					});
+				}else{
+					usort($result, function ($a, $b) {					 
+						return $a->age_years >= $b->age_years  ? -1 : 1;
+						});
+				}	
+				$this->data['results_count'] = $count;
+				$this->data['results'] = array_slice($result, $start, $rows_per_page);
+			}
+			
 		
-	   $this->load->view('pages/followup_details',$this->data);
+	   		$this->load->view('pages/followup_details',$this->data);
 		
-		$this->load->view('templates/footer');
+			$this->load->view('templates/footer');
 		}
 		else{
-		show_404();
+			show_404();
 		}
 		}
 		else{
-		show_404();
+			show_404();
 		}
 		
 	}
@@ -537,49 +543,6 @@ class Reports extends CI_Controller {
                 }
         }
         
-        private function validate_appointment_slot()
-		{ 
-            $appointment_slot = $this->reports_model->validate_appointment_slot();
-            if ($appointment_slot>=0){               
-					return $appointment_slot;
-		    }
-		    else if ($appointment_slot==-2) {
-		       	header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Selected appointment time is outside of the slot';        
-				echo(json_encode($result));	       
-		    }
-		    else if ($appointment_slot==-3) {
-				header('Content-Type: application/json; charset=UTF-8');
-				header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Appointment limit exceeded';        
-				echo(json_encode($result));	       
-		    }
-		    else if ($appointment_slot==-4) {
-		       	header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Please enter Department';        
-				echo(json_encode($result));	       
-		    }
-		    else if ($appointment_slot==-5) {
-				header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Please enter Appointment time';        
-				echo(json_encode($result));	       
-		    }
-		    else{
-			    header('Content-Type: application/json; charset=UTF-8');
-			    header('HTTP/1.1 500 Internal Server Error');    
-			    $result=array();    	
-				$result['Message'] = 'Error in Appointment slot validation';        
-				echo(json_encode($result));
-			}
-			return $appointment_slot;
-	}
     public function add_appointment_slot()
 	{
 		if($this->session->userdata('logged_in')){
@@ -717,21 +680,52 @@ class Reports extends CI_Controller {
 			}
 		}
 		if($access==1){
-		if($this->input->post('visit_id')){		
-			$appointment_slot_id_current = $this->validate_appointment_slot();
-			$updated = false;
-			if($appointment_slot_id_current >= 0) {
-				//echo("<script>alert('appointment_slot_id_current: " . $appointment_slot_id_current . "');</script>");
-				$updated = $this->reports_model->update_appointment($appointment_slot_id_current);
-				if($updated == false){
+		if($this->input->post('visit_id')){	
+			
+			$response = $this->reports_model->update_appointment();
+			//echo("<script>console.log('response: " . $response . "');</script>");
+			switch($response){
+				case 0:
+					return;
+				case -2:
 					header('Content-Type: application/json; charset=UTF-8');
 					header('HTTP/1.1 500 Internal Server Error');    
 					$result=array();    	
-					$result['Message'] = 'Error in Appointment slot validation';        
+					$result['Message'] = 'Selected appointment time is outside of the slot';        
+					echo(json_encode($result));	       
+					return;
+				case -3:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Appointment limit exceeded';        
+					echo(json_encode($result));	       
+					return;
+				case -4:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Please enter department';        
+					echo(json_encode($result));	       
+					return;
+				case -5:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Please enter appointment time';        
+					echo(json_encode($result));	       
+					return;
+				default:
+					header('Content-Type: application/json; charset=UTF-8');
+					header('HTTP/1.1 500 Internal Server Error');    
+					$result=array();    	
+					$result['Message'] = 'Error in appointment slot validation';        
 					echo(json_encode($result));
-				}
+					return;
+				
 			}
-			return;
+		
+		
 		}	
 		if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
 		$this->data['title']="Registrations/Appointments";
@@ -1834,22 +1828,12 @@ class Reports extends CI_Controller {
 		}
 	}	
     
-    public function login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital)
+    public function login_activity_detail($trend_type=-1,$datefilter=-1,$login_status=-1,$from_date=-1,$to_date=-1,$rowsperpage=-1,$hospital=-1)
 	{
-		if(empty($from_date)|| $from_date==0)
-		{
-			$from_date = $this->input->post('from_date');
-			if(empty($this->input->post('to_date')))
-			{
-				$to_date=$from_date;
-			}else{
-				$to_date = $this->input->post('to_date');
-			}
-
-		}else{
-			$this->data['post_from_date'] = $from_date;
-		}
+		
+		
 	       if($this->session->userdata('logged_in')){
+			
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
 		foreach($this->data['functions'] as $function){
@@ -1859,8 +1843,37 @@ class Reports extends CI_Controller {
 			}
 		}
 		if($access==1){
-		//if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}	
-    		$this->data['title']="Login Activities - Detail"; 	
+		//if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+		
+		if($from_date!=-1){
+			$this->data['post_from_date'] = $from_date;
+		}
+		else {
+			if ($this->input->post("from_date")){
+				$this->data['post_from_date'] = date("Y-m-d",strtotime($this->input->post("from_date")));
+			}
+		}
+		
+		if($to_date!=-1){
+			$this->data['post_to_date'] = $to_date;
+		}	
+		else {
+			if ($this->input->post("to_date")){
+				$this->data['post_to_date'] = date("Y-m-d",strtotime($this->input->post("to_date")));
+			}
+		}
+		$this->data['post_to_hospital'] = -1;
+		if($hospital!=-1){
+			$this->data['post_to_hospital'] = $hospital;
+		}	
+		else {
+			if ($this->input->post("hospital")){
+				$this->data['post_to_hospital'] = $this->input->post("hospital");
+			}
+		}
+
+
+    	$this->data['title']="Login Activities - Detail"; 	
 		$this->load->helper('form');
 		$this->load->library('form_validation');
 		$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
@@ -1873,22 +1886,22 @@ class Reports extends CI_Controller {
 
 				}
 		   }
+		if ($rowsperpage==-1){
+			$rowsperpage = $this->data['rowsperpage'];
+		}
+		else{
+			$this->data['rowsperpage'] = $rowsperpage;
+		}
 		$this->load->view('templates/header',$this->data);
 		$userdata = $this->session->userdata('logged_in');
 		$user_id = $userdata['user_id'];
 		$this->data['hospitals']=$this->staff_model->user_hospital($user_id);
 		//print_r($this->data['report_count']);
-		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$from_date,$to_date,$rowsperpage,$hospital);		
-		//print_r($this->db->last_query());
-		$this->data['filter_report']=$this->reports_model->get_login_activity_filter_data();
-		if(!empty($this->input->post('filter')))
-		{
-			$this->data['report_count'] = [
-				(object) ['count' => count($this->data['filter_report'])]
-			];
-		}else{
-			$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$from_date,$to_date,$hospital);
-		}
+		$this->data['report_count']=$this->reports_model->get_login_activity_detail_count($trend_type,$datefilter,$login_status,$this->data['post_from_date'],$this->data['post_to_date'],$this->data['post_to_hospital']);
+		$this->data['report']=$this->reports_model->get_login_activity_detail($trend_type,$datefilter,$login_status,$this->data['post_from_date'],$this->data['post_to_date'],$rowsperpage,$this->data['post_to_hospital']);		
+		
+		
+		
 				
 		//print_r($this->db->last_query());
 		$this->form_validation->set_rules('from_date', 'From Date',
