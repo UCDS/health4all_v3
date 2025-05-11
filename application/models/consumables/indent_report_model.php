@@ -652,8 +652,8 @@ class Indent_report_model extends CI_Model
 		->where('indent.hospital_id', $hospital['hospital_id'])
 		->where('item.item_id', $item_id)
 		->where('inventory.supply_chain_party_id', $scp_id)
-		->where('inventory.date_time >=', $from_date)
-		->where('inventory.date_time <=', $to_date);
+		->where('inventory.date_time >=', $from_date. " 00:00:00")
+		->where('inventory.date_time <=', $to_date. " 23:59:59");
 		$this->db->group_by('indent_item.indent_id');
 
 		$this->db->order_by('indent.indent_date','ASC');
@@ -689,7 +689,7 @@ class Indent_report_model extends CI_Model
 		->where('item_id', $item)
 		->where('date_time <', $from_date);
 		$query = $this->db->get();
-		//echo $this->db->last_query();
+//		echo $this->db->last_query();
 		$records = $query->result();
 		return $records;
 
