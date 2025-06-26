@@ -926,64 +926,75 @@ class Register extends CI_Controller {
 			}
 			else{
 				$this->data['patients']=$this->register_model->search();
-				$this->data['registered'] = $this->data['patients'][0];
-				if(count($this->data['patients'])==1){
-					$this->load->model('diagnostics_model');
-					$visit_id = $this->data['patients'][0]->visit_id;
-					if ($patient_id!=0 && $visit_id){
-						$previous_visit = $this->register_model->get_previous_visit($visit_id, $patient_id);
-					}	
-					$data_array = array('patient_id' => $this->data['patients'][0]->patient_id);				
-					$this->data['vitals'] = $this->gen_rep_model->simple_join('patient_vitals', false, array('patient.patient_id'=>$this->data['patients'][0]->patient_id));	
-					$this->data['patient_visits'] = $this->gen_rep_model->simple_join('patient_visits_all', $data_array);
-					$this->data['clinical_notes'] = $this->gen_rep_model->simple_join('clinical_notes', $data_array);
-					$this->data['all_tests'] = $this->gen_rep_model->simple_join('tests_ordered', $data_array);
-					$this->data['prescriptions'] = $this->gen_rep_model->simple_join('prescriptions', $data_array);
-                    $this->data['transfers'] = $this->patient_model->get_transfers_info($visit_id);
-					$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
-					$this->data['transport'] = $this->staff_model->get_transport_log();
-					$this->data['prescription']=$this->register_model->get_prescription($visit_id);
-					
-					$hospital=$this->session->userdata('hospital');
-					$hospital_id=$hospital['hospital_id'];
-					$this->data['hosp_all_print_layouts']=$this->register_model->get_hosp_all_print_layouts($hospital_id);
-					// start -- 18_02_2023 --- Shruthi S M//
-					$pri_patient_id	= $this->data['patients'][0]->patient_id;
-					$this->data['update_print_layout'] = $this->register_model->get_print_layout($pri_patient_id);
-					$print_layout_id = $this->data['update_print_layout'][0]->print_layout_id;
-				    $a6_print_layout_id = $this->data['update_print_layout'][0]->a6_print_layout_id;
-					
-						$print_layout = $this->staff_model->get_print_layout($print_layout_id);
-						$a6_print_layout = $this->staff_model->get_print_layout($a6_print_layout_id);					
-						$print_layout_page = $print_layout->print_layout_page;
-						$print_layout_a6 = $a6_print_layout->print_layout_page;
 
-					if(count($previous_visit)>0)
-						$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
-					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
-					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
-					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
-					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
-					
-					
+				$hospital=$this->session->userdata('hospital');
+				$hospital_id=$hospital['hospital_id'];
+				if(!empty($this->data['patients'][0]->hospital_id) && $this->data['patients'][0]->hospital_id != $hospital_id)
+				{
+					echo '<p style="margin-top:2%; text-align:center;color:green;font-weight:bold;">
+							You don\'t have access to patients hospital or please login to that hospital.</p>';
+					echo '<br/>';
 				}
-				 //Set the print layout page based on the form selected.
-				 /* Newly added Jan 30 2024 */
-				 $print_layout_id = $this->input->post('print_layout_id');
-				 $this->data['all_print_layouts'] = $this->staff_model->get_print_layouts();
-				 $this->data['new_print_layout'] = $this->staff_model->get_print_layout($print_layout_id);
-				 //$this->data['default_layout'] = $this->staff_model->select_default_layout();
-				 /*if(!empty($print_layout_id) || $print_layout_id!='0')
-				 {
-				 	$this->data['update_print_layout'] = $this->staff_model->update_hospital_print_layout($print_layout_id);
-				 }*/
-				 /* Till here */
-				 $this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
-				 $this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
-				 //$this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no); <!-- changed on 24-07-2024 -->
-				 $this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->visit_id);
-        		//--- end  18_02_2023 --- //
-				$this->load->view('pages/update_patients',$this->data);
+				else{
+					$this->data['registered'] = $this->data['patients'][0];
+					if(count($this->data['patients'])==1){
+						$this->load->model('diagnostics_model');
+						$visit_id = $this->data['patients'][0]->visit_id;
+						if ($patient_id!=0 && $visit_id){
+							$previous_visit = $this->register_model->get_previous_visit($visit_id, $patient_id);
+						}	
+						$data_array = array('patient_id' => $this->data['patients'][0]->patient_id);				
+						$this->data['vitals'] = $this->gen_rep_model->simple_join('patient_vitals', false, array('patient.patient_id'=>$this->data['patients'][0]->patient_id));	
+						$this->data['patient_visits'] = $this->gen_rep_model->simple_join('patient_visits_all', $data_array);
+						$this->data['clinical_notes'] = $this->gen_rep_model->simple_join('clinical_notes', $data_array);
+						$this->data['all_tests'] = $this->gen_rep_model->simple_join('tests_ordered', $data_array);
+						$this->data['prescriptions'] = $this->gen_rep_model->simple_join('prescriptions', $data_array);
+						$this->data['transfers'] = $this->patient_model->get_transfers_info($visit_id);
+						$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
+						$this->data['transport'] = $this->staff_model->get_transport_log();
+						$this->data['prescription']=$this->register_model->get_prescription($visit_id);
+						
+						$hospital=$this->session->userdata('hospital');
+						$hospital_id=$hospital['hospital_id'];
+						$this->data['hosp_all_print_layouts']=$this->register_model->get_hosp_all_print_layouts($hospital_id);
+						// start -- 18_02_2023 --- Shruthi S M//
+						$pri_patient_id	= $this->data['patients'][0]->patient_id;
+						$this->data['update_print_layout'] = $this->register_model->get_print_layout($pri_patient_id);
+						$print_layout_id = $this->data['update_print_layout'][0]->print_layout_id;
+						$a6_print_layout_id = $this->data['update_print_layout'][0]->a6_print_layout_id;
+						
+							$print_layout = $this->staff_model->get_print_layout($print_layout_id);
+							$a6_print_layout = $this->staff_model->get_print_layout($a6_print_layout_id);					
+							$print_layout_page = $print_layout->print_layout_page;
+							$print_layout_a6 = $a6_print_layout->print_layout_page;
+
+						if(count($previous_visit)>0)
+							$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
+						$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
+						$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
+						$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
+						$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
+						
+						
+					}
+					//Set the print layout page based on the form selected.
+					/* Newly added Jan 30 2024 */
+					$print_layout_id = $this->input->post('print_layout_id');
+					$this->data['all_print_layouts'] = $this->staff_model->get_print_layouts();
+					$this->data['new_print_layout'] = $this->staff_model->get_print_layout($print_layout_id);
+					//$this->data['default_layout'] = $this->staff_model->select_default_layout();
+					/*if(!empty($print_layout_id) || $print_layout_id!='0')
+					{
+						$this->data['update_print_layout'] = $this->staff_model->update_hospital_print_layout($print_layout_id);
+					}*/
+					/* Till here */
+					$this->data['update_print_layout']="pages/print_layouts/$print_layout_page";
+					$this->data['update_print_layout_a6']="pages/print_layouts/$print_layout_a6";
+					//$this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->hosp_file_no); <!-- changed on 24-07-2024 -->
+					$this->data['print_summary_counseling']  = $this->masters_model->get_all_couseling_for_print($this->data['patients'][0]->visit_id);
+					//--- end  18_02_2023 --- //
+					$this->load->view('pages/update_patients',$this->data);
+				}
 			}
 		}
 		$this->load->view('templates/footer');

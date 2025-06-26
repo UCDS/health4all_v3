@@ -620,7 +620,8 @@ class patient_model extends CI_Model {
         patient_visit.visit_name_id,patient_visit.presenting_complaints,patient_visit.past_history,patient_visit.family_history,patient_visit.admit_weight,
         patient_visit.pulse_rate,patient_visit.respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,
         rs,pa,cns,cxr,provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,unit.unit_name,area.area_name,
-        visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id,patient_visit.visit_type,patient_visit.appointment_slot_id')
+        visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id,patient_visit.visit_type,patient_visit.appointment_status_id,
+        patient_visit.signed_consultation')
             ->from('patient_visit')
             ->join('department','department.department_id=patient_visit.department_id','left')
             ->join('unit','unit.unit_id=patient_visit.unit','left')
@@ -654,7 +655,7 @@ class patient_model extends CI_Model {
         $edit_visit_history = array();
         $patient = array();
         $elements = ['admit_date','admit_time','department_id','unit','area','visit_name_id','presenting_complaints','past_history','family_history','admit_weight','pulse_rate','respiratory_rate','temperature','sbp','dbp',
-                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time','icd_10'];
+                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time','icd_10','signed_consultation'];
         foreach ($elements as $column) {
         	if (array_key_exists($column,$input_data))
             { 
