@@ -647,6 +647,7 @@ function initDistrictSelectize(){
 			<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$p->visit_id));?>
 			<input type="text" class="sr-only" hidden value="<?php echo $p->visit_id;?>" form="select_patient_<?php echo $p->visit_id;?>" name="selected_patient" />
 			<input type="text" class="sr-only" hidden value="<?php echo $p->patient_id;?>" name="patient_id" />
+			<input type="text" class="sr-only" hidden value="<?php echo $p->hospital_id;?>" name="hospital_id" />
 			</form>
 			<?php echo $i++;?>
 		</td>
@@ -657,7 +658,6 @@ function initDistrictSelectize(){
 		<td style="text-align:center"><?php echo $p->visit_name;?></td>
 		<td style="text-align:center"><?php if($p->outcome_date =="0000-00-00" || $p->outcome_date==" "){ echo " "; }else{ echo date("d-M-Y",strtotime($p->outcome_date)); } ?></td>
 		<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
-										
 	</tr>
 	<?php
 	}
