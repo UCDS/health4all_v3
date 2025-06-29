@@ -749,6 +749,7 @@ class Register extends CI_Controller {
 		}
 		else{		
 			// Patient documents
+			
 			if (array_key_exists("upload_file", $_FILES)) 
 			{
 				$dir_path = './assets/patient_documents/';
@@ -939,7 +940,7 @@ class Register extends CI_Controller {
 
 				
 				$this->data['registered'] = $this->data['patients'][0];
-				if(count($this->data['patients'])==1){
+				if(count($this->data['patients'])>0){
 					$this->load->model('diagnostics_model');
 					$visit_id = $this->data['patients'][0]->visit_id;
 					if ($patient_id!=0 && $visit_id){
@@ -970,14 +971,12 @@ class Register extends CI_Controller {
 					$print_layout_page = $print_layout->print_layout_page;
 					$print_layout_a6 = $a6_print_layout->print_layout_page;
 
-					if(count($previous_visit)>0)
+					if(count($previous_visit)>0){
 						$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
 						$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
 						$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
 						$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
 						$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
-						
-						
 					}
 					//Set the print layout page based on the form selected.
 					/* Newly added Jan 30 2024 */
@@ -997,7 +996,8 @@ class Register extends CI_Controller {
 					//--- end  18_02_2023 --- //
 					$this->load->view('pages/update_patients',$this->data);
 			
-			}
+				}
+			}	
 		}
 		$this->load->view('templates/footer');
 		}
