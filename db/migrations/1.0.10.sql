@@ -333,11 +333,7 @@ CREATE TABLE `update_patient_custom_form` (
   `id` int(11) NOT NULL,
   `form_name` varchar(300) NOT NULL,
   `no_of_cols` smallint(6) NOT NULL,
-  `hospital_id` int(11) NOT NULL,
-  `created_by` int(11) NOT NULL,
-  `updated_by` int(11) NOT NULL,
-  `created_date_time` datetime DEFAULT NULL,
-  `updated_date_time` datetime DEFAULT NULL
+  `hospital_id` int(11) NOT NULL
 );
 
 ALTER TABLE `update_patient_custom_form` ADD PRIMARY KEY (`id`);
