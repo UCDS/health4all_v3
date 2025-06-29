@@ -300,33 +300,33 @@ function openSmsModal(){
     
 </script>
 <script type="text/javascript">
-function initHospitalSelectize(){
-	var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
+// function initHospitalSelectize(){
+// 	var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
 
-	var selectize = $('#hospital_id').selectize({
-	    valueField: 'hospital_id',
-	    labelField: 'customdata',
-	    searchField: ['hospital','hospital_short_name', 'place', 'district','state'],
-		options: helpline_hospitals,
-	    create: false,
-	    render: {
-	        option: function(item, escape) {
-	        	return '<div>' +
-	                '<span class="title">' +
-	                    '<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
-	                '</span>' +
-	            '</div>';
-	        }
-	    },
-	    load: function(query, callback) {
-	      if (!query.length) return callback();
-		},
-	});
-	var selected_hospital = '<?php echo $this->input->post('hospital'); ?>';
-	if(selected_hospital){
-		selectize[0].selectize.setValue(selected_hospital);
-	}
-}
+// 	var selectize = $('#hospital_id').selectize({
+// 	    valueField: 'hospital_id',
+// 	    labelField: 'customdata',
+// 	    searchField: ['hospital','hospital_short_name', 'place', 'district','state'],
+// 		options: helpline_hospitals,
+// 	    create: false,
+// 	    render: {
+// 	        option: function(item, escape) {
+// 	        	return '<div>' +
+// 	                '<span class="title">' +
+// 	                    '<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
+// 	                '</span>' +
+// 	            '</div>';
+// 	        }
+// 	    },
+// 	    load: function(query, callback) {
+// 	      if (!query.length) return callback();
+// 		},
+// 	});
+// 	var selected_hospital = '<?php echo $this->input->post('hospital'); ?>';
+// 	if(selected_hospital){
+// 		selectize[0].selectize.setValue(selected_hospital);
+// 	}
+// }
 function initDistrictSelectize(){
         var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
 	var selectize = $('#district_id').selectize({
@@ -635,7 +635,7 @@ function initDistrictSelectize(){
 	<tbody>
 	<?php 
 	$i=1;
-	foreach($patients as $p){ ;
+	foreach($patients as $p){ 
 		$age="";
 		if($p->age_years!=0) $age.=$p->age_years."Y ";
 		if($p->age_months!=0) $age.=$p->age_months."M ";
@@ -1297,28 +1297,46 @@ function initDistrictSelectize(){
                                             }
                                             ?>
                                      </div>                                     
-                                     <div class="col-md-8 col-xs-6">
-                                        <label class="control-label">Referred by Hospital</label>
-                                        <?php if($f->edit==1 && empty($patient->referral_by_hospital_id)){ ?>
-               			<select id="hospital_id" class="selectize-inline" name="referral_by_hospital_id" style="width: 340px;" class="" placeholder="       --Enter hospital--                      ">
-					<option value="">        --Enter hospital--                       </option>
-                                        </select>
-                                        <script>
-						
-						initHospitalSelectize();
-	
-					</script>
-                                        <?php 
-                                            }else{
-                                               
-                                           echo "<input type='text' id='hospital_id' class='form-control' value='$patient->referral_by_hospital_name' disabled/>";
-                                           echo "<input type='hidden' name='referral_by_hospital_id' id='hospital_id' class='form-control' value='$patient->referral_by_hospital_id'/>";
-                                                    
-                                                
-                                            }
-                                            ?>
-                                     </div>                                     
-                                 </div>
+                                     <script type="text/javascript">
+										function initHospitalSelectize(){
+											var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
+
+											var selectize = $('#hospital_id').selectize({
+												valueField: 'hospital_id',
+												labelField: 'customdata',
+												searchField: ['hospital','hospital_short_name', 'place', 'district','state'],
+												options: helpline_hospitals,
+												create: false,
+												render: {
+													option: function(item, escape) {
+														return '<div>' +
+															'<span class="title">' +
+																'<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
+															'</span>' +
+														'</div>';
+													}
+												},
+												load: function(query, callback) {
+												if (!query.length) return callback();
+												},
+											});
+											
+											var selected_hospital = '<?php echo isset($patient->referral_by_hospital_id) ? $patient->referral_by_hospital_id : $this->input->post('hospital'); ?>';
+											if(selected_hospital){
+												selectize[0].selectize.setValue(selected_hospital);
+											}
+										}
+									 </script>
+										<div class="col-md-8 col-xs-6">
+											<label class="control-label">Referred by Hospital</label>
+											<select id="hospital_id" class="selectize-inline" name="referral_by_hospital_id" style="width: 340px;" placeholder="--Enter hospital--">
+												<option value="">--Enter hospital--</option>
+											</select>
+											<script>
+												initHospitalSelectize();
+											</script>
+										</div>
+                                  </div>
                                  <div class="row alt">
                                      &nbsp;
                                  </div>

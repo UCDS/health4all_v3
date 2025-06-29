@@ -660,6 +660,24 @@ function submitUpdations()
   		}	
   	}
 
+    if ($('#signed_consultation').is(':checked')){
+  		isUpdate = true;
+  		if($('#signed_consultation_new_value').val() == $('#signed_consultation_old_value').text())
+      {
+          bootbox.alert({
+              title: "<b>Signed Consultation Update</b>",	
+              message: "New value should be different than old value.",
+              onHidden: function(e) {
+                $('#signed_consultaion_new_value').focus();
+              }
+              });
+              return;  			 
+  		}  else {  		
+  			postData["signed_consultation"] = {"old":$('#signed_consultation_old_value').text(),"new":$('#signed_consultation_new_value').val()};
+  			updateAlert = updateAlert + "<br> <b>Signed Consultation Update</b>: " + $('#signed_consultation_old_value').text() + " -> " + $('#signed_consultation_new_value').val();
+  		}	
+  	}
+
   	
 if (!isUpdate) {
   bootbox.alert("There are nothing to update!");
@@ -686,14 +704,17 @@ bootbox.confirm({
         url: '<?php echo base_url();?>patient/update_patient_visit_details',
         contentType : "application/json; charset=UTF-8",
                 type : "POST",
-        success: function (data) {	
+        success: function (data) {
             var bracetoast = JSON.parse(data);
             var message = bracetoast.Message;
             alert(message);
             location.reload();
         },
-        error: function(data){
-          bootbox.alert(data.Message);
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert('AJAX error occurred: ' + textStatus + ' - ' + errorThrown);
+          console.error('Full error response:', jqXHR);
+          var responseText = jqXHR.responseText || "No response text";
+          bootbox.alert("Error: " + responseText);
         },
         data: JSON.stringify(postData)
         });
@@ -785,7 +806,8 @@ bootbox.confirm({
                   var outcome_time = response[i]['outcome_time'];
                   var icd_10 = response[i]['icd_10'];
                   var visit_type_op_ip = response[i]['visit_type'];
-				  var appointment_slot_id = response[i]['appointment_slot_id'];
+				  var appointment_slot_id = response[i]['appointment_status_id'];
+                  var signed_consult_val = response[i]['signed_consultation'];
                 }
 				//console.log(appointment_slot_id);
 				if (appointment_slot_id > 0) {
@@ -836,6 +858,7 @@ bootbox.confirm({
                 $('#outcome_date_update_old_value').append(outcome_date);
                 $('#outcome_time_update_old_value').append(outcome_time);
                 $('#icdcode_update_old_value').append(icd_10);
+                $('#signed_consultation_old_value').append(signed_consult_val);
 
                 var tbody = $('#counseling-table-body');
                 tbody.empty();
@@ -1208,6 +1231,13 @@ bootbox.confirm({
         </td>
       </tr>
       
+      <tr>
+        <td>Signed Consultation</td>
+        <td class="old-value-container" id="signed_consultation_old_value"></td>
+        <td><input type="checkbox" class="form-check-input"  id="signed_consultation" name="signed_consultation" value="signed_consultation"></td>
+        <td><input type="text" class="form-control" id="signed_consultation_new_value" name="signed_consultation_new_value" placeholder="" value=""  disabled></td>
+      </tr>
+
     </tbody>
   </table>
 </div>
