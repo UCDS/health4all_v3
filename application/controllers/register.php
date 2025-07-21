@@ -743,13 +743,11 @@ class Register extends CI_Controller {
 		$this->form_validation->set_rules('patient_number', 'IP/OP Number',
 		'trim|xss_clean');
 		if ($this->form_validation->run() === FALSE)
-		{						
+		{					
 			$this->load->view('pages/update_patients',$this->data);
-
 		}
 		else{		
-			// Patient documents
-			
+			// Patient documents		
 			if (array_key_exists("upload_file", $_FILES)) 
 			{
 				$dir_path = './assets/patient_documents/';
@@ -973,11 +971,11 @@ class Register extends CI_Controller {
 
 					if(count($previous_visit)>0){
 						$this->data['previous_prescription']=$this->register_model->get_prescription($previous_visit->visit_id);
-						$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
-						$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
-						$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
-						$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
 					}
+					$this->data['tests']=$this->diagnostics_model->get_all_tests($visit_id);
+					$this->data['visit_notes']=$this->register_model->get_clinical_notes($visit_id);
+					$this->data['patient_document_upload'] = $this->patient_document_upload_model->get_patient_documents($this->data['patients'][0]->patient_id);
+					$this->data['patient_document_type'] = $this->patient_document_upload_model->get_patient_document_type();
 					//Set the print layout page based on the form selected.
 					/* Newly added Jan 30 2024 */
 					$print_layout_id = $this->input->post('print_layout_id');

@@ -1322,8 +1322,9 @@ function initDistrictSelectize(){
 											});
 											
 											var selected_hospital = '<?php echo isset($patient->referral_by_hospital_id) ? $patient->referral_by_hospital_id : $this->input->post('hospital'); ?>';
-											if(selected_hospital){
-												selectize[0].selectize.setValue(selected_hospital);
+											if(selected_hospital != 0){
+									selectize[0].selectize.setValue(selected_hospital);
+									selectize[0].selectize.disable();
 											}
 										}
 									 </script>
