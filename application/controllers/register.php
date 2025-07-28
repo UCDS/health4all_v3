@@ -684,6 +684,9 @@ class Register extends CI_Controller {
 		$this->data['patient_document_remove_access']=$patient_document_remove_access;
 		$this->data['patient_document_edit_access']=$patient_document_edit_access;
 		$this->data['add_sms_access']=$add_sms_access;
+
+		$this->data['user_hospitals'] = $this->staff_model->get_user_hospitals();
+
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('selected_patient');
 		$document_link = $this->input->post('document_link');
