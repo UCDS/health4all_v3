@@ -179,9 +179,18 @@ display: inline-grid;
                                 $filtered_columns = array_filter($columns_array, function($column) use ($exclude_columns) {
                                     return !in_array($column, $exclude_columns);
                                 });
+
+                                $filtered_datatypes = [];
+                                if (!empty($datatype[$table])) {
+                                    foreach ($columns_array as $index => $column_name) {
+                                        if (!in_array($column_name, $exclude_columns)) {
+                                            $filtered_datatypes[] = $datatype[$table][$index];
+                                        }
+                                    }
+                                }
                                 ?>
                                 
-                                <?php foreach ($filtered_columns as $column): ?>
+                                <?php foreach (array_values($filtered_columns) as $i => $column): ?>
                                     <label>
                                         <input type="checkbox" 
                                             name="selected_columns[<?php echo $table; ?>][]" 
@@ -189,6 +198,12 @@ display: inline-grid;
                                             class="column-checkbox">
                                         <?php echo $column; ?>
                                     </label>
+                                    
+                                    <input type="hidden" 
+                                        name="column_types[<?php echo $table; ?>][]" 
+                                        value="<?php echo (in_array(strtolower($filtered_datatypes[$i]), ['varchar', 'text']) ? 1 : 0); ?>" 
+                                        readonly 
+                                        class="datatype-input">
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <p>No columns found for this table.</p>
@@ -212,13 +227,20 @@ display: inline-grid;
 		$("#columnsForm").on("submit", function(event) {
 			event.preventDefault();
 			var selectedColumns = [];
-			$("input.column-checkbox:checked").each(function() {
-				selectedColumns.push($(this).val());
-			});
+			var columnTypes = [];
+
+            $("input.column-checkbox:checked").each(function(index) {
+                selectedColumns.push($(this).val());
+                var datatypeInput = $(this).closest('label').next('.datatype-input').val();
+                columnTypes.push(datatypeInput);
+            });
+
 			var formData = {
 				form_name: $("input[name='form_id']").val(),
-				selected_columns: selectedColumns
+				selected_columns: selectedColumns,
+                column_types: columnTypes
 			};
+            //alert(JSON.stringify(formData));
 			$.ajax({
 				url: '<?php echo base_url('register/submit_columns'); ?>',
 				type: 'POST',

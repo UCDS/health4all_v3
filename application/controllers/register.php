@@ -1377,8 +1377,24 @@ class Register extends CI_Controller {
 				$selected_patient = $this->input->post('selected_patient'); 
 				$this->session->set_userdata('selected_visit_id', $selected_patient);
 				$table_names = ['patient', 'patient_visit', 'patient_followup'];
-				$columns = $this->register_model->get_columns_for_multiple_tables($table_names);
-				$data['columns'] = $columns;
+				//$columns = $this->register_model->get_columns_for_multiple_tables($table_names);
+				$columns = $this->register_model->get_columns_and_types_for_multiple_tables($table_names);
+				$columns_name = [];
+				$datatype = [];
+
+				foreach ($columns as $table => $column_data) {
+					if (!empty($column_data)) {
+						foreach ($column_data as $col) {
+							$columns_name[$table][] = $col['COLUMN_NAME'];
+							$datatype[$table][] = $col['DATA_TYPE'];
+						}
+					} else {
+						$columns_name[$table] = null;
+						$datatype[$table] = null;
+					}
+				}
+				$data['columns'] = $columns_name;
+				$data['datatype'] = $datatype;
 			}
 				$this->load->view('templates/header',$this->data);
 				$this->load->view('templates/leftnav',$this->$data);
@@ -1395,6 +1411,7 @@ class Register extends CI_Controller {
 	{
 		$form_name = $this->input->post('form_name');
 		$selected_columns = $this->input->post('selected_columns');
+		$column_types = $this->input->post('column_types');
 		if ($form_name && !empty($selected_columns)) 
 		{
 			$data = [
@@ -1402,7 +1419,7 @@ class Register extends CI_Controller {
 				'selected_columns' => json_encode($selected_columns)
 			];
 			
-			$form_id = $this->register_model->save_sel_cols_update_patients($form_name, $selected_columns);
+			$form_id = $this->register_model->save_sel_cols_update_patients($form_name, $selected_columns,$column_types);
 			if ($form_id) 
 			{
 				echo json_encode(['status' => 'success', 'message' => 'Form Created Successfully!']);
