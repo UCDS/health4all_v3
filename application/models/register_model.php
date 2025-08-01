@@ -1994,37 +1994,74 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 		return $query->result();
 	}
 
-	function get_columns_for_multiple_tables($table_names)
+	// function get_columns_for_multiple_tables($table_names)
+	// {
+	// 	if (!empty($table_names) && is_array($table_names)) 
+	// 	{
+    //         foreach ($table_names as $table) 
+	// 		{
+    //             if ($this->db->table_exists($table)) 
+	// 			{
+    //                 $columns[$table] = $this->db->list_fields($table);
+    //             } else 
+	// 			{
+    //                 $columns[$table] = null;
+    //             }
+    //         }
+    //     }
+    //     return $columns;
+	// }
+
+	public function get_columns_and_types_for_multiple_tables($table_names)
 	{
-		if (!empty($table_names) && is_array($table_names)) 
-		{
-            foreach ($table_names as $table) 
-			{
-                if ($this->db->table_exists($table)) 
-				{
-                    $columns[$table] = $this->db->list_fields($table);
-                } else 
-				{
-                    $columns[$table] = null;
-                }
-            }
-        }
-        return $columns;
+		$columns = [];
+
+		if (!empty($table_names) && is_array($table_names)) {
+			foreach ($table_names as $table) {
+				if ($this->db->table_exists($table)) {
+					// Get column name and data type
+					$sql = "SELECT COLUMN_NAME, DATA_TYPE 
+							FROM information_schema.COLUMNS 
+							WHERE TABLE_SCHEMA = DATABASE() 
+							AND TABLE_NAME = ?";
+					$query = $this->db->query($sql, [$table]);
+
+					if ($query->num_rows() > 0) {
+						$columns[$table] = [];
+
+						foreach ($query->result() as $row) {
+							$columns[$table][] = [
+								'COLUMN_NAME' => $row->COLUMN_NAME,
+								'DATA_TYPE'   => $row->DATA_TYPE
+							];
+						}
+					} else {
+						$columns[$table] = null;
+					}
+				} else {
+					$columns[$table] = null;
+				}
+			}
+		}
+
+		return $columns;
 	}
 
-	public function save_sel_cols_update_patients($form_name,$selected_columns) 
+	public function save_sel_cols_update_patients($form_name,$selected_columns,$column_types) 
 	{
 		$insert_data = [];
-		foreach ($selected_columns as $column) {
+		foreach ($selected_columns as $index => $column) {
 			$column_parts = explode('.', $column);
 			if (count($column_parts) == 2) 
 			{
 				$column_name = $column_parts[0];
 				$table_name = $column_parts[1];
+				$text = isset($column_types[$index]) ? $column_types[$index] : 0;
 				$insert_data[] = [
 					'form_id' => $form_name,
 					'selected_columns' => $column_name,
-					'table_name' => $table_name
+					'table_name' => $table_name,
+					'text_box' => $text
 				];
 			}
 		}
@@ -2040,7 +2077,8 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 
 	public function get_saved_fields_data_up($saved_form_id)
 	{
-		$this->db->select('upcf.form_name,upcf.form_header,upcf.no_of_cols,upcff.selected_columns,upcff.table_name,upcf.id,upcff.label');   
+		$this->db->select('upcf.form_name,upcf.form_header,upcf.no_of_cols,upcff.selected_columns,upcff.table_name,upcf.id,upcff.label,
+		upcff.text_box');   
 		$this->db->from('update_patient_custom_form as upcf');   
 		$this->db->join('update_patient_custom_form_fields as upcff','upcff.form_id = upcf.id','left');	
 		$this->db->where('upcff.form_id',$saved_form_id);	
