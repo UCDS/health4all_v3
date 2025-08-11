@@ -592,7 +592,33 @@ function initDistrictSelectize(){
 <br />
 	<?php 
         $pic_set = 1;
-        if(isset($patients) && count($patients)>1){ ?>
+		
+		// Current logged in hospital
+		$hospital = $this->session->userdata('hospital');
+		$current_hospital_id = $hospital['hospital_id'];
+
+		// Current logged in user
+		$user = $this->session->userdata('logged_in');
+		$logged_user_id = $user['user_id'];
+
+		// Current user having access hospital id
+		$hospital_ids_by_user = [];
+		foreach ($user_hospitals as $entry) {
+			$user_id = $entry->user_id;
+			$hospital_ids_by_user[$user_id][] = $entry->hospital_id;
+		}
+		//print_r($hospital_ids_by_user);
+
+		// Searched patient visits by id - patient hospital id 
+		$searched_hospital_ids = [];
+		foreach ($patients as $p) {
+			$searched_hospital_ids[] = $p->hospital_id;
+		}
+		//print_r($searched_hospital_ids);
+
+        $patient_hospital_id = $patients[0]->hospital_id;
+
+		if(isset($patients) && count($patients)>1){ ?>
 		<?php  echo "| <b>H4A Patient ID</b> : ".$patients[0]->patient_id." | ";
 			if(isset($patients[0]->patient_id_manual) and $patients[0]->patient_id_manual!="")
 			{
@@ -642,8 +668,7 @@ function initDistrictSelectize(){
 		if($p->age_days!=0) $age.=$p->age_days."D ";
 		if($p->age_days==0 && $p->age_months == 0 && $p->age_years == 0) $age.="0D ";
 	?>
-	<tr onclick="$('#select_patient_<?php echo $p->visit_id;?>').submit()" style="cursor:pointer">
-		<td>
+	<tr onclick="validateAndSubmit(<?php echo $p->visit_id; ?>, <?php echo $p->hospital_id; ?>)" style="cursor:pointer">		<td>
 			<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$p->visit_id));?>
 			<input type="text" class="sr-only" hidden value="<?php echo $p->visit_id;?>" form="select_patient_<?php echo $p->visit_id;?>" name="selected_patient" />
 			<input type="text" class="sr-only" hidden value="<?php echo $p->patient_id;?>" name="patient_id" />
@@ -664,8 +689,26 @@ function initDistrictSelectize(){
 	?>
 	</tbody>
 	</table>
+	<script>
+		const loggedInHospitalId = <?php echo json_encode($current_hospital_id); ?>;
+		const accessibleHospitalIds = <?php echo json_encode(isset($hospital_ids_by_user[$logged_user_id]) ? $hospital_ids_by_user[$logged_user_id] : []); ?>;
+		function validateAndSubmit(visitId, patientHospitalId) {
+			const hospitalIdStr = String(patientHospitalId);
+			const currentHospitalStr = String(loggedInHospitalId);
+			const accessibleStrIds = accessibleHospitalIds.map(String);
+
+			if (currentHospitalStr === hospitalIdStr) {
+				document.getElementById('select_patient_' + visitId).submit();
+			} else if (accessibleStrIds.includes(hospitalIdStr)) {
+				alert("Please log into that hospital to access the patient.");
+			} else {
+				alert("You do not have access to that hospital.");
+			}
+		}
+	</script>
 	<?php } 
 	else if(isset($patients) && count($patients)==1){
+		$p = $patients[0];
             ?>
 <?php if(isset($duplicate)) { ?>
 		<!-- If duplicate IP no is found then it displays the error message -->
@@ -676,6 +719,7 @@ function initDistrictSelectize(){
 	<?php } ?>
 	<?php echo form_open('register/update_patients',array('class'=>'form-custom','role'=>'form', 'id'=>'update_patients')); ?>
 	<input type="hidden" class="sr-only" value="<?php echo $transaction_id;?>" name="transaction_id" />
+	<input type="hidden" name="patient_id" value="<?php echo $patients[0]->id; ?>">
 	<div class="panel panel-default">
 	<div class="panel-body">
 	  <!-- Nav tabs -->
@@ -3020,6 +3064,76 @@ function initDistrictSelectize(){
 	</div>
 	</div>
 	</div>
+	<!-- <script>
+		const loggedInHospitalId = <?php echo json_encode($current_hospital_id); ?>;
+		const accessibleHospitalIds = <?php echo json_encode(isset($hospital_ids_by_user[$logged_user_id]) ? $hospital_ids_by_user[$logged_user_id] : []); ?>;
+
+		const hospitalIdStr = String(<?php echo $p->hospital_id; ?>);
+		const currentHospitalStr = String(loggedInHospitalId);
+		const accessibleStrIds = accessibleHospitalIds.map(String);
+
+		if (currentHospitalStr === hospitalIdStr) {
+			document.addEventListener('DOMContentLoaded', function() {
+				document.getElementById('select_patient_<?php echo $p->visit_id; ?>').submit();
+			});
+		} else if (accessibleStrIds.includes(hospitalIdStr)) {
+			alert("Please log into that hospital to access the patient.");
+		} else {
+			alert("You do not have access to that hospital.");
+		}
+	</script> -->
+	<!-- <script>
+		const loggedInHospitalId = <?php echo json_encode($current_hospital_id); ?>;
+		const accessibleHospitalIds = <?php echo json_encode(
+			isset($hospital_ids_by_user[$logged_user_id]) ? $hospital_ids_by_user[$logged_user_id] : []
+		); ?>;
+
+		const hospitalIdStr = String(<?php echo $patients[0]->hospital_id; ?>);
+		const currentHospitalStr = String(loggedInHospitalId);
+		const accessibleStrIds = accessibleHospitalIds.map(String);
+
+		document.addEventListener('DOMContentLoaded', function () {
+			if (currentHospitalStr === hospitalIdStr) {
+				document.getElementById('update_patients').submit();
+				break;
+			} else if (accessibleStrIds.includes(hospitalIdStr)) {
+				alert("Please log into that hospital to access the patient.");
+				window.location.href = "<?php echo base_url('register/update_patients'); ?>";
+			} else {
+				alert("You do not have access to that hospital.");
+				window.location.href = "<?php echo base_url('register/update_patients'); ?>";
+			}
+		});
+	</script> -->
+	<script>
+		const loggedInHospitalId = <?php echo json_encode($current_hospital_id); ?>;
+		const accessibleHospitalIds = <?php echo json_encode(
+			isset($hospital_ids_by_user[$logged_user_id]) ? $hospital_ids_by_user[$logged_user_id] : []
+		); ?>;
+
+		const hospitalIdStr = String(<?php echo $patients[0]->hospital_id; ?>);
+		const currentHospitalStr = String(loggedInHospitalId);
+		const accessibleStrIds = accessibleHospitalIds.map(String);
+
+		document.addEventListener('DOMContentLoaded', function () {
+			if (sessionStorage.getItem('form_submitted') === '1') {
+				sessionStorage.removeItem('form_submitted');
+				return;
+			}
+			if (currentHospitalStr === hospitalIdStr) {
+				sessionStorage.setItem('form_submitted', '1');
+				document.getElementById('update_patients').submit();
+				return;
+			}
+			if (accessibleStrIds.includes(hospitalIdStr)) {
+				alert("Please log into that hospital to access the patient.");
+				window.location.href = "<?php echo base_url('register/update_patients'); ?>";
+			} else {
+				alert("You do not have access to that hospital.");
+				window.location.href = "<?php echo base_url('register/update_patients'); ?>";
+			}
+		});
+	</script>
 	</form>
 	<?php echo form_open("register/generate_summary_link",array('id'=>'generate_summary_link')); ?>
 							
@@ -3036,7 +3150,6 @@ function initDistrictSelectize(){
 	?>
 	</div>
 	<br/>
-	
 	<?php if(!!isset($previous_visits)){ ?>
 	<div class="container">
 	<table class="table table-bordered table-striped">

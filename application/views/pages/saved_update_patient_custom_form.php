@@ -79,7 +79,11 @@ pri.print();
         <?php if (!empty($saved_form_id)) { ?>
                 <!-- <div class="sortable-container" style="width: 100%; padding: 15px 0;"> --> <!-- If needed activate sortable container -->
                 <div class="" style="width: 100%; padding: 15px 0;">
-                    <?php $counter = 1; ?>
+                    <?php 
+                        $counter = 1;
+                        $currentRowWidth = 0;
+                        echo '<div class="row">'; 
+                    ?>
                     <?php foreach ($saved_form_id as $sfi) { 
                         if ($sfi->no_of_cols == 1) {
                             $col = '12';
@@ -90,6 +94,12 @@ pri.print();
                         if ($sfi->no_of_cols == 3) {
                             $col = '4';
                         }
+                        if ($currentRowWidth + $col > 12) {
+                            echo '</div><div class="row">';
+                            $currentRowWidth = 0;
+                        }
+
+                        $currentRowWidth += $col;
                     ?>
                     <div class="col-md-<?php echo $col; ?> sortable-item" >
                         <div class="form-group row myrow" style="padding-top:5px;padding-bottom:5px;">
@@ -172,12 +182,18 @@ pri.print();
                                     ?>
                                     <input type="time" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
                                         value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='00:00') { echo "readonly"; }?>>
-                                <?php } else {  $column_name = $sfi->selected_columns?>
+                                <?php } else {  $column_name = $sfi->selected_columns; if($sfi->text_box==0) { ?>
+                                    
                                     <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
                                         value="<?php if(!empty($db_values[0]->$column_name) || $db_values[0]->$column_name!='0') { echo $db_values[0]->$column_name; }?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" 
                                             autocomplete="off" <?php if(!empty($db_values[0]->$column_name)) { echo "readonly"; } ?>>
-                                <?php } ?>
-                                
+                                            <?php }else{ ?>  
+                                                <textarea class="form-control" rows="5" cols="10"
+                                                    name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
+                                                    <?php if (!empty($db_values[0]->$column_name)) echo "readonly"; ?>><?php
+                                                    echo (!empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0') ? $db_values[0]->$column_name : '';
+                                                ?></textarea>
+                                <?php } } ?>
                             </div>
                         </div>
                     </div>
