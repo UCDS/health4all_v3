@@ -696,9 +696,7 @@ class Register extends CI_Controller {
 			$hospital_id_patient = $this->input->post('hospital_id');
 			if(!empty($hospital_id_patient) && $hospital_id_patient != $hospital_id)
 			{
-					echo '<p style="margin-top:2%; text-align:center;color:green;font-weight:bold;">
-							You don\'t have access to patients hospital or please login to that hospital.</p>';
-					echo '<br/>';
+				$this->load->view('templates/invalid_patient_hospital',$this->data);
 			}
 			else{
 				$this->data['previous_visits']=$this->register_model->get_visits($patient_id);

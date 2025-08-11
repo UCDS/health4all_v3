@@ -715,7 +715,7 @@ echo "</select></li>";
 		<?php } ?>
 		<td><?php echo $s->appointment_update_by_name;?> , <?php echo date("j M Y", strtotime("$s->appointment_update_time")).", ".date("h:i A.", strtotime("$s->appointment_update_time"));?></td>
 		<?php if($edit_appointment_access==1) { ?>
-		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->slot_id; ?>" data-department="<?php echo $s->department; ?>" data-visitname="<?php echo $s->visit_name; ?>" data-date="<?php echo $date; ?>" data-toggle="modal" data-from="<?php echo $from; ?>"  data-to="<?php echo date('h:i A', strtotime($s->to_time)); ?>"  data-target="#editModal">Edit</button>
+		<td style="text-align:center"><button type="button" class="btn btn-info" autofocus data-id="<?php echo $s->slot_id; ?>" data-limit="<?php echo $s->appointments_limit; ?>" data-department="<?php echo $s->department; ?>" data-visitname="<?php echo $s->visit_name; ?>" data-date="<?php echo $date; ?>" data-toggle="modal" data-from="<?php echo $from; ?>"  data-to="<?php echo date('h:i A', strtotime($s->to_time)); ?>"  data-target="#editModal">Edit</button>
 		</td> 
 	<?php } ?>
 		<?php if($remove_appointment_access==1) { ?>
