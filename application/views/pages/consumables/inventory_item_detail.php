@@ -622,7 +622,7 @@ $('#to_id').change(function(){
 							<td style="text-align:right;"><?= (float)$inventory_item->cost; ?></td>
 							<td><?php if($batch!=''){ echo $batch;}?><?php if($batch!='' && $manufacture_date!=''){ echo " | "; }?><?php if($manufacture_date!='') { echo date("d-M-Y", strtotime($manufacture_date)); ?> to <?php } if($expiry_date!='') { echo date("d-M-Y", strtotime($expiry_date)); } ?> </td>
 							<td><?= $inventory_item->patient_id ? $inventory_item->patient_id: ""; ?></td>
-							<td><?= $inventory_item->item_note;?></td>
+							<td><?= $inventory_item->indent_note;?></td>
 						</tr>
 						<?php
 						$i++;

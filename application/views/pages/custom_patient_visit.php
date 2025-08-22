@@ -492,6 +492,7 @@ echo "</select></li>";
 							rows += '<tr class="sortable-row" data-id="' + data.main_id + '">' +
 										'<td>' + data.table_name + '</td>' +
 										'<td>' + selectedColumnsColumn + '</td>' +
+										'<td>' + data.text_box + '</td>' +
 										labelColumn +
 										sequenceColumn +
 										editButton +
@@ -524,11 +525,11 @@ echo "</select></li>";
 						}
 
 						if (allValidData) {
-							$('#dataModal .table th').eq(2).text('Label');
-							$('#dataModal .table th').eq(3).text('Sequence ID');
+							$('#dataModal .table th').eq(3).text('Label');
+							$('#dataModal .table th').eq(4).text('Seq ID');
 						} else {
-							$('#dataModal .table th').eq(2).text('Add Label');
-							$('#dataModal .table th').eq(3).text('Sequence');
+							$('#dataModal .table th').eq(3).text('Add Label');
+							$('#dataModal .table th').eq(4).text('Sequence');
 						}
 
 						$('#dataModal').modal('show');
@@ -582,12 +583,12 @@ echo "</select></li>";
 				var row = $(this).closest('tr');
 				
 				var selectedColumns = row.find('td').eq(1).text();
-				var label = row.find('td').eq(2).text();
-				var sequence = row.find('td').eq(3).text();
+				var label = row.find('td').eq(3).text();
+				var sequence = row.find('td').eq(4).text();
 				
 				row.find('td').eq(1).html('<input type="text" class="form-control selected-columns-input" value="' + selectedColumns + '" data-id="' + main_id + '">');
-				row.find('td').eq(2).html('<input type="text" class="form-control label-input" value="' + label + '" data-id="' + main_id + '">');
-				row.find('td').eq(3).html('<input type="number" class="form-control sequence-input" value="' + sequence + '" data-id="' + main_id + '">');
+				row.find('td').eq(3).html('<input type="text" class="form-control label-input" value="' + label + '" data-id="' + main_id + '">');
+				row.find('td').eq(4).html('<input type="number" class="form-control sequence-input" value="' + sequence + '" data-id="' + main_id + '">');
 				
 				$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fa fa-check"></i>').removeClass('edit-row').addClass('save-row');
 				row.find('td:last').addClass('icon-container').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
@@ -600,8 +601,8 @@ echo "</select></li>";
 				var sequence = row.find('.sequence-input').val();
 				
 				row.find('td').eq(1).text(selectedColumns);
-				row.find('td').eq(2).text(label);
-				row.find('td').eq(3).text(sequence);
+				row.find('td').eq(3).text(label);
+				row.find('td').eq(4).text(sequence);
 				
 				row.find('.save-row')
 					.removeClass('btn-success')
@@ -704,6 +705,7 @@ echo "</select></li>";
 					<tr>
 					<th>Table Name</th>
 					<th>Field Name</th>
+					<th>Textbox</th>
 					<th>Add Label</th>
 					<th>Sequence </th>
 					</tr>
