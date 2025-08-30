@@ -638,7 +638,7 @@ class Indent_report_model extends CI_Model
 		scp_to.supply_chain_party_name to_party, scp.supply_chain_party_name, scp.supply_chain_party_id, inventory.inward_outward, 
 		inventory.date_time, inventory.batch, inventory.manufacture_date, inventory.expiry_date, inventory.quantity total_quantity, 
 		inventory.cost, inventory.gtin_code, inventory.patient_id, inventory.indent_id, inventory.note,indent.issue_date_time,
-		item_form.item_form,indent_item.note as item_note")
+		item_form.item_form,indent_item.note as item_note,indent.note as indent_note")
 		->from('inventory')
 		->join('item', 'item.item_id = inventory.item_id') //remove left later
 		->join('supply_chain_party scp', 'scp.supply_chain_party_id = inventory.supply_chain_party_id') // remove left later for only relevant details

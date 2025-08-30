@@ -725,7 +725,30 @@ if ($this->input->post('to_id')) {
 		<div class="col-md-offset-2">
 			<div id="print-container">
 				<?php if(count($search_inventory_summary) > 0) { ?>
-					<h4> Item Type : <span style="color: green;"><?php if($this->input->post('item_type')==2){ echo 'Surgical'; }else{ echo 'Drug';} ?></span></h4>
+					<h4> Item Type : <span style="color: green;">
+							<?php $item_type = $this->input->post('item_type');
+								if ($item_type == 1) {
+									echo 'Drug';
+								} elseif ($item_type == 2) {
+									echo 'Surgical';
+								} else {
+									echo 'NA';
+								}
+							?>
+						</span>
+						<?php
+							$item_form_id = $this->input->post('item_form');
+
+							if (!empty($item_form_id)) {
+								foreach ($item_form as $form) {
+									if ($form->item_form_id == $item_form_id) {
+										echo ' - '.$form->item_form;
+										break;
+									}
+								}
+							}
+						?>
+					</h4>
 					<!-- Hidden Item Type Element -->
 					<div id="item-type-value" style="display:none;">
 						<?php echo $this->input->post('item_type') == 2 ? 'Surgical' : 'Drug'; ?>
