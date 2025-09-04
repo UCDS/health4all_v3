@@ -68,13 +68,13 @@ pri.print();
               </div>
             </div>
         </div>
-        <?php echo form_open('register/save_custom_patient_visit_details',array('role'=>'form','class'=>'','id'=>'')); ?>
-
         <input type="hidden" name="patient_id" id="patient_id" value="<?php echo $patient_id; ?>" class="form-control" readonly>
         <input type="hidden" name="visit_id" value="<?php echo $visit_id; ?>" class="form-control" readonly>
         <input type="hidden" name="form_id" value="<?php echo $saved_form_id[0]->id; ?>" class="form-control" readonly>
         <input type="hidden" name="search_patient_id" value="<?php echo $patient_id; ?>" class="form-control" readonly>
         <input type="hidden" name="form_header" class="form-control" value="<?php echo $saved_form_id[0]->form_header ?>">
+        <input type="hidden" name="file_no" class="form-control" value="<?php echo $file_no ?>">
+        <input type="hidden" name="visit_type_name" class="form-control" value="<?php echo $visit_type_name ?>">
         <div class="panel-body">
         <?php if (!empty($saved_form_id)) { ?>
                 <!-- <div class="sortable-container" style="width: 100%; padding: 15px 0;"> --> <!-- If needed activate sortable container -->
@@ -134,13 +134,55 @@ pri.print();
                                 <?php } else if($sfi->selected_columns=='department_id')
                                     {  
                                 ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="department" class="form-control mydeptunit" <?php if(!empty($db_values[0]->department_id)) { echo "readonly"; } ?>>
+                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" <?php if(!empty($db_values[0]->department_id)) { echo "disabled"; } ?>>
                                         <option value="#">Select Department</option>
                                         <?php foreach ($all_departments as $ald){ ?>
                                             <option <?php if($db_values[0]->department_id==$ald->department_id){ echo "selected" ; } ?>
                                             value="<?php echo $ald->department_id; ?>"><?php echo $ald->department; ?></option>
                                         <?php } ?>
                                     </select>
+                                <?php }else if($sfi->selected_columns == 'unit') 
+                                    {  
+                                ?>
+                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" 
+                                        <?php if (!empty($db_values[0]->unit)) { echo "disabled"; } ?>>
+                                        <option value="#">Select Unit</option>
+                                        <?php foreach ($units as $unit) { ?>
+                                            <option <?php if($db_values[0]->unit == $unit->unit_id) { echo "selected"; } ?>
+                                                value="<?php echo $unit->unit_id; ?>">
+                                                <?php echo $unit->unit_name; ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                <?php   } else if($sfi->selected_columns == 'area') 
+                                    {  
+                                ?>
+                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" 
+                                        <?php if (!empty($db_values[0]->area)) { echo "disabled"; } ?>>
+                                        <option value="#">Select Area</option>
+                                        <?php foreach ($areas as $area) { ?>
+                                            <option <?php if($db_values[0]->area == $area->area_id) { echo "selected"; } ?>
+                                                value="<?php echo $area->area_id; ?>">
+                                                <?php echo $area->area_name; ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                <?php  }  else if($sfi->selected_columns == 'ndps') {
+                                        $ndps_value = isset($db_values[0]->ndps) ? $db_values[0]->ndps : null;
+                                ?>
+                                    <div>
+                                    <label>
+                                        <input type="radio" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                            value="1" <?php if($ndps_value === '1' || $ndps_value === 1){ echo "checked"; } ?>>
+                                        Yes
+                                    </label>
+                                    &nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                            value="0" <?php if($ndps_value === '0' || $ndps_value === 0){ echo "checked"; } ?>>
+                                        No
+                                    </label>
+                                </div>
                                 <?php } else if($sfi->selected_columns=='priority_type_id')
                                     {  
                                 ?>
@@ -176,12 +218,33 @@ pri.print();
                                     ?>
                                     <input type="date" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
                                         value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='0000-00-00') { echo "readonly"; } ?>>
-                                <?php } else if (strpos($sfi->selected_columns, 'time') !== false) {
+                                <?php } else if (strpos($sfi->selected_columns, 'time') !== false) { 
                                         $column_name = $sfi->selected_columns;
                                         $value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
                                     ?>
-                                    <input type="time" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='00:00') { echo "readonly"; }?>>
+                                    <input type="datetime-local" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
+                                <?php } elseif ($sfi->selected_columns == 'note') {
+                                        $column_name = $sfi->selected_columns;
+                                        $raw_value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
+                                        $formatted_text = '';
+
+                                        if (!empty($raw_value) || $raw_value === '0') {
+                                            $doc = new DOMDocument();
+                                            $doc->loadHTML($raw_value);
+                                            $lis = $doc->getElementsByTagName('li');
+                                            $items = [];
+                                            foreach ($lis as $li) {
+                                                $items[] = '. ' . trim($li->textContent);
+                                            }
+                                            $formatted_text = implode("\n", $items);
+                                        }
+                                    ?>
+                                    <textarea class="form-control" rows="5" cols="10"
+                                        name="note_display" readonly><?php echo htmlspecialchars($formatted_text); ?></textarea>
+                                    <input type="hidden"
+                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
+                                        value="<?php echo htmlspecialchars($raw_value); ?>" />
                                 <?php } else {  $column_name = $sfi->selected_columns; if($sfi->text_box==0) { ?>
                                     
                                     <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
@@ -212,15 +275,16 @@ pri.print();
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4" style="margin-left:5px;">
+                        <!-- <div class="col-md-4" style="margin-left:5px;">
                             <div class="row container" id="area-container" >
                                 <label for="area_con" class="col-md-1 col-form-label">
                                     Area
                                 </label>
                                 <div class="col-md-3">
-                                    <select name="<?php echo 'area' . '.' . 'patient_visit'; ?>" id="area_con" class="form-control" style="width:195px;">
+                                    <select name="<?php echo 'area' . '.' . 'patient_visit'; ?>" id="area_con" class="form-control"
+                                     style="width:195px;" <?php if (!empty($db_values[0]->area)) { echo 'disabled'; } ?>>>
                                         <option value="#">Select Area</option>
-                                        <?php foreach($areas as $a){ print_r($db_values); ?>
+                                        <?php foreach($areas as $a){  ?>
                                             <option  <?php if($db_values[0]->area==$a->area_id) { echo "selected"; } ?>
                                             
                                             value="<?php echo $a->area_id; ?>" data-department-id="<?php echo $a->department_id; ?>">
@@ -230,8 +294,8 @@ pri.print();
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
+                        </div> -->
+                        <!-- <div class="col-md-4">
                             <div class="row container" id="unit-container">
                                 <label for="unit_con" class="col-md-1 col-form-label">
                                     Unit
@@ -249,42 +313,42 @@ pri.print();
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <script>
                         $(document).ready(function() {
                             $('#state-container').hide();
-                            $('#area-container').hide();
-                            $('#unit-container').hide();
+                           // $('#area-container').hide();
+                           // $('#unit-container').hide();
                             var selectedDistrict = $('#district').val();
                             if (selectedDistrict && selectedDistrict !== '#') {
                                 var state_id = $('#district').find('option:selected').data('state-id');
                                 $('#state-container').show();
                                 $('#state').val(state_id);
                             }
-                            var selectedDepartment = $('#department').val();
-                            if (selectedDepartment && selectedDepartment !== '#') {
-                                $('#area-container').show();
-                                $('#unit-container').show();
+                            // var selectedDepartment = $('#department').val();
+                            // if (selectedDepartment && selectedDepartment !== '#') {
+                            //     $('#area-container').show();
+                            //     $('#unit-container').show();
 
-                                $('#area_con option').each(function() {
-                                    var optionDepartmentId = $(this).data('department-id');
-                                    if (optionDepartmentId == selectedDepartment) {
-                                        $(this).show();
-                                    } else {
-                                        $(this).hide();
-                                    }
-                                });
+                            //     $('#area_con option').each(function() {
+                            //         var optionDepartmentId = $(this).data('department-id');
+                            //         if (optionDepartmentId == selectedDepartment) {
+                            //             $(this).show();
+                            //         } else {
+                            //             $(this).hide();
+                            //         }
+                            //     });
 
-                                $('#unit_con option').each(function() {
-                                    var optionDepartmentId = $(this).data('department-id');
-                                    if (optionDepartmentId == selectedDepartment) {
-                                        $(this).show();
-                                    } else {
-                                        $(this).hide();
-                                    }
-                                });
-                            }
+                            //     $('#unit_con option').each(function() {
+                            //         var optionDepartmentId = $(this).data('department-id');
+                            //         if (optionDepartmentId == selectedDepartment) {
+                            //             $(this).show();
+                            //         } else {
+                            //             $(this).hide();
+                            //         }
+                            //     });
+                            // }
 
                             $('#district').change(function() {
                                 var district_id = $(this).val();
@@ -297,50 +361,50 @@ pri.print();
                                 }
                             });
 
-                            $('#department').change(function() {
-                                var department_id = $(this).val();
+                            // $('#department').change(function() {
+                            //     var department_id = $(this).val();
                                 
-                                $('#area_con').val('');
-                                $('#unit_con').val('');
-                                $('#area-container').hide();
-                                $('#unit-container').hide();
+                            //     $('#area_con').val('');
+                            //     $('#unit_con').val('');
+                            //     $('#area-container').hide();
+                            //     $('#unit-container').hide();
 
-                                if (department_id !== '#') {
-                                    $('#area-container').show();
-                                    $('#unit-container').show();
+                            //     if (department_id !== '#') {
+                            //         $('#area-container').show();
+                            //         $('#unit-container').show();
 
-                                    $('#area_con option').each(function() {
-                                        var optionDepartmentId = $(this).data('department-id');
-                                        if (optionDepartmentId == department_id) {
-                                            $(this).show();
-                                        } else {
-                                            $(this).hide();
-                                        }
-                                    });
+                            //         $('#area_con option').each(function() {
+                            //             var optionDepartmentId = $(this).data('department-id');
+                            //             if (optionDepartmentId == department_id) {
+                            //                 $(this).show();
+                            //             } else {
+                            //                 $(this).hide();
+                            //             }
+                            //         });
 
-                                    $('#unit_con option').each(function() {
-                                        var optionDepartmentId = $(this).data('department-id');
-                                        if (optionDepartmentId == department_id) {
-                                            $(this).show();
-                                        } else {
-                                            $(this).hide();
-                                        }
-                                    });
-                                } else {
-                                    $('#area-container').hide();
-                                    $('#unit-container').hide();
-                                }
-                            });
-                            $('#area_con').change(function() {
-                                var area_id = $(this).val();
-                                if (area_id !== '#') {
-                                }
-                            });
-                            $('#unit_con').change(function() {
-                                var unit_id = $(this).val();
-                                if (unit_id !== '#') {
-                                }
-                            });
+                            //         $('#unit_con option').each(function() {
+                            //             var optionDepartmentId = $(this).data('department-id');
+                            //             if (optionDepartmentId == department_id) {
+                            //                 $(this).show();
+                            //             } else {
+                            //                 $(this).hide();
+                            //             }
+                            //         });
+                            //     } else {
+                            //         $('#area-container').hide();
+                            //         $('#unit-container').hide();
+                            //     }
+                            // });
+                            // $('#area_con').change(function() {
+                            //     var area_id = $(this).val();
+                            //     if (area_id !== '#') {
+                            //     }
+                            // });
+                            // $('#unit_con').change(function() {
+                            //     var unit_id = $(this).val();
+                            //     if (unit_id !== '#') {
+                            //     }
+                            // });
                         });
                         
                     </script>
@@ -356,16 +420,16 @@ pri.print();
 			<?php $this->load->view('pages/print_layouts/patient_summary_custom');?>
 		</div>
         <div class="panel-footer" style="display: flex;justify-content: center; align-items: center; gap: 10px;">
-            <button type="submit" class="btn btn-primary btn-md" name="search_patients" value="1">Update</button>
+            <button type="button" class="btn btn-primary btn-md" id="updateFormBtn">Update</button>
+            <button class="btn btn-md btn-warning" value="Print" type="button" id="printButtonsss">Print Custom</button>
             <button class="btn btn-md btn-warning" value="Print" type="button" onclick="printDiv('print-div')">Print Summary</button>
-            <button type="button" class="btn btn-md btn-warning" id="printButton">Print Selected Format</button>
             <select class="form-control" name="add_on_print_layout_id" id="add_on_print_layout_id" style="width: 265px;">
                 <option value="Select">Select Format</option>
                 <?php foreach($hosp_all_print_layouts as $layout_name) { ?>
                     <option value="<?php echo $layout_name->add_on_print_layout_id; ?>"><?php echo $layout_name->print_layout_name; ?></option>
                 <?php } ?>
             </select>
-            <button class="btn btn-md btn-warning" value="Print" type="button" id="printButtonsss">Print Custom</button>
+            <button type="button" class="btn btn-md btn-warning" id="printButton">Print Selected Format</button>
         </div>
         </form>
         <script>
@@ -374,8 +438,15 @@ pri.print();
                     var formData = {};
                     $('.form-group.row.myrow').each(function() {
                         var label = $(this).find('label').text().trim();
-                        var field = $(this).find('input[type="text"], select, textarea');
+                        var field = $(this).find('input[type="text"], select, textarea, input[type="radio"]');
                         var value = '';
+                        if (field.is('input[type="radio"]')) {
+                            var radioName = field.attr('name');
+                            var selectedRadio = $('input[name="' + radioName + '"]:checked');
+                            if (selectedRadio.length > 0) {
+                                value = selectedRadio.val();
+                            }
+                        }
                         if (field.is('input[type="text"]') || field.is('textarea')) {
                             value = field.val().trim();
                         } else if (field.is('select')) {
@@ -427,7 +498,7 @@ pri.print();
                         unitValue = unitValue.replace(/[^a-zA-Z0-9]/g, '_');
                         formData[unitLabel] = unitValue;
                     }
-                    console.log("Processed Form Data:", formData);
+                    //console.log("Processed Form Data:", formData);
                     $.ajax({
                         url: "<?php echo site_url('register/store_form_data'); ?>", 
                         type: "POST",
@@ -476,7 +547,7 @@ pri.print();
 				});
 			});
 		</script>
-        <script>
+        <!-- <script>
             document.querySelector('form').addEventListener('submit', function(event) {
                 // Loop through all the form inputs
                 var formElements = this.elements;
@@ -489,6 +560,22 @@ pri.print();
                     }
                 }
             });
+        </script> -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var form = document.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function(event) {
+                        var formElements = this.elements;
+                        for (var i = 0; i < formElements.length; i++) {
+                            var name = formElements[i].name;
+                            if (name.indexOf('.') !== -1) {
+                                formElements[i].name = name.replace(/\./g, '__DOT__');
+                            }
+                        }
+                    });
+                }
+            });
         </script>
     </div>
 </div>
@@ -499,7 +586,7 @@ $(document).ready(function() {
         items: ".sortable-item",
         handle: ".form-group",
         update: function(event, ui) {
-            console.log("Order Updated");
+           // console.log("Order Updated");
             $(".sortable-item").each(function(index) {
                 $(this).find(".sequence-input").val(index + 1);
             });
@@ -508,3 +595,46 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+$(document).ready(function() {
+    $('#updateFormBtn').click(function(e) {
+        e.preventDefault();
+        var formData = {};
+        $('[name]').each(function() {
+            var name = $(this).attr('name');
+            var value;
+
+            if ($(this).is(':radio')) {
+                if ($(this).is(':checked')) {
+                    value = $(this).val();
+                    formData[name.replace('.', '__DOT__')] = value;
+                }
+            } else if ($(this).is(':checkbox')) {
+                formData[name.replace('.', '__DOT__')] = $(this).is(':checked') ? $(this).val() : '';
+            } else {
+                formData[name.replace('.', '__DOT__')] = $(this).val();
+            }
+        });
+       //console.log(formData);
+       //alert(JSON.stringify(formData));
+        $.ajax({
+            url: "<?php echo site_url('register/save_custom_patient_visit_details'); ?>",
+            method: "POST",
+            data: formData,
+            dataType: "json",
+            success: function(response) {
+                if (response.status === 'success') {
+                    alert('Update successful!');
+                    window.location.reload(); 
+                } else {
+                    alert('Update failed: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                //console.error('AJAX Error:', error);
+                alert('Something went wrong. Try again.');
+            }
+        });
+    });
+});
+</script>

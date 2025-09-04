@@ -509,16 +509,15 @@ echo "</select></li>";
 
 						updateSequenceNumbers();
 
-						if(showUpdateButton)
-						{
-							$('#dataBody').sortable({
-								items: 'tr.sortable-row',
-								update: function(event, ui) {
-									updateSequenceNumbers();
-								}
-							});
-						}
-						if (showUpdateButton && !editButton) {
+						
+						$('#dataBody').sortable({
+							items: 'tr.sortable-row',
+							update: function(event, ui) {
+								updateSequenceNumbers();
+							}
+						});
+						
+						if (!editButton) {
 							$('#updateButton').show();
 						} else {
 							$('#updateButton').hide();
@@ -529,7 +528,7 @@ echo "</select></li>";
 							$('#dataModal .table th').eq(4).text('Seq ID');
 						} else {
 							$('#dataModal .table th').eq(3).text('Add Label');
-							$('#dataModal .table th').eq(4).text('Sequence');
+							$('#dataModal .table th').eq(4).text('Seq ID');
 						}
 
 						$('#dataModal').modal('show');
@@ -570,12 +569,12 @@ echo "</select></li>";
 					var sequenceInput = $(this).find('.sequence-input');
 					if (sequenceInput.length) {
 						sequenceInput.val(sequence);
-						//sequenceInput.prop('readonly', true);
+					} else {
+						$(this).find('td').eq(4).text(sequence);
 					}
 					sequence++;
 				});
 			}
-
 
 			$(document).on('click', '.edit-row', function() {
 				var main_id = $(this).data('id');
@@ -584,11 +583,9 @@ echo "</select></li>";
 				
 				var selectedColumns = row.find('td').eq(1).text();
 				var label = row.find('td').eq(3).text();
-				var sequence = row.find('td').eq(4).text();
 				
 				row.find('td').eq(1).html('<input type="text" class="form-control selected-columns-input" value="' + selectedColumns + '" data-id="' + main_id + '">');
 				row.find('td').eq(3).html('<input type="text" class="form-control label-input" value="' + label + '" data-id="' + main_id + '">');
-				row.find('td').eq(4).html('<input type="number" class="form-control sequence-input" value="' + sequence + '" data-id="' + main_id + '">');
 				
 				$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fa fa-check"></i>').removeClass('edit-row').addClass('save-row');
 				row.find('td:last').addClass('icon-container').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
@@ -598,11 +595,9 @@ echo "</select></li>";
 				var row = $(this).closest('tr');
 				var selectedColumns = row.find('.selected-columns-input').val();
 				var label = row.find('.label-input').val();
-				var sequence = row.find('.sequence-input').val();
 				
 				row.find('td').eq(1).text(selectedColumns);
 				row.find('td').eq(3).text(label);
-				row.find('td').eq(4).text(sequence);
 				
 				row.find('.save-row')
 					.removeClass('btn-success')
@@ -617,12 +612,11 @@ echo "</select></li>";
 				var main_id = $(this).data('id');
 				var selectedColumns = $(this).closest('tr').find('.selected-columns-input').val();
 				var label = $(this).closest('tr').find('.label-input').val();
-				var sequence = $(this).closest('tr').find('.sequence-input').val();
-				//alert(sequence);
+
 				$.ajax({
 					url: '<?php echo base_url('user_panel/update_row_cutom_layout'); ?>', 
 					type: 'post',
-					data: { main_id: main_id, selected_columns: selectedColumns, label: label, sequence_id: sequence },
+					data: { main_id: main_id, selected_columns: selectedColumns, label: label},
 					dataType: 'json',
 					success: function(response) 
 					{
@@ -643,11 +637,13 @@ echo "</select></li>";
 
 			$('#updateButton').click(function() {
 				var updates = [];
-				
-				$('.label-input').each(function() {
+
+				$('#dataBody tr.sortable-row').each(function() {
 					var id = $(this).data('id');
-					var label = $(this).val();
-					var sequence = $(this).closest('tr').find('.sequence-input').val();
+					var labelInput = $(this).find('.label-input');
+					var label = labelInput.length ? labelInput.val() : $(this).find('td').eq(3).text().trim();
+					var sequenceInput = $(this).find('.sequence-input');
+					var sequence = sequenceInput.length ? sequenceInput.val() : $(this).find('td').eq(4).text().trim();
 
 					updates.push({
 						id: id,
@@ -655,8 +651,6 @@ echo "</select></li>";
 						sequence: sequence
 					});
 				});
-
-				// Send the updates to the server
 				$.ajax({
 					url: '<?php echo base_url('user_panel/save_updated_label_seqeunce'); ?>',
 					type: 'post',
@@ -692,7 +686,7 @@ echo "</select></li>";
 	</table>
 	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
-			<div class="modal-content">
+			<div class="modal-content" style="width:max-content!important;">
 			<div class="modal-header">
 				<!-- <p> Sequnce can be added by draging columns<p> -->
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-12px!important;">

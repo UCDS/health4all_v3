@@ -1499,24 +1499,22 @@ class Register extends CI_Controller {
 
 	public function save_custom_patient_visit_details() 
 	{
-		$this->load->library('session');
-		$form_data = $this->input->post();
-		$this->session->set_userdata('form_data', $form_data);
+		if (!$this->input->is_ajax_request()) {
+			show_404();
+		}
 
-		$post_data = $_POST;
+		$post_data = $this->input->post();
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('visit_id');
-		
-		$this->data['patient_details'] = $this->register_model->get_pat_details_custom_print($patient_id,$visit_id);
-		$this->session->set_userdata('patient_details', $this->data['patient_details']);
+		$sent_form_id = $this->input->post('form_id');
+		$file_no = $this->input->post('file_no');
+		$visit_type = $this->input->post('visit_type_name');
 
 		$fields_to_update = [];
-		foreach ($post_data as $field_name => $new_value) 
-		{
+		foreach ($post_data as $field_name => $new_value) {
 			$field_name = str_replace('__DOT__', '.', $field_name);
 			$dot_position = strpos($field_name, '.');
-			if ($dot_position !== false) 
-			{
+			if ($dot_position !== false) {
 				$column_name = substr($field_name, 0, $dot_position);
 				$table_name = substr($field_name, $dot_position + 1);
 				$fields_to_update[] = [
@@ -1526,14 +1524,16 @@ class Register extends CI_Controller {
 				];
 			}
 		}
-		
-		$update_status = $this->register_model->update_patient_visit_data_cus($fields_to_update,$patient_id,$visit_id);
+
+		$update_status = $this->register_model->update_patient_visit_data_cus($fields_to_update, $patient_id, $visit_id);
+
 		if ($update_status) {
-			$this->session->set_flashdata('success', 'Patient visit details updated successfully.');
+			echo json_encode(['status' => 'success']);
 		} else {
-			$this->session->set_flashdata('error', 'No changes were made or an error occurred.');
+			echo json_encode(['status' => 'error', 'message' => 'No changes or update failed.']);
 		}
-		redirect('register/saved_update_patient_custom_form');
+
+		return;
 	}
 
 	public function store_form_data()

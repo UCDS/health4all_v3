@@ -2116,7 +2116,7 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			'update_datetime' => date("Y-m-d H:i:s"),
 			'update_by_user_id' => $user_data['staff_id']
 		);
-	
+
 		$static_followup_data = array(
 			'update_by' => $this->session->userdata('logged_in')['staff_id'],
 			'update_time' => date("Y-m-d H:i:s")
@@ -2127,10 +2127,10 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			$column_name = $field_data['column_name'];
 			$table_name = $field_data['table_name'];
 			$new_value = $field_data['new_value'];
-	
+
 			$this->db->select($column_name);
 			$this->db->from($table_name);
-	
+
 			if ($table_name == 'patient') {
 				$this->db->where('patient_id', $patient_id);
 			} elseif ($table_name == 'patient_followup') {
@@ -2138,11 +2138,12 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			} elseif ($table_name == 'patient_visit') {
 				$this->db->where('visit_id', $visit_id);
 			}
-	
+
 			$query = $this->db->get();
-			$old_value = $query->row()->$column_name;
-	
-			if ($new_value != $old_value) 
+			
+			$old_value = ($query->row()) ? $query->row()->$column_name : null;
+
+			if (trim((string)$new_value) != trim((string)$old_value)) 
 			{
 				$this->db->set($column_name, $new_value);
 			}
@@ -2166,12 +2167,20 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			} elseif ($table_name == 'patient_visit') {
 				$this->db->where('visit_id', $visit_id);
 			}
-			$this->db->update($table_name);
-			$update_status = true;
+
 			
+			$this->db->update($table_name);
 		}
+		
+		
 		$this->db->trans_complete();
-		return $update_status;
+
+		
+		if ($this->db->trans_status() === FALSE) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	public function get_pat_details_custom_print($patient_id,$visit_id)

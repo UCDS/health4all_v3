@@ -1449,7 +1449,6 @@ class User_panel extends CI_Controller {
 		$main_id = $this->input->post('main_id');
 		$selected_columns = $this->input->post('selected_columns');
 		$label = $this->input->post('label');
-		$sequence_id = $this->input->post('sequence_id');
 
 		if ( empty($label) ) {
 			echo json_encode(['success' => false, 'message' => 'All fields are required.']);
@@ -1458,8 +1457,7 @@ class User_panel extends CI_Controller {
 
 		$data = [
 			'selected_columns' => $selected_columns,
-			'label' => $label,
-			'sequence_id' => $sequence_id
+			'label' => $label
 		];
 
 		$update_result = $this->masters_model->update_row_db($main_id, $data);

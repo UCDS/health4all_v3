@@ -165,14 +165,14 @@
 				<tbody height="10%">
 					<?php if (!empty($form_data)) : ?>
 						<?php 
-						$form_data_keys = array_keys($form_data);  // Get the keys of the form data
-						$total_data = count($form_data_keys); // Total number of data fields
+						$form_data_keys = array_keys($form_data);
+						$total_data = count($form_data_keys);
 						for ($i = 0; $i < $total_data; $i += 2) :
-							$key1 = $form_data_keys[$i];  // First key
-							$value1 = $form_data[$key1];  // First value
+							$key1 = $form_data_keys[$i]; 
+							$value1 = $form_data[$key1]; 
 
-							$key2 = ($i + 1 < $total_data) ? $form_data_keys[$i + 1] : '';  // Second key
-							$value2 = ($i + 1 < $total_data) ? $form_data[$key2] : '';  // Second value
+							$key2 = ($i + 1 < $total_data) ? $form_data_keys[$i + 1] : '';
+							$value2 = ($i + 1 < $total_data) ? $form_data[$key2] : ''; 
 
 							// Skip unwanted keys (Form Header, sequence, Search patient id, form_id)
 							if (in_array($key1, ['Form header','sequence', 'Search patient id', 'form_id'])) {
@@ -187,7 +187,14 @@
 							$key1 = ucfirst(str_replace('_', ' ', $key1));
 							$key2 = strtok($key2, ' DOT');
 							$key2 = ucfirst(str_replace('_', ' ', $key2)); 
-
+							if (stripos($key1, 'ndps') !== false) {
+								$value1 = ($value1 == '1' || $value1 === 1) ? 'Yes' : 'No';
+								$key1 = 'NDPS';
+							}
+							if ($key2 && stripos($key2, 'ndps') !== false) {
+								$value2 = ($value2 == '1' || $value2 === 1) ? 'Yes' : 'No';
+								$key2 = 'NDPS';
+							}
 						
 						?>
 							<tr width="90%">
