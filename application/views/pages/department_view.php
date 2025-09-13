@@ -236,10 +236,10 @@ display: inline-grid;
 						<div class="form-group">
 							<label for = "inputClinical"  name="clinical">Clinical</label>
 							<div class="radio">																
-								<label><input type="radio" name="optradio" <?php if($edit_departments['clinical']==1) { echo "checked"; } ?> value="1">yes</label>
+								<label><input type="radio" name="optradio" <?php if(!empty($edit_departments) && $edit_departments['clinical']==1) { echo "checked"; } ?> value="1">yes</label>
 							</div>
 							<div class="radio">
-								<label><input type="radio" name="optradio" <?php if($edit_departments['clinical']==0) { echo "checked"; } ?> value="2">no</label>														
+								<label><input type="radio" name="optradio" <?php if(!empty($edit_departments) && $edit_departments['clinical']==0) { echo "checked"; } ?> value="2">no</label>														
 							</div>																																															
 						</div>
 					</div>
