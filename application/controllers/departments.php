@@ -141,52 +141,48 @@ class Departments extends CI_Controller {
 							$this->data['rowsperpage'] = $default->value;
 							$this->data['upper_rowsperpage']= $default->upper_range;
 							$this->data['lower_rowsperpage']= $default->lower_range;	 
-
+							break;
 						}
 					}
-					$hospital_id = $this->session->userdata('hospital')['hospital_id'];
-					$hospital = $hospital_id;
-					$department=$this->input->post('department');
-					$description=$this->input->post('description');
-					$lab_report_staff_id=$this->input->post('lab_report_staff_id');
-					$department_email=$this->input->post('department_email');
-					$number_of_units=$this->input->post('number_of_units');
-					$op_room_no=$this->input->post('op_room_no');
-					$clinical = $this->input->post('optradio');
-					$floor=$this->input->post('floor');
-					$mon=$this->input->post('mon');
-					$tue=$this->input->post('tue');
-					$wed=$this->input->post('wed');
-					$thr=$this->input->post('thr');
-					$fri=$this->input->post('fri');
-					$sat=$this->input->post('sat');
-					$update_record_id = $this->input->post('record_id');
-					if($this->hospital_model->check_department($department,$hospital)) 
-					{
-						$this->data['error'] = 'Department already exists';
-					}else 
-					{
-						$update_data = array(
-								//'hospital_id' => $hospital,
-								'department' => $department,
-								'description' => $description,
-								'lab_report_staff_id' => $lab_report_staff_id,
-								'department_email' => $department_email,
-								'number_of_units' => $number_of_units,
-								'op_room_no' => $op_room_no,
-								'clinical' => $clinical,
-								'floor' => $floor,
-								'mon' => $mon,
-								'tue' => $tue,
-								'wed' => $wed,
-								'thr' => $thr,
-								'fri' => $fri,
-								'sat' => $sat,
-							);
-						$this->hospital_model->update_selected_department($update_record_id, $update_data);
-						$this->data['success'] = 'Department Updated Successfully';
-					}
-					
+				$hospital_id = $this->session->userdata('hospital')['hospital_id'];
+				$hospital = $hospital_id;
+				$department=$this->input->post('department');
+				$description=$this->input->post('description');
+				$lab_report_staff_id=$this->input->post('lab_report_staff_id');
+				$department_email=$this->input->post('department_email');
+				$number_of_units=$this->input->post('number_of_units');
+				$op_room_no=$this->input->post('op_room_no');
+				$clinical = $this->input->post('optradio');
+				$floor=$this->input->post('floor');
+				$mon=$this->input->post('mon');
+				$tue=$this->input->post('tue');
+				$wed=$this->input->post('wed');
+				$thr=$this->input->post('thr');
+				$fri=$this->input->post('fri');
+				$sat=$this->input->post('sat');
+				$update_record_id = $this->input->post('record_id');
+				
+				$update_data = array(
+						//'hospital_id' => $hospital,
+						'department' => $department,
+						'description' => $description,
+						'lab_report_staff_id' => $lab_report_staff_id,
+						'department_email' => $department_email,
+						'number_of_units' => $number_of_units,
+						'op_room_no' => $op_room_no,
+						'clinical' => $clinical,
+						'floor' => $floor,
+						'mon' => $mon,
+						'tue' => $tue,
+						'wed' => $wed,
+						'thr' => $thr,
+						'fri' => $fri,
+						'sat' => $sat,
+					);
+				$this->hospital_model->update_selected_department($update_record_id, $update_data);
+				$this->data['success'] = 'Department Updated Successfully';
+				
+				
 					
 				// Fetch all records from primary table
 				$this->data['get_all_departments']=$this->hospital_model->get_all_departments($this->data['rowsperpage']);

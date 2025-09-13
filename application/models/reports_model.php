@@ -2866,7 +2866,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		$cur_slot_lock_acquired = 1;
 		$cur_lock_name = 'row_' . $current_slot_id . '_lock';
 		$old_lock_name = 'row_' . $appointment_slot_id_old . '_lock';
-		$timeout = 2; 	 // seconds
+		$timeout = 1; 	 // seconds
 		if ($operation=="add" && $current_slot_id != 0) {
 			$query = $this->db->query("SELECT GET_LOCK(?, ?)", [$cur_lock_name, $timeout]);
 			$cur_slot_lock_acquired = $query->row()->{'GET_LOCK(\'' . $cur_lock_name . '\', ' . $timeout . ')'};
