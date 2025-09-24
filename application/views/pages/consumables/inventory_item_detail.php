@@ -510,6 +510,16 @@ $('#to_id').change(function(){
 									'<span class="text text-primary headerprint">'.$scp->supply_chain_party_name.'</span>'.
 								 '</h3>';
 						}
+						echo '<h4 style="text-align:center;">Item Type : <span style="color: green;">';
+						$item_type = $this->input->post('item_type');
+						if ($item_type == 1) {
+							echo 'Drug';
+						} elseif ($item_type == 2) {
+							echo 'Surgical';
+						} else {
+							echo 'NA';
+						}
+						echo '</span></h4>';
 					?>
 					<h4 style="text-align:center;">
 						Item : <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name.' - '.$search_inventory_summary[0]->item_form; ?></span> ,

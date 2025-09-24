@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
 <link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" > -->
 
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
 
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.core.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.widget.min.js"></script>
@@ -108,7 +109,7 @@ pri.print();
                                 <?php echo str_replace('_', ' ', $sfi->selected_columns); ?>
                             </label> -->
                             <label for="<?php echo $sfi->label; ?>" class="col-md-5 col-form-label">
-                                <?php echo $sfi->label; ?>
+                                <strong><?php echo $sfi->label; ?></strong>
                             </label>
                             <div class="col-md-12">
                                 <?php if($sfi->selected_columns=='patient_id')
@@ -218,48 +219,170 @@ pri.print();
                                     ?>
                                     <input type="date" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
                                         value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='0000-00-00') { echo "readonly"; } ?>>
-                                <?php } else if (strpos($sfi->selected_columns, 'time') !== false) { 
+                                <?php } else if (strpos($sfi->selected_columns, 'time') !== false && $sfi->selected_columns !== 'appointment_time') { 
                                         $column_name = $sfi->selected_columns;
-                                        $value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
+                                        $value = (isset($db_values[0]->$column_name) && $db_values[0]->$column_name != '00:00:00') 
+                                            ? $db_values[0]->$column_name 
+                                            : '';
+                                    ?>
+                                    <input type="time" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
+                                <?php }else if ($sfi->selected_columns == 'appointment_time') { 
+                                        $column_name = $sfi->selected_columns;
+                                        $value = (isset($db_values[0]->$column_name) && $db_values[0]->$column_name != '0000-00-00 00:00:00') 
+                                            ? $db_values[0]->$column_name 
+                                            : '';
                                     ?>
                                     <input type="datetime-local" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
                                         value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
-                                <?php } elseif ($sfi->selected_columns == 'note') {
+                                <?php } elseif ($sfi->selected_columns == 'note' || $sfi->selected_columns == 'advise') {
                                         $column_name = $sfi->selected_columns;
                                         $raw_value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
                                         $formatted_text = '';
 
                                         if (!empty($raw_value) || $raw_value === '0') {
                                             $doc = new DOMDocument();
-                                            $doc->loadHTML($raw_value);
-                                            $lis = $doc->getElementsByTagName('li');
+                                            libxml_use_internal_errors(true);
+                                            $doc->loadHTML('<div>' . $raw_value . '</div>');
+                                            libxml_clear_errors();
                                             $items = [];
+                                            $lis = $doc->getElementsByTagName('li');
                                             foreach ($lis as $li) {
                                                 $items[] = '. ' . trim($li->textContent);
+                                            }
+                                            if (empty($items)) {
+                                                $paragraphs = $doc->getElementsByTagName('p');
+                                                foreach ($paragraphs as $p) {
+                                                    $items[] = trim($p->textContent);
+                                                }
                                             }
                                             $formatted_text = implode("\n", $items);
                                         }
                                     ?>
+                                    <div class="mb-2">
+                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="ckeditor" > Ckeditor</label>
+                                    </div>
+                                    <div class="input_container <?php echo $column_name; ?>">
                                     <textarea class="form-control" rows="5" cols="10"
-                                        name="note_display" readonly><?php echo htmlspecialchars($formatted_text); ?></textarea>
-                                    <input type="hidden"
+                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" <?php if(!empty($formatted_text) || (!empty($raw_value))){ echo 'readonly'; } ?>>
+                                        <?php if(empty($formatted_text)){ echo $raw_value; }else{ echo htmlspecialchars($formatted_text); }?>
+                                    </textarea>
+                                    <!-- <input type="hidden"
                                         name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
-                                        value="<?php echo htmlspecialchars($raw_value); ?>" />
+                                        value="<?php echo htmlspecialchars($raw_value); ?>" /> -->
+                                    </div>
                                 <?php } else {  $column_name = $sfi->selected_columns; if($sfi->text_box==0) { ?>
-                                    
+                                    <!-- <div class="mb-2">
+                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="text" <?php echo $sfi->text_box == 0 ? 'checked' : ''; ?>> Textbox</label>
+                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="textarea" <?php echo $sfi->text_box != 0 ? 'checked' : ''; ?>> Textarea</label>
+                                    </div> -->
+                                    <!-- <div class="input_container <?php echo $column_name; ?>"> -->
                                     <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
                                         value="<?php if(!empty($db_values[0]->$column_name) || $db_values[0]->$column_name!='0') { echo $db_values[0]->$column_name; }?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" 
                                             autocomplete="off" <?php if(!empty($db_values[0]->$column_name)) { echo "readonly"; } ?>>
-                                            <?php }else{ ?>  
-                                                <textarea class="form-control" rows="5" cols="10"
-                                                    name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
-                                                    <?php if (!empty($db_values[0]->$column_name)) echo "readonly"; ?>><?php
-                                                    echo (!empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0') ? $db_values[0]->$column_name : '';
-                                                ?></textarea>
+                                        <!-- </div> -->
+                                <?php }else{ if(empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0' || $db_values[0]->$column_name === ''){ ?>  
+                                    <div class="mb-2">
+                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="text" <?php echo $sfi->text_box == 0 ? 'checked' : ''; ?>> Textbox</label>
+                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="textarea" <?php echo $sfi->text_box != 0 ? 'checked' : ''; ?>> Textarea</label>
+                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="ckeditor" > Ckeditor</label>
+                                    </div>
+                                    <?php } ?>
+                                    <div class="input_container <?php echo $column_name; ?>">
+                                    <textarea class="form-control" rows="5" cols="10"
+                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
+                                        <?php if (!empty($db_values[0]->$column_name)) echo "readonly"; ?>><?php
+                                        echo (!empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0') ? $db_values[0]->$column_name : '';
+                                    ?></textarea>
+                                    </div>
                                 <?php } } ?>
                             </div>
                         </div>
                     </div>
+                    <script>
+                        document.querySelectorAll('input[type="checkbox"][name^="input_type_"]').forEach(function(checkbox) {
+                            checkbox.addEventListener('change', function () {
+                                const columnClass = this.name.replace('input_type_', '');
+                                const checkboxes = document.querySelectorAll('input[name="' + this.name + '"]');
+
+                                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+                                if (checkedBoxes.length === 0) {
+                                    alert('At least one input type must be selected.');
+                                    this.checked = true;
+                                    return;
+                                }
+
+                                checkboxes.forEach(cb => {
+                                    if (cb !== this) cb.checked = false;
+                                });
+
+                                const container = document.querySelector('.input_container.' + columnClass);
+                                if (!container) return;
+
+                                const selectedType = this.value;
+                                const existingInput = container.querySelector('input, textarea');
+                                let currentValue = existingInput ? existingInput.value : '';
+                                const isReadonly = existingInput && existingInput.hasAttribute('readonly');
+                                const isDisabled = existingInput && existingInput.hasAttribute('disabled');
+                                const nameAttr = existingInput ? existingInput.getAttribute('name') : columnClass;
+
+                                let html = '';
+
+                                if (selectedType === 'text') {
+                                    html = `<input type="text"
+                                                name="${nameAttr}"
+                                                value="${currentValue.replace(/"/g, '&quot;')}"
+                                                class="form-control ${columnClass}"
+                                                autocomplete="off"
+                                                ${isReadonly ? 'readonly' : ''}
+                                                ${isDisabled ? 'disabled' : ''}>`;
+                                } else {
+                                    html = `<textarea class="form-control ${columnClass}" rows="5" cols="10"
+                                                name="${nameAttr}"
+                                                ${isReadonly ? 'readonly' : ''}
+                                                ${isDisabled ? 'disabled' : ''}>${currentValue}</textarea>`;
+                                }
+
+                                container.innerHTML = html;
+                            });
+                        });
+                    </script>
+                    <script>
+                        //const ckeditors = {};
+                        window.ckeditors = window.ckeditors || {};
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.querySelectorAll('input[type="checkbox"][name^="input_type_"]').forEach(function(checkbox) {
+                                checkbox.addEventListener('change', function () {
+                                    const columnClass = this.name.replace('input_type_', '');
+                                    const container = document.querySelector('.input_container.' + columnClass);
+
+                                    if (!container) return;
+                                    if (ckeditors[columnClass]) {
+                                        ckeditors[columnClass].destroy().catch(err => console.error(err));
+                                        delete ckeditors[columnClass];
+                                    }
+                                    if (this.value === 'ckeditor' && this.checked) {
+                                        setTimeout(() => {
+                                            const textarea = container.querySelector('textarea');
+                                            if (textarea) {
+                                                ClassicEditor
+                                                    .create(textarea, {
+                                                        toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+                                                    })
+                                                    .then(editor => {
+                                                        ckeditors[columnClass] = editor;
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('CKEditor error:', error);
+                                                    });
+                                            }
+                                        }, 10);
+                                    }
+                                });
+                            });
+                        });
+                    </script>
                     <?php $counter++; } ?>
                     <div class="row col-md-12" style="margin-left:5px;"><br/>
                         <div class="row container col-md-4" id="state-container" style="display:none;">
@@ -437,8 +560,10 @@ pri.print();
                 $('#printButtonsss').click(function() {
                     var formData = {};
                     $('.form-group.row.myrow').each(function() {
-                        var label = $(this).find('label').text().trim();
-                        var field = $(this).find('input[type="text"], select, textarea, input[type="radio"]');
+                        //var label = $(this).find('label').text().trim();
+                        // var field = $(this).find('input[type="text"], select, textarea, input[type="radio"]');
+                        var label = $(this).find('label').first().text().trim();
+                        var field = $(this).find('input[type="text"], input[type="radio"], input[type="date"], input[type="time"], input[type="datetime-local"], select, textarea');
                         var value = '';
                         if (field.is('input[type="radio"]')) {
                             var radioName = field.attr('name');
@@ -449,6 +574,14 @@ pri.print();
                         }
                         if (field.is('input[type="text"]') || field.is('textarea')) {
                             value = field.val().trim();
+                        } else if (
+                            field.is('input[type="text"]') || 
+                            field.is('input[type="date"]') || 
+                            field.is('input[type="time"]') || 
+                            field.is('input[type="datetime-local"]') || 
+                            field.is('textarea')
+                        ) {
+                            value = field.val().trim();
                         } else if (field.is('select')) {
                             value = field.find('option:selected').text().trim();
                         }
@@ -457,7 +590,7 @@ pri.print();
                             return true;
                         }
                         label = label.replace(/[^a-zA-Z0-9]/g, '_');
-                        value = value.replace(/[^a-zA-Z0-9]/g, '_');
+                        //value = value.replace(/[^a-zA-Z0-9]/g, '_');
                         formData[label] = value;
                         
                     });
@@ -603,20 +736,35 @@ $(document).ready(function() {
         $('[name]').each(function() {
             var name = $(this).attr('name');
             var value;
-
-            if ($(this).is(':radio')) {
+            const nameParts = name.split('.');
+            const baseName = nameParts[0];
+            if (ckeditors[baseName]) {
+                value = ckeditors[baseName].getData();
+            } else if ($(this).is(':radio')) {
                 if ($(this).is(':checked')) {
                     value = $(this).val();
                     formData[name.replace('.', '__DOT__')] = value;
                 }
+                return true;
             } else if ($(this).is(':checkbox')) {
-                formData[name.replace('.', '__DOT__')] = $(this).is(':checked') ? $(this).val() : '';
+                if (name.startsWith('input_type_')) {
+                    if ($(this).is(':checked')) {
+                        formData[name.replace('.', '__DOT__')] = $(this).val();
+                    }
+                    return true;
+                }
+                value = $(this).is(':checked') ? $(this).val() : '';
             } else {
-                formData[name.replace('.', '__DOT__')] = $(this).val();
+                value = $(this).val();
+            }
+            if (value !== undefined) {
+                formData[name.replace('.', '__DOT__')] = value;
             }
         });
-       //console.log(formData);
-       //alert(JSON.stringify(formData));
+        
+        //console.log(formData);
+        // alert(JSON.stringify(formData));
+        
         $.ajax({
             url: "<?php echo site_url('register/save_custom_patient_visit_details'); ?>",
             method: "POST",
@@ -631,7 +779,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                //console.error('AJAX Error:', error);
+                console.error('AJAX Error:', error);
                 alert('Something went wrong. Try again.');
             }
         });

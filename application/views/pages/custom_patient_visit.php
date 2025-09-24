@@ -684,7 +684,7 @@ echo "</select></li>";
 		}
 	</style>
 	</table>
-	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
+	<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content" style="width:max-content!important;">
 			<div class="modal-header">

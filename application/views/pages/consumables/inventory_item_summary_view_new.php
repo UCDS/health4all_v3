@@ -67,6 +67,7 @@
 			var from_date = "<?php echo $this->input->post('from_date'); ?>";
 			var scp_name = "<?php echo $search_inventory_summary[0]['supply_chain_party_name']; ?>";
 			var itemTypeText = document.getElementById('item-type-value').textContent;
+			var itemTypeForm = document.getElementById('item-form-value').textContent;
 			$('#table-sort').find('.tablesorter-filter-row').hide();
 				var printContent = '<!DOCTYPE html>';
 				printContent += '<html>';
@@ -81,7 +82,9 @@
 				printContent += '</head>';
 				printContent += '<body>';
 				printContent += '<h5 style="text-align:center;">' + '<span style="color: black;">' + 'Inventory Item Summary' + '</span></h5>';
-				printContent += '<h4 style="text-align:center;">Item type ' + '<span style="color: green;padding-bottom:10px!important;">' + itemTypeText + '</span></h4>';
+				printContent += '<h4 style="text-align:center;">Item type ' +
+					'<span style="color: green; padding-bottom:10px!important;">' + itemTypeText + '</span> - ' + itemTypeForm +
+					'</h4>';
 				printContent += '<h3 style="text-align:center;">From ' + from_date + ' to ' + to_date + ' for SCP: <span style="color: green;">' + scp_name + '</span></h3>';
 				printContent += document.getElementById("table-sort").outerHTML;
 				printContent += '</body>';
@@ -752,6 +755,9 @@ if ($this->input->post('to_id')) {
 					<!-- Hidden Item Type Element -->
 					<div id="item-type-value" style="display:none;">
 						<?php echo $this->input->post('item_type') == 2 ? 'Surgical' : 'Drug'; ?>
+					</div>
+					<div id="item-form-value" style="display:none;">
+						<?php echo $form->item_form ?>
 					</div>
 					<h3>From 
 					<span style="color: green;"><?= $from_date; ?></span> to <span style="color: green;"><?= $to_date; ?></span>
