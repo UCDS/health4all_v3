@@ -789,6 +789,7 @@ if ($this->input->post('to_id')) {
 									$redir = 1;
 									$item_id = $inventory_item['item_id'];
 									$item_name = $inventory_item['item_name'];
+									$item_form = $inventory_item['item_form'];
 									$scp_id = $inventory_item['supply_chain_party_id'];
 								?>
 
@@ -800,7 +801,7 @@ if ($this->input->post('to_id')) {
 								</td>
 								<td>
 									<b>
-										<?php echo $item_name; ?>
+										<?php echo $item_name.' - '.$item_form; ?>
 									</b>
 								</td>
 								<td>

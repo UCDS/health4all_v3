@@ -552,7 +552,19 @@ $('#to_id').change(function(){
 						<?php
 						}
 						?>
-					<h4 style="text-align:center;">Opening Balance : <?php echo $balance; ?></h4>
+					<h4 style="text-align:center;">
+						Opening Balance : 
+						<?php
+						if ($balance < 0) {
+							$deficitAmount = abs($balance);
+							echo '<strong style="color:green;">Deficit</strong> 
+								<i class="fa fa-info-circle" title="Lack of stock" style="color:green; cursor: pointer; margin-left: 4px;"></i> 
+								' . $deficitAmount;
+						} else {
+							echo $balance;
+						}
+						?>
+					</h4>
 				<?php } ?>
 			</div>
 			<table class="table table-bordered table-striped" id="table-sort">
