@@ -5,7 +5,6 @@
 
 		<?php  
 			$patient = $patient_details[0];
-			print_r($patient);
 			$hospitals = $hospital_details[0];
 		?>
 
