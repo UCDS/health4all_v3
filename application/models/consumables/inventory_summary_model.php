@@ -336,7 +336,7 @@ class Inventory_summary_model extends CI_Model
 
         $this->db->select('
             inventory.item_id, inventory.date_time,
-            item.item_name,
+            item.item_name,item_form.item_form,
             item_type.item_type, 
             scp.supply_chain_party_name, inventory.supply_chain_party_id,
             SUM(CASE WHEN inventory.inward_outward = "inward" THEN inventory.quantity ELSE 0 END) AS total_inward,
@@ -380,7 +380,7 @@ class Inventory_summary_model extends CI_Model
        
         $this->db->select('
         inventory.item_id, inventory.date_time,
-        item.item_name,
+        item.item_name,item_form.item_form,
         item_type.item_type, 
         scp.supply_chain_party_name, inventory.supply_chain_party_id,
         ')

@@ -1550,13 +1550,11 @@ class Register extends CI_Controller {
 
 		$userdata=$this->session->userdata('logged_in');
 		$user_id = $userdata['user_id'];
-		$data['hospitals'] = $this->staff_model->user_hospital($user_id);
-		$this->session->set_userdata('hospitals', $data['hospitals']);
+		$data['hospital_details'] = $this->staff_model->user_hospital($user_id);
 
 		$patient_id = $data['form_data']['patient_id'];
 		$visit_id = $data['form_data']['visit_id'];
 		$data['patient_details'] = $this->register_model->get_pat_details_custom_print($patient_id,$visit_id);
-		$this->session->set_userdata('patient_details', $data['patient_details']);
 
 		$this->load->view('pages/print_layouts/patient_summary_custom', $data);
 	}

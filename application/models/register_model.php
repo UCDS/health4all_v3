@@ -2185,12 +2185,16 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 	
 	public function get_pat_details_custom_print($patient_id,$visit_id)
 	{
-		$this->db->select('patient_id,visit_type,vn.visit_name,appointment_time,admit_date,admit_time,outcome,outcome_date,outcome_time');
+		$this->db->select("patient_visit.patient_id, visit_type, vn.visit_name, appointment_time, admit_date, admit_time, outcome, 
+		outcome_date, outcome_time, p.first_name,p.last_name,p.age_years,p.gender,p.spouse_name,p.address,p.place,patient_visit.hosp_file_no,
+		dept.department,p.phone");
 		$this->db->from('patient_visit');
-		$this->db->join('visit_name vn','patient_visit.visit_name_id = vn.visit_name_id','left');
-		$this->db->where('patient_id',$patient_id);
-		$this->db->where('visit_id',$visit_id);
-		$query=$this->db->get();   
+		$this->db->join('patient p', 'patient_visit.patient_id = p.patient_id', 'left');
+		$this->db->join('visit_name vn', 'patient_visit.visit_name_id = vn.visit_name_id', 'left');
+		$this->db->join('department dept', 'patient_visit.department_id = dept.department_id', 'left');
+		$this->db->where('patient_visit.patient_id', $patient_id);
+		$this->db->where('visit_id', $visit_id);
+		$query = $this->db->get();
 		return $query->result();
 	}
 }

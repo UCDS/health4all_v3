@@ -510,6 +510,16 @@ $('#to_id').change(function(){
 									'<span class="text text-primary headerprint">'.$scp->supply_chain_party_name.'</span>'.
 								 '</h3>';
 						}
+						echo '<h4 style="text-align:center;">Item Type : <span style="color: green;">';
+						$item_type = $this->input->post('item_type');
+						if ($item_type == 1) {
+							echo 'Drug';
+						} elseif ($item_type == 2) {
+							echo 'Surgical';
+						} else {
+							echo 'NA';
+						}
+						echo '</span></h4>';
 					?>
 					<h4 style="text-align:center;">
 						Item : <span class="text text-primary headerprint"><?= $search_inventory_summary[0]->item_name.' - '.$search_inventory_summary[0]->item_form; ?></span> ,
@@ -542,7 +552,19 @@ $('#to_id').change(function(){
 						<?php
 						}
 						?>
-					<h4 style="text-align:center;">Opening Balance : <?php echo $balance; ?></h4>
+					<h4 style="text-align:center;">
+						Opening Balance : 
+						<?php
+						if ($balance < 0) {
+							$deficitAmount = abs($balance);
+							echo '<strong style="color:green;">Deficit</strong> 
+								<i class="fa fa-info-circle" title="Lack of stock" style="color:green; cursor: pointer; margin-left: 4px;"></i> 
+								' . $deficitAmount;
+						} else {
+							echo $balance;
+						}
+						?>
+					</h4>
 				<?php } ?>
 			</div>
 			<table class="table table-bordered table-striped" id="table-sort">

@@ -3,10 +3,9 @@
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
 
-		<?php $pat_val=$this->session->userdata('patient_details'); 
-				$patient = $pat_val[0];
-			  $hosp_data = $this->session->userdata('hospitals');
-				$hospitals = $hosp_data[0];
+		<?php  
+			$patient = $patient_details[0];
+			$hospitals = $hospital_details[0];
 		?>
 
 		<script type="text/javascript">
@@ -159,54 +158,118 @@
 						<div style="float:right;">
 						<b> Person ID: <?php echo $patient->patient_id ?></b>
 						</div>
+						<tbody height="10%">
+						<tr width="95%">
+								<td style="padding-top:20px"><b>Name: </b><?php echo $patient->first_name.' '.$patient->last_name; ?></td>
+								<td style="padding-top:20px"><b>Age/Sex: </b><?php 
+									if($patient->age_years!=0){ echo $patient->age_years." Yrs "; } 
+									if($patient->age_months!=0){ echo $patient->age_months." Mths "; }
+									if($patient->age_days!=0){ echo $patient->age_days." Days "; }
+									if($patient->age_years==0 && $patient->age_months == 0 && $patient->age_days==0) echo "0 Days";
+									echo "/".$patient->gender; ?></td>
+
+								<td></td>
+									
+								
+						</tr>
+						<tr width="95%">
+								<td><b>Father/Spouse: </b> <?php echo $patient->spouse_name; ?></td>
+								<td><b>Address:</b> <?php echo $patient->address." ".$patient->place; ?></td>
+								<td></td>
+						</tr>
+						<tr width="95%">
+								<td><b><?php echo $patient->visit_type;?> number : </b><?php echo $patient->hosp_file_no; ?></td>
+								<td><b>Department : </b><?php echo $patient->department; ?> </td>
+								<td><b>Phone : </b><?php echo $patient->phone; ?></td>
+						</tr>
+						</tbody>
 					</td>
 				</tr>
 				</tbody>
 				<tbody height="10%">
 					<?php if (!empty($form_data)) : ?>
-						<?php 
-						$form_data_keys = array_keys($form_data);
-						$total_data = count($form_data_keys);
-						for ($i = 0; $i < $total_data; $i += 2) :
-							$key1 = $form_data_keys[$i]; 
-							$value1 = $form_data[$key1]; 
+					<?php	$form_data_keys = array_keys($form_data);
+					$total_data = count($form_data_keys);
 
-							$key2 = ($i + 1 < $total_data) ? $form_data_keys[$i + 1] : '';
-							$value2 = ($i + 1 < $total_data) ? $form_data[$key2] : ''; 
+					// Define the keys to skip
+					$skip_keys = ['form_header', 'sequence', 'Search patient id', 'form_id', 'patient_id', 'visit_id', 'Form Header','address'];
 
-							// Skip unwanted keys (Form Header, sequence, Search patient id, form_id)
-							if (in_array($key1, ['Form header','sequence', 'Search patient id', 'form_id'])) {
-								continue;
-							}
-							if (in_array($key2, ['sequence', 'Search patient id','Form header'])) {
-								continue;
-							}
-
-							// Format the key names
-							$key1 = strtok($key1, ' DOT');
-							$key1 = ucfirst(str_replace('_', ' ', $key1));
-							$key2 = strtok($key2, ' DOT');
-							$key2 = ucfirst(str_replace('_', ' ', $key2)); 
-							if (stripos($key1, 'ndps') !== false) {
-								$value1 = ($value1 == '1' || $value1 === 1) ? 'Yes' : 'No';
-								$key1 = 'NDPS';
-							}
-							if ($key2 && stripos($key2, 'ndps') !== false) {
-								$value2 = ($value2 == '1' || $value2 === 1) ? 'Yes' : 'No';
-								$key2 = 'NDPS';
-							}
+					// Re-adjust the loop to process keys individually to avoid unwanted skipping
+					for ($i = 0; $i < $total_data; $i++) {
+						$key = $form_data_keys[$i];
+						$value = $form_data[$key];
 						
+						// Check if the current key should be skipped. If so, continue to the next iteration.
+						if (in_array($key, $skip_keys)) {
+							continue;
+						}
+						// Initialize display variables for the current pair
+						$display_key1 = '';
+						$display_value1 = '';
+						$display_key2 = '';
+						$display_value2 = '';
+
+						// First element of the pair
+						$display_key1 = $key;
+						$display_value1 = $value;
+						if ($display_key1 === 'appointment_time' && !empty($display_value1)) {
+							$datetime = new DateTime($display_value1);
+							$display_value1 = $datetime->format('Y-m-d H:i'); // Format as 'YYYY-MM-DD HH:MM'
+						}
+						if (preg_match('/^Select/i', $display_value1)) {
+							$display_value1 = '';
+						}
+						$display_key1 = strtok($display_key1, ' DOT');
+						$display_key1 = ucfirst(str_replace('_', ' ', $display_key1));
+						if (stripos($display_key1, 'ndps') !== false) {
+							$display_value1 = ($display_value1 == '1' || $display_value1 === 1) ? 'Yes' : 'No';
+							$display_key1 = 'NDPS';
+						}
+
+						// Check for a second element in the pair
+						if ($i + 1 < $total_data) {
+							$key2 = $form_data_keys[$i + 1];
+							if (!in_array($key2, $skip_keys)) {
+								$value2 = $form_data[$key2];
+								$display_key2 = $key2;
+								$display_value2 = $value2;
+
+								if (preg_match('/^Select/i', $display_value2)) {
+									$display_value2 = '';
+								}
+								$display_key2 = strtok($display_key2, ' DOT');
+								$display_key2 = ucfirst(str_replace('_', ' ', $display_key2));
+								if (stripos($display_key2, 'ndps') !== false) {
+									$display_value2 = ($display_value2 == '1' || $display_value2 === 1) ? 'Yes' : 'No';
+									$display_key2 = 'NDPS';
+								}
+								// Increment the main loop counter to skip the next iteration
+								$i++;
+							}
+						}
+
+						// Display the data in table rows
 						?>
-							<tr width="90%">
-								<td><strong><?php echo $key1; ?></strong></td>
-								<td><?php echo htmlspecialchars($value1); ?></td>
-								<?php if ($key2) : ?>
-									<td><strong><?php echo $key2; ?></strong></td>
-									<td><?php echo htmlspecialchars($value2); ?></td>
-								<?php endif; ?>
-							</tr>
-						<?php endfor; ?>
-					<?php else: ?>
+						<!-- old one with coming for 2 rows -->
+						<!-- <tr width="90%">
+							<td><strong><?php echo $display_key1; ?></strong></td>
+							<td><?php echo htmlspecialchars($display_value1); ?></td>
+							<?php if (!empty($display_key2)) : ?>
+								<td><strong><?php echo $display_key2; ?></strong></td>
+								<td><?php echo htmlspecialchars($display_value2); ?></td>
+							<?php endif; ?>
+						</tr> -->
+						<tr width="90%">
+							<td><strong><?php echo $display_key1; ?></strong></td>
+							<td><?php echo htmlspecialchars($display_value1); ?></td>
+						</tr>
+						<tr width="90%">
+							<?php if (!empty($display_key2)) : ?>
+								<td><strong><?php echo $display_key2; ?></strong></td>
+								<td><?php echo htmlspecialchars($display_value2); ?></td>
+							<?php endif; ?>
+						</tr>
+					<?php } else: ?>
 						<tr>
 							<td colspan="4">No form data available</td>
 						</tr>
