@@ -479,7 +479,8 @@ class Helpline_model extends CI_Model{
 		if($this->input->post('call_category')){
 			$this->db->where('helpline_call_category.call_category_id',$this->input->post('call_category'));
 		}
-		if($this->input->post('from_number')){
+		$from_number = trim($this->input->post('from_number'));
+		if($from_number){
 			$this->db->like('helpline_call.from_number', $this->input->post('from_number'));
 		}
 		if($this->input->post('to_number')){

@@ -10,6 +10,7 @@ class Patient extends CI_Controller {
         $this->load->model('bloodbank/donation_model');
 	$this->load->model('staff_model');
 	$this->load->model('masters_model');
+    $this->load->model('hospital_model');
         $this->load->model('bloodbank/register_model');
         $this->data['hospitals']=$this->staff_model->user_hospital($user_id);
         $this->data['functions']=$this->staff_model->user_function($user_id);
@@ -359,6 +360,7 @@ function update_patient(){
             $this->data['units'] = $this->staff_model->get_unit();
             $this->data['areas'] = $this->staff_model->get_area();
             $this->data['visit_types'] = $this->staff_model->get_visit_name();
+            $this->data['hospitals']=$this->hospital_model->get_hospitals_selectize(true);
             $this->data['icd_codes'] = $this->patient_model->get_all_icd_codes_patient_visits();
             $this->load->view('templates/header',$this->data);
             $this->load->helper('form');
