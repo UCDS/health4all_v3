@@ -678,6 +678,30 @@ function submitUpdations()
   		}	
   	}
 
+    if ($('#referral_hospital_name_update').is(':checked')) {
+        isUpdate = true;
+
+        var selectedHospital = $('#referral_hospital_name_update_new_value option:selected');
+        var selectedHospitalName = selectedHospital.text();
+        var selectedHospitalId = selectedHospital.val();
+        
+        if (selectedHospitalName === $('#referral_hospital_update_old_value').text()) {
+            bootbox.alert({
+                title: "<b>Referral Hospital</b>",
+                message: "New value should be different than old value.",
+                onHidden: function(e) {
+                    $('#referral_hospital_name_update_new_value').focus();
+                }
+            });
+            return;
+        } else {
+            postData["referral_by_hospital_id"] = {
+                "old": $('#referral_hospital_update_old_value').text(),
+                "new": selectedHospitalId
+            };
+            updateAlert += "<br><b>Referral Hospital</b>: " + $('#referral_hospital_update_old_value').text() + " -> " + selectedHospitalName;
+        }
+    }
   	
 if (!isUpdate) {
   bootbox.alert("There are nothing to update!");
@@ -808,6 +832,7 @@ bootbox.confirm({
                   var visit_type_op_ip = response[i]['visit_type'];
 				  var appointment_slot_id = response[i]['appointment_status_id'];
                   var signed_consult_val = response[i]['signed_consultation'];
+                  var hname = response[i]['hospital'];
                 }
 				//console.log(appointment_slot_id);
 				if (appointment_slot_id > 0) {
@@ -859,6 +884,7 @@ bootbox.confirm({
                 $('#outcome_time_update_old_value').append(outcome_time);
                 $('#icdcode_update_old_value').append(icd_10);
                 $('#signed_consultation_old_value').append(signed_consult_val);
+                $('#referral_hospital_update_old_value').append(hname);
 
                 var tbody = $('#counseling-table-body');
                 tbody.empty();
@@ -1238,6 +1264,21 @@ bootbox.confirm({
         <td><input type="text" class="form-control" id="signed_consultation_new_value" name="signed_consultation_new_value" placeholder="" value=""  disabled></td>
       </tr>
 
+      <tr id="tr_referral_hospital">
+        <td>Referral Hospital</td>
+        <td class="old-value-container" id="referral_hospital_update_old_value"></td>
+        <td><input type="checkbox" class="form-check-input"  id="referral_hospital_name_update" name="referral_hospital_name_update" 
+          value="referral_hospital_name_update"></td>
+        <td>
+          <select class="form-control" id="referral_hospital_name_update_new_value" name="referral_hospital_update_new_value" disabled>
+              <option>Choose Hospital</option>
+              <?php foreach($hospitals as $h){ ?>
+							  <option value="<?php echo $h->hospital_id; ?>"><?php echo $h->hospital; ?></option>
+						  <?php } ?>
+          </select>
+        </td>
+      </tr>
+
     </tbody>
   </table>
 </div>
@@ -1402,6 +1443,10 @@ bootbox.confirm({
         if($edit->dname!='')
         { 
           echo $edit->dname; 
+        }
+        if($edit->referral_hospital_name!='')
+        { 
+          echo $edit->referral_hospital_name; 
         }
         if($edit->uname!='')
         { 

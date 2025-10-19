@@ -621,7 +621,7 @@ class patient_model extends CI_Model {
         patient_visit.pulse_rate,patient_visit.respiratory_rate,temperature,sbp,dbp,spo2,blood_sugar,hb,clinical_findings,cvs,
         rs,pa,cns,cxr,provisional_diagnosis,final_diagnosis,decision,advise,outcome,outcome_date,outcome_time,unit.unit_name,area.area_name,
         visit_name.visit_name,patient_visit.icd_10,counseling_text.counseling_text as c_txt,counseling.counseling_id,patient_visit.visit_type,patient_visit.appointment_status_id,
-        patient_visit.signed_consultation')
+        patient_visit.signed_consultation,hospital.hospital,hospital.hospital_short_name')
             ->from('patient_visit')
             ->join('department','department.department_id=patient_visit.department_id','left')
             ->join('unit','unit.unit_id=patient_visit.unit','left')
@@ -629,6 +629,7 @@ class patient_model extends CI_Model {
             ->join('visit_name','visit_name.visit_name_id=patient_visit.visit_name_id','left')
             ->join('counseling','counseling.visit_id=patient_visit.visit_id','left')
             ->join('counseling_text','counseling_text.counseling_text_id=counseling.counseling_text_id','left')
+            ->join('hospital','hospital.hospital_id=patient_visit.referral_by_hospital_id','left')
             ->where('patient_visit.visit_id',$edit_visit_id);
         $query = $this->db->get();
         $result = $query->result();
@@ -655,7 +656,7 @@ class patient_model extends CI_Model {
         $edit_visit_history = array();
         $patient = array();
         $elements = ['admit_date','admit_time','department_id','unit','area','visit_name_id','presenting_complaints','past_history','family_history','admit_weight','pulse_rate','respiratory_rate','temperature','sbp','dbp',
-                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time','icd_10','signed_consultation'];
+                    'spo2','blood_sugar','hb','clinical_findings','cvs','rs','pa','cns','cxr','provisional_diagnosis','final_diagnosis','decision','advise','outcome','outcome_date','outcome_time','icd_10','signed_consultation','referral_by_hospital_id'];
         foreach ($elements as $column) {
         	if (array_key_exists($column,$input_data))
             { 
@@ -710,6 +711,9 @@ class patient_model extends CI_Model {
         AND patient_visits_edit_history.new_value = unit.unit_id) as uname,
         (SELECT area_name FROM area WHERE patient_visits_edit_history.field_name='area'
         AND patient_visits_edit_history.new_value = area.area_id) as aname,
+        (SELECT hospital FROM hospital 
+        WHERE patient_visits_edit_history.field_name = 'referral_by_hospital_id' 
+        AND patient_visits_edit_history.new_value = hospital.hospital_id) AS referral_hospital_name,
         (SELECT visit_name FROM visit_name WHERE patient_visits_edit_history.field_name='visit_name_id'
         AND patient_visits_edit_history.new_value = visit_name.visit_name_id) as vname")
                 ->from('patient_visits_edit_history')
