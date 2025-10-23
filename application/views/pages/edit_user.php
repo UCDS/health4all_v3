@@ -153,6 +153,12 @@ $(function(){
 		else
 			$(".view").prop('checked',false);
 	});
+	$(".remove_all").click(function(){
+		if($(this).is(":checked"))
+			$(".remove").prop('checked',true);
+		else
+			$(".remove").prop('checked',false);
+	});
 });
 </script>
 <script>

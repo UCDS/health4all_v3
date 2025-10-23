@@ -598,4 +598,44 @@ function update_patient(){
             show_404();
             }
     }
+
+    function list_patient_document_delete()
+    {
+        if($this->session->userdata('logged_in'))
+        {                          
+            $this->data['userdata']=$this->session->userdata('logged_in');
+            $access=0;
+            foreach($this->data['functions'] as $function){
+                if($function->user_function=="list_patient_document_delete"){
+                    $access=1;break;
+                }
+            }
+            if($access==1)
+            { 
+                if($from_date == 0 && $to_date==0) {$from_date=date("Y-m-d");$to_date=$from_date;}
+                $this->data['title']="List Patient Document Delete";
+                $this->load->model('masters_model');
+                $this->load->model('patient_model');
+                $this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+                foreach($this->data['defaultsConfigs'] as $default){		 
+                    if($default->default_id=='pagination'){
+                            $this->data['rowsperpage'] = $default->value;
+                            $this->data['upper_rowsperpage']= $default->upper_range;
+                            $this->data['lower_rowsperpage']= $default->lower_range;	 
+                        }
+                   }
+                $this->load->view('templates/header',$this->data);
+                $this->load->helper('form');
+                $this->data['all_patient_document_delete_count']=$this->patient_model->get_all_patient_document_delete_count($from_date,$to_date);
+                $this->data['all_patient_document_delete'] = $this->patient_model->get_all_patient_document_delete($this->data['rowsperpage']);
+                $this->load->view('pages/list_patient_document_delete',$this->data);	
+                $this->load->view('templates/footer');
+            }else{
+                show_404();
+            }
+        }
+        else{
+            show_404();
+            }
+    }
 }
