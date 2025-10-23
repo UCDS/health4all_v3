@@ -906,8 +906,8 @@ class patient_model extends CI_Model {
 
     function get_all_patient_document_delete_count()
     {
-        //$from_time = '00:00';	
-	    //$to_time = '23:59';
+        $from_time = '00:00';	
+	    $to_time = '23:59';
         if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
@@ -949,8 +949,8 @@ class patient_model extends CI_Model {
 		}
 		$start = ($page_no -1 )  * $rows_per_page;
 
-        //$from_time = '00:00';	
-	    //$to_time = '23:59';
+        $from_time = '00:00';	
+	    $to_time = '23:59';
         if($this->input->post('from_date') && $this->input->post('to_date')){
 			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
 			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
