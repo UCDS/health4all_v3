@@ -326,7 +326,7 @@ foreach($this->data['functions'] as $function){
 			 || $function->user_function=="list_patient_visit_duplicate" || $function->user_function=="list_patient_edits" 
 			 || $function->user_function=="edit_patient_visits" || $function->user_function=="list_edit_patient_visits"
 			 || $function->user_function=="delete_patient_followup"
-			 || $function->user_function=="list_blood_donor_details_edit")
+			 || $function->user_function=="list_blood_donor_details_edit" || $function->user_function=="list_patient_document_delete" )
 			 {
 				$admin=1;
 				?>
@@ -380,6 +380,10 @@ if($function->user_function=="list_patient_visit_duplicate"){ ?>
 
 if($function->user_function=="list_blood_donor_details_edit"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_blood_donor_details_edit";?>">List blood donor details edit</a></button>
+<?php		 }
+
+if($function->user_function=="list_patient_document_delete"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_patient_document_delete";?>">List patient document delete</a></button>
 <?php		 }
 
 		} ?>

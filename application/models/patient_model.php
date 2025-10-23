@@ -903,6 +903,94 @@ class patient_model extends CI_Model {
         $result = $query->result();
         return $result;
     }
+
+    function get_all_patient_document_delete_count()
+    {
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(removed_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $this->db->select("count(*) as count",false)
+                ->from('removed_patient_document_upload')
+                ->join('user','user.staff_id=removed_patient_document_upload.removed_by_staff_id','left');
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
+
+    function get_all_patient_document_delete($default_rowsperpage)
+    {
+        if ($this->input->post('page_no')) {
+			$page_no = $this->input->post('page_no');
+		}
+		else{
+			$page_no = 1;
+		}
+		if($this->input->post('rows_per_page')) {
+			$rows_per_page = $this->input->post('rows_per_page');
+		}
+		else{
+			$rows_per_page = $default_rowsperpage;
+		}
+		$start = ($page_no -1 )  * $rows_per_page;
+
+        $from_time = '00:00';	
+	    $to_time = '23:59';
+        if($this->input->post('from_date') && $this->input->post('to_date')){
+			$from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			$to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		}
+		else if($this->input->post('from_date') || $this->input->post('to_date')){
+			$this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			$to_date=$from_date;
+		}
+		else{
+			$from_date=date("Y-m-d");
+			$to_date=$from_date;
+		}
+
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(rpdu.removed_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
+
+        $patient_id = $this->input->post('patient_id');
+
+        if (!empty($patient_id) && $patient_id != 0) 
+        {
+            $this->db->where('rpdu.patient_id', $patient_id);
+        }
+
+        $this->db->select('rpdu.document_date,pdt.document_type,rpdu.document_link,rpdu.insert_datetime,rpdu.removed_datetime,
+        rpdu.patient_id,user.username')
+                ->from('removed_patient_document_upload rpdu')
+                ->join('patient_document_type pdt','pdt.document_type_id=rpdu.document_type_id','left')
+                ->join('user','user.staff_id=rpdu.removed_by_staff_id','left');
+        $this->db->order_by('rpdu.removed_datetime','DESC');
+
+        if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+        
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result;
+    }
 }
 
 ?>
