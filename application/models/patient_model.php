@@ -921,14 +921,13 @@ class patient_model extends CI_Model {
 			$to_date=$from_date;
 		}
 
-       // $from_timestamp = $from_date." ".$from_time;
-		//$to_timestamp = $to_date." ".$to_time;
-		$this->db->where("(document_date BETWEEN '$from_date' AND '$to_date')");
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(removed_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
 
         $this->db->select("count(*) as count",false)
                 ->from('removed_patient_document_upload')
                 ->join('user','user.staff_id=removed_patient_document_upload.removed_by_staff_id','left');
-        $this->db->order_by('removed_patient_document_upload.removed_datetime','DESC');
         $query = $this->db->get();
         $result = $query->result();
         return $result;
@@ -965,9 +964,9 @@ class patient_model extends CI_Model {
 			$to_date=$from_date;
 		}
 
-        //$from_timestamp = $from_date." ".$from_time;
-		//$to_timestamp = $to_date." ".$to_time;
-		$this->db->where("(rpdu.document_date BETWEEN '$from_date' AND '$to_date')");
+        $from_timestamp = $from_date." ".$from_time;
+		$to_timestamp = $to_date." ".$to_time;
+		$this->db->where("(rpdu.removed_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
 
         $patient_id = $this->input->post('patient_id');
 
