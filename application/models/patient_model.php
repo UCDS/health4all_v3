@@ -921,13 +921,19 @@ class patient_model extends CI_Model {
 			$to_date=$from_date;
 		}
 
+        $patient_id = $this->input->post('patient_id');
+        if (!empty($patient_id) && $patient_id != 0) 
+        {
+            $this->db->where('removed_patient_document_upload.patient_id', $patient_id);
+        }
+
         $from_timestamp = $from_date." ".$from_time;
 		$to_timestamp = $to_date." ".$to_time;
 		$this->db->where("(removed_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
 
         $this->db->select("count(*) as count",false)
                 ->from('removed_patient_document_upload')
-                ->join('user','user.staff_id=removed_patient_document_upload.removed_by_staff_id','left');
+                ->join('staff','staff.staff_id=removed_patient_document_upload.removed_by_staff_id','left');
         $query = $this->db->get();
         $result = $query->result();
         return $result;
@@ -976,10 +982,10 @@ class patient_model extends CI_Model {
         }
 
         $this->db->select('rpdu.document_date,pdt.document_type,rpdu.document_link,rpdu.insert_datetime,rpdu.removed_datetime,
-        rpdu.patient_id,user.username')
+        rpdu.patient_id,staff.first_name,staff.last_name')
                 ->from('removed_patient_document_upload rpdu')
                 ->join('patient_document_type pdt','pdt.document_type_id=rpdu.document_type_id','left')
-                ->join('user','user.staff_id=rpdu.removed_by_staff_id','left');
+                ->join('staff','staff.staff_id=rpdu.removed_by_staff_id','left');
         $this->db->order_by('rpdu.removed_datetime','DESC');
 
         if ($default_rowsperpage !=0)
