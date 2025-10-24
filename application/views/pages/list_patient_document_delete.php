@@ -170,7 +170,7 @@ display: inline-grid;
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 			From Date : <input class="form-control" style = "background-color:#EEEEEE" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
 			To Date : <input class="form-control" type="text" style = "background-color:#EEEEEE" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-	        Patient id : <input class="form-control" type="text" name="patient_id" value="">
+	        Patient id : <input class="form-control" type="text" name="patient_id" value="<?php echo $this->input->post('patient_id'); ?>">
 			Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			<input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 		</form>
@@ -334,7 +334,7 @@ echo "</select></li>";
 		<td style="text-align:left"><?php echo $pdd->document_link ?></td>
 		<td style="text-align:left"><?php echo date("j M Y h:i A",strtotime($pdd->insert_datetime)); ?></td>	
 		<td style="text-align:left"><?php echo date("j M Y h:i A",strtotime($pdd->removed_datetime));?></td>
-		<td style="text-align:left"><?php echo $pdd->username; ?> </td>
+		<td style="text-align:left"><?php echo $pdd->first_name.' '.$pdd->last_name; ?> </td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>

@@ -7,169 +7,118 @@
 		</div>
 	<?php } ?>
 </center>
-
-<script type="text/javascript">
-	function yesnoCheck() {
-		if (document.getElementById('yesCheck').checked) {
-			document.getElementById('ifYes1').style.display = 'block';
-			document.getElementById('ifYes2').style.display = 'block';
-			document.getElementById('ifNo').style.display = 'none';
-
-		}
-		else if (document.getElementById('noCheck').checked) {
-			document.getElementById('ifNo').style.display = 'block';
-			document.getElementById('ifYes1').style.display = 'none';
-			document.getElementById('ifYes2').style.display = 'none';
-
-		}
-
-
+<style>
+	#footer{
+		position: fixed;  bottom: 0;  width: 100%;  z-index: 1000;
 	}
-	window.onload = function () {
-		document.getElementById('ifYes1').style.display = 'none';
-		document.getElementById('ifYes2').style.display = 'none';
-
-
-		document.getElementById('ifNo').style.display = 'none';
-		yesnoCheck();
-	}
-	
-</script>
-
-
-<?php 
-	$type = null;
-	$vendor_id = null;
-	$department_id = null;
-	$area_id = null;
-	if($scp_selected->vendor_id){
-		$type = 'external';
-		$vendor_id = $scp_selected->vendor_id;
-
-	}else{
-		$type = 'in_house';
-		$department_id = $scp_selected->department_id;
-		$area_id = $scp_selected->area_id;
-	}
-
-?>
+</style>
 <div class="container">
-
 	<h2>
 		<center>Edit Supply Chain Party</center>
 	</h2><br>
-	<center>
-	<?php 
-		if(!$this->input->post('navigate_edit'))
-			echo validation_errors('<div class="alert alert-danger">', '</div>'); ?>
-	</center>
 	<!--Heading-->
-	<?php echo form_open('consumables/supply_chain_party/edit', array('class' => 'form-group', 'role' => 'form', 'id' => 'edit_scp')); ?>
-	<div class="col-md-6 col-md-offset-2">
+	<?php echo form_open('consumables/supply_chain_party/edit_supply_chain_party', array('class' => 'form-group', 'role' => 'form', 'id' => 'edit_scp')); ?>
+	<div class="col-md-12 col-md-offset-2">
 		<div class="row">
-			<div class="col-md-6">
-				<h4>Supply Chain Party ID: <?= $scp_selected->supply_chain_party_id; ?><input type="hidden" class="sr-only" name = "supply_chain_party_id" id = "supply_chain_party_id" value="<?= $scp_selected->supply_chain_party_id; ?>"></h4>
-			</div>
+			<!-- <div class="col-md-6">
+				<h4>Supply Chain Party ID: <?php echo $item_result[0]->supply_chain_party_id; ?> -->
+				<input type="hidden" class="sr-only" name = "supply_chain_party_id" id = "supply_chain_party_id" 
+					value="<?php echo $item_result[0]->supply_chain_party_id ?>"></h4>
+			<!-- </div> -->
 		</div>
-		<div class="row">
-			<div class="col-md-6">
-				<div class="form-group">
-					<!--Supply Chain Party Name Field-->
-					<label for="supply_chain_party_name">Supply Chain Party <font style="color:red">*</font></label>
-					<input class="form-control" name="supply_chain_party_name" id="supply_chain_party_name"
-						placeholder="Enter Supply Chain Party Name" type="text" align="middle" value="<?= $scp_selected->supply_chain_party_name; ?>" required>
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<!--Supply Chain Party Name Field-->
+						<label for="supply_chain_party_name">Supply Chain Party <font style="color:red">*</font></label>
+						<input class="form-control" name="supply_chain_party_name" id="supply_chain_party_name"
+							placeholder="Enter Supply Chain Party Name" type="text" align="middle" value="<?php echo $item_result[0]->supply_chain_party_name; ?>" required>
+					</div>
 				</div>
-				<!--Supply Chain Party Name Field end-->
-			</div>
-			<div class="col-md-3">
-				<div class="form-group">
-					<div class="radio">
-						<label for="yesCheck">
-							<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="yesCheck"
-								value="in_house" aria-label="..." <?= $type === 'in_house' ? 'checked': '';?> required>In House
-						</label>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="department">Department</label>
+						<select name="department" id="department" class="form-control">
+							<option value="">Select</option>
+							<?php 
+							$selectedDept = $item_result[0]->department_id;
+							foreach($departments as $dept) {
+								$selected = ($selectedDept == $dept->department_id) ? 'selected' : '';
+								echo "<option value='{$dept->department_id}' {$selected}>{$dept->department}</option>";
+							}
+							?>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="area">Area</label>
+						<select name="area" id="area" class="form-control">
+							<option value="">Select</option>
+							<?php 
+							$selectedDept = $item_result[0]->area_id;
+							foreach($all_area as $are) {
+								$selected = ($selectedDept == $are->area_id) ? 'selected' : '';
+								echo "<option value='".$are->area_id."' class='".$are->department_id."' $selected>".$are->area_name."</option>";
+							} 
+							?>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="vendor">Vendor</label>
+						<select name="vendor" id="vendor" class="form-control">
+							<option value="">Select</option>
+							<?php 
+							$selectedDept = $item_result[0]->vendor_id;
+							foreach($all_vendor as $ven) {
+								$selected = ($selectedDept == $ven->vendor_id) ? 'selected' : '';
+								echo "<option value='".$ven->vendor_id."' $selected>".$ven->vendor_name."</option>";
+							} 
+							?>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<label>Type : </label>
+					<div class="form-group">
+						<div class="">
+							<select name="int_ext" id="int_ext" class="form-control">
+								<option value="" > select type </option>
+								<option value="1" <?php if($item_result[0]->is_external=='1'){ echo 'selected'; } ?>>Internal</option>
+								<option value="2" <?php if($item_result[0]->is_external=='2'){ echo 'selected'; } ?>>External</option>
+							</select>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="col-md-3">
-				<div class="radio">
-					<label class="radio-inline" for="noCheck">
-						<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="noCheck"
-							value="external" aria-label="..." <?= $type === 'external' ? 'checked': '';?> required>External
-				</div>
-			</div>
 		</div>
-	</div>
-	<div class="col-md-6 col-md-offset-2">
-		<div class="row">
-			<div class="col-md-4" id="ifYes1" style="display:none">
-				<div class="form-group">
-					<label for="department">Department</label>
-					<!--Department field-->
-					<select name="department" id="department" class="form-control">
-						<option value="">Select</option>
-						<?php
-						foreach ($departments as $dept) {
-							if($type === 'in_house' && $department_id == $dept->department_id){
-								echo "<option value='" . $dept->department_id . "' selected>" . $dept->department . "</option>";
-							}else{
-								echo "<option value='" . $dept->department_id . "' >" . $dept->department . "</option>";
-							}
-
-						}
-						?>
-					</select>
-				</div>
-				<!--Department field end-->
-			</div>
-			<div class="col-md-4" id="ifYes2" style="display:none">
-				<div class="form-group">
-					<label for="area">Area</label>
-					<!--Area field-->
-					<select name="area" id="area" class="form-control">
-						<option value="">Select</option>
-						<?php
-						foreach ($all_area as $are) {
-							if($type === "in_house" && $area_id == $are->area_id){
-								echo "<option value='" . $are->area_id . "'  class='" . $are->department_id . "' selected>" . $are->area_name . "</option>";
-							}else{
-								echo "<option value='" . $are->area_id . "'  class='" . $are->department_id . "'>" . $are->area_name . "</option>";
-							}
-
-						}
-						?>
-					</select>
-				</div>
-				<!--Area field end-->
-			</div>
-		</div>
-	</div>
-	<div class="col-md-6 col-md-offset-2">
-		<div class="row">
-
-			<div class=" col-md-6" id="ifNo" style="display:none">
-				<div class="form-group">
-					<label for="vendor">Vendor</label>
-					<!--Vendor field-->
-					<select name="vendor" id="vendor" class="form-control">
-						<option value="">Select</option>
-						<?php
-						foreach ($all_vendor as $ven) {
-							if($type === 'external' && $vendor_id == $ven->vendor_id){
-								echo "<option value='" . $ven->vendor_id . "' selected>" . $ven->vendor_name . "</option>";
-							}else{
-								echo "<option value='" . $ven->vendor_id . "' >" . $ven->vendor_name . "</option>";
-							}
-						}
-						?>
-					</select>
-				</div>
-				<!--Vendor field end-->
-			</div>
-		</div>
-	</div>
+		<script>
+			$(document).ready(function() {
+				function toggleFields() {
+					var type = $('#int_ext').val();
+					if (type === '1') {
+						$('.col-md-3:has(#vendor)').hide();
+						$('.col-md-4:has(#department), .col-md-4:has(#area)').show();
+					} 
+					else if (type === '2') {
+						$('.col-md-3:has(#vendor)').show();
+						$('.col-md-4:has(#department), .col-md-4:has(#area)').hide();
+					} 
+					else {
+						$('.col-md-3:has(#vendor), .col-md-4:has(#department), .col-md-4:has(#area)').show();
+					}
+				}
+				toggleFields();
+				$('#int_ext').change(function() {
+					toggleFields();
+				});
+			});
+		</script>
 	<div class="col-lg-12">
-		<center><button class="btn btn-primary" type="submit" name="submit" id="btn">Submit</button></center>
+		<center><button class="btn btn-success" type="submit" name="submit" id="btn">Update</button></center>
 	</div>
 </div>
 <?php echo form_close(); ?>

@@ -24,7 +24,7 @@
 			|| preg_match("^add_dosage^", current_url()) || preg_match("^add_item_type^", current_url()) 
 			|| preg_match("^add_drug_type^", current_url()) || preg_match("^update_item_type^", current_url())
 			|| preg_match("^update_item_form^", current_url()) || preg_match("^update_dosage^", current_url())
-			|| preg_match("^update_drug_type^", current_url()) || preg_match("^supply_chain_parties_list^", current_url()));
+			|| preg_match("^update_drug_type^", current_url()) || preg_match("^^", current_url()));
 		}else if($group == "reports"){
 			return preg_match("^get_indent_summary^", current_url()) 
 			|| preg_match("^indents_list^", current_url()) 
@@ -199,7 +199,12 @@
 	|| preg_match(
 		"^supply_chain_party/*^",
 		current_url()
-	) || preg_match(
+	)
+	|| preg_match(
+		"^edit_supply_chain_party/*^",
+		current_url()
+	)  
+	|| preg_match(
 		"^indent/*^",
 		current_url()
 	)

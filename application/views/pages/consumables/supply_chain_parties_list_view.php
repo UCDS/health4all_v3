@@ -210,36 +210,6 @@ function onchange_page_dropdown(dropdownobj){
 
 	}
 </script>
-<script type="text/javascript">
-	function yesnoCheck() {
-		if (document.getElementById('yesCheck').checked) {
-			document.getElementById('ifYes1').style.display = 'block';
-			document.getElementById('ifYes2').style.display = 'block';
-			document.getElementById('ifNo').style.display = 'none';
-
-		} 
-		else if(document.getElementById('noCheck').checked) {
-			document.getElementById('ifNo').style.display = 'block';
-			document.getElementById('ifYes1').style.display = 'none';
-			document.getElementById('ifYes2').style.display = 'none';
-
-		}
-
-
-	}
- 	window.onload = function() {
-		document.getElementById('ifYes1').style.display = 'none';
-		document.getElementById('ifYes2').style.display = 'none';
-		document.getElementById('ifNo').style.display = 'none';
-		yesnoCheck();
-	}
-
-
-</script>
-
-
-
-
 
 <script>
 
@@ -265,13 +235,6 @@ function onchange_page_dropdown(dropdownobj){
 
 	<div class="text-center">
 		<center>
-			<?php
-			echo validation_errors();
-			if (isset($msg)) { ?>
-				<div class="alert alert-info">
-					<?php echo $msg; ?>
-				</div>
-			<?php } ?>
 			<h3>Supply Chain Party</h3>
 		</center><br>
 		<center>
@@ -281,84 +244,115 @@ function onchange_page_dropdown(dropdownobj){
 
 				<div class="col-md-12">
 					<div class="row">
-						<div class="col-md-3" id="ifYes1" style="display:none">
+						<div class="col-md-3">
+							<div class="form-group">
+								<!-- Supply Chain Party Name Field -->
+								<label for="supply_chain_party_name">Supply Chain Party</label>
+								<input class="form-control" name="supply_chain_party_name" id="supply_chain_party_name"
+									placeholder="Enter Supply Chain Party Name" type="text">
+							</div>
+						</div>
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="department">Department</label>
 								<select name="department" id="department" class="form-control">
 									<option value="">Select</option>
-									<?php
-									foreach ($departments as $dept) {
-										echo "<option value='" . $dept->department_id . "'>" . $dept->department . "</option>";
+									<?php 
+									// Check if a department was posted
+									$selectedDept = isset($_POST['department']) ? $_POST['department'] : '';
+
+									foreach($departments as $dept) {
+										// If posted value matches, mark as selected
+										$selected = ($selectedDept == $dept->department_id) ? 'selected' : '';
+										echo "<option value='{$dept->department_id}' {$selected}>{$dept->department}</option>";
 									}
 									?>
 								</select>
 							</div>
 						</div>
-						<div class="col-md-3" id="ifYes2" style="display:none">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label for="area">Area</label>
 								<select name="area" id="area" class="form-control">
 									<option value="">Select</option>
-									<?php
-									foreach ($all_area as $are) {
-										echo "<option value='" . $are->area_id . "'  class='" . $are->department_id . "'>" . $are->area_name . "</option>";
-
-									}
+									<?php 
+									foreach($all_area as $are) {
+										$selected = (isset($_POST['area']) && $_POST['area'] == $are->area_id) ? 'selected' : '';
+										echo "<option value='".$are->area_id."' class='".$are->department_id."' $selected>".$are->area_name."</option>";
+									} 
 									?>
 								</select>
 							</div>
 						</div>
-						<div class=" col-md-3" id="ifNo" style="display:none">
+						<div class="col-md-3">
 							<div class="form-group">
 								<label for="vendor">Vendor</label>
-								<!--Vendor field-->
 								<select name="vendor" id="vendor" class="form-control">
 									<option value="">Select</option>
-									<?php
-									foreach ($all_vendor as $ven) {
-										echo "<option value='" . $ven->vendor_id . "'>" . $ven->vendor_name . "</option>";
-
-									}
+									<?php 
+									foreach($all_vendor as $ven) {
+										$selected = (isset($_POST['vendor']) && $_POST['vendor'] == $ven->vendor_id) ? 'selected' : '';
+										echo "<option value='".$ven->vendor_id."' $selected>".$ven->vendor_name."</option>";
+									} 
 									?>
 								</select>
 							</div>
-							<!--Vendor field end-->
 						</div>
-						<div style="margin-top:30px;">
-							<div class="col-md-2">
-								<label class="radio-inline" for="yesCheck"></label>
-								<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="yesCheck" value="in_house" aria-label="..." checked> In House
-							</div>
-							<div class="col-md-2">
-								<label class="radio-inline" for="noCheck"></label>
-									<input type="radio" onclick="javascript:yesnoCheck();" name="in_house" id="noCheck" value="external" aria-label="..."> External
+						<div class="col-md-3">
+							<label>Type : </label>
+							<div class="form-group">
+								<div class="">
+									<select name="int_ext" id="int_ext" class="form-control">
+										<option value="" > select type </option>
+										<option value="1" <?php if($this->input->post('int_ext')=='1'){ echo 'selected'; } ?>>Internal</option>
+										<option value="2" <?php if($this->input->post('int_ext')=='2'){ echo 'selected'; } ?>>External</option>
+									</select>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-md-2" style="margin-left:-15px!important;">
-						Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
-					</div>
-				</div>
-				
+
+						<div class="col-md-2" style="margin-left:-15px!important;">
+							Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+						</div>
+				</div><br/>
+				<script>
+					$(document).ready(function() {
+						function toggleFields() {
+							var type = $('#int_ext').val();
+							if (type === '1') {
+								$('.col-md-3:has(#vendor)').hide();
+								$('.col-md-4:has(#department), .col-md-4:has(#area)').show();
+							} 
+							else if (type === '2') {
+								$('.col-md-3:has(#vendor)').show();
+								$('.col-md-4:has(#department), .col-md-4:has(#area)').hide();
+							} 
+							else {
+								$('.col-md-3:has(#vendor), .col-md-4:has(#department), .col-md-4:has(#area)').show();
+							}
+						}
+						toggleFields();
+						$('#int_ext').change(function() {
+							toggleFields();
+						});
+					});
+				</script>
+			</div>
 				<div class="row">
 					<div class="col-md-1 col-md-offset-4">
-						<!--button for searching-->
 						<center><button class="btn btn-primary" type="submit" name="search" value="search"
 								id="btn">Search</button></center>
 					</div>
 					<?php echo form_close(); ?>
-					<!--closing of form-->
 					<div class="col-md-1">
 						<center><a href="<?= base_url() . "consumables/supply_chain_party/add_supply_chain_party" ?>"><button
 									class="btn btn-success" type="button">Add Supply Chain Party</button></a></center>
 					</div>
 				</div>
+				
 
 			</div>
-			<!--set method for hidden the table-->
 
-		<?php if(isset($search_items) && count($search_items)>0)
-		{ ?>
 			<div style='padding: 0px 40px;text-align:left!important;'>
 
 			<h5>Report as on <?php echo date("j-M-Y h:i A"); ?></h5>
@@ -513,6 +507,7 @@ function onchange_page_dropdown(dropdownobj){
 						<th>Department</th>
 						<th>Area</th>
 						<th>Vendor</th>
+						<th>status</th>
 						<th></th>
 
 
@@ -544,9 +539,19 @@ function onchange_page_dropdown(dropdownobj){
 								<td>
 									<?php echo $item->vendor_name; ?>
 								</td>
-
 								<td>
-									<?php echo form_open("consumables/supply_chain_party/edit", array('role' => 'form')) ?>
+									<?php
+										if ($item->is_external === '1') {
+											echo 'Internal';
+										} elseif ($item->is_external === '2') {
+											echo 'External';
+										} else {
+											echo '';
+										}
+									?>
+								</td>
+								<td>
+									<?php echo form_open("consumables/supply_chain_party/edit_supply_chain_party", array('role' => 'form')) ?>
 									<button type="submit" value="<?= $item->supply_chain_party_id; ?>" name="navigate_edit"
 										class="btn btn-warning">Edit</button>
 									<?php echo form_close(); ?>
@@ -667,9 +672,6 @@ function onchange_page_dropdown(dropdownobj){
 		echo "</select></li>";
 		} ?>
 		</ul>
-			<?php } else { ?>
 			
-			No Data found
-		<?php }  ?>
 	</div>
 </div>
