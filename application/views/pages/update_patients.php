@@ -3168,7 +3168,7 @@ function initDistrictSelectize(){
 		<?php foreach($previous_visits as $visit){ ?>
 			<tr onclick="$('#select_visit_<?php echo $visit->visit_id;?>').submit()" style="cursor:pointer">
 				<td>
-					<?php echo form_open('register/view_patients',array('role'=>'form','id'=>'select_visit_'.$visit->visit_id));?>
+					<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_visit_'.$visit->visit_id));?>
 					<input type="text" class="sr-only" hidden value="<?php echo $visit->visit_id;?>"  name="selected_patient" />
 					<input type="text" class="sr-only" hidden value="<?php echo $visit->patient_id;?>" name="patient_id" />
 					</form>
