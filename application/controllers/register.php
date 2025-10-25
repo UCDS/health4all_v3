@@ -843,7 +843,7 @@ class Register extends CI_Controller {
 
 				$dir_path = './assets/patient_documents/';
 				$config['upload_path'] = $dir_path; // upload directory
-				$config['allowed_types'] = 'gif|jpg|png|jpeg'; // Allowed file types
+				$config['allowed_types'] =  $allowed_types; // Allowed file types
 				$config['max_size'] = $max_size;
 				$config['max_width'] = $max_width;
 				$config['max_height'] = $max_height;
