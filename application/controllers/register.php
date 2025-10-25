@@ -782,6 +782,8 @@ class Register extends CI_Controller {
 				if ($uploadOk == 0) {
 					$this->data['msg'] = $msg . " Your file was not uploaded.";
 				} else {
+
+					
 					// Rotate image
 					$rotation_angle = $this->input->post('rotation');
 					if ($rotation_angle) {
@@ -789,20 +791,21 @@ class Register extends CI_Controller {
 						$this->load->library('image_lib');
 						$config['rotation_angle'] = $rotation_angle;
 						$config['source_image'] = $_FILES["upload_file"]["tmp_name"];
-						$config['maintain_ratio'] = FAlSE;
+						$config['maintain_ratio'] = FALSE;
             			$config['width'] = 180;
 						$config['height'] = 180;
 						$this->image_lib->initialize($config);
 						if (!$this->image_lib->rotate()) {
 							$this->data['msg'] = "Error rotating image: " . $this->image_lib->display_errors();
 							$uploadOk = 0;
-						} else {
+						}
+					       	else {
 							echo "Image rotated successfully."; // Debugging statement
 						}
 					} else {
-						echo "No rotation angle provided."; // Debugging statement
+						echo "No rotation angle provided."; // Debugging statement 
 					}
-			
+					 	
 					// Try to upload file
 					if ($uploadOk == 1) {
 						$new_name = $patient_id . '_' . $_FILES["upload_file"]['name'];
@@ -814,14 +817,16 @@ class Register extends CI_Controller {
 						} else {
 							$file = $this->upload->data();
 							$uploadOk = 1;
+						
 						}
 					}
-				}
+				} 
 			
 				// Add document record
 				if ($uploadOk == 1 && $this->patient_document_upload_model->add_document($patient_id, $file['file_name']) ) {
 					$this->data['msg'] = "Document Added Successfully";
 				}
+				return;
 
 		}
 
@@ -856,7 +861,7 @@ class Register extends CI_Controller {
 					$old_path = $upload_data['full_path'];
 					$new_path = $upload_data['file_path'] . $new_name;
 					rename($old_path, $new_path);
-
+                                        
 					$rotation_angle = $this->input->post('rotation');
 					if($rotation_angle) 
 					{
@@ -870,18 +875,20 @@ class Register extends CI_Controller {
 						$this->image_lib->initialize($config);
 						if (!$this->image_lib->rotate()) {
 							$this->data['msg'] = "Error rotating image: " . $this->image_lib->display_errors();
-						} else {
+						} 
+                                         else {
 							echo "Image rotated successfully."; // Debugging statement
 						}
 					} else {
 						echo "No rotation angle provided."; // Debugging statement
-					}
+					} 
 					$this->patient_document_upload_model->update_document_metadata($new_name, $edit_note);
 				} else {
 					$error = array('error' => $this->upload->display_errors());
 					$edit_document_link = $this->input->post('edit_document_link');
 					$this->patient_document_upload_model->update_document_metadata($edit_document_link, $edit_note);
 				}
+				return;
 			}
 		 		
 			$this->data['transporters'] = $this->staff_model->get_staff("Transport");
