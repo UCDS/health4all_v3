@@ -669,6 +669,7 @@ function initDistrictSelectize(){
 		if($p->age_days==0 && $p->age_months == 0 && $p->age_years == 0) $age.="0D ";
 	?>
 	<tr onclick="validateAndSubmit(<?php echo $p->visit_id; ?>, <?php echo $p->hospital_id; ?>)" style="cursor:pointer">		<td>
+			
 			<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$p->visit_id));?>
 			<input type="text" class="sr-only" hidden value="<?php echo $p->visit_id;?>" form="select_patient_<?php echo $p->visit_id;?>" name="selected_patient" />
 			<input type="text" class="sr-only" hidden value="<?php echo $p->patient_id;?>" name="patient_id" />
@@ -3122,9 +3123,9 @@ function initDistrictSelectize(){
 			}
 			if (currentHospitalStr === hospitalIdStr) {
 				sessionStorage.setItem('form_submitted', '1');
-				document.getElementById('update_patients').submit();
+				//document.getElementById('update_patients').submit();
 				return;
-			}
+		        }
 			if (accessibleStrIds.includes(hospitalIdStr)) {
 				alert("Please log into that hospital to access the patient.");
 				window.location.href = "<?php echo base_url('register/update_patients'); ?>";
