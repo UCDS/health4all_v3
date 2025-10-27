@@ -21,7 +21,21 @@
 							placeholder="Enter Supply Chain Party Name" type="text" required>
 					</div>
 				</div>
-
+				<div class="col-md-2">
+					<div class="form-group">
+						<label for=""></label>
+						<div class="">
+							<label class="radio-inline" for="internalCheck">
+								<input type="radio" name="int_ext" id="internalCheck" value="1" checked onclick="yesnoCheck();">
+								Internal
+							</label>
+							<label class="radio-inline" for="externalCheck">
+								<input type="radio" name="int_ext" id="externalCheck" value="0" onclick="yesnoCheck();">
+								External
+							</label>
+						</div>
+					</div>
+				</div>
 				<div class="col-md-4" id="ifYes1" style="display:none;">
 					<div class="form-group">
 						<label for="department">Department</label>
@@ -33,7 +47,6 @@
 						</select>
 					</div>
 				</div>
-
 				<div class="col-md-4" id="ifYes2" style="display:none;">
 					<div class="form-group">
 						<label for="area">Area</label>
@@ -55,21 +68,6 @@
 								echo "<option value='".$ven->vendor_id."'>".$ven->vendor_name."</option>";
 							} ?>
 						</select>
-					</div>
-				</div>
-
-				<div class="col-md-3">
-					<div class="form-group">
-						<div class="">
-							<label class="radio-inline" for="internalCheck">
-								<input type="radio" name="int_ext" id="internalCheck" value="1" checked onclick="yesnoCheck();">
-								Internal
-							</label>
-							<label class="radio-inline" for="externalCheck">
-								<input type="radio" name="int_ext" id="externalCheck" value="0" onclick="yesnoCheck();">
-								External
-							</label>
-						</div>
 					</div>
 				</div>
 			</div>

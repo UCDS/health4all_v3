@@ -36,6 +36,30 @@
 							placeholder="Enter Supply Chain Party Name" type="text" align="middle" value="<?php echo $item_result[0]->supply_chain_party_name; ?>" required>
 					</div>
 				</div>
+				<div class="col-md-3">
+					<label>Type :</label>
+					<div class="form-group">
+						<div>
+							<label class="radio-inline">
+								<input type="radio" name="int_ext" id="int_ext_internal" value="1" 
+									<?php 
+										if (!isset($item_result[0]->is_external) || $item_result[0]->is_external == '1') { 
+											echo 'checked'; 
+										} 
+									?>> Internal
+							</label>
+
+							<label class="radio-inline" style="margin-left:10px;">
+								<input type="radio" name="int_ext" id="int_ext_external" value="2" 
+									<?php 
+										if (isset($item_result[0]->is_external) && $item_result[0]->is_external == '2') { 
+											echo 'checked'; 
+										} 
+									?>> External
+							</label>
+						</div>
+					</div>
+				</div>
 				<div class="col-md-4">
 					<div class="form-group">
 						<label for="department">Department</label>
@@ -81,24 +105,12 @@
 						</select>
 					</div>
 				</div>
-				<div class="col-md-3">
-					<label>Type : </label>
-					<div class="form-group">
-						<div class="">
-							<select name="int_ext" id="int_ext" class="form-control">
-								<option value="" > select type </option>
-								<option value="1" <?php if($item_result[0]->is_external=='1'){ echo 'selected'; } ?>>Internal</option>
-								<option value="2" <?php if($item_result[0]->is_external=='2'){ echo 'selected'; } ?>>External</option>
-							</select>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 		<script>
 			$(document).ready(function() {
 				function toggleFields() {
-					var type = $('#int_ext').val();
+					var type = $('input[name="int_ext"]:checked').val();
 					if (type === '1') {
 						$('.col-md-3:has(#vendor)').hide();
 						$('.col-md-4:has(#department), .col-md-4:has(#area)').show();
@@ -111,9 +123,17 @@
 						$('.col-md-3:has(#vendor), .col-md-4:has(#department), .col-md-4:has(#area)').show();
 					}
 				}
+				var savedValue = "<?php echo isset($item_result[0]->is_external) ? $item_result[0]->is_external : ''; ?>";
+				if ((!$('input[name="int_ext"]:is(:checked)').length) && savedValue !== '0' && savedValue !== '') {
+					$('input[name="int_ext"][value="1"]').prop('checked', true);
+				}
 				toggleFields();
-				$('#int_ext').change(function() {
+				if (savedValue === '1' || savedValue === '2') {
+					$('input[name="int_ext"]').prop('disabled', true);
+				}
+				$('input[name="int_ext"]').change(function() {
 					toggleFields();
+					$('input[name="int_ext"]').prop('disabled', true);
 				});
 			});
 		</script>
