@@ -684,13 +684,14 @@ class Register extends CI_Controller {
 		$this->data['patient_document_remove_access']=$patient_document_remove_access;
 		$this->data['patient_document_edit_access']=$patient_document_edit_access;
 		$this->data['add_sms_access']=$add_sms_access;
-
+		 
 		$this->data['user_hospitals'] = $this->staff_model->get_user_hospitals();
-
+                //echo("<script>alert('Here');</script>");
 		$patient_id = $this->input->post('patient_id');
 		$visit_id = $this->input->post('selected_patient');
 		$document_link = $this->input->post('document_link');
 		if($this->input->post('selected_patient')){
+		       //echo("<script>alert('Here');</script>"); 	
 			$hospital=$this->session->userdata('hospital');
 			$hospital_id=$hospital['hospital_id'];
 			$hospital_id_patient = $this->input->post('hospital_id');
@@ -705,7 +706,7 @@ class Register extends CI_Controller {
 				$this->data['all_tests'] = $this->gen_rep_model->simple_join('tests_ordered', false);
 				$this->data['prescriptions'] = $this->gen_rep_model->simple_join('prescriptions', false);
 			}
-			// $this->data['previous_prescriptions'] = $this->register_model->get_previous_prescriptions($visit_id);
+		//	$this->data['previous_prescriptions'] = $this->register_model->get_previous_prescriptions($visit_id);
 		}		
 		//  $this->data['hospitals'] = $this->hospital_model->get_hospitals();
 
@@ -740,14 +741,14 @@ class Register extends CI_Controller {
 				'receiver_link' => $user_receiver_links
 			));        
 		//  $this->data['arrival_modes'] = $this->patient_model->get_arrival_modes();
-        $this->data['visit_names'] = $this->staff_model->get_visit_name();
+        	$this->data['visit_names'] = $this->staff_model->get_visit_name();
 		$this->form_validation->set_rules('patient_number', 'IP/OP Number',
 		'trim|xss_clean');
 		if ($this->form_validation->run() === FALSE)
 		{					
 			$this->load->view('pages/update_patients',$this->data);
 		}
-		else{		
+		else{	
 			// Patient documents		
 			if (array_key_exists("upload_file", $_FILES)) 
 			{
@@ -781,6 +782,8 @@ class Register extends CI_Controller {
 				if ($uploadOk == 0) {
 					$this->data['msg'] = $msg . " Your file was not uploaded.";
 				} else {
+
+					
 					// Rotate image
 					$rotation_angle = $this->input->post('rotation');
 					if ($rotation_angle) {
@@ -788,20 +791,21 @@ class Register extends CI_Controller {
 						$this->load->library('image_lib');
 						$config['rotation_angle'] = $rotation_angle;
 						$config['source_image'] = $_FILES["upload_file"]["tmp_name"];
-						$config['maintain_ratio'] = FAlSE;
+						$config['maintain_ratio'] = FALSE;
             			$config['width'] = 180;
 						$config['height'] = 180;
 						$this->image_lib->initialize($config);
 						if (!$this->image_lib->rotate()) {
 							$this->data['msg'] = "Error rotating image: " . $this->image_lib->display_errors();
 							$uploadOk = 0;
-						} else {
+						}
+					       	else {
 							echo "Image rotated successfully."; // Debugging statement
 						}
 					} else {
-						echo "No rotation angle provided."; // Debugging statement
+						echo "No rotation angle provided."; // Debugging statement 
 					}
-			
+					 	
 					// Try to upload file
 					if ($uploadOk == 1) {
 						$new_name = $patient_id . '_' . $_FILES["upload_file"]['name'];
@@ -813,23 +817,25 @@ class Register extends CI_Controller {
 						} else {
 							$file = $this->upload->data();
 							$uploadOk = 1;
+						
 						}
 					}
-				}
+				} 
 			
 				// Add document record
 				if ($uploadOk == 1 && $this->patient_document_upload_model->add_document($patient_id, $file['file_name']) ) {
 					$this->data['msg'] = "Document Added Successfully";
 				}
+				return;
 
-			}
+		}
 
 			if ($document_link){
 				if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
 					$this->delete_document($document_link);
 				}
 			}
-			
+		 	
 			if($this->input->post('edit_document_link'))
 			{
 				$edit_note = $this->input->post('note');
@@ -837,7 +843,7 @@ class Register extends CI_Controller {
 
 				$dir_path = './assets/patient_documents/';
 				$config['upload_path'] = $dir_path; // upload directory
-				$config['allowed_types'] = 'gif|jpg|png|jpeg'; // Allowed file types
+				$config['allowed_types'] =  $allowed_types; // Allowed file types
 				$config['max_size'] = $max_size;
 				$config['max_width'] = $max_width;
 				$config['max_height'] = $max_height;
@@ -855,7 +861,7 @@ class Register extends CI_Controller {
 					$old_path = $upload_data['full_path'];
 					$new_path = $upload_data['file_path'] . $new_name;
 					rename($old_path, $new_path);
-
+                                        
 					$rotation_angle = $this->input->post('rotation');
 					if($rotation_angle) 
 					{
@@ -869,28 +875,29 @@ class Register extends CI_Controller {
 						$this->image_lib->initialize($config);
 						if (!$this->image_lib->rotate()) {
 							$this->data['msg'] = "Error rotating image: " . $this->image_lib->display_errors();
-						} else {
+						} 
+                                         else {
 							echo "Image rotated successfully."; // Debugging statement
 						}
 					} else {
 						echo "No rotation angle provided."; // Debugging statement
-					}
+					} 
 					$this->patient_document_upload_model->update_document_metadata($new_name, $edit_note);
 				} else {
 					$error = array('error' => $this->upload->display_errors());
 					$edit_document_link = $this->input->post('edit_document_link');
 					$this->patient_document_upload_model->update_document_metadata($edit_document_link, $edit_note);
 				}
+				return;
 			}
-					
+		 		
 			$this->data['transporters'] = $this->staff_model->get_staff("Transport");
-			if($this->input->post('update_patient') && $transaction){				
+			if($this->input->post('update_patient') && $transaction){
 				$update = $this->register_model->update();
                 if(is_int($update) && $update==2){
 					//If register function returns value 2 then we are setting a duplicate ip no error.
 					$this->data['duplicate']=1;
 				}
-				
 				$this->data['transfers'] = $this->patient_model->get_transfers_info();
 				$this->data['transport'] = $this->staff_model->get_transport_log();
 				$this->data['patients']=$this->register_model->search();
@@ -935,9 +942,9 @@ class Register extends CI_Controller {
 				$this->load->view('pages/update_patients',$this->data);
 			}
 			else{
+
 				$this->data['patients']=$this->register_model->search();
 
-				
 				$this->data['registered'] = $this->data['patients'][0];
 				if(count($this->data['patients'])>0){
 					$this->load->model('diagnostics_model');
@@ -955,7 +962,7 @@ class Register extends CI_Controller {
 					$this->data['prescription_frequency'] = $this->staff_model->get_prescription_frequency();
 					$this->data['transport'] = $this->staff_model->get_transport_log();
 					$this->data['prescription']=$this->register_model->get_prescription($visit_id);
-						
+			                $this->data['previous_visits']=$this->register_model->get_visits($patient_id);			
 					$hospital=$this->session->userdata('hospital');
 					$hospital_id=$hospital['hospital_id'];
 					$this->data['hosp_all_print_layouts']=$this->register_model->get_hosp_all_print_layouts($hospital_id);
