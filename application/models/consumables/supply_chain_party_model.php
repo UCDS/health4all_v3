@@ -25,10 +25,18 @@ class Supply_chain_party_model extends CI_Model {
                 $supply_chain['vendor_id'] = $this->input->post('vendor');			    
             }
 
-                $supply_chain['is_external'] = $this->input->post('int_ext');			    
+            $supply_chain['is_external'] = $this->input->post('int_ext');			    
             
-        
-		$supply_chain['hospital_id']=$hospital['hospital_id'];
+            if ($supply_chain['is_external']==1) { //Internal
+		    $supply_chain['vendor_id']=0;	
+	    }
+
+	    if ($supply_chain['is_external']==2) { //Extrnal
+		    $supply_chain['department_id']=0;
+		    $supply_chain['area_id']=0;
+	    }
+
+	$supply_chain['hospital_id']=$hospital['hospital_id'];
         $this->db->trans_start();
         $this->db->insert('supply_chain_party', $supply_chain);
         $this->db->trans_complete();
@@ -59,8 +67,17 @@ class Supply_chain_party_model extends CI_Model {
         }
         if($this->input->post('int_ext')){
             $edit_supply_chain['is_external'] = $this->input->post('int_ext');			    
-        }
-		$edit_supply_chain['hospital_id']=$hospital['hospital_id'];
+	}
+	if ($edit_supply_chain['is_external']==1) { //Internal
+	    $edit_supply_chain['vendor_id']=0;
+	}
+
+	if ($supply_chain['is_external']==2) { //Extrnal
+            $edit_supply_chain['department_id']=0;
+	    $edit_supply_chain['area_id']=0;
+	}
+	
+	$edit_supply_chain['hospital_id']=$hospital['hospital_id'];
         $this->db->trans_start();
         $this->db->update('supply_chain_party', $edit_supply_chain);
         $this->db->trans_complete();
