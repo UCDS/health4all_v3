@@ -252,6 +252,24 @@ function onchange_page_dropdown(dropdownobj){
 									placeholder="Enter Supply Chain Party Name" type="text">
 							</div>
 						</div>
+						<div class="col-md-3">
+							<label>Type :</label>
+							<div class="form-group">
+								<div class="">
+									<label>
+										<input type="radio" name="int_ext" value="1" 
+											<?php if($this->input->post('int_ext') == '1'){ echo 'checked'; } ?>>
+										Internal
+									</label>&nbsp;&nbsp;
+
+									<label>
+										<input type="radio" name="int_ext" value="2" 
+											<?php if($this->input->post('int_ext') == '2'){ echo 'checked'; } ?>>
+										External
+									</label>
+								</div>
+							</div>
+						</div>
 						<div class="col-md-4">
 							<div class="form-group">
 								<label for="department">Department</label>
@@ -298,19 +316,6 @@ function onchange_page_dropdown(dropdownobj){
 								</select>
 							</div>
 						</div>
-						<div class="col-md-3">
-							<label>Type : </label>
-							<div class="form-group">
-								<div class="">
-									<select name="int_ext" id="int_ext" class="form-control">
-										<option value="" > select type </option>
-										<option value="1" <?php if($this->input->post('int_ext')=='1'){ echo 'selected'; } ?>>Internal</option>
-										<option value="2" <?php if($this->input->post('int_ext')=='2'){ echo 'selected'; } ?>>External</option>
-									</select>
-								</div>
-							</div>
-						</div>
-
 						<div class="col-md-2" style="margin-left:-15px!important;">
 							Rows per page : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 						</div>
@@ -318,7 +323,7 @@ function onchange_page_dropdown(dropdownobj){
 				<script>
 					$(document).ready(function() {
 						function toggleFields() {
-							var type = $('#int_ext').val();
+							var type = $('input[name="int_ext"]:checked').val();
 							if (type === '1') {
 								$('.col-md-3:has(#vendor)').hide();
 								$('.col-md-4:has(#department), .col-md-4:has(#area)').show();
@@ -332,7 +337,7 @@ function onchange_page_dropdown(dropdownobj){
 							}
 						}
 						toggleFields();
-						$('#int_ext').change(function() {
+						$('input[name="int_ext"]').change(function() {
 							toggleFields();
 						});
 					});
