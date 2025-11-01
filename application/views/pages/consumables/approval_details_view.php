@@ -377,7 +377,7 @@ $(window).load(function() {
 
 				$("#okBtn").off("click").on("click", function() {
 					$("#balanceModal").modal("hide");
-					//$("form").submit();
+					$("form").submit();
 				});
 
 				$("#cancelBtn").off("click").on("click", function() {

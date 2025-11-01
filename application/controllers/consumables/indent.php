@@ -429,15 +429,12 @@ class Indent extends CI_Controller {
 
     public function check_party_type()
     {
+        $this->load->model('consumables/indent_report_model');
         $party_id = $this->input->post('from_id');
-        $this->db->select('is_external');
-        $this->db->from('supply_chain_party');
-        $this->db->where('supply_chain_party_id', $party_id);
-        $query = $this->db->get();
-        $result = $query->row();
-
-        if ($result) {
-            echo json_encode(['is_external' => $result->is_external]);
+        $res = $this->indent_report_model->get_scp_type($party_id);
+        
+        if ($res) {
+            echo json_encode(['is_external' => $res->is_external]);
         } else {
             echo json_encode(['is_external' => null]);
         }

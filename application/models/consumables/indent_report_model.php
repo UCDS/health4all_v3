@@ -872,4 +872,13 @@ class Indent_report_model extends CI_Model
 		$records = $query->result();
 		return $records;
 	}
+
+	function get_scp_type($party_id = null)
+	{
+		$this->db->select('is_external');
+		$this->db->from('supply_chain_party');
+		$this->db->where('supply_chain_party_id', $party_id);
+		$query = $this->db->get();
+		return $query->row(); // <-- must return
+	}
 }
