@@ -64,7 +64,15 @@ class Indent_issue_model extends CI_Model{                                      
    
 	function display_issue_details(){                                                              //definition of a function :display_issue_details
 		$hospital=$this->session->userdata('hospital');                                            //Storing user data who logged into the hospital into a var:hospital
-		$this->db->select('quantity_approved,indent.approve_date_time,indent_item.item_id, indent_item.indent_status item_status, indent_item.indent_item_id,indent_item.quantity_indented, indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,from_party.supply_chain_party_id from_party_id, to_party.supply_chain_party_name to_party, to_party.supply_chain_party_id to_party_id, orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name,indent_item.quantity_issued,indent_item.note note, indent.note indent_note, indent.indent_status, indent.indent_date')->from('indent')
+		$this->db->select('quantity_approved,indent.approve_date_time,indent_item.item_id, 
+		indent_item.indent_status item_status, indent_item.indent_item_id,indent_item.quantity_indented, 
+		indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,
+		item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,
+		from_party.supply_chain_party_id from_party_id, to_party.supply_chain_party_name to_party, 
+		to_party.supply_chain_party_id to_party_id, orderby.first_name as order_first,orderby.last_name as order_last,
+		approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,
+		item_name,indent_item.quantity_issued,indent_item.note note, indent.note indent_note, indent.indent_status, 
+		indent.indent_date, item.item_id')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                   //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')          //item_type,item_form,dosage,supply_chain_party,staff,hospital)
@@ -272,6 +280,51 @@ class Indent_issue_model extends CI_Model{                                      
                 return false;
             }//if
              else{
+
+				// $this->db->from('inventory_opening_balance');
+				// $count = $this->db->count_all_results();
+
+				// if ($count == 0) 
+				// {
+				// 	$sql = "
+				// 		INSERT INTO inventory_opening_balance (item_id, current_balance, last_updated_datetime)
+				// 		SELECT 
+				// 			item_id,
+				// 			SUM(CASE WHEN inward_outward = 'inward' THEN quantity ELSE -1 * quantity END) AS current_balance,
+				// 			NOW() AS last_updated_datetime
+				// 		FROM inventory
+				// 		GROUP BY item_id
+				// 	";
+				// 	$this->db->query($sql);
+				// }
+
+				$current_datetime = date("Y-m-d H:i:s");
+
+				foreach ($data_inventory_out as $inv) 
+				{
+					$item_id = $inv['item_id'];
+					$quantity = $inv['quantity'];
+					$this->db->select('current_balance');
+					$this->db->from('inventory_opening_balance');
+					$this->db->where('item_id', $item_id);
+					$query = $this->db->get();
+					if ($query->num_rows() > 0) 
+					{
+						$row = $query->row();
+						$new_balance = $row->current_balance + $quantity;
+						$this->db->where('item_id', $item_id);
+						$this->db->update('inventory_opening_balance', [
+							'current_balance' => $new_balance,
+							'last_updated_datetime' => $current_datetime
+						]);
+					} else {
+						$this->db->insert('inventory_opening_balance', [
+							'item_id' => $item_id,
+							'current_balance' => $quantity,
+							'last_updated_datetime' => $current_datetime
+						]);
+					}
+				}
                 return true;
             }//else			
 		}//end_if

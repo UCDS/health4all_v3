@@ -411,4 +411,37 @@ class Indent extends CI_Controller {
        $this->load->view('templates/footer');	
        
    }
+
+   public function check_item_balance()
+   {
+        $this->load->model('consumables/indent_report_model');
+        $item_id = $this->input->post('item_id');
+        $closing_balance = $this->indent_report_model->get_individual_item_closing_balance($item_id);
+        $balance = 0;
+        if (!empty($closing_balance)) 
+        {
+            $balance = $closing_balance[0]->current_balance;
+        }
+        echo json_encode([
+            'balance' => $balance
+        ]);
+    }
+
+    public function check_party_type()
+    {
+        $party_id = $this->input->post('from_id');
+        $this->db->select('is_external');
+        $this->db->from('supply_chain_party');
+        $this->db->where('supply_chain_party_id', $party_id);
+        $query = $this->db->get();
+        $result = $query->row();
+
+        if ($result) {
+            echo json_encode(['is_external' => $result->is_external]);
+        } else {
+            echo json_encode(['is_external' => null]);
+        }
+    }
+
+
 }

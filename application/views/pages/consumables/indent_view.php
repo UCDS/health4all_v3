@@ -391,31 +391,130 @@ $('#to_id').change(function(){
 			</div>
 	     <?php echo form_close(); ?> 
 	 </div>
-		 
-	     
 
+	 <!-- Bootstrap modal for alerts -->
+<div class="modal fade" id="stockAlertModal" tabindex="-1" role="dialog" aria-labelledby="stockAlertLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h4 class="modal-title" id="stockAlertLabel">Stock Alert</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color:white;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="stockAlertBody">
+        
+      </div>
+      <div class="modal-footer">
+		<button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script>
+	$(document).ready(function () {
 
+		$('#evaluate_applicant').on('submit', function (e) {
+			const form = this;
+			const fromPartyId = $('#from_id').val();
 
+			if (!fromPartyId) {
+				alert("Please select 'From Party'.");
+				e.preventDefault();
+				return;
+			}
 
+			$.ajax({
+				url: "<?php echo base_url('consumables/indent/check_party_type'); ?>",
+				type: "POST",
+				dataType: "json",
+				async: false,
+				data: { from_id: fromPartyId },
+				success: function (partyRes) {
+					if (!partyRes || partyRes.is_external == null) {
+						alert("Invalid party selection.");
+						e.preventDefault();
+						return;
+					}
+					const isExternal = parseInt(partyRes.is_external);
+					if (isExternal === 2) {
+						return;
+					}
+					e.preventDefault();
 
+					let itemChecks = [];
+					let itemNames = [];
 
+					$('[name="item[]"]').each(function () {
+						const selectizeInstance = $(this)[0].selectize;
+						if (selectizeInstance) {
+							const itemId = selectizeInstance.getValue();
+							const itemOption = selectizeInstance.options[itemId];
+							const itemName = itemOption ? itemOption.item_name : "Unknown Item";
 
+							if (itemId) {
+								itemNames.push(itemName);
+								itemChecks.push(
+									$.ajax({
+										url: "<?php echo base_url('consumables/indent/check_item_balance'); ?>",
+										type: "POST",
+										dataType: "json",
+										data: { item_id: itemId }
+									})
+								);
+							}
+						}
+					});
 
+					if (itemChecks.length === 0) {
+						alert("Please select at least one item before issuing.");
+						return;
+					}
 
-				
+					$.when.apply($, itemChecks).done(function () {
+						let responses = arguments;
+						if (itemChecks.length === 1) responses = [arguments];
 
+						let lowStockItems = [];
 
+						for (let i = 0; i < responses.length; i++) {
+							const balance = responses[i][0].balance;
+							if (balance <= 0) lowStockItems.push(itemNames[i]);
+						}
 
+						if (lowStockItems.length > 0) {
+							$('#stockAlertBody').html(
+								`<strong>The following items are not available or have negative balance:</strong><br><br>
+								<ul>${lowStockItems.map(i => `<li>${i}</li>`).join('')}</ul>`
+							);
+							$('#stockAlertModal').modal('show');
+						} else {
+							syncSelectizeValues();
+							form.submit();
+						}
+					}).fail(function () {
+						alert("Error checking item balances.");
+					});
+				},
+				error: function () {
+					alert("Error checking party type.");
+					e.preventDefault();
+				}
+			});
+		});
 
-
-
-
-
-
-
-
-
-
+		function syncSelectizeValues() {
+			$('[name="item[]"]').each(function () {
+				const selectizeInstance = $(this)[0].selectize;
+				if (selectizeInstance) {
+					const val = selectizeInstance.getValue();
+					$(this).val(val);
+				}
+			});
+		}
+	});
+</script>
 
 

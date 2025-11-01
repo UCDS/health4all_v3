@@ -859,4 +859,17 @@ class Indent_report_model extends CI_Model
 		$query = $this->db->get(); 
 		return $query->result_array();
 	}
+
+	function get_individual_item_closing_balance($item_id = null)
+	{
+		//$from_date = date("Y-m-d 00:00:00");
+
+		$this->db->select("current_balance")
+		->from('inventory_opening_balance')
+		->where('item_id', $item);
+		//->where('last_updated_datetime <', $from_date);
+		$query = $this->db->get();
+		$records = $query->result();
+		return $records;
+	}
 }
