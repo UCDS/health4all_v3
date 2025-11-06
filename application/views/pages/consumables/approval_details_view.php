@@ -407,8 +407,8 @@ $(window).load(function() {
         You do not have sufficient balance to approve this indent.
       </div>
       <div class="modal-footer">
-        <button type="button" id="okBtn" class="btn btn-success">OK</button>
-        <button type="button" id="cancelBtn" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+		<button type="button" id="cancelBtn" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" id="okBtn" class="btn btn-success">Proceed Anyway</button>
       </div>
     </div>
   </div>

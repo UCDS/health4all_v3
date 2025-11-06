@@ -40,23 +40,22 @@
 					<label>Type :</label>
 					<div class="form-group">
 						<div>
+							<?php 
+							$isExternal = isset($item_result[0]->is_external) ? $item_result[0]->is_external : '';
+							?>
 							<label class="radio-inline">
-								<input type="radio" name="int_ext" id="int_ext_internal" value="1" 
-									<?php 
-										if (!isset($item_result[0]->is_external) || $item_result[0]->is_external == '1') { 
-											echo 'checked'; 
-										} 
-									?>> Internal
+								<input type="radio" name="int_ext_radio" value="1"
+									<?php echo ($isExternal === '' || $isExternal == '1') ? 'checked' : ''; ?>
+									<?php echo ($isExternal === '1' || $isExternal === '2') ? 'disabled' : ''; ?>
+								> Internal
 							</label>
-
 							<label class="radio-inline" style="margin-left:10px;">
-								<input type="radio" name="int_ext" id="int_ext_external" value="2" 
-									<?php 
-										if (isset($item_result[0]->is_external) && $item_result[0]->is_external == '2') { 
-											echo 'checked'; 
-										} 
-									?>> External
+								<input type="radio" name="int_ext_radio" value="2"
+									<?php echo ($isExternal == '2') ? 'checked' : ''; ?>
+									<?php echo ($isExternal === '1' || $isExternal === '2') ? 'disabled' : ''; ?>
+								> External
 							</label>
+							<input type="hidden" name="int_ext" value="<?php echo ($isExternal !== '') ? $isExternal : '1'; ?>">
 						</div>
 					</div>
 				</div>
@@ -110,7 +109,11 @@
 		<script>
 			$(document).ready(function() {
 				function toggleFields() {
-					var type = $('input[name="int_ext"]:checked').val();
+					var type = $('input[name="int_ext_radio"]:checked').val();
+					if (!type) {
+						type = $('input[name="int_ext"]').val();
+					}
+
 					if (type === '1') {
 						$('.col-md-3:has(#vendor)').hide();
 						$('.col-md-4:has(#department), .col-md-4:has(#area)').show();
@@ -123,17 +126,10 @@
 						$('.col-md-3:has(#vendor), .col-md-4:has(#department), .col-md-4:has(#area)').show();
 					}
 				}
-				var savedValue = "<?php echo isset($item_result[0]->is_external) ? $item_result[0]->is_external : ''; ?>";
-				if ((!$('input[name="int_ext"]:is(:checked)').length) && savedValue !== '0' && savedValue !== '') {
-					$('input[name="int_ext"][value="1"]').prop('checked', true);
-				}
 				toggleFields();
-				if (savedValue === '1' || savedValue === '2') {
-					$('input[name="int_ext"]').prop('disabled', true);
-				}
-				$('input[name="int_ext"]').change(function() {
+				$('input[name="int_ext_radio"]').change(function() {
 					toggleFields();
-					$('input[name="int_ext"]').prop('disabled', true);
+					$('input[name="int_ext"]').val($(this).val());
 				});
 			});
 		</script>

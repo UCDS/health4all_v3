@@ -83,147 +83,197 @@
 }
 </style>
 <script type="text/javascript">
-		var rowcount=0;
-		$(function(){
+    var rowcount = 0;
+    var currentPartyType = null;
+    let options = <?= json_encode($all_item); ?>;
 
-		let options = <?= json_encode($all_item); ?>;
-		options = options.map(opt => {
-		let ans = `${opt.item_name}-${opt.item_form}-`;
-		if (opt.dosage) {
-			ans += opt.dosage;
-		}
-		if (opt.dosage_unit) {
-			ans += opt.dosage_unit;
-		}
-		return {
-			...opt,
-			item_name: ans
-		};
-		});
-		console.log(options);
+    // Pre-process items for Selectize display
+    options = options.map(opt => {
+        let ans = `${opt.item_name}-${opt.item_form}-`;
+        if (opt.dosage) {
+            ans += opt.dosage;
+        }
+        if (opt.dosage_unit) {
+            ans += opt.dosage_unit;
+        }
+        return {
+            ...opt,
+            item_name: ans
+        };
+    });
 
-		$("#indent_date").Zebra_DatePicker({direction:false});
-		$("#indent_time").ptTimeSelect();
-		$("#addbutton").click(function(){
-			rowcount++;
-			var sno="<td>"+ " " +"</td></br>";
-			
-			var item ="<td><div class='form-group'><select name='item[]' id='item' class='items' required><option value=''>Select</option>";
-			
-			item += "</select></td>";
-			var note = '<td><div class="form-group"><textarea class="form-control" name="item_note[]" required > </textarea>	</div></td>'
-			var quantity="<td><input type='number' class='number form-control' name='quantity_indented[]' required /></td></br>";
-		    var remove="<td><button value='X' class='btn btn-danger remove show-tip' onclick='$(\"#slot_row_"+rowcount+"\").remove();'><span class='glyphicon glyphicon-trash'></span></button></td>";
-			$("#slot_table").append("<tr id='slot_row_"+rowcount+"'>"+sno+item+quantity+ note+remove+"</tr>");
+    $(function() {
+        $("#indent_date").Zebra_DatePicker({ direction: false });
+        $("#indent_time").ptTimeSelect();
 
-			$selectize = $('[name="item[]"]').selectize({
-			labelField: "item_name",
-			searchField: "item_name",
-			valueField: "item_id",
-			options: options,
-			// allowEmptyOption: true, 
-			// showEmptyOptionInDropdown: true, 
-			maxOptions: 10,
-			load: function(query, callback) {
-				if(!query.length) return callback();
-				console.log('loading', $('.selectize-control.items'));
-				$($('.selectize-control.items')[rowcount]).addClass('loading');
-				$.ajax({
-					url: '<?php echo base_url(); ?>consumables/indent/search_selectize_items',
-					type: 'POST',
-					dataType: 'JSON', 
-					data: {query: query, item_type: $('#item_type').val()},
-					error: function(res) {
-						
-						callback();
-						$($('.selectize-control.items')[rowcount]).addClass('loading');
-						setTimeout(() => {
+        $("#from_id").change(function() {
+            let from_id = $(this).val();
+            if (from_id) {
+                $.ajax({
+                    url: '<?php echo base_url(); ?>consumables/indent/check_party_type',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: { from_id: from_id },
+                    success: function(res) {
+                        currentPartyType = res.is_external; // 1 = internal, 2 = external
+                    }
+                });
+            } else {
+                currentPartyType = null;
+            }
+            $("#to_id option").show();
+            $('#to_id option[value="' + this.value + '"]').hide();
+        }).trigger('change');
 
-							$($('.selectize-control.items')[rowcount]).removeClass('loading');
-						}, 500);
-					},
-					success: function(res) {
-						
-						callback(res.items);
-						$($('.selectize-control.items')[rowcount]).addClass('loading');
-						setTimeout(() => {
-							console.log('delayed loading');
-							$($('.selectize-control.items')[rowcount]).removeClass('loading');
-						}, 500);
-					}
-				});
-			}
-		});
+        $('#to_id').change(function() {
+            $("#from_id option").show();
+            $('#from_id option[value="' + this.value + '"]').hide();
+        }).trigger('change');
+        
+        function initSelectize($selector) {
+             $selector.selectize({
+                labelField: "item_name",
+                searchField: "item_name",
+                valueField: "item_id",
+                options: options,
+                maxOptions: 10,
+                load: function(query, callback) {
+                    if (!query.length) return callback();
+                    let $selectizeControl = $selector.closest('.selectize-control.items');
+                    $selectizeControl.addClass('loading');
+                    
+                    $.ajax({
+                        url: '<?php echo base_url(); ?>consumables/indent/search_selectize_items',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: { query: query, item_type: $('#item_type').val() },
+                        success: function(res) {
+                            callback(res.items);
+                            setTimeout(() => $selectizeControl.removeClass('loading'), 500);
+                        },
+                        error: function() {
+                            callback();
+                            setTimeout(() => $selectizeControl.removeClass('loading'), 500);
+                        }
+                    });
+                }
+            });
+        }
+        
+        initSelectize($("[name='item[]']").eq(0));
 
-			let item_elements = $("[name='item[]']");
-			$("[name='item[]']").change((e) => {
-				console.log("Changed", rowcount, e.target.value);
-				for(let r = 0; r < item_elements.length; r++){
-					if(r != rowcount && $(item_elements[r]).val() == e.target.value){
-						console.log("Same");
-						console.log(item_elements[r]);
-						item_elements[rowcount].selectize.setValue(0);
-						return;
-					}
-				}
-			});
-		});
+        $("#addbutton").click(function() {
+            rowcount++;
+            var sno = "<td>" + " " + "</td>";
+            var item = "<td><div class='form-group'><select name='item[]' class='items' required><option value=''>Select</option></select></div></td>";
+            var note = '<td><div class="form-group"><textarea class="form-control" name="item_note[]" required></textarea></div></td>';
+            var quantity = "<td><input type='number' min='1' step='1' class='number form-control' name='quantity_indented[]' required /></td>";
+            var remove = "<td><button type='button' class='btn btn-danger remove show-tip' onclick='$(\"#slot_row_" + rowcount + "\").remove();'><span class='glyphicon glyphicon-trash'></span></button></td>";
+
+            $("#slot_table").append("<tr id='slot_row_" + rowcount + "'>" + sno + item + quantity + note + remove + "</tr>");
+
+            initSelectize($('#slot_row_' + rowcount + ' select[name="item[]"]'));
+        });
+        
+        $("#slot_table").on('change', 'select[name="item[]"]', function(e) {
+            let selectedItemId = e.target.value;
+            let $itemElements = $("[name='item[]']");
+            let currentIndex = $itemElements.index(this);
+
+            for (let r = 0; r < $itemElements.length; r++) {
+                if (r !== currentIndex && $($itemElements[r]).val() === selectedItemId && selectedItemId !== "") {
+                    alert("This item has already been selected in another row!");
+                    let $selectizeInstance = $itemElements[currentIndex].selectize;
+                    if ($selectizeInstance) {
+                       $selectizeInstance.setValue(""); 
+                    }
+                    return;
+                }
+            }
+        });
 
 
-		$selectize = $('[name="item[]"]').selectize({
-			labelField: "item_name",
-			searchField: "item_name",
-			valueField: "item_id",
-			options: options,
-			// allowEmptyOption: true, 
-			// showEmptyOptionInDropdown: true, 
-			maxOptions: 10,
-			load: function(query, callback) {
-				if(!query.length) return callback();
-				console.log('loading', $('.selectize-control.items'));
-				$($('.selectize-control.items')[rowcount]).addClass('loading');
-				$.ajax({
-					url: '<?php echo base_url(); ?>consumables/indent/search_selectize_items',
-					type: 'POST',
-					dataType: 'JSON', 
-					data: {query: query, item_type: $('#item_type').val()},
-					error: function(res) {
-						
-						callback();
-						$($('.selectize-control.items')[rowcount]).addClass('loading');
-						setTimeout(() => {
+        $("#evaluate_applicant").submit(function(e) {
+            if ($(this).data('is-override')) {
+                return true;
+            }
+            
+            if (currentPartyType != 1) {
+                return true;
+            }
 
-							$($('.selectize-control.items')[rowcount]).removeClass('loading');
-						}, 500);
-					},
-					success: function(res) {
-						
-						callback(res.items);
-						$($('.selectize-control.items')[rowcount]).addClass('loading');
-						setTimeout(() => {
-							console.log('delayed loading');
-							$($('.selectize-control.items')[rowcount]).removeClass('loading');
-						}, 500);
-					}
-				});
-			}
-		});
+            e.preventDefault();
 
-		let item_elements = $("[name='item[]']");
-		$("[name='item[]']").change((e) => {
-			console.log("Changed", rowcount, e.target.value);
-			for(let r = 0; r < item_elements.length; r++){
-				if(r != rowcount && $(item_elements[r]).val() == e.target.value){
-					console.log("Same");
-					console.log(item_elements[r]);
-					item_elements[rowcount].selectize.setValue(0);
-					return;
-				}
-			}
-		});
+            let $form = $(this);
+            let itemSelects = $form.find('select[name="item[]"]');
+            let lowBalanceItems = [];
 
-	});
-	
+            if ($("#from_id").val() === "" || $("#to_id").val() === "") {
+                 alert("Please select both Indent From and Indent To parties.");
+                 return;
+            }
+            if (itemSelects.length === 0 || itemSelects.filter(function() { return $(this).val() === ""; }).length > 0) {
+                 alert("Please ensure all item rows have a selected item.");
+                 return;
+            }
+			let fromPartyId = $('#from_id').val();
+            let balancePromises = itemSelects.map(function() {
+                let itemId = $(this).val();
+                let itemText = $(this).next().find('.selectize-input').find('.item').text() || itemId;
+
+                return new Promise((resolve) => {
+                    $.ajax({
+                        url: '<?php echo base_url(); ?>consumables/indent/check_item_balance',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: { item_id: itemId,
+                				from_id: fromPartyId 
+							},
+                        success: function(res) {
+                            if (res.balance <= 0) {
+                                lowBalanceItems.push(itemText);
+                            }
+                            resolve();
+                        },
+                        error: function() {
+                            lowBalanceItems.push(itemText + " (Balance Check Failed)");
+                            resolve();
+                        }
+                    });
+                });
+            }).get();
+
+            Promise.all(balancePromises).then(() => {
+                if (lowBalanceItems.length > 0) {
+                    $('#lowBalanceItemsList').empty();
+                    lowBalanceItems.forEach(item => {
+                        $('#lowBalanceItemsList').append('<li>' + item + '</li>');
+                    });
+                    $('#balanceWarningModal').modal('show');
+                } else {
+                    $form.data('is-override', true); 
+                    this.submit();
+                }
+            });
+        });
+
+        $('#confirmSubmitBtn').off('click').on('click', function() {
+            $('#balanceWarningModal').modal('hide');
+            
+            const $form = $("#evaluate_applicant");
+            const formElement = document.getElementById('evaluate_applicant');
+        
+            if ($form.find('input[name="Submit"]').length === 0) {
+                 $('<input>').attr({
+                    type: 'hidden',
+                    name: 'Submit', 
+                    value: 'Submit'
+                }).appendTo($form);
+            }
+            $form.data('is-override', true);
+            formElement.submit();
+        });
+    });
 </script>
 <script>
 $(function(){
@@ -392,129 +442,23 @@ $('#to_id').change(function(){
 	     <?php echo form_close(); ?> 
 	 </div>
 
-	 <!-- Bootstrap modal for alerts -->
-<div class="modal fade" id="stockAlertModal" tabindex="-1" role="dialog" aria-labelledby="stockAlertLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h4 class="modal-title" id="stockAlertLabel">Stock Alert</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true" style="color:white;">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="stockAlertBody">
-        
-      </div>
-      <div class="modal-footer">
-		<button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+<div class="modal fade" id="balanceWarningModal" tabindex="-1" role="dialog" aria-labelledby="balanceWarningModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="balanceWarningModalLabel"> Insufficient Balance </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You do not have sufficient balance for the following item(s) to approve. 
+                <ul id="lowBalanceItemsList" class="mt-2"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmSubmitBtn">Proceed Anyway</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
-<script>
-	$(document).ready(function () {
-
-		$('#evaluate_applicant').on('submit', function (e) {
-			const form = this;
-			const fromPartyId = $('#from_id').val();
-
-			if (!fromPartyId) {
-				alert("Please select 'From Party'.");
-				e.preventDefault();
-				return;
-			}
-
-			$.ajax({
-				url: "<?php echo base_url('consumables/indent/check_party_type'); ?>",
-				type: "POST",
-				dataType: "json",
-				async: false,
-				data: { from_id: fromPartyId },
-				success: function (partyRes) {
-					if (!partyRes || partyRes.is_external == null) {
-						alert("Invalid party selection.");
-						e.preventDefault();
-						return;
-					}
-					const isExternal = parseInt(partyRes.is_external);
-					if (isExternal === 2) {
-						return;
-					}
-					e.preventDefault();
-
-					let itemChecks = [];
-					let itemNames = [];
-
-					$('[name="item[]"]').each(function () {
-						const selectizeInstance = $(this)[0].selectize;
-						if (selectizeInstance) {
-							const itemId = selectizeInstance.getValue();
-							const itemOption = selectizeInstance.options[itemId];
-							const itemName = itemOption ? itemOption.item_name : "Unknown Item";
-
-							if (itemId) {
-								itemNames.push(itemName);
-								itemChecks.push(
-									$.ajax({
-										url: "<?php echo base_url('consumables/indent/check_item_balance'); ?>",
-										type: "POST",
-										dataType: "json",
-										data: { item_id: itemId }
-									})
-								);
-							}
-						}
-					});
-
-					if (itemChecks.length === 0) {
-						alert("Please select at least one item before issuing.");
-						return;
-					}
-
-					$.when.apply($, itemChecks).done(function () {
-						let responses = arguments;
-						if (itemChecks.length === 1) responses = [arguments];
-
-						let lowStockItems = [];
-
-						for (let i = 0; i < responses.length; i++) {
-							const balance = responses[i][0].balance;
-							if (balance <= 0) lowStockItems.push(itemNames[i]);
-						}
-
-						if (lowStockItems.length > 0) {
-							$('#stockAlertBody').html(
-								`<strong>The following items are not available or have negative balance:</strong><br><br>
-								<ul>${lowStockItems.map(i => `<li>${i}</li>`).join('')}</ul>`
-							);
-							$('#stockAlertModal').modal('show');
-						} else {
-							syncSelectizeValues();
-							form.submit();
-						}
-					}).fail(function () {
-						alert("Error checking item balances.");
-					});
-				},
-				error: function () {
-					alert("Error checking party type.");
-					e.preventDefault();
-				}
-			});
-		});
-
-		function syncSelectizeValues() {
-			$('[name="item[]"]').each(function () {
-				const selectizeInstance = $(this)[0].selectize;
-				if (selectizeInstance) {
-					const val = selectizeInstance.getValue();
-					$(this).val(val);
-				}
-			});
-		}
-	});
-</script>
-
-

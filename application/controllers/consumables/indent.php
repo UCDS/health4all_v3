@@ -416,11 +416,12 @@ class Indent extends CI_Controller {
    {
         $this->load->model('consumables/indent_report_model');
         $item_id = $this->input->post('item_id');
-        $closing_balance = $this->indent_report_model->get_individual_item_closing_balance($item_id);
+        $from_id = $this->input->post('from_id');
+        $closing_bal= $this->indent_report_model->get_individual_item_closing_balance($item_id,$from_id);
         $balance = 0;
-        if (!empty($closing_balance)) 
+        if (!empty($closing_bal)) 
         {
-            $balance = $closing_balance[0]->current_balance;
+            $balance = $closing_bal[0]->closing_balance;
         }
         echo json_encode([
             'balance' => $balance

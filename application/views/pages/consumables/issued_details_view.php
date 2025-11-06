@@ -614,7 +614,7 @@ $(document).ready(function() {
 
             $("#okBtn").off("click").on("click", function() {
                 $("#balanceModal").modal("hide");
-                $("form").submit(); // Uncomment if you want to force submit
+                //$("form").submit(); // Uncomment if you want to force submit
             });
 
             $("#cancelBtn").off("click").on("click", function() {
