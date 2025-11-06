@@ -577,6 +577,7 @@ $(document).ready(function() {
             let row = $(this);
             let item_id = row.find("input[name^='item_id_']").val();
             let itemName = row.find(".item_name").text();
+			let fromParty = $("input[name='indent_from_party']").val();
             let indent_item_id = row.find("input[name^='item_id_']").attr("name").split("_").pop();
 
             if (!item_id) return true;
@@ -587,7 +588,7 @@ $(document).ready(function() {
             $.ajax({
                 url: "<?= base_url('consumables/indent/check_item_balance'); ?>",
                 type: "POST",
-                data: { item_id: item_id },
+                data: { item_id: item_id, from_id: fromParty },
                 dataType: "json",
                 async: false,
                 success: function(response) {

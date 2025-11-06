@@ -209,14 +209,14 @@
             let lowBalanceItems = [];
 
             if ($("#from_id").val() === "" || $("#to_id").val() === "") {
-                 alert("Please select both Indent From and Indent To parties.");
-                 return;
+                alert("Please select both Indent From and Indent To parties.");
+                return;
             }
             if (itemSelects.length === 0 || itemSelects.filter(function() { return $(this).val() === ""; }).length > 0) {
-                 alert("Please ensure all item rows have a selected item.");
-                 return;
+                alert("Please ensure all item rows have a selected item.");
+                return;
             }
-			let fromPartyId = $('#from_id').val();
+            let fromPartyId = $('#from_id').val();
             let balancePromises = itemSelects.map(function() {
                 let itemId = $(this).val();
                 let itemText = $(this).next().find('.selectize-input').find('.item').text() || itemId;
@@ -227,8 +227,8 @@
                         type: 'POST',
                         dataType: 'JSON',
                         data: { item_id: itemId,
-                				from_id: fromPartyId 
-							},
+                                from_id: fromPartyId 
+                            },
                         success: function(res) {
                             if (res.balance <= 0) {
                                 lowBalanceItems.push(itemText);
@@ -251,8 +251,17 @@
                     });
                     $('#balanceWarningModal').modal('show');
                 } else {
-                    $form.data('is-override', true); 
-                    this.submit();
+                    $form.data('is-override', true);
+                    setTimeout(() => {
+                        if ($form.find('input[name="Submit"]').length === 0) {
+                            $('<input>').attr({
+                                type: 'hidden',
+                                name: 'Submit', 
+                                value: 'Submit'
+                            }).appendTo($form);
+                        }
+                        $form.submit();
+                    }, 100);
                 }
             });
         });
@@ -261,17 +270,18 @@
             $('#balanceWarningModal').modal('hide');
             
             const $form = $("#evaluate_applicant");
-            const formElement = document.getElementById('evaluate_applicant');
-        
+            
             if ($form.find('input[name="Submit"]').length === 0) {
-                 $('<input>').attr({
+                $('<input>').attr({
                     type: 'hidden',
                     name: 'Submit', 
                     value: 'Submit'
                 }).appendTo($form);
             }
             $form.data('is-override', true);
-            formElement.submit();
+            setTimeout(() => {
+                $form.submit();
+            }, 100);
         });
     });
 </script>

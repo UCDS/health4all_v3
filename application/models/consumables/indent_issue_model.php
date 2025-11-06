@@ -182,7 +182,8 @@ class Indent_issue_model extends CI_Model{                                      
 		if($this->input->post('indent_item')){                                                    //indent_item is an array which contains indent_item_id values and checking whether it is valid or not
 		    $data = array();     
 			$data_inventory_in = array();
-			$data_inventory_out = array();                                                                 //declaring an array with name data
+			$data_inventory_out = array();  
+			$summary_updates = array();                                                               //declaring an array with name data
 			$call_date = date("Y-m-d H:i:s");
 			$call_timestamp = strtotime($call_date);
 			$issue_datetime = $call_date;
@@ -260,7 +261,7 @@ class Indent_issue_model extends CI_Model{                                      
 					$summary_updates[] = [
 						'item_id' => $item_id,
 						'party_id' => $from_party_id,
-						'change' => -$quantity
+						'change' => $quantity
 					];
 					$summary_updates[] = [
 						'item_id' => $item_id,
@@ -308,7 +309,7 @@ class Indent_issue_model extends CI_Model{                                      
 		foreach ($updates as $update) 
 		{
 			$item_id = $update['item_id'];
-			$quantity = $update['quantity'];
+			$quantity = $update['change'];
 			$party_id = $update['party_id'];
 
 			if ($party_id == $from_party_id) 
