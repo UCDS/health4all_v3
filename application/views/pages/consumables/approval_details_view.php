@@ -342,7 +342,7 @@ $(window).load(function() {
 				let indent_item_id = row.find("input[name^='quantity_approved_']").attr("name").split("_").pop();
 
 				let status = $("input[name='indent_status_" + indent_item_id + "']:checked").val();
-
+				let enteredQty = parseInt(row.find("input[name^='quantity_approved_']").val()) || 0;
 				if (status === "Rejected") {
 					return true;
 				}
@@ -354,8 +354,9 @@ $(window).load(function() {
 					dataType: "json",
 					async: false,
 					success: function(response) {
-						if (response.balance <= 0) {
-							lowBalanceItems.push(itemName);
+						let availableQty = parseInt(response.balance) || 0;
+						if (enteredQty > availableQty) {  
+							lowBalanceItems.push(itemName + " (Entered: " + enteredQty + ", Available: " + availableQty + ")");
 						}
 					},
 					error: function(xhr, status, error) {

@@ -584,7 +584,8 @@ $(document).ready(function() {
 
             // let status = $("input[name='indent_status_" + indent_item_id + "']:checked").val();
             // if (status === "Rejected") return true;
-
+			let quantityInput = row.find("input[name^='quantity_issued_']");
+    		let enteredQty = parseInt(quantityInput.val()) || 0;
             $.ajax({
                 url: "<?= base_url('consumables/indent/check_item_balance'); ?>",
                 type: "POST",
@@ -592,9 +593,10 @@ $(document).ready(function() {
                 dataType: "json",
                 async: false,
                 success: function(response) {
-                    if (response.balance <= 0) {
-                        lowBalanceItems.push(itemName.trim());
-                    }
+                    let availableQty = parseInt(response.balance) || 0;
+					if (enteredQty > availableQty) {
+						lowBalanceItems.push(itemName.trim() + " (Entered: " + enteredQty + ", Available: " + availableQty + ")");
+					}
                 },
                 error: function(xhr, status, error) {
                     console.error("Error checking item balance:", error);

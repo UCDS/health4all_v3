@@ -218,20 +218,28 @@
             }
             let fromPartyId = $('#from_id').val();
             let balancePromises = itemSelects.map(function() {
-                let itemId = $(this).val();
-                let itemText = $(this).next().find('.selectize-input').find('.item').text() || itemId;
+                let $selectEl = $(this);
+                let itemId = $selectEl.val();
+                let itemText = $selectEl.next().find('.selectize-input').find('.item').text() || itemId;
+                let enteredQty = parseFloat($selectEl.closest('tr').find('input[name="quantity_indented[]"]').val()) || 0;
 
                 return new Promise((resolve) => {
                     $.ajax({
                         url: '<?php echo base_url(); ?>consumables/indent/check_item_balance',
                         type: 'POST',
                         dataType: 'JSON',
-                        data: { item_id: itemId,
-                                from_id: fromPartyId 
-                            },
+                        data: { 
+                            item_id: itemId,
+                            from_id: fromPartyId 
+                        },
                         success: function(res) {
-                            if (res.balance <= 0) {
-                                lowBalanceItems.push(itemText);
+                            if (enteredQty > res.balance) {
+                                // alert(
+                                //     itemText + 
+                                //     " → Entered quantity (" + enteredQty + 
+                                //     ") exceeds available (" + res.balance + ")"
+                                // );
+                                lowBalanceItems.push(itemText + " (Entered: " + enteredQty + ", Available: " + res.balance + ")");
                             }
                             resolve();
                         },

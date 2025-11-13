@@ -962,96 +962,106 @@
 </div>
 
 <script>
-	$(document).ready(function () {
+var current_items = [];
 
-		$('#auto_indent_form').on('submit', function (e) {
-			const form = this;
-			const fromPartyId = $('#from_id').val();
+ $(function () {
 
-			if (!fromPartyId) {
-				alert("Please select 'From Party'.");
-				e.preventDefault();
-				return;
-			}
+    $('#auto_indent_form').on('submit', function (e) {
+        e.preventDefault();
+        const form = this;
+        const $form = $(this);
 
-			$.ajax({
-				url: "<?php echo base_url('consumables/indent/check_party_type'); ?>",
-				type: "POST",
-				dataType: "json",
-				async: false,
-				data: { from_id: fromPartyId },
-				success: function (partyRes) {
-					if (!partyRes || partyRes.is_external == null) {
-						alert("Invalid party selection.");
-						e.preventDefault();
-						return;
-					}
-					const isExternal = parseInt(partyRes.is_external);
-					if (isExternal !== 1) {
-						return;
-					}
-					e.preventDefault();
-					let itemChecks = [];
-					let itemNames = [];
+        const fromPartyId = $('#from_id').val();
+        if (!fromPartyId) {
+            alert("Please select 'From Party' before issuing items.");
+            return;
+        }
 
-					$('[name="item[]"]').each(function () {
-						const selectizeInstance = $(this)[0].selectize;
-						if (selectizeInstance) {
-							const itemId = selectizeInstance.getValue();
-							const itemOption = selectizeInstance.options[itemId];
-							const itemName = itemOption ? itemOption.item_name : "Unknown Item";
+        const qtyInputs = $('input[name^="quantity_"]');
+        if (qtyInputs.length === 0) {
+            alert("Please add at least one item and enter quantity.");
+            return;
+        }
 
-							if (itemId) {
-								itemNames.push(itemName);
-								itemChecks.push(
-									$.ajax({
-										url: "<?php echo base_url('consumables/indent/check_item_balance'); ?>",
-										type: "POST",
-										dataType: "json",
-										data: { item_id: itemId }
-									})
-								);
-							}
-						}
-					});
+        let itemsToCheck = [];
 
-					if (itemChecks.length === 0) {
-						alert("Please select at least one item before issuing.");
-						return;
-					}
+        qtyInputs.each(function () {
+            const $input = $(this);
+            const name = $input.attr('name');
+            const match = name.match(/^quantity_(\d+)\[\]$/);
+            if (!match) return;
 
-					$.when.apply($, itemChecks).done(function () {
-						let responses = arguments;
-						if (itemChecks.length === 1) responses = [arguments];
+            const itemId = match[1];
+            const enteredQty = parseFloat($input.val()) || 0;
+            if (enteredQty <= 0) return;
+            let $form = $(this);		
+            let itemName = "Item ID " + itemId;
+            const selectEl = $(`[name="item[]"]`).filter(function () {
+                const sel = this.selectize;
+                return sel && sel.getValue() == itemId;
+            })[0];
+            if (selectEl && selectEl.selectize) {
+                const opt = selectEl.selectize.options[itemId];
+                if (opt && opt.item_name) itemName = opt.item_name;
+            }
+            const existing = itemsToCheck.find(i => i.id === itemId);
+            if (existing) existing.enteredQty += enteredQty;
+            else itemsToCheck.push({ id: itemId, name: itemName, enteredQty });
+        });
 
-						let lowStockItems = [];
+        if (itemsToCheck.length === 0) {
+            alert("Please enter a quantity greater than 0.");
+            return;
+        }
 
-						for (let i = 0; i < responses.length; i++) {
-							const balance = responses[i][0].balance;
-							if (balance <= 0) lowStockItems.push(itemNames[i]);
-						}
+        const ajaxCalls = itemsToCheck.map(item => {
+            return $.ajax({
+                url: "<?php echo base_url('consumables/indent/check_item_balance'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: { item_id: item.id, from_id: fromPartyId }
+            });
+        });
 
-						if (lowStockItems.length > 0) {
-							$('#stockAlertBody').html(
-								`<strong>The following items are not available or have negative balance:</strong><br><br>
-								<ul>${lowStockItems.map(i => `<li>${i}</li>`).join('')}</ul>`
-							);
-							$('#stockAlertModal').modal('show');
-						} else {
-							form.submit();
-						}
-					}).fail(function () {
-						alert("Error checking item balances.");
-					});
+        $.when.apply($, ajaxCalls)
+            .done(function () {
+                const responses = (ajaxCalls.length === 1) ? [arguments] : arguments;
+                let lowStock = [];
 
-				},
-				error: function () {
-					alert("Error checking party type.");
-					e.preventDefault();
-				}
-			});
+                for (let i = 0; i < responses.length; i++) {
+                    const availableQty = parseFloat(responses[i][0].balance) || 0;
+                    const item = itemsToCheck[i];
+                    if (item.enteredQty > availableQty) {
+                        lowStock.push(`${item.name} — Entered: <strong>${item.enteredQty}</strong>, Available: <strong>${availableQty}</strong>`);
+                    }
+                }
 
-		});
+                if (lowStock.length > 0) {
+                    $('#stockAlertBody').html(`
+                        <strong>Insufficient stock for the following items:</strong><br><br>
+                        <ul>${lowStock.map(i => `<li>${i}</li>`).join('')}</ul>
+                        <p class="text-danger"><strong>Please fix the quantities before submitting.</strong></p>
+                    `);
+                    $('#stockAlertModal').modal('show');
+                    return;
+                }
 
-	});
+                $('#auto_indent_form').off('submit');
+                $form.data('is-override', true);
+                    setTimeout(() => {
+                        if ($form.find('input[name="Submit"]').length === 0) {
+                            $('<input>').attr({
+                                type: 'hidden',
+                                name: 'Submit', 
+                                value: 'Submit'
+                            }).appendTo($form);
+                        }
+                        $form.submit();
+                    }, 100);
+            })
+            .fail(function () {
+                alert("Error checking stock balances. Please try again.");
+            });
+    });
+});
 </script>
