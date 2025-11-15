@@ -859,4 +859,26 @@ class Indent_report_model extends CI_Model
 		$query = $this->db->get(); 
 		return $query->result_array();
 	}
+
+	function get_individual_item_closing_balance($item_id = null,$from_id)
+	{
+		//$from_date = date("Y-m-d 00:00:00");
+
+		$this->db->select("closing_balance")
+		->from('inventory_summary')
+		->where('item_id', $item_id)
+		->where('supply_chain_party_id', $from_id);
+		$query = $this->db->get();
+		$records = $query->result();
+		return $records;
+	}
+
+	function get_scp_type($party_id = null)
+	{
+		$this->db->select('is_external');
+		$this->db->from('supply_chain_party');
+		$this->db->where('supply_chain_party_id', $party_id);
+		$query = $this->db->get();
+		return $query->row(); // <-- must return
+	}
 }

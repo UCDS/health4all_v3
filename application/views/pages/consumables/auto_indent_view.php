@@ -940,3 +940,128 @@
 
 
 </div>
+
+<div class="modal fade" id="stockAlertModal" tabindex="-1" role="dialog" aria-labelledby="stockAlertLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h4 class="modal-title" id="stockAlertLabel">Stock Alert</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" style="color:white;">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="stockAlertBody">
+        
+      </div>
+      <div class="modal-footer">
+		<button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var current_items = [];
+
+ $(function () {
+
+    $('#auto_indent_form').on('submit', function (e) {
+        e.preventDefault();
+        const form = this;
+        const $form = $(this);
+
+        const fromPartyId = $('#from_id').val();
+        if (!fromPartyId) {
+            alert("Please select 'From Party' before issuing items.");
+            return;
+        }
+
+        const qtyInputs = $('input[name^="quantity_"]');
+        if (qtyInputs.length === 0) {
+            alert("Please add at least one item and enter quantity.");
+            return;
+        }
+
+        let itemsToCheck = [];
+
+        qtyInputs.each(function () {
+            const $input = $(this);
+            const name = $input.attr('name');
+            const match = name.match(/^quantity_(\d+)\[\]$/);
+            if (!match) return;
+
+            const itemId = match[1];
+            const enteredQty = parseFloat($input.val()) || 0;
+            if (enteredQty <= 0) return;
+            let $form = $(this);		
+            let itemName = "Item ID " + itemId;
+            const selectEl = $(`[name="item[]"]`).filter(function () {
+                const sel = this.selectize;
+                return sel && sel.getValue() == itemId;
+            })[0];
+            if (selectEl && selectEl.selectize) {
+                const opt = selectEl.selectize.options[itemId];
+                if (opt && opt.item_name) itemName = opt.item_name;
+            }
+            const existing = itemsToCheck.find(i => i.id === itemId);
+            if (existing) existing.enteredQty += enteredQty;
+            else itemsToCheck.push({ id: itemId, name: itemName, enteredQty });
+        });
+
+        if (itemsToCheck.length === 0) {
+            alert("Please enter a quantity greater than 0.");
+            return;
+        }
+
+        const ajaxCalls = itemsToCheck.map(item => {
+            return $.ajax({
+                url: "<?php echo base_url('consumables/indent/check_item_balance'); ?>",
+                type: "POST",
+                dataType: "json",
+                data: { item_id: item.id, from_id: fromPartyId }
+            });
+        });
+
+        $.when.apply($, ajaxCalls)
+            .done(function () {
+                const responses = (ajaxCalls.length === 1) ? [arguments] : arguments;
+                let lowStock = [];
+
+                for (let i = 0; i < responses.length; i++) {
+                    const availableQty = parseFloat(responses[i][0].balance) || 0;
+                    const item = itemsToCheck[i];
+                    if (item.enteredQty > availableQty) {
+                        lowStock.push(`${item.name} — Entered: <strong>${item.enteredQty}</strong>, Available: <strong>${availableQty}</strong>`);
+                    }
+                }
+
+                if (lowStock.length > 0) {
+                    $('#stockAlertBody').html(`
+                        <strong>Insufficient stock for the following items:</strong><br><br>
+                        <ul>${lowStock.map(i => `<li>${i}</li>`).join('')}</ul>
+                        <p class="text-danger"><strong>Please fix the quantities before submitting.</strong></p>
+                    `);
+                    $('#stockAlertModal').modal('show');
+                    return;
+                }
+
+                $('#auto_indent_form').off('submit');
+                $form.data('is-override', true);
+                    setTimeout(() => {
+                        if ($form.find('input[name="Submit"]').length === 0) {
+                            $('<input>').attr({
+                                type: 'hidden',
+                                name: 'Submit', 
+                                value: 'Submit'
+                            }).appendTo($form);
+                        }
+                        $form.submit();
+                    }, 100);
+            })
+            .fail(function () {
+                alert("Error checking stock balances. Please try again.");
+            });
+    });
+});
+</script>

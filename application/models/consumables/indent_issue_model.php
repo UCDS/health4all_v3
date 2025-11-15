@@ -64,7 +64,15 @@ class Indent_issue_model extends CI_Model{                                      
    
 	function display_issue_details(){                                                              //definition of a function :display_issue_details
 		$hospital=$this->session->userdata('hospital');                                            //Storing user data who logged into the hospital into a var:hospital
-		$this->db->select('quantity_approved,indent.approve_date_time,indent_item.item_id, indent_item.indent_status item_status, indent_item.indent_item_id,indent_item.quantity_indented, indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,from_party.supply_chain_party_id from_party_id, to_party.supply_chain_party_name to_party, to_party.supply_chain_party_id to_party_id, orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,item_name,indent_item.quantity_issued,indent_item.note note, indent.note indent_note, indent.indent_status, indent.indent_date')->from('indent')
+		$this->db->select('quantity_approved,indent.approve_date_time,indent_item.item_id, 
+		indent_item.indent_status item_status, indent_item.indent_item_id,indent_item.quantity_indented, 
+		indent_item.quantity_approved,indent.indent_id,indent.issuer_id,indent.issue_date_time,hospital.hospital,
+		item_type,item_form,dosage_unit,dosage,from_party.supply_chain_party_name from_party,
+		from_party.supply_chain_party_id from_party_id, to_party.supply_chain_party_name to_party, 
+		to_party.supply_chain_party_id to_party_id, orderby.first_name as order_first,orderby.last_name as order_last,
+		approve.first_name as approve_first,approve.last_name as approve_last,issue.first_name as issue_first,issue.last_name as issue_last,
+		item_name,indent_item.quantity_issued,indent_item.note note, indent.note indent_note, indent.indent_status, 
+		indent.indent_date, item.item_id')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                   //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')          //item_type,item_form,dosage,supply_chain_party,staff,hospital)
@@ -174,7 +182,8 @@ class Indent_issue_model extends CI_Model{                                      
 		if($this->input->post('indent_item')){                                                    //indent_item is an array which contains indent_item_id values and checking whether it is valid or not
 		    $data = array();     
 			$data_inventory_in = array();
-			$data_inventory_out = array();                                                                 //declaring an array with name data
+			$data_inventory_out = array();  
+			$summary_updates = array();                                                               //declaring an array with name data
 			$call_date = date("Y-m-d H:i:s");
 			$call_timestamp = strtotime($call_date);
 			$issue_datetime = $call_date;
@@ -208,41 +217,57 @@ class Indent_issue_model extends CI_Model{                                      
 				// foreach($this->input->post("quantity_".$i) as $q){
 				// 	log_message("info", "SAIRAM $q");
 				// }
-				for($j = 0; $j < count($this->input->post("quantity_".$i)); $j++){
-					array_push($data_inventory_in, array(
-						'inward_outward' => 'inward', 
-						'supply_chain_party_id' => $this->input->post('from_party_id'), 
-						'item_id' => $this->input->post("item_id_$i"), 
-						'quantity' => $quantities[$j], 
-						'date_time' => $issue_datetime, 
-						'inward_outward_type' => '', 
-						'manufacture_date' => date("Y-m-d H:i:s", strtotime($mfg_dates[$j])), 
-						'expiry_date' => date("Y-m-d H:i:s", strtotime($exp_dates[$j])), 
-						'batch' => $batch_ids[$j], 
-						'cost' => $costs[$j], 
-						'patient_id' => $patient_ids[$j], 
-						'indent_id' => $this->input->post('selected_indent_id'), 
-						'gtin_code' => $gtins[$j], 
-						'note' => $notes[$j]
-						
-					));
-					array_push($data_inventory_out, array(
-						'inward_outward' => 'outward', 
-						'supply_chain_party_id' => $this->input->post('to_party_id'), 
-						'item_id' => $this->input->post("item_id_$i"), 
-						'quantity' => $quantities[$j], 
-						'date_time' => $issue_datetime, 
-						'inward_outward_type' => '', 
-						'manufacture_date' => date("Y-m-d H:i:s", strtotime($mfg_dates[$j])), 
-						'expiry_date' => date("Y-m-d H:i:s", strtotime($exp_dates[$j])), 
-						'batch' => $batch_ids[$j], 
-						'cost' => $costs[$j], 
-						'patient_id' => $patient_ids[$j], 
-						'indent_id' => $this->input->post('selected_indent_id'), 
-						'gtin_code' => $gtins[$j], 
-						'note' => $notes[$j]
-						
-					));
+				for ($j = 0; $j < count($quantities); $j++) {
+
+					$item_id = $this->input->post("item_id_$i");
+					$from_party_id = $this->input->post('from_party_id');
+					$to_party_id = $this->input->post('to_party_id');
+					$current_datetime = date("Y-m-d H:i:s");
+					$quantity = $quantities[$j];
+
+					$data_inventory_in[] = [
+						'inward_outward'       => 'inward',
+						'supply_chain_party_id'=> $from_party_id,
+						'item_id'              => $item_id,
+						'quantity'             => $quantity,
+						'date_time'            => $issue_datetime,
+						'inward_outward_type'  => '',
+						'manufacture_date'     => date("Y-m-d H:i:s", strtotime($mfg_dates[$j])),
+						'expiry_date'          => date("Y-m-d H:i:s", strtotime($exp_dates[$j])),
+						'batch'                => $batch_ids[$j],
+						'cost'                 => $costs[$j],
+						'patient_id'           => $patient_ids[$j],
+						'indent_id'            => $this->input->post('selected_indent_id'),
+						'gtin_code'            => $gtins[$j],
+						'note'                 => $notes[$j]
+					];
+					$data_inventory_out[] = [
+						'inward_outward'       => 'outward',
+						'supply_chain_party_id'=> $to_party_id,
+						'item_id'              => $item_id,
+						'quantity'             => $quantity,
+						'date_time'            => $issue_datetime,
+						'inward_outward_type'  => '',
+						'manufacture_date'     => date("Y-m-d H:i:s", strtotime($mfg_dates[$j])),
+						'expiry_date'          => date("Y-m-d H:i:s", strtotime($exp_dates[$j])),
+						'batch'                => $batch_ids[$j],
+						'cost'                 => $costs[$j],
+						'patient_id'           => $patient_ids[$j],
+						'indent_id'            => $this->input->post('selected_indent_id'),
+						'gtin_code'            => $gtins[$j],
+						'note'                 => $notes[$j]
+					];
+
+					$summary_updates[] = [
+						'item_id' => $item_id,
+						'party_id' => $from_party_id,
+						'change' => $quantity
+					];
+					$summary_updates[] = [
+						'item_id' => $item_id,
+						'party_id' => $to_party_id,
+						'change' => $quantity
+					];
 				}
 			}
 			log_message("info", json_encode($data_inventory_in));
@@ -266,7 +291,7 @@ class Indent_issue_model extends CI_Model{                                      
             $this->db->update('indent', $array);
 			$this->db->insert_batch('inventory', $data_inventory_in);
 			$this->db->insert_batch('inventory', $data_inventory_out);
-
+			$this->update_inventory_summary($summary_updates, $from_party_id, $to_party_id);
 		    $this->db->trans_complete();                                                   
             if($this->db->trans_status()==FALSE){                                          
                 return false;
@@ -276,6 +301,71 @@ class Indent_issue_model extends CI_Model{                                      
             }//else			
 		}//end_if
 	}//issue_indent
+
+	function update_inventory_summary($updates, $from_party_id, $to_party_id) 
+	{
+		$current_datetime = date("Y-m-d H:i:s");
+
+		foreach ($updates as $update) 
+		{
+			$item_id = $update['item_id'];
+			$quantity = $update['change'];
+			$party_id = $update['party_id'];
+
+			if ($party_id == $from_party_id) 
+			{
+				$query = $this->db->select('closing_balance')
+					->from('inventory_summary')
+					->where('item_id', $item_id)
+					->where('supply_chain_party_id', $from_party_id)
+					->get();
+
+				if ($query->num_rows() > 0) {
+					$row = $query->row();
+					$new_balance = $row->closing_balance - $quantity;
+					$this->db->where('item_id', $item_id)
+						->where('supply_chain_party_id', $from_party_id)
+						->update('inventory_summary', [
+							'closing_balance' => $new_balance,
+							'transaction_date' => $current_datetime
+						]);
+				} else {
+					$this->db->insert('inventory_summary', [
+						'supply_chain_party_id' => $from_party_id,
+						'item_id' => $item_id,
+						'closing_balance' => -$quantity,
+						'transaction_date' => $current_datetime
+					]);
+				}
+			}
+			if ($party_id == $to_party_id) 
+			{
+				$query = $this->db->select('closing_balance')
+					->from('inventory_summary')
+					->where('item_id', $item_id)
+					->where('supply_chain_party_id', $to_party_id)
+					->get();
+
+				if ($query->num_rows() > 0) {
+					$row = $query->row();
+					$new_balance = $row->closing_balance + $quantity;
+					$this->db->where('item_id', $item_id)
+						->where('supply_chain_party_id', $to_party_id)
+						->update('inventory_summary', [
+							'closing_balance' => $new_balance,
+							'transaction_date' => $current_datetime
+						]);
+				} else {
+					$this->db->insert('inventory_summary', [
+						'supply_chain_party_id' => $to_party_id,
+						'item_id' => $item_id,
+						'closing_balance' => $quantity,
+						'transaction_date' => $current_datetime
+					]);
+				}
+			}
+		}
+	}
 
 	function update_data($fieldId, $newValue, $indentId)
 	{

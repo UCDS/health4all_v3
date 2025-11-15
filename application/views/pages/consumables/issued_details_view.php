@@ -494,7 +494,8 @@
 											name=<?="item_id_$all_int->indent_item_id"; ?> readonly>
 
 										<!-- name="add_$indent_item->id" -->
-
+										<input type="hidden" value="<?php echo $all_int->item_id; ?>" name="item_id" class="form-control">
+										<input type="hidden" class="form_control" name="indent_from_party" value="<?php echo $all_int->from_party_id; ?>">
 									</tr>
 
 									<?php
@@ -544,4 +545,108 @@
 </div>
 
 
+</div>
+
+<script>
+$(document).ready(function() {
+    $("#btn").click(function(e) {
+        e.preventDefault();
+
+        let fromParty = $("input[name='indent_from_party']").val(); 
+        let isExternal = null;
+        let lowBalanceItems = [];
+
+        $.ajax({
+            url: "<?= base_url('consumables/indent/check_party_type'); ?>",
+            type: "POST",
+            data: { from_id: fromParty },
+            dataType: "json",
+            async: false,
+            success: function(response) {
+                isExternal = parseInt(response.is_external);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error checking party type:", error);
+                alert("Error checking party type. Check console for details.");
+                return;
+            }
+        });
+
+        // Loop through each indent item row
+        $("tr.indent_item").each(function() {
+            let row = $(this);
+            let item_id = row.find("input[name^='item_id_']").val();
+            let itemName = row.find(".item_name").text();
+			let fromParty = $("input[name='indent_from_party']").val();
+            let indent_item_id = row.find("input[name^='item_id_']").attr("name").split("_").pop();
+
+            if (!item_id) return true;
+
+            // let status = $("input[name='indent_status_" + indent_item_id + "']:checked").val();
+            // if (status === "Rejected") return true;
+			let quantityInput = row.find("input[name^='quantity_issued_']");
+    		let enteredQty = parseInt(quantityInput.val()) || 0;
+            $.ajax({
+                url: "<?= base_url('consumables/indent/check_item_balance'); ?>",
+                type: "POST",
+                data: { item_id: item_id, from_id: fromParty },
+                dataType: "json",
+                async: false,
+                success: function(response) {
+                    let availableQty = parseInt(response.balance) || 0;
+					if (enteredQty > availableQty) {
+						lowBalanceItems.push(itemName.trim() + " (Entered: " + enteredQty + ", Available: " + availableQty + ")");
+					}
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error checking item balance:", error);
+                }
+            });
+        });
+
+        // If insufficient balance found
+        if (isExternal === 1 && lowBalanceItems.length > 0) {
+            let modalBody = "You do not have sufficient balance for the following item(s):<br><ul>";
+            lowBalanceItems.forEach(function(name) {
+                modalBody += "<li>" + name + "</li>";
+            });
+            modalBody += "</ul>";
+
+            $("#balanceModal .modal-body").html(modalBody);
+            $("#balanceModal").modal("show");
+
+            $("#okBtn").off("click").on("click", function() {
+                $("#balanceModal").modal("hide");
+                //$("form").submit(); // Uncomment if you want to force submit
+            });
+
+            $("#cancelBtn").off("click").on("click", function() {
+                $("#balanceModal").modal("hide");
+            });
+        } else {
+            $("form").submit();
+        }
+    });
+});
+</script>
+
+
+<div class="modal fade" id="balanceModal" tabindex="-1" role="dialog" aria-labelledby="balanceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="balanceModalLabel">Insufficient Balance</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="margin-top:-22px!important;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        You do not have sufficient balance to approve this indent.
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="okBtn" class="btn btn-success">OK</button>
+        <button type="button" id="cancelBtn" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
