@@ -423,7 +423,8 @@ class Indent_reports extends CI_Controller
 		$res = array('items' => $items);
 		echo json_encode($res);
 	}
-	function run_report_periodic()
+	//Commenting for temporarily as inventory_summary table is now being used for capturing the cumulative balnce after every transaction
+/*function run_report_periodic()
 	{
 		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
             $this->data['userdata']=$this->session->userdata('logged_in');                        //taking session data into data array of index:userdata                   
@@ -448,7 +449,7 @@ class Indent_reports extends CI_Controller
 		}
 		$this->load->model('consumables/inventory_summary_model');
 		$this->inventory_summary_model->run_report_periodic();
-	}
+}*/
 	function get_item_summary($item_id, $scp_id)
 	{
 		if($this->session->userdata('logged_in')){                                                //checking whether user is in logging state or not;session:state of a user.
