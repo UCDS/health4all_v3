@@ -183,7 +183,8 @@ class Indent_issue_model extends CI_Model{                                      
 		    $data = array();     
 			$data_inventory_in = array();
 			$data_inventory_out = array();  
-			$summary_updates = array();                                                               //declaring an array with name data
+			$summary_updates_in = array();                                                               //declaring an array with name data
+			$summary_updates_out = array();                                                               //declaring an array with name data
 			$call_date = date("Y-m-d H:i:s");
 			$call_timestamp = strtotime($call_date);
 			$issue_datetime = $call_date;
@@ -258,12 +259,12 @@ class Indent_issue_model extends CI_Model{                                      
 						'note'                 => $notes[$j]
 					];
 
-					$summary_updates[] = [
+					$summary_updates_in[] = [
 						'item_id' => $item_id,
 						'party_id' => $from_party_id,
 						'change' => $quantity
 					];
-					$summary_updates[] = [
+					$summary_updates_out[] = [
 						'item_id' => $item_id,
 						'party_id' => $to_party_id,
 						'change' => $quantity
@@ -291,7 +292,7 @@ class Indent_issue_model extends CI_Model{                                      
             $this->db->update('indent', $array);
 			$this->db->insert_batch('inventory', $data_inventory_in);
 			$this->db->insert_batch('inventory', $data_inventory_out);
-			$this->update_inventory_summary($summary_updates, $from_party_id, $to_party_id);
+			$this->update_inventory_summary($summary_updates_in,$summary_updates_out);
 		    $this->db->trans_complete();                                                   
             if($this->db->trans_status()==FALSE){                                          
                 return false;
@@ -302,68 +303,70 @@ class Indent_issue_model extends CI_Model{                                      
 		}//end_if
 	}//issue_indent
 
-	function update_inventory_summary($updates, $from_party_id, $to_party_id) 
+	function update_inventory_summary($summary_updates_in,$summary_updates_out) 
 	{
 		$current_datetime = date("Y-m-d H:i:s");
-
-		foreach ($updates as $update) 
+		foreach ($summary_updates_in as $update) 
 		{
 			$item_id = $update['item_id'];
 			$quantity = $update['change'];
 			$party_id = $update['party_id'];
 
-			if ($party_id == $from_party_id) 
-			{
+			
 				$query = $this->db->select('closing_balance')
 					->from('inventory_summary')
 					->where('item_id', $item_id)
-					->where('supply_chain_party_id', $from_party_id)
+					->where('supply_chain_party_id', $party_id)
 					->get();
 
 				if ($query->num_rows() > 0) {
 					$row = $query->row();
 					$new_balance = $row->closing_balance - $quantity;
 					$this->db->where('item_id', $item_id)
-						->where('supply_chain_party_id', $from_party_id)
+						->where('supply_chain_party_id', $party_id)
 						->update('inventory_summary', [
 							'closing_balance' => $new_balance,
 							'transaction_date' => $current_datetime
 						]);
 				} else {
 					$this->db->insert('inventory_summary', [
-						'supply_chain_party_id' => $from_party_id,
+						'supply_chain_party_id' => $party_id,
 						'item_id' => $item_id,
-						'closing_balance' => -$quantity,
+						'closing_balance' => $quantity,
 						'transaction_date' => $current_datetime
 					]);
 				}
-			}
-			if ($party_id == $to_party_id) 
-			{
+			
+		}
+		foreach ($summary_updates_out as $update) 
+		{
+			$item_id = $update['item_id'];
+			$quantity = $update['change'];
+			$party_id = $update['party_id'];
+
 				$query = $this->db->select('closing_balance')
 					->from('inventory_summary')
 					->where('item_id', $item_id)
-					->where('supply_chain_party_id', $to_party_id)
+					->where('supply_chain_party_id', $party_id)
 					->get();
 
 				if ($query->num_rows() > 0) {
 					$row = $query->row();
 					$new_balance = $row->closing_balance + $quantity;
 					$this->db->where('item_id', $item_id)
-						->where('supply_chain_party_id', $to_party_id)
+						->where('supply_chain_party_id', $party_id)
 						->update('inventory_summary', [
 							'closing_balance' => $new_balance,
 							'transaction_date' => $current_datetime
 						]);
 				} else {
 					$this->db->insert('inventory_summary', [
-						'supply_chain_party_id' => $to_party_id,
+						'supply_chain_party_id' => $party_id,
 						'item_id' => $item_id,
-						'closing_balance' => $quantity,
+						'closing_balance' => -$quantity,
 						'transaction_date' => $current_datetime
 					]);
 				}
-			}
 		}
 	}
 

@@ -963,15 +963,36 @@
 
 <script>
 var current_items = [];
+var currentPartyType = null;
 
  $(function () {
+
+	$('#to_id').change(function () {
+        let to_id = $(this).val();
+
+        if (to_id) {
+            $.ajax({
+                url: '<?php echo base_url(); ?>consumables/indent/check_party_type',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { to_id: to_id },
+                success: function (res) {
+                    currentPartyType = res.is_external;
+                    //console.log("Party Type: " + currentPartyType);
+                }
+            });
+        } else {
+            currentPartyType = null;
+        }
+    }).trigger('change');
+	
 
     $('#auto_indent_form').on('submit', function (e) {
         e.preventDefault();
         const form = this;
         const $form = $(this);
 
-        const fromPartyId = $('#from_id').val();
+        const fromPartyId = $('#to_id').val();
         if (!fromPartyId) {
             alert("Please select 'From Party' before issuing items.");
             return;
@@ -1014,12 +1035,31 @@ var current_items = [];
             return;
         }
 
+		if (currentPartyType != 1) {
+            //console.log("External party → skipping balance check");
+
+            $('#auto_indent_form').off('submit');
+            $form.data('is-override', true);
+
+            setTimeout(() => {
+                if ($form.find('input[name="Submit"]').length === 0) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'Submit',
+                        value: 'Submit'
+                    }).appendTo($form);
+                }
+                $form.submit();
+            }, 100);
+
+            return;
+        }
         const ajaxCalls = itemsToCheck.map(item => {
             return $.ajax({
                 url: "<?php echo base_url('consumables/indent/check_item_balance'); ?>",
                 type: "POST",
                 dataType: "json",
-                data: { item_id: item.id, from_id: fromPartyId }
+                data: { item_id: item.id, to_id: fromPartyId }
             });
         });
 

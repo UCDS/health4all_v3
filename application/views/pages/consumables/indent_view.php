@@ -107,25 +107,27 @@
         $("#indent_time").ptTimeSelect();
 
         $("#from_id").change(function() {
-            let from_id = $(this).val();
-            if (from_id) {
-                $.ajax({
-                    url: '<?php echo base_url(); ?>consumables/indent/check_party_type',
-                    type: 'POST',
-                    dataType: 'JSON',
-                    data: { from_id: from_id },
-                    success: function(res) {
-                        currentPartyType = res.is_external; // 1 = internal, 2 = external
-                    }
-                });
-            } else {
-                currentPartyType = null;
-            }
             $("#to_id option").show();
             $('#to_id option[value="' + this.value + '"]').hide();
         }).trigger('change');
 
         $('#to_id').change(function() {
+
+            let to_id = $(this).val();
+            if (to_id) {
+                $.ajax({
+                    url: '<?php echo base_url(); ?>consumables/indent/check_party_type',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: { to_id: to_id },
+                    success: function(res) {
+                        currentPartyType = res.is_external;
+                    }
+                });
+            } else {
+                currentPartyType = null;
+            }
+
             $("#from_id option").show();
             $('#from_id option[value="' + this.value + '"]').hide();
         }).trigger('change');
@@ -216,7 +218,9 @@
                 alert("Please ensure all item rows have a selected item.");
                 return;
             }
-            let fromPartyId = $('#from_id').val();
+
+            let fromPartyId = $('#to_id').val();
+
             let balancePromises = itemSelects.map(function() {
                 let $selectEl = $(this);
                 let itemId = $selectEl.val();
@@ -230,15 +234,10 @@
                         dataType: 'JSON',
                         data: { 
                             item_id: itemId,
-                            from_id: fromPartyId 
+                            to_id: fromPartyId 
                         },
                         success: function(res) {
                             if (enteredQty > res.balance) {
-                                // alert(
-                                //     itemText + 
-                                //     " → Entered quantity (" + enteredQty + 
-                                //     ") exceeds available (" + res.balance + ")"
-                                // );
                                 lowBalanceItems.push(itemText + " (Entered: " + enteredQty + ", Available: " + res.balance + ")");
                             }
                             resolve();

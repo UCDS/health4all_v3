@@ -860,14 +860,14 @@ class Indent_report_model extends CI_Model
 		return $query->result_array();
 	}
 
-	function get_individual_item_closing_balance($item_id = null,$from_id)
+	function get_individual_item_closing_balance($item_id = null,$to_id)
 	{
 		//$from_date = date("Y-m-d 00:00:00");
 
 		$this->db->select("closing_balance")
 		->from('inventory_summary')
 		->where('item_id', $item_id)
-		->where('supply_chain_party_id', $from_id);
+		->where('supply_chain_party_id', $to_id);
 		$query = $this->db->get();
 		$records = $query->result();
 		return $records;

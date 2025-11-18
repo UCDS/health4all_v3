@@ -828,7 +828,7 @@ function initDistrictSelectize(){
 		<?php 
 			foreach($functions as $f){ 
 				if($f->user_function == "patient_document_upload" && ($f->add==1 || $f->view ==1 || $f->edit==1 || $f->remove==1)) { ?>
-					<li role="presentation" <?php if(count($previous_visits) > 1) echo "class='active'"; ?>><a href="#docupload" aria-controls="docupload" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-file" aria-hidden="true">&nbsp;</span>Patient Documents</a></li>
+					<li role="presentation"><a href="#docupload" aria-controls="docupload" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-file" aria-hidden="true">&nbsp;</span>Patient Documents</a></li>
 				<?php 
 				break;
 				 } 
@@ -2784,7 +2784,7 @@ function initDistrictSelectize(){
 			</div>			
 		</div>
 		<!-- Insert New Tab here for Patient documents upload -->
-		<div role="tabpanel" class="tab-pane  <?php if(count($previous_visits) > 1) echo "active"; ?>" id="docupload">
+		<div role="tabpanel" class="tab-pane" id="docupload">
 			<div data-patient-quick-info></div>
 
 			<div class="row">

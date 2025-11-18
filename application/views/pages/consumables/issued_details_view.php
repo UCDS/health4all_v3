@@ -495,7 +495,7 @@
 
 										<!-- name="add_$indent_item->id" -->
 										<input type="hidden" value="<?php echo $all_int->item_id; ?>" name="item_id" class="form-control">
-										<input type="hidden" class="form_control" name="indent_from_party" value="<?php echo $all_int->from_party_id; ?>">
+										<input type="text" class="form_control" name="indent_from_party" value="<?php echo $all_int->to_party_id; ?>">
 									</tr>
 
 									<?php
@@ -559,7 +559,7 @@ $(document).ready(function() {
         $.ajax({
             url: "<?= base_url('consumables/indent/check_party_type'); ?>",
             type: "POST",
-            data: { from_id: fromParty },
+            data: { to_id: fromParty },
             dataType: "json",
             async: false,
             success: function(response) {
@@ -589,7 +589,7 @@ $(document).ready(function() {
             $.ajax({
                 url: "<?= base_url('consumables/indent/check_item_balance'); ?>",
                 type: "POST",
-                data: { item_id: item_id, from_id: fromParty },
+                data: { item_id: item_id, to_id: fromParty },
                 dataType: "json",
                 async: false,
                 success: function(response) {
