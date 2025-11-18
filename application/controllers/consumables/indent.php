@@ -416,8 +416,8 @@ class Indent extends CI_Controller {
    {
         $this->load->model('consumables/indent_report_model');
         $item_id = $this->input->post('item_id');
-        $from_id = $this->input->post('from_id');
-        $closing_bal= $this->indent_report_model->get_individual_item_closing_balance($item_id,$from_id);
+        $to_id = $this->input->post('to_id');
+        $closing_bal= $this->indent_report_model->get_individual_item_closing_balance($item_id,$to_id);
         $balance = 0;
         if (!empty($closing_bal)) 
         {
@@ -431,7 +431,7 @@ class Indent extends CI_Controller {
     public function check_party_type()
     {
         $this->load->model('consumables/indent_report_model');
-        $party_id = $this->input->post('from_id');
+        $party_id = $this->input->post('to_id');
         $res = $this->indent_report_model->get_scp_type($party_id);
         
         if ($res) {

@@ -834,6 +834,7 @@ class Register extends CI_Controller {
 				if (($this->patient_document_upload_model->delete_document($patient_id, $document_link)) > 0) {
 					$this->delete_document($document_link);
 				}
+				return;
 			}
 		 	
 			if($this->input->post('edit_document_link'))

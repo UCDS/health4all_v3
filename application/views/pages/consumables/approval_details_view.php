@@ -247,7 +247,7 @@ $(window).load(function() {
 					                <div class="form-group"> 
 					                      <td align="left"><?php echo  $all_int->item_name."-".$all_int->item_type."-".$all_int->item_form."-".$all_int->dosage.$all_int->dosage_unit ;?></td>
 										  <input type="hidden" class="form_control" name="item_id" value="<?php echo $all_int->item_id; ?>">
-										  <input type="hidden" class="form_control" name="indent_from_party" value="<?php echo $all_int->supply_chain_party_id; ?>">
+										  <input type="hidden" class="form_control" name="indent_from_party" value="<?php echo $all_int->to_party_supply_chain_party_id; ?>">
 					                </div>
 					                <div class="form-group">
 					                      <td align="right"><?php echo $all_int->quantity_indented;?></td>
@@ -320,7 +320,7 @@ $(window).load(function() {
 			$.ajax({
 				url: "<?= base_url('consumables/indent/check_party_type'); ?>",
 				type: "POST",
-				data: { from_id: fromParty },
+				data: { to_id: fromParty },
 				dataType: "json",
 				async: false,
 				success: function(response) {
@@ -350,7 +350,7 @@ $(window).load(function() {
 				$.ajax({
 					url: "<?= base_url('consumables/indent/check_item_balance'); ?>",
 					type: "POST",
-					data: { item_id: item_id , from_id: fromParty },
+					data: { item_id: item_id , to_id: fromParty },
 					dataType: "json",
 					async: false,
 					success: function(response) {

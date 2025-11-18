@@ -64,7 +64,7 @@ class Indent_approval_model extends CI_Model {                                  
 		from_party.supply_chain_party_name from_party,to_party.supply_chain_party_name to_party ,
 		orderby.first_name as order_first,orderby.last_name as order_last,approve.first_name as approve_first,approve.last_name as approve_last,
 		item_name,indent_item.quantity_approved,indent_item.indent_status, indent_item.note, indent.note indent_note,item.item_id,
-		from_party.supply_chain_party_id')->from('indent')
+		from_party.supply_chain_party_id, to_party.supply_chain_party_id as to_party_supply_chain_party_id')->from('indent')
 		->join('indent_item','indent.indent_id = indent_item.indent_id' ,'left')
 		->join('item','item.item_id=indent_item.item_id','left')                                              //this is the select query to get field values by joining all the  tables(indent,indent_item,item,generic_item,
 		->join('generic_item','item.generic_item_id=generic_item.generic_item_id','left')                     //item_type,item_form,dosage,supply_chain_party,staff,hospital)
