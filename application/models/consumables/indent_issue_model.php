@@ -261,12 +261,12 @@ class Indent_issue_model extends CI_Model{                                      
 
 					$summary_updates_in[] = [
 						'item_id' => $item_id,
-						'party_id' => $from_party_id,
+						'party_id' => $from_party_id,  //receiving party
 						'change' => $quantity
 					];
 					$summary_updates_out[] = [
 						'item_id' => $item_id,
-						'party_id' => $to_party_id,
+						'party_id' => $to_party_id,  //sending party
 						'change' => $quantity
 					];
 				}
@@ -321,7 +321,7 @@ class Indent_issue_model extends CI_Model{                                      
 
 				if ($query->num_rows() > 0) {
 					$row = $query->row();
-					$new_balance = $row->closing_balance - $quantity;
+					$new_balance = $row->closing_balance + $quantity;
 					$this->db->where('item_id', $item_id)
 						->where('supply_chain_party_id', $party_id)
 						->update('inventory_summary', [
@@ -352,7 +352,7 @@ class Indent_issue_model extends CI_Model{                                      
 
 				if ($query->num_rows() > 0) {
 					$row = $query->row();
-					$new_balance = $row->closing_balance + $quantity;
+					$new_balance = $row->closing_balance - $quantity;
 					$this->db->where('item_id', $item_id)
 						->where('supply_chain_party_id', $party_id)
 						->update('inventory_summary', [
