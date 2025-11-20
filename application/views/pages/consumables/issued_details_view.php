@@ -495,7 +495,7 @@
 
 										<!-- name="add_$indent_item->id" -->
 										<input type="hidden" value="<?php echo $all_int->item_id; ?>" name="item_id" class="form-control">
-										<input type="text" class="form_control" name="indent_from_party" value="<?php echo $all_int->to_party_id; ?>">
+										<input type="hidden" class="form_control" name="indent_from_party" value="<?php echo $all_int->to_party_id; ?>">
 									</tr>
 
 									<?php
