@@ -705,6 +705,7 @@ function initDistrictSelectize(){
 			} else {
 				alert("You do not have access to that hospital.");
 			}
+			localStorage.removeItem("activePatientTab");
 		}
 	</script>
 	<?php } 
@@ -835,6 +836,47 @@ function initDistrictSelectize(){
 			}
 		?>
 	  </ul>
+	<script>
+		$(document).ready(function() {
+			//console.log("--- Tab Manager Script Initialized ---");
+			const ACTIVE_TAB_KEY = 'activePatientTab';
+			const navTabs = $('.nav-tabs');
+			if (navTabs.length === 0) {
+				//console.error("CRITICAL ERROR: .nav-tabs element not found. Script cannot run.");
+				return;
+			}
+			$('body').on('click', '.nav-tabs a[data-toggle="tab"]', function(e) {
+				var clickedTabId = $(this).attr('href');
+				//console.log("CLICKED on tab. Will save:", clickedTabId);
+				localStorage.setItem(ACTIVE_TAB_KEY, clickedTabId);
+			});
+			setTimeout(function() {
+				//console.log("--- Timeout reached. Attempting to restore tab. ---");
+				var savedTabId = localStorage.getItem(ACTIVE_TAB_KEY);
+				//console.log("Found in localStorage:", savedTabId);
+
+				if (savedTabId) {
+					var $tabLink = navTabs.find('a[href="' + savedTabId + '"]');
+					//console.log("jQuery object for tab link:", $tabLink);
+					//console.log("Was the tab link found? (length > 0):", $tabLink.length > 0);
+
+					if ($tabLink.length > 0) {
+						//console.log("SUCCESS: Found tab link. Forcing activation now.");
+						navTabs.find('li').removeClass('active');
+						$('.tab-pane').removeClass('active');
+						$tabLink.parent('li').addClass('active');
+						$(savedTabId).addClass('active');
+						//console.log("Forced activation of:", savedTabId);
+					} else {
+						//console.warn("FAILURE: Saved tab ID was found, but the link does not exist on the page.");
+						localStorage.removeItem(ACTIVE_TAB_KEY);
+					}
+				} else {
+					console.log("No tab saved in localStorage. Doing nothing, PHP default should be visible.");
+				}
+			}, 500);
+		});
+	</script>
           <?php
 				$age="";
 				if($patient->age_years!=0) $age.=$patient->age_years."Y ";
