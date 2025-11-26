@@ -702,6 +702,30 @@ function submitUpdations()
             updateAlert += "<br><b>Referral Hospital</b>: " + $('#referral_hospital_update_old_value').text() + " -> " + selectedHospitalName;
         }
     }
+    if ($('#summary_sent_update').is(':checked')) 
+    {
+        isUpdate = true;
+
+        var newSummarySent = $('#summary_sent_update_new_value').val();
+        var oldSummarySent = $('#summary_sent_update_old_value').text();
+
+        if (newSummarySent === oldSummarySent) {
+            bootbox.alert({
+                title: "<b>Summary Sent Date-Time</b>",
+                message: "New value should be different than old value.",
+                onHidden: function(e) {
+                    $('#summary_sent_update_new_value').focus();
+                }
+            });
+            return;
+        } else {
+            postData["summary_sent_time"] = {
+                "old": oldSummarySent,
+                "new": newSummarySent
+            };
+            updateAlert += "<br><b>Summary Sent Date-Time</b>: " + oldSummarySent + " -> " + newSummarySent;
+        }
+    }
   	
 if (!isUpdate) {
   bootbox.alert("There are nothing to update!");
@@ -833,6 +857,7 @@ bootbox.confirm({
 				  var appointment_slot_id = response[i]['appointment_status_id'];
                   var signed_consult_val = response[i]['signed_consultation'];
                   var hname = response[i]['hospital'];
+                  var sst = response[i]['summary_sent_time'];
                 }
 				//console.log(appointment_slot_id);
 				if (appointment_slot_id > 0) {
@@ -885,6 +910,7 @@ bootbox.confirm({
                 $('#icdcode_update_old_value').append(icd_10);
                 $('#signed_consultation_old_value').append(signed_consult_val);
                 $('#referral_hospital_update_old_value').append(hname);
+                $('#summary_sent_update_old_value').append(sst);
 
                 var tbody = $('#counseling-table-body');
                 tbody.empty();
@@ -1279,6 +1305,17 @@ bootbox.confirm({
         </td>
       </tr>
 
+
+      <tr id="tr_summary_sent">
+        <td>Summary Sent Date-Time</td>
+        <td class="old-value-container" id="summary_sent_update_old_value"></td>
+        <td><input type="checkbox" class="form-check-input"  id="summary_sent_update" name="summary_sent_update" 
+          value="summary_sent_update"></td>
+        <td><input type="datetime-local" class="form-control" id="summary_sent_update_new_value" name="summary_sent_update_new_value" 
+          placeholder="" value=""  disabled>
+        </td>
+      </tr>
+
     </tbody>
   </table>
 </div>
@@ -1460,7 +1497,11 @@ bootbox.confirm({
         { 
           echo $edit->vname; 
         }
-        if(empty($edit->dname) && empty($edit->uname) && empty($edit->aname) && empty($edit->vname))
+        if($edit->field_name=='summary_sent_time')
+        { 
+          echo $edit->new_value ? date("d-m-Y H:i", strtotime($edit->new_value)) : null;
+        }
+        if(empty($edit->dname) && empty($edit->uname) && empty($edit->aname) && empty($edit->vname) && $edit->field_name != 'summary_sent_time')
         { 
           echo $edit->new_value; 
         } 
