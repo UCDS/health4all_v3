@@ -552,7 +552,7 @@ class Helpline_model extends CI_Model{
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
+		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone and helpline_receiver.activity_status=1','left')
 		->join('helpline_caller_type','helpline_call.caller_type_id = helpline_caller_type.caller_type_id','left')
 		->join('helpline_call_category','helpline_call.call_category_id = helpline_call_category.call_category_id','left')
 		->join('helpline_resolution_status','helpline_call.resolution_status_id = helpline_resolution_status.resolution_status_id','left')
@@ -656,7 +656,7 @@ class Helpline_model extends CI_Model{
 		->from('helpline_call')
 		->join('helpline', 'helpline_call.to_number=helpline.helpline','left')	// 6 Dec 18 -> gokulakrishna@yousee.in
 		->join('user_helpline_link', 'helpline.helpline_id = user_helpline_link.helpline_id')
-		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone','left')
+		->join('helpline_receiver','helpline_call.dial_whom_number = helpline_receiver.phone and helpline_receiver.activity_status=1','left')
 		->join('helpline_caller_type','helpline_call.caller_type_id = helpline_caller_type.caller_type_id','left')
 		->join('helpline_call_category','helpline_call.call_category_id = helpline_call_category.call_category_id','left')
 		->join('helpline_resolution_status','helpline_call.resolution_status_id = helpline_resolution_status.resolution_status_id','left')
