@@ -180,7 +180,11 @@
 			padding: 10px;
 			border-top: 1px solid #ddd;
 		}
-		
+		.selectize-locked {
+			background-color: #eeeeee !important;
+			cursor: not-allowed;
+			opacity: 0.7;
+		}
 	
 </style>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.selectize.js"></script>
@@ -327,31 +331,54 @@ function openSmsModal(){
 // 		selectize[0].selectize.setValue(selected_hospital);
 // 	}
 // }
-function initDistrictSelectize(){
-        var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
-	var selectize = $('#district_id').selectize({
-	    valueField: 'district_id',
-	    labelField: 'custom_data',
-	    searchField: ['district','district_alias','state'],
-	    options: districts,
-	    create: false,
-	    render: {
-	        option: function(item, escape) {
-	        	return '<div>' +
-	                '<span class="title">' +
-	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
-	                '</span>' +
-	            '</div>';
-	        }
-	    },
-	    load: function(query, callback) {
-	        if (!query.length) return callback();
-		},
 
-	});
-	if($('#district_id').attr("data-previous-value")){
-		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
-	}
+// commented on nov 27 2025
+
+// function initDistrictSelectize(){
+//         var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
+// 	var selectize = $('#district_id').selectize({
+// 	    valueField: 'district_id',
+// 	    labelField: 'custom_data',
+// 	    searchField: ['district','district_alias','state'],
+// 	    options: districts,
+// 	    create: false,
+// 	    render: {
+// 	        option: function(item, escape) {
+// 	        	return '<div>' +
+// 	                '<span class="title">' +
+// 	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
+// 	                '</span>' +
+// 	            '</div>';
+// 	        }
+// 	    },
+// 	    load: function(query, callback) {
+// 	        if (!query.length) return callback();
+// 		},
+
+// 	});
+// 	if($('#district_id').attr("data-previous-value")){
+// 		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
+// 	}
+// }
+
+function initDistrictSelectize() {
+    var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
+    var selectizeControl = $('#district_id').selectize({
+        valueField: 'district_id',
+        labelField: 'custom_data',
+        searchField: ['district','district_alias','state'],
+        options: districts,
+        create: false
+    })[0].selectize;
+
+    let prevVal = $('#district_id').attr("data-previous-value");
+
+    if (prevVal) {
+        selectizeControl.setValue(prevVal);
+        selectizeControl.setTextboxValue(""); 
+        selectizeControl.lock();
+		$(selectizeControl.$control).addClass('selectize-locked');
+    }
 }
     $(document).ready(function() {
   $("input:radio[name=mlc_radio]").click(function() {
@@ -1017,25 +1044,26 @@ function initDistrictSelectize(){
 				<label class="control-label">Place</label>
 				<input type="text" name="place" class="form-control" value="<?php if($patient) echo $patient->place;?>" <?php if($f->edit==1 && empty($patient->place)) echo ''; else echo ' readonly'; ?>/>
 			</div>
-                        <div class="col-md-4 col-xs-6">
+        	<div class="col-md-4 col-xs-6">
 				<label class="control-label">District</label>
-                                <?php if($f->edit==1) { ?>
-				<select name="district_id" id="district_id" class="selectize_district" style="width:250px">
-				<option value="">--Enter district-- </option>				
-				</select>
-				<script>
-					var patient = JSON.parse(JSON.stringify(<?php echo json_encode($patient); ?>)); 
-					$('#district_id').attr("data-previous-value", patient['district_id']);
-					initDistrictSelectize();	
-				</script>
-                                <?php }else{
-                                    foreach($districts as $district){
-                                        if($district->district_id==$patient->district_id){
-                                            echo "<input type='text' id='district' class='form-control' value='$district->district' disabled/>";
-                                            echo "<input type='hidden' name='district' id='district' class='form-control' value='$district->district_id'/>";
-                                        }
-                                    }
-                                } ?>
+                    <?php if($f->edit==1) { ?>
+						<select name="district_id" id="district_id" class="selectize_district" style="width:250px">
+							<option value="">--Enter district-- </option>				
+						</select>
+						<script>
+							var patient = JSON.parse(JSON.stringify(<?php echo json_encode($patient); ?>)); 
+							$('#district_id').attr("data-previous-value", patient['district_id']);
+							initDistrictSelectize();	
+						</script>
+                    <?php }else{ 
+								foreach($districts as $district){
+									if($district->district_id==$patient->district_id){
+										echo "<input type='text' id='district' class='form-control' value='$district->district' disabled/>";
+										echo "<input type='hidden' name='district' id='district' class='form-control' value='$district->district_id'/>";
+									}
+								}
+							} 
+					?>
 			</div>
 			</div>
 			<div class="row alt">
