@@ -200,7 +200,7 @@ class Reports_model extends CI_Model{
 			$this->db->where('icd_chapter.chapter_id',$this->input->post('icd_chapter'));
 		}
         //Selection of visit type OP/IP
-		if($this->input->post('visit_type')){
+		if($this->input->post('visit_type')){	
 			$this->db->where('patient_visit.visit_type',$this->input->post('visit_type'));
 		}
 		else
@@ -3382,7 +3382,8 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		if($visit_type!='0'){
 			$this->db->where('patient_visit.visit_type',$visit_type);
 		}
-		if(!!$visit_name && $visit_name != "-1"){
+		if(!!$visit_name && $visit_name != "-1" || $this->input->post('visit_name')){
+			if($this->input->post('visit_name')) $visit_name=$this->input->post('visit_name');
 			$this->db->where('patient_visit.visit_name_id',$visit_name);
 		}
 		if($icd_10!="0" && $icd_10 != -1){
@@ -3457,6 +3458,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		age_years,age_months,age_days,patient.place,phone,address,admit_date,admit_time, department,unit_name,area_name,mlc_number,patient_visit.icd_10,icd_code.code_title,outcome,final_diagnosis,
 		outcome_date,outcome_time",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
@@ -3492,7 +3494,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		if($visit_type!='0'){
 			$this->db->where('patient_visit.visit_type',$visit_type);
 		}
-		if(!!$visit_name && $visit_name != "-1"){
+		if(!!$visit_name && $visit_name != "-1" || $this->input->post('visit_name')){
+			if($this->input->post('visit_name')) $visit_name=$this->input->post('visit_name');
 			$this->db->where('patient_visit.visit_name_id',$visit_name);
 		}
 		if($icd_10!="0" && $icd_10 != -1){
@@ -3564,6 +3567,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		}
 		$this->db->select("count(*) as count",false);
 		 $this->db->from('patient_visit')->join('patient','patient_visit.patient_id=patient.patient_id')
+		 ->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left')
 		 ->join('department','patient_visit.department_id=department.department_id','left')
 		 ->join('unit','patient_visit.unit=unit.unit_id','left')
 		 ->join('area','patient_visit.area=area.area_id','left')
