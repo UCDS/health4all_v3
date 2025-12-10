@@ -3173,12 +3173,8 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 				$this->db->where_not_in('outcome', array('Death', 'Absconded', 'Discharge', 'LAMA'));
 			} else $this->db->where('outcome', $outcome);
 		}
-		if($date_type == "admit_date") {
-			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
-		}
-		else{
-			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
-		}
+		
+		$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
 
 		if(!!$icd_code || $this->input->post('icd_code')){
 			if ($this->input->post('icd_code')) {
@@ -3327,12 +3323,8 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			}
 			else $this->db->where('outcome', $outcome);
 		}
-		if($date_type == "admit_date") {
-			$this->db->where("(admit_date BETWEEN '$from_date' AND '$to_date')");
-		}
-		else{
-			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
-		}
+	
+		$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
 
 		if(!!$icd_code || $this->input->post('icd_code')){
 			if ($this->input->post('icd_code')) {
