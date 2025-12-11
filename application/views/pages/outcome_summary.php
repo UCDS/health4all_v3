@@ -366,6 +366,13 @@ $(function(){
 	$total_male=0;	
 	$total_outcome=0;
 	$outcome_types = array('Discharge','LAMA','Absconded','Death','Unupdated');
+	$icd_chapter = $this->input->post('icd_chapter'); 
+	$icd_block = $this->input->post('icd_block'); 
+	$icd_code = $this->input->post('icd_code'); 
+	if ($icd_code) {
+		$icd_code = strtok($icd_code, " ");
+		$this->db->where('icd_code.icd_code', $icd_code);
+	}
 	foreach($report as $s){
 	?>
 	<tr>
@@ -375,17 +382,22 @@ $(function(){
 			$outcome = $this->input->post('outcome_type'); 
 		?>
         <td class="text-right">
-			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
-			<?php echo $s->{'male_'.strtolower($this->input->post('outcome_type'))};?>
+			<a href="<?php 
+				echo base_url()."reports/outcome_detail/
+				$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/
+				$visit_name/$date_type/$outcome/"
+				.($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0);
+			?>">
+				<?php echo $s->{'male_'.strtolower($this->input->post('outcome_type'))};?>
 			</a>
 		</td>
         <td class="text-right">
-			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 			<?php echo $s->{'female_'.strtolower($this->input->post('outcome_type'))};?>
 			</a>
 		</td>
         <td class="text-right">
-			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 			<?php echo $s->{'total_'.strtolower($this->input->post('outcome_type'))};?>
 			</a>
 		</td>
@@ -394,17 +406,17 @@ $(function(){
 			foreach($outcome_types as $outcome) { ?>
 			
 			<td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo $s->{'male_'.strtolower($outcome)};?>
 				</a>
 			</td>
 			<td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo $s->{'female_'.strtolower($outcome)};?>
 				</a>
 			</td>
 			<td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo $s->{'total_'.strtolower($outcome)};?>
 				</a>
 			</td>
@@ -412,17 +424,17 @@ $(function(){
 		} ?>
 		
 		<td class="text-right">
-			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/$visit_name/$date_type/"?>">
+			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 			<?php echo $s->outcome_male;?>
 			</a>
 		</td>
 		<td class="text-right">
-			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$visit_name/$date_type/"?>">
+			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 			<?php echo $s->outcome_female;?>
 			</a>
 		</td>
 		<td class="text-right">
-			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$visit_name/$date_type/"?>">
+			<a href="<?php echo base_url()."reports/outcome_detail/$s->department_id/$s->unit/$s->area/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 			<?php echo $s->outcome;?>
 			</a>
 		</td>
@@ -450,17 +462,17 @@ $(function(){
 		    <th>Total </th>
 			<?php if(strtolower($this->input->post('outcome_type'))){ ?>	
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo ${'total_male_'.strtolower($this->input->post('outcome_type'))};?>
 				</a>
 			</td>
             <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo ${'total_female_'.strtolower($this->input->post('outcome_type'))};?>
 				</a>
 			</td>
             <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo ${'total_'.strtolower($this->input->post('outcome_type'))};?>
 				</a>
 			</td>
@@ -469,34 +481,34 @@ $(function(){
 				foreach($outcome_types as $outcome) { 
 			?>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo ${'total_male_'.strtolower($outcome)};?>
 				</a>
 			</td>
             <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo ${'total_female_'.strtolower($outcome)};?>
 				</a>
 			</td>
             <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo ${'total_'.strtolower($outcome)};?>
 				</a>
 			</td>
 			<?php }
 			} ?>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo $total_male;?>
 				</a>
 			</td>
             <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo $total_female;?>
 				</a>
 			</td>
             <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo $total_outcome;?>
 				</a>
 			</td>
@@ -505,17 +517,17 @@ $(function(){
             <th>Percentage of total</th>
 			<?php if(strtolower($this->input->post('outcome_type'))){ ?>	
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo round((${'total_male_'.strtolower($this->input->post('outcome_type'))}/$total_outcome)*100)."%";?>
 				</a>
 			</td>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo round((${'total_female_'.strtolower($this->input->post('outcome_type'))}/$total_outcome)*100)."%";?>
 				</a>
 			</td>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo round((${'total_'.strtolower($this->input->post('outcome_type'))}/$total_outcome)*100)."%";?>
 				</a>
 			</td>
@@ -523,17 +535,17 @@ $(function(){
 			else { 
 				foreach($outcome_types as $outcome) { ?>
 				<td class="text-right">
-					<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+					<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 					<?php echo round((${'total_male_'.strtolower($outcome)}/$total_outcome)*100).'%';?>
 					</a>
 				</td>
 				<td class="text-right">
-					<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+					<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 					<?php echo round((${'total_female_'.strtolower($outcome)}/$total_outcome)*100).'%';?>
 					</a>
 				</td>
 				<td class="text-right">
-					<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome"?>">
+					<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 					<?php echo round((${'total_'.strtolower($outcome)}/$total_outcome)*100).'%';?>
 					</a>
 				</td>
@@ -541,17 +553,17 @@ $(function(){
 				}
 			} ?>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/M/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo round(($total_male/$total_outcome)*100).'%';?>
 				</a>
 			</td>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/F/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo round(($total_female/$total_outcome)*100).'%';?>
 				</a>
 			</td>
 		    <td class="text-right">
-				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type"?>">
+				<a href="<?php echo base_url()."reports/outcome_detail/-1/0/0/0/0/0/$from_date/$to_date/$visit_name/$date_type/$outcome/".($icd_chapter ?: 0)."/".($icd_block ?: 0)."/".($icd_code ?: 0)?>">
 				<?php echo round(($total_outcome/$total_outcome)*100).'%';?>
 				</a>
 			</td>

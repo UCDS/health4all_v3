@@ -1232,8 +1232,17 @@ class Reports extends CI_Controller {
 		}
 	}
 	
-	public function outcome_detail($department=-1,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0,$visit_name=-1,$date_type=0,$outcome=0)
+	public function outcome_detail($department=-1,$unit=0,$area=0,$gender=0,$from_age=0,$to_age=0,$from_date=0,$to_date=0,$visit_name=-1,$date_type=0,$outcome=0,$icd_chapter='',$icd_block='',$icd_code='')
 	{
+		$this->data['department'] = $department;
+		$this->data['unit_type'] = $unit;
+		$this->data['area_type'] = $area;
+		$this->data['outcome_type'] = $outcome;
+		$this->data['icd_chapter'] = $icd_chapter;
+	    $this->data['icd_block'] = $icd_block; 
+		$this->data['icd_code'] = $icd_code; 
+		$this->data['date_type'] = $date_type; 
+
 		if($this->session->userdata('logged_in')){
 		$this->data['userdata']=$this->session->userdata('logged_in');
 		$access=0;
@@ -1264,8 +1273,8 @@ class Reports extends CI_Controller {
 				break;
 			}
 		}
-		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome);
-		$this->data['report']=$this->reports_model->get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome,$this->data['rowsperpage']);
+		$this->data['report_count'] = $this->reports_model->get_ip_detail_count($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome,$icd_chapter,$icd_block,$icd_code);
+		$this->data['report']=$this->reports_model->get_ip_detail($department,$unit,$area,$gender,$from_age,$to_age,$from_date,$to_date,$visit_name,$date_type,$outcome,$this->data['rowsperpage'],$icd_chapter,$icd_block,$icd_code);
 		$this->data['icd_chapters']=$this->masters_model->get_data('icd_chapters');
 		$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');
 		$this->form_validation->set_rules('from_date', 'From Date',

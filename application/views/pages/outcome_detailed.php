@@ -66,41 +66,60 @@ $(document).ready(function(){
 </script>
 <script>
 	$(document).ready(function() {
-		
-	$("#icd_block").chained("#icd_chapter");
-	
-	$('#icd_code').selectize({
-    valueField: 'code_title',
-    labelField: 'code_title',
-    searchField: 'code_title',
-    create: false,
-    render: {
-        option: function(item, escape) {
+    $("#icd_block").chained("#icd_chapter");
 
-            return '<div>' +
-                '<span class="title">' +
-                    '<span class="icd_code">' + escape(item.code_title) + '</span>' +
-                '</span>' +
-            '</div>';
+    var $select = $('#icd_code').selectize({
+        valueField: 'code_title',
+        labelField: 'code_title',
+        searchField: ['code_title'],
+        create: false,
+        render: {
+            option: function(item, escape) {
+                return '<div><span class="title"><span class="icd_code">'
+                        + escape(item.code_title) +
+                    '</span></span></div>';
+            }
+        },
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.ajax({
+                url: '<?= base_url(); ?>register/search_icd_codes',
+                type: 'POST',
+                dataType: 'JSON',
+                data: { query: query, block: $("#icd_block").val(), chapter: $("#icd_chapter").val() },
+                success: function(res){
+                    callback(res.icd_codes.slice(0, 10));
+                },
+                error: function(){ callback(); }
+            });
         }
-    },
-    load: function(query, callback) {
-        if (!query.length) return callback();
-		$.ajax({
-            url: '<?php echo base_url();?>register/search_icd_codes',
+    });
+
+    // -------------------------
+    // Auto-select ICD using only code
+    // -------------------------
+    <?php if(!empty($icd_code)) { ?>
+        var selectize = $select[0].selectize;
+        var icdCode = "<?= $icd_code ?>"; // e.g., "A001"
+
+        // Fetch full ICD text using your search endpoint
+        $.ajax({
+            url: '<?= base_url(); ?>register/search_icd_codes',
             type: 'POST',
-			dataType : 'JSON',
-			data : {query:query,block:$("#icd_block").val(),chapter:$("#icd_chapter").val()},
-            error: function(res) {
-                callback();
-            },
+            dataType: 'JSON',
+            data: { query: icdCode, block: $("#icd_block").val(), chapter: $("#icd_chapter").val() },
             success: function(res) {
-                callback(res.icd_codes.slice(0, 10));
+                if(res.icd_codes.length) {
+                    // find the exact match
+                    var match = res.icd_codes.find(x => x.code_title.startsWith(icdCode));
+                    if(match) {
+                        selectize.addOption(match);
+                        selectize.setValue(match.code_title);
+                    }
+                }
             }
         });
-    }
-	});
-	
+    <?php } ?>
 });
 </script>
 <script type="text/javascript">
@@ -305,7 +324,7 @@ $(document).ready(function(){
 					<?php 
 					foreach($all_departments as $dept){
 						echo "<option value='".$dept->department_id."'";
-						if($this->input->post('department') && $this->input->post('department') == $dept->department_id) echo " selected ";
+						if($this->input->post('department') && $this->input->post('department') == $dept->department_id || $department==$dept->department_id) echo " selected ";
 						echo ">".$dept->department."</option>";
 					}
 					?>
@@ -315,7 +334,7 @@ $(document).ready(function(){
 					<?php 
 					foreach($units as $unit){
 						echo "<option value='".$unit->unit_id."' class='".$unit->department_id."'";
-						if($this->input->post('unit') && $this->input->post('unit') == $unit->unit_id) echo " selected ";
+						if($this->input->post('unit') && $this->input->post('unit') == $unit->unit_id || $unit_type== $unit->unit_id) echo " selected ";
 						echo ">".$unit->unit_name."</option>";
 					}
 					?>
@@ -325,11 +344,17 @@ $(document).ready(function(){
 					<?php 
 					foreach($areas as $area){
 						echo "<option value='".$area->area_id."' class='".$area->department_id."'";
-						if($this->input->post('area') && $this->input->post('area') == $area->area_id) echo " selected ";
+						if($this->input->post('area') && $this->input->post('area') == $area->area_id || $area_type == $area->area_id) echo " selected ";
 						echo ">".$area->area_name."</option>";
 					}
 					?>
 					</select>
+
+					<select name="date_type_selection" id="date_type_selection" class="form-control"> 
+                        <option <?php if($this->input->post('date_type_selection') && $this->input->post('date_type_selection') == "admit_date" || $date_type == "admit_date") echo " selected ";?> value="admit_date" selected>Admit date</option>
+                        <option <?php if($this->input->post('date_type_selection') && $this->input->post('date_type_selection') == "outcome_date" || $date_type == "outcome_date") echo " selected ";?> value="outcome_date">Outcome Date</option>
+                    </select>
+
 					<!-- <select name="visit_name" id="visit_name" class="form-control" >
 					<option value="">All</option>
 					<?php 
@@ -342,15 +367,15 @@ $(document).ready(function(){
 					</select> -->
 					<select name="outcome_type" id="outcome_type" class="form-control" >
 					<option value="">All  Outcomes</option>
-					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Discharge") echo " selected ";?> value="Discharge"
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Discharge" || $outcome_type =="Discharge") echo " selected ";?> value="Discharge"
 					>Discharge</option>
-					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "LAMA") echo " selected ";?> value="LAMA"
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "LAMA" || $outcome_type =="LAMA" ) echo " selected ";?> value="LAMA"
 					>LAMA</option>
-					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Absconded") echo " selected ";?> value="Absconded"			
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Absconded" || $outcome_type =="Absconded") echo " selected ";?> value="Absconded"			
 					>Absconded</option>
-					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Death") echo " selected ";?> value="Death"			
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Death" || $outcome_type =="Death" ) echo " selected ";?> value="Death"			
 					>Death</option>
-					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Unupdated") echo " selected ";?> value="Unupdated"					
+					<option <?php if($this->input->post('outcome_type') && $this->input->post('outcome_type') == "Unupdated" || $outcome_type =="Unupdated" ) echo " selected ";?> value="Unupdated"					
 					>Unupdated</option>
 					</select>
 					<div style="margin-top:10px;">
@@ -359,7 +384,7 @@ $(document).ready(function(){
 							<?php 
 								foreach($icd_chapters as $v){
 									echo "<option value='".$v->chapter_id."'";
-									if($this->input->post('icd_chapter') && $this->input->post('icd_chapter') == $v->chapter_id) echo " selected ";
+									if($this->input->post('icd_chapter') && $this->input->post('icd_chapter') == $v->chapter_id || $icd_chapter == $v->chapter_id) echo " selected ";
 									echo ">".$v->chapter_id." - ".$v->chapter_title."</option>";
 								}
 							?>
@@ -369,7 +394,7 @@ $(document).ready(function(){
 							<?php 
 								foreach($icd_blocks as $v){
 									echo "<option value='".$v->block_id."' class='".$v->chapter_id."' ";
-										if($this->input->post('icd_block') && $this->input->post('icd_block') == $v->block_id) echo " selected ";
+										if($this->input->post('icd_block') && $this->input->post('icd_block') == $v->block_id || $icd_block == $v->block_id ) echo " selected ";
 										echo ">".$v->block_id." - ".$v->block_title."</option>";
 								}
 							?>

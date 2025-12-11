@@ -287,99 +287,37 @@ function openSmsModal(){
 	$('#smsModal-templatewithname-dropdown').show();	
 	$("#smsModal").modal({ keyboard: false, backdrop: 'static' });
 }
- /*window.addEventListener('DOMContentLoaded', function () {
-      var gallery = document.getElementById('gallery');
-      var viewer;
-  	document.getElementById('btnPreviewImages').addEventListener('click', function () {
-          viewer = new Viewer(gallery, {
-            hidden: function () {
-            viewer.destroy();
-          },
-          });
-          viewer.show();
-        });     
-    });
-    
-  */  
-    
 </script>
 <script type="text/javascript">
-// function initHospitalSelectize(){
-// 	var helpline_hospitals = JSON.parse(JSON.stringify(<?php echo json_encode($helpline_hospitals); ?>));
+	function initDistrictSelectize() 
+	{
+		var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
+		var selectizeControl = $('#district_id').selectize({
+			valueField: 'district_id',
+			labelField: 'custom_data',
+			searchField: ['district','district_alias','state'],
+			options: districts,
+			create: false
+		})[0].selectize;
 
-// 	var selectize = $('#hospital_id').selectize({
-// 	    valueField: 'hospital_id',
-// 	    labelField: 'customdata',
-// 	    searchField: ['hospital','hospital_short_name', 'place', 'district','state'],
-// 		options: helpline_hospitals,
-// 	    create: false,
-// 	    render: {
-// 	        option: function(item, escape) {
-// 	        	return '<div>' +
-// 	                '<span class="title">' +
-// 	                    '<span class="prescription_drug_selectize_span">' + escape(item.customdata) + '</span>' +
-// 	                '</span>' +
-// 	            '</div>';
-// 	        }
-// 	    },
-// 	    load: function(query, callback) {
-// 	      if (!query.length) return callback();
-// 		},
-// 	});
-// 	var selected_hospital = '<?php echo $this->input->post('hospital'); ?>';
-// 	if(selected_hospital){
-// 		selectize[0].selectize.setValue(selected_hospital);
-// 	}
-// }
+		let prevVal = $('#district_id').attr("data-previous-value");
 
-// commented on nov 27 2025
+		if (prevVal) {
+			let exists = districts.some(d => String(d.district_id) === String(prevVal));
 
-// function initDistrictSelectize(){
-//         var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
-// 	var selectize = $('#district_id').selectize({
-// 	    valueField: 'district_id',
-// 	    labelField: 'custom_data',
-// 	    searchField: ['district','district_alias','state'],
-// 	    options: districts,
-// 	    create: false,
-// 	    render: {
-// 	        option: function(item, escape) {
-// 	        	return '<div>' +
-// 	                '<span class="title">' +
-// 	                    '<span class="prescription_drug_selectize_span">'+escape(item.custom_data)+'</span>' +
-// 	                '</span>' +
-// 	            '</div>';
-// 	        }
-// 	    },
-// 	    load: function(query, callback) {
-// 	        if (!query.length) return callback();
-// 		},
+			if (exists) {
+				selectizeControl.setValue(prevVal);
+				selectizeControl.setTextboxValue(""); 
+				selectizeControl.lock();
+				$(selectizeControl.$control).addClass('selectize-locked');
+			} else {
+				console.warn("Previous district not found in list. Keeping Selectize enabled.");
+				selectizeControl.unlock();
+				$(selectizeControl.$control).removeClass('selectize-locked');
+			}
+		}
+	}
 
-// 	});
-// 	if($('#district_id').attr("data-previous-value")){
-// 		selectize[0].selectize.setValue($('#district_id').attr("data-previous-value"));
-// 	}
-// }
-
-function initDistrictSelectize() {
-    var districts = JSON.parse(JSON.stringify(<?php echo json_encode($districts); ?>));
-    var selectizeControl = $('#district_id').selectize({
-        valueField: 'district_id',
-        labelField: 'custom_data',
-        searchField: ['district','district_alias','state'],
-        options: districts,
-        create: false
-    })[0].selectize;
-
-    let prevVal = $('#district_id').attr("data-previous-value");
-
-    if (prevVal) {
-        selectizeControl.setValue(prevVal);
-        selectizeControl.setTextboxValue(""); 
-        selectizeControl.lock();
-		$(selectizeControl.$control).addClass('selectize-locked');
-    }
-}
     $(document).ready(function() {
   $("input:radio[name=mlc_radio]").click(function() {
       if($('input[name=mlc_radio]:checked').val()=='-1'){          
