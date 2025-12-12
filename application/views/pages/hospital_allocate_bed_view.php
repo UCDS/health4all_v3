@@ -354,6 +354,15 @@ display: inline-grid;
 		</script>
 		<?php echo form_open('hospital_beds/patient_allocate_beds',array('class'=>'form-group','role'=>'form','id'=>'appointment')); ?> 
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
+		<style>
+			.bed-card-fixed {
+				height: 500px;
+				overflow-y: hidden;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+		</style>
 		<div class="row" style="margin-top:2%;">
 			<div class="col-md-12" >
 			<?php
@@ -384,9 +393,9 @@ display: inline-grid;
 						$patient_details->details = implode("\n", $output_lines);
 					}
 			?>
-			<div class="col-md-4" 
-				style="max-height:800px!important;overflow-y:auto;<?php if($patient_details->patient_name == '' && $patient_details->reservation_details!= '' ) echo 'margin-bottom:80px;'; ?>">
-            <div class="form-group">
+			<div class="col-md-4" style="max-height:800px!important;overflow-y:auto;">
+            <div class="bed-card-fixed">
+				<div class="form-group">
                 <label for="inputhospital_name" style="color:red;font-weight:bold;"></label>
                 <input type="hidden" name="bed_id_<?php echo $j; ?>" value="<?php echo $abc->hospital_bed_id; ?>">
 				<input type="hidden" value="<?php echo $abc->hospital_bed_id; ?>" id="bed_no_id_<?php echo $abc->hospital_bed_id; ?>" data-id="<?php echo $abc->hospital_bed_id; ?>">
@@ -635,7 +644,7 @@ display: inline-grid;
 							<input type="text" class="form-control" name="" id="age_gender_<?php echo $j; ?>" value="">
 						</div>
 					</div>
-					<input type="text" class="form-control patient_name" name="patient_name_<?php echo $j; ?>" id="patient_name_<?php echo $j; ?>" value="" autocomplete="off" placeholder="Patient Name" style="height:55px!important;">
+					<input type="text" class="form-control patient_name" name="patient_name_<?php echo $j; ?>" id="patient_name_<?php echo $j; ?>" value="" autocomplete="off" placeholder="Patient Name">
                     <input type="hidden" class="form-control" name="patient_name_store_<?php echo $j; ?>" id="patient_name_store_<?php echo $j; ?>" value="" autocomplete="off">
                     <input type="hidden" class="form-control" name="address_store_<?php echo $j; ?>" id="address_store_<?php echo $j; ?>" value="" autocomplete="off">
                     <input type="hidden" class="form-control" name="age_gender_store_<?php echo $j; ?>" id="age_gender_store_<?php echo $j; ?>" value="" autocomplete="off">
@@ -691,7 +700,7 @@ display: inline-grid;
 						<div class="col-md-6">
 							<input type="checkbox" name="reserve_id_<?php echo $j; ?>" id="reserve_id_<?php echo $j; ?>" value="" onclick="toggleReserveDetails(<?php echo $j; ?>)"> &nbsp;Reserve Bed <br/><br/>
 						</div>
-						<div class="col-md-6" style="text-align:right;">
+						<div class="col-md-5" style="text-align:right;">
 							<button type="button" class="btn btn-success" id="update_bed_<?php echo $j; ?>" onclick="submitFormAndReload()">Update Bed</button>
 						</div>
 					</div>
@@ -726,6 +735,7 @@ display: inline-grid;
 					</script>
 				<?php } ?>
             </div>
+					</div>
         </div>
 			<?php
 				}
