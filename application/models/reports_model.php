@@ -3174,7 +3174,9 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			} else $this->db->where('outcome', $outcome);
 		}
 		
-		$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
+		if(!empty($date_type)){
+			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
+		}
 
 		if(!!$icd_code || $this->input->post('icd_code')){
 			if ($this->input->post('icd_code')) {
@@ -3323,9 +3325,9 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			}
 			else $this->db->where('outcome', $outcome);
 		}
-	
-		$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
-
+		if(!empty($date_type)){
+			$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
+		}
 		if(!!$icd_code || $this->input->post('icd_code')){
 			if ($this->input->post('icd_code')) {
 				$icd_code = substr($this->input->post('icd_code'),0,strpos($this->input->post('icd_code')," "));
