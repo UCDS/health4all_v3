@@ -356,8 +356,7 @@ display: inline-grid;
 		<input type="hidden" name="page_no" id="page_no" value='<?php echo "$page_no"; ?>'>
 		<style>
 			.bed-card-fixed {
-				height: 500px;
-				overflow-y: hidden;
+				height: 600px;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;

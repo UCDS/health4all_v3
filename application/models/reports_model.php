@@ -3089,7 +3089,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
     
 	}
 
-	function get_ip_detail_count($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type, $outcome = 0,$icd_chapter,$icd_block,$icd_code)
+	function get_ip_detail_count($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type='admit_date', $outcome = 0,$icd_chapter,$icd_block,$icd_code)
 	{
 		$hospital = $this->session->userdata('hospital');
 		if ($this->input->post('from_date') && $this->input->post('to_date')) {
@@ -3174,6 +3174,10 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			} else $this->db->where('outcome', $outcome);
 		}
 		
+		if($this->input->post('date_type'))
+		{
+			$date_type = $this->input->post('date_type');
+		}
 		$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
 
 		if(!!$icd_code || $this->input->post('icd_code')){
@@ -3220,7 +3224,7 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 		return $resource->result();
 	}
 
-	function get_ip_detail($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type , $outcome = 0,$default_rowsperpage=0,$icd_chapter,$icd_block,$icd_code)
+	function get_ip_detail($department, $unit, $area, $gender, $from_age, $to_age, $from_date, $to_date, $visit_name, $date_type='admit_date' , $outcome = 0,$default_rowsperpage=0,$icd_chapter,$icd_block,$icd_code)
 	{
 		if ($this->input->post('page_no')) {
 			$page_no = $this->input->post('page_no');
@@ -3323,7 +3327,10 @@ SUM(CASE WHEN aps.is_default =  1 THEN 1 ELSE 0 END) AS default_status_count",fa
 			}
 			else $this->db->where('outcome', $outcome);
 		}
-	
+		if($this->input->post('date_type'))
+		{
+			$date_type = $this->input->post('date_type');
+		}
 		$this->db->where("($date_type BETWEEN '$from_date' AND '$to_date')");
 
 		if(!!$icd_code || $this->input->post('icd_code')){

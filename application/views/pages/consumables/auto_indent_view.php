@@ -250,7 +250,7 @@
 							</td>\
 							<td>\
 								<div class="col">\
-									<input type="text"  class="form-control exp_date_picker narrow" placeholder="Expiry Date"  name="exp_date_${item_id}[]"/>\
+									<input type="text"  class="form-control exp_date_picker narrow" placeholder="Expiry Date"  name="exp_date_${item_id}[]" required/>\
 								</div>\
 							</td>\
 							
@@ -901,7 +901,8 @@
 
 								</table>
 							</div>
-						</div>
+						</div><br>
+						<p style="color:red;font-size:15px;font-weight:bold;text-align:center;"> Expiry date is mandatory for all items *</p>
 					</div>
 				</div>
 			</div>
@@ -991,6 +992,10 @@ var currentPartyType = null;
         e.preventDefault();
         const form = this;
         const $form = $(this);
+
+		if (!validateExpiryDates()) {
+			return false;
+		}
 
         const fromPartyId = $('#to_id').val();
         if (!fromPartyId) {
@@ -1105,3 +1110,91 @@ var currentPartyType = null;
     });
 });
 </script>
+
+<script>
+    function parseDateDMY(dateStr) {
+        let parts = dateStr.split("-");
+        if (parts.length !== 3) return null;
+
+        let monthIndex = new Date(Date.parse(parts[1] + " 1, 2000")).getMonth();
+        return new Date(parts[2], monthIndex, parts[0]);
+    }
+    function addMonths(date, months) {
+        let d = new Date(date);
+        d.setMonth(d.getMonth() + months);
+        return d;
+    }
+    function validateExpiryDates(warningMonths = 3) {
+        let today = new Date();
+        today.setDate(1);
+        let futureWarningDate = addMonths(today, warningMonths);
+
+        let isValid = true;
+        let missingDateErrors = [];
+        let expiredDateErrors = [];
+        let expiringWithinWarningItems = [];
+
+        $(".exp_date_picker").each(function () {
+            let $field = $(this);
+            let val = $field.val().trim();
+            let itemName = "Unknown Item";
+            let $parentItemRow = $field.closest("tr").prevAll("tr[name='indent_item']").first();
+            if ($parentItemRow.length) {
+                let $select = $parentItemRow.find("select.items");
+                if ($select.length && $select[0].selectize) {
+                    let selectedValue = $select[0].selectize.getValue();
+                    if (selectedValue && $select[0].selectize.options[selectedValue]) {
+                        itemName = $select[0].selectize.options[selectedValue].item_name;
+                    }
+                }
+            }
+            if (!val) {
+                missingDateErrors.push(itemName);
+                isValid = false;
+                return;
+            }
+            let expDate = parseDateDMY(val);
+            if (!expDate || isNaN(expDate.getTime())) {
+                expiredDateErrors.push(itemName);
+                isValid = false;
+                return;
+            }
+            expDate.setDate(1);
+            if (expDate <= today) {
+                expiredDateErrors.push(itemName);
+                isValid = false;
+            } else if (expDate > today && expDate <= futureWarningDate) {
+                expiringWithinWarningItems.push(itemName);
+                isValid = false;
+            }
+        });
+
+        if (missingDateErrors.length > 0) {
+            bootbox.alert({
+                message:
+                    "Expiry Date is required for the following items:<br><br>" +
+                    missingDateErrors.join("<br>")
+            });
+            return false;
+        }
+
+        if (expiredDateErrors.length > 0) {
+            bootbox.alert({
+                message:
+                    "The following item(s) will expire in the current month or already expired:<br><br>" +
+                    expiredDateErrors.join("<br>")
+            });
+        }
+
+        if (expiringWithinWarningItems.length > 0) {
+            bootbox.alert({
+                message:
+                    `Warning: The following item(s) are going to expire within ${warningMonths} months:<br><br>` +
+                    expiringWithinWarningItems.join("<br>")
+            });
+        }
+
+        return isValid;
+    }
+</script>
+
