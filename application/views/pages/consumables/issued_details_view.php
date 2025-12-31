@@ -508,7 +508,6 @@
 						</table>
 					</div>
 				</div></br>
-				<p style="color:red;font-size:15px;font-weight:bold;text-align:center;"> Expiry date is mandatory for all items *</p>
 			</div>
 		</div>
 	</div>
@@ -654,175 +653,128 @@ $(document).ready(function() {
     </div>
   </div>
 </div>
-<!-- <script>
-    function parseDateDMY(dateStr) 
-    {
-        let parts = dateStr.split("-");
-        if (parts.length !== 3) return null;
-        return new Date(
-            parts[2],
-            new Date(Date.parse(parts[1] + " 1, 2012")).getMonth(),
-            parts[0]
-        );
-    }
-
-    function monthsDiff(d1, d2) {
-        return (d2.getFullYear() - d1.getFullYear()) * 12 +
-               (d2.getMonth() - d1.getMonth());
-    }
-
-    function validateExpiryDates() 
-    {
-        let today = new Date();
-        today.setDate(1);
-
-        let expiringThisMonthItems = []; 
-        let expiringWithin3MonthsItems = [];
-
-        $(".exp_date_picker").each(function () {
-            let $field = $(this);
-            let val = $field.val().trim();
-            if (!val) {
-                bootbox.alert({
-                    message: "Expiry Date is required for all items.",
-                    callback: function () {
-                        $field.focus();
-                    }
-                });
-                expiringThisMonthItems = [];
-                expiringWithin3MonthsItems = [];
-                throw "STOP_VALIDATION";
-            }
-            let expDate = parseDateDMY(val);
-            if (!expDate || isNaN(expDate.getTime())) {
-                bootbox.alert({
-                    message: "Invalid Expiry Date format.",
-                    callback: function () {
-                        $field.focus();
-                    }
-                });
-                expiringThisMonthItems = [];
-                expiringWithin3MonthsItems = [];
-                throw "STOP_VALIDATION";
-            }
-            expDate.setDate(1);
-            let diff = monthsDiff(today, expDate);
-
-            let itemName =
-                $field.closest("tr").find(".item_name").text().trim() ||
-                "Unknown Item";
-            if (diff <= 0) {
-                expiringThisMonthItems.push(itemName);
-            }
-            else if (diff <= 3) {
-                expiringWithin3MonthsItems.push(itemName);
-            }
-        });
-		if (expiringWithin3MonthsItems.length > 0) {
-            bootbox.alert({
-                message:
-                    "Warning: The following item(s) are going to expire within 3 months:<br><br>" +
-                    expiringWithin3MonthsItems.join("<br>")
-            });
-        }
-        if (expiringThisMonthItems.length > 0) {
-            bootbox.alert({
-                message:
-                    "The following item(s) will expire in the current month or already expired:<br><br>" +
-                    expiringThisMonthItems.join("<br>") 
-            });
-            return false;
-        }
-        
-
-        return expiringWithin3MonthsItems.length === 0 ? true : false;
-    }
-</script> -->
 
 
 <script>
-    function parseDateDMY(dateStr) {
-        let parts = dateStr.split("-");
-        if (parts.length !== 3) return null;
+	function parseDateDMY(dateStr) {
+		let parts = dateStr.split("-");
+		if (parts.length !== 3) return null;
 
-        return new Date(
-            parts[2],
-            new Date(Date.parse(parts[1] + " 1, 2012")).getMonth(),
-            parts[0]
-        );
-    }
+		return new Date(
+			parts[2],
+			new Date(Date.parse(parts[1] + " 1, 2012")).getMonth(),
+			parts[0]
+		);
+	}
 
-    function addMonths(date, months) {
-        let d = new Date(date);
-        d.setMonth(d.getMonth() + months);
-        return d;
-    }
+	function addMonths(date, months) {
+		let d = new Date(date);
+		d.setMonth(d.getMonth() + months);
+		return d;
+	}
 
-    function validateExpiryDates() {
-        let today = new Date();
-        today.setDate(1);
+	let skipValidation = false;
 
-        let threeMonthsFromToday = addMonths(today, 3);
+	function validateExpiryDates() {
+		if (skipValidation) return true;
 
-        let expiringThisMonthItems = [];
-        let expiringWithin3MonthsItems = [];
+		let today = new Date();
+		today.setDate(1);
+		let threeMonthsFromToday = addMonths(today, 3);
 
-        $(".exp_date_picker").each(function () {
-            let $field = $(this);
-            let val = $field.val().trim();
+		let missingDateItems = [];
+		let expiringThisMonthItems = [];
+		let expiringWithin3MonthsItems = [];
+		let $form = $("form");
 
-            if (!val) {
-                bootbox.alert({
-                    message: "Expiry Date is required for all items.",
-                    callback: function () {
-                        $field.focus();
-                    }
-                });
-                throw "STOP_VALIDATION";
-            }
+		$(".exp_date_picker").each(function () {
+			let $field = $(this);
+			let val = $field.val().trim();
 
-            let expDate = parseDateDMY(val);
-            if (!expDate || isNaN(expDate.getTime())) {
-                bootbox.alert({
-                    message: "Invalid Expiry Date format.",
-                    callback: function () {
-                        $field.focus();
-                    }
-                });
-                throw "STOP_VALIDATION";
-            }
+			let itemName = "";
+			let $parentItemRow = $field.closest("tr").prevAll("tr[name='indent_item']").first();
 
-            expDate.setDate(1);
+			if ($parentItemRow.length) {
+				let $select = $parentItemRow.find("select.items");
+				if ($select.length && $select[0].selectize) {
+					let selectedValue = $select[0].selectize.getValue();
+					let option = $select[0].selectize.options[selectedValue];
+					if (option) {
+						itemName = option.item_name || option.text || itemName;
+					}
+				}
+			}
 
-            let itemName =
-                $field.closest("tr").find(".item_name").text().trim() ||
-                "Unknown Item";
-            if (expDate <= today) {
-                expiringThisMonthItems.push(itemName);
-            }
-            else if (expDate > today && expDate <= threeMonthsFromToday) {
-                expiringWithin3MonthsItems.push(itemName);
-            }
-        });
+			if (!itemName) {
+				itemName =
+					$field.closest("tr").find(".item_name").text().trim() ||
+					$field.closest("tr").find("td:first").text().trim() ||
+					"Unknown Item";
+			}
 
-        if (expiringWithin3MonthsItems.length > 0) {
-            bootbox.alert({
-                message:
-                    "Warning: The following item(s) are going to expire within 3 months:<br><br>" +
-                    expiringWithin3MonthsItems.join("<br>")
-            });
-        }
+			if (!val) {
+				missingDateItems.push(itemName);
+				return;
+			}
 
-        if (expiringThisMonthItems.length > 0) {
-            bootbox.alert({
-                message:
-                    "The following item(s) will expire in the current month or already expired:<br><br>" +
-                    expiringThisMonthItems.join("<br>")
-            });
-            return false;
-        }
+			let expDate = parseDateDMY(val);
+			if (!expDate || isNaN(expDate.getTime())) return;
 
-        return expiringWithin3MonthsItems.length === 0;
-    }
+			expDate.setDate(1);
+
+			if (expDate <= today) {
+				expiringThisMonthItems.push(itemName);
+			} else if (expDate <= threeMonthsFromToday) {
+				expiringWithin3MonthsItems.push(itemName);
+			}
+		});
+
+		let alerts = [];
+
+		if (missingDateItems.length > 0) {
+			alerts.push({
+				message:
+					"Expiry date is required. Please check:<br><br>" +
+					missingDateItems.join("<br>")
+			});
+		}
+
+		if (expiringThisMonthItems.length > 0) {
+			alerts.push({
+				message:
+					"Warning: Expiring this month...<br><br>" +
+					expiringThisMonthItems.join("<br>")
+			});
+		}
+
+		if (expiringWithin3MonthsItems.length > 0) {
+			alerts.push({
+				message:
+					"Warning: Expiring within 3 months...<br><br>" +
+					expiringWithin3MonthsItems.join("<br>")
+			});
+		}
+		function showNextAlert() {
+			if (alerts.length === 0) {
+				skipValidation = true;
+				$form.submit();
+				setTimeout(() => (skipValidation = false), 1000);
+				return;
+			}
+
+			let alert = alerts.shift();
+			bootbox.alert({
+				message: alert.message,
+				callback: showNextAlert
+			});
+		}
+
+		if (alerts.length > 0) {
+			showNextAlert();
+			return false;
+		}
+
+		return true;
+	}
 </script>
 
