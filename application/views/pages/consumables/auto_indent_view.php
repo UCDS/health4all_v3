@@ -902,7 +902,6 @@
 								</table>
 							</div>
 						</div><br>
-						<p style="color:red;font-size:15px;font-weight:bold;text-align:center;"> Expiry date is mandatory for all items *</p>
 					</div>
 				</div>
 			</div>
@@ -1111,90 +1110,110 @@ var currentPartyType = null;
 });
 </script>
 
+
 <script>
-    function parseDateDMY(dateStr) {
-        let parts = dateStr.split("-");
-        if (parts.length !== 3) return null;
+	function parseDateDMY(dateStr) {
+		let parts = dateStr.split("-");
+		if (parts.length !== 3) return null;
+		let monthIndex = new Date(Date.parse(parts[1] + " 1, 2000")).getMonth();
+		return new Date(parts[2], monthIndex, parts[0]);
+	}
 
-        let monthIndex = new Date(Date.parse(parts[1] + " 1, 2000")).getMonth();
-        return new Date(parts[2], monthIndex, parts[0]);
-    }
-    function addMonths(date, months) {
-        let d = new Date(date);
-        d.setMonth(d.getMonth() + months);
-        return d;
-    }
-    function validateExpiryDates(warningMonths = 3) {
-        let today = new Date();
-        today.setDate(1);
-        let futureWarningDate = addMonths(today, warningMonths);
+	function addMonths(date, months) {
+		let d = new Date(date);
+		d.setMonth(d.getMonth() + months);
+		return d;
+	}
 
-        let isValid = true;
-        let missingDateErrors = [];
-        let expiredDateErrors = [];
-        let expiringWithinWarningItems = [];
+	let skipValidation = false;
 
-        $(".exp_date_picker").each(function () {
-            let $field = $(this);
-            let val = $field.val().trim();
-            let itemName = "Unknown Item";
-            let $parentItemRow = $field.closest("tr").prevAll("tr[name='indent_item']").first();
-            if ($parentItemRow.length) {
-                let $select = $parentItemRow.find("select.items");
-                if ($select.length && $select[0].selectize) {
-                    let selectedValue = $select[0].selectize.getValue();
-                    if (selectedValue && $select[0].selectize.options[selectedValue]) {
-                        itemName = $select[0].selectize.options[selectedValue].item_name;
-                    }
-                }
-            }
-            if (!val) {
-                missingDateErrors.push(itemName);
-                isValid = false;
-                return;
-            }
-            let expDate = parseDateDMY(val);
-            if (!expDate || isNaN(expDate.getTime())) {
-                expiredDateErrors.push(itemName);
-                isValid = false;
-                return;
-            }
-            expDate.setDate(1);
-            if (expDate <= today) {
-                expiredDateErrors.push(itemName);
-                isValid = false;
-            } else if (expDate > today && expDate <= futureWarningDate) {
-                expiringWithinWarningItems.push(itemName);
-                isValid = false;
-            }
-        });
+	function validateExpiryDates(warningMonths = 3) {
+		if (skipValidation) return true;
 
-        if (missingDateErrors.length > 0) {
-            bootbox.alert({
-                message:
-                    "Expiry Date is required for the following items:<br><br>" +
-                    missingDateErrors.join("<br>")
-            });
-            return false;
-        }
+		let today = new Date();
+		today.setDate(1);
+		let futureWarningDate = addMonths(today, warningMonths);
 
-        if (expiredDateErrors.length > 0) {
-            bootbox.alert({
-                message:
-                    "The following item(s) will expire in the current month or already expired:<br><br>" +
-                    expiredDateErrors.join("<br>")
-            });
-        }
+		let missingDateErrors = [];
+		let expiredDateErrors = [];
+		let expiringWithinWarningItems = [];
 
-        if (expiringWithinWarningItems.length > 0) {
-            bootbox.alert({
-                message:
-                    `Warning: The following item(s) are going to expire within ${warningMonths} months:<br><br>` +
-                    expiringWithinWarningItems.join("<br>")
-            });
-        }
+		let $form = $("form");
 
-        return isValid;
-    }
+		$(".exp_date_picker").each(function () {
+			let $field = $(this);
+			let val = $field.val().trim();
+			let itemName = "Unknown Item";
+
+			let $parentItemRow = $field.closest("tr").prevAll("tr[name='indent_item']").first();
+			if ($parentItemRow.length) {
+				let $select = $parentItemRow.find("select.items");
+				if ($select.length && $select[0].selectize) {
+					let selectedValue = $select[0].selectize.getValue();
+					if (selectedValue && $select[0].selectize.options[selectedValue]) {
+						itemName = $select[0].selectize.options[selectedValue].item_name;
+					}
+				}
+			}
+
+			if (!val) {
+				missingDateErrors.push(itemName);
+				return;
+			}
+
+			let expDate = parseDateDMY(val);
+			if (!expDate || isNaN(expDate.getTime()) || expDate <= today) {
+				expiredDateErrors.push(itemName);
+			} else if (expDate <= futureWarningDate) {
+				expiringWithinWarningItems.push(itemName);
+			}
+		});
+
+		let alerts = [];
+
+		if (missingDateErrors.length > 0) {
+			alerts.push({
+				title: "Missing Expiry Dates",
+				message: "Expiry date is required. Please check:<br><br>" +
+						missingDateErrors.join("<br>")
+			});
+		}
+		if (expiredDateErrors.length > 0) {
+			alerts.push({
+				title: "Expired Items",
+				message: "Warning: Expiring this month:<br><br>" +
+						expiredDateErrors.join("<br>")
+			});
+		}
+
+		if (expiringWithinWarningItems.length > 0) {
+			alerts.push({
+				title: "Upcoming Expiry",
+				message: `Warning: Expiring within ${warningMonths} months:<br><br>` +
+						expiringWithinWarningItems.join("<br>")
+			});
+		}
+		function showNextAlert() {
+			if (alerts.length === 0) {
+				skipValidation = true;
+				$form.submit();
+				setTimeout(() => { skipValidation = false; }, 1000);
+				return;
+			}
+
+			let alert = alerts.shift();
+			bootbox.alert({
+				title: alert.title,
+				message: alert.message,
+				callback: showNextAlert
+			});
+		}
+
+		if (alerts.length > 0) {
+			showNextAlert();
+			return false;
+		}
+
+		return true;
+	}
 </script>
-
