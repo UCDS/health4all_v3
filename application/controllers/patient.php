@@ -84,6 +84,7 @@ class Patient extends CI_Controller {
 	$this->load->helper('form');
 	$this->data['patient_data'] = $this->patient_model->get_patient_data();
 	$this->data['patient_data_edit_history'] = $this->patient_model->get_patient_data_edit_history();
+    $this->data['districts']=$this->staff_model->get_district();
 	
 	if (count($this->data['patient_data']) == 0 && $this->input->post('patient_id')){
 		$this->data['error']="No details found";
