@@ -1558,7 +1558,8 @@ class Register extends CI_Controller {
 
 		$userdata=$this->session->userdata('logged_in');
 		$user_id = $userdata['user_id'];
-		$data['hospital_details'] = $this->staff_model->user_hospital($user_id);
+		$hospital_id = $this->session->userdata('hospital');
+		$data['hospital_details'] = $hospital_id;
 
 		$patient_id = $data['form_data']['patient_id'];
 		$visit_id = $data['form_data']['visit_id'];

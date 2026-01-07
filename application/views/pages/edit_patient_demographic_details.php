@@ -335,6 +335,37 @@ $(function(){
   			updateAlert = updateAlert + "<br> <b>Spouse name</b>: " + $('#spouse_name_update_old_value').text() + " -> " + $('#spouse_name_update_new_value').val();
   		}	
   	}
+
+    if ($('#district_update').is(':checked')) {
+        isUpdate = true;
+
+        var oldDistrictName = $('#district_update_old_value').text().trim();
+        var oldDistrictId   = $('#district_update_old_value').attr('value');
+
+        var newDistrictName = $('#district_update_new_value option:selected').text().trim();
+        var newDistrictId   = $('#district_update_new_value').val();
+
+        if (newDistrictId == "" || oldDistrictName === newDistrictName) {
+            bootbox.alert({
+                title: "<b>District</b>",
+                message: "New value should be different than old value.",
+                onHidden: function () {
+                    $('#district_update_new_value').focus();
+                }
+            });
+            return;
+        } else {
+            postData["district_id"] = {
+                "old_id": oldDistrictId,
+                "new_id": newDistrictId,
+                "old_name": oldDistrictName,
+                "new_name": newDistrictName
+            };
+
+            updateAlert += "<br> <b>District</b>: " + oldDistrictName + " -> " + newDistrictName;
+        }
+    }
+
   	
   	if (!isUpdate) {
   		bootbox.alert("There are nothing to update!");
@@ -529,6 +560,21 @@ $(function(){
         <td id="spouse_name_update_old_value"><?php if(!!$patient_data[0]->spouse_name) {echo $patient_data[0]->spouse_name;}?></td>
         <td><input type="checkbox" class="form-check-input"  id="spouse_name_update" name="spouse_name_update" value="spouse_name_update"></td>
         <td><input type="text" class="form-control" id="spouse_name_update_new_value" name="spouse_name_update_new_value" placeholder="New spouse name" value=""  disabled></td>
+      </tr>
+      <tr>
+        <td>District</td>
+        <td id="district_update_old_value" value="<?php echo ($patient_data[0]->district_id); ?>"><?php echo $patient_data[0]->dname; ?></td>
+        <td><input type="checkbox" class="form-check-input"  id="district_update" name="district_update" value="district_update"></td>
+        <td>   
+        	<select name="district_update_new_value" id="district_update_new_value" class="form-control" disabled>
+            <option value="">Select District</option>
+            <?php foreach ($districts as $district) { ?>
+                <option value="<?php echo $district->district_id; ?>">
+                    <?php echo $district->district; ?>
+                </option>
+            <?php } ?>
+        </select>
+        </td>
       </tr>
       
       

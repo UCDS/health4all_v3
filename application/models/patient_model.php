@@ -124,8 +124,9 @@ class patient_model extends CI_Model {
             return;
         }
         
-        $this->db->select('patient_id,first_name,middle_name,last_name, phone, alt_phone, gender, age_years,age_months,age_days,address,place,father_name,mother_name,spouse_name,patient_id_manual')
+        $this->db->select('patient_id,first_name,middle_name,last_name, phone, alt_phone, gender, age_years,age_months,age_days,address,place,father_name,mother_name,spouse_name,patient_id_manual,patient.district_id, district.district as dname')
                 ->from('patient')
+                ->join('district','district.district_id = patient.district_id','left')
                 ->where('patient.patient_id', "$patient_id");
         
         $query = $this->db->get();
@@ -165,7 +166,7 @@ class patient_model extends CI_Model {
         $table_name='patient';
         $edit_history = array();
         $patient = array();
-        $elements = ['patient_id_manual','first_name','middle_name','last_name','phone','alt_phone','gender','age_years','age_months','age_days','address','place','father_name','mother_name','spouse_name'];
+        $elements = ['patient_id_manual','first_name','middle_name','last_name','phone','alt_phone','gender','age_years','age_months','age_days','address','place','father_name','mother_name','spouse_name','district_id'];
         foreach ($elements as $column) {
         	if (array_key_exists($column,$input_data)){ 
 			$edit_data = array();
@@ -177,6 +178,15 @@ class patient_model extends CI_Model {
 			$edit_data['new_value'] = $input_data[$column]['new'];
 			$edit_data['field_name'] = $column; 
 			$edit_data['table_name'] = 'patient';  
+            if ($column == 'district_id') {
+                $patient[$column] = $input_data[$column]['new_id'];
+                $edit_data['previous_value'] = $input_data[$column]['old_name'];
+                $edit_data['new_value'] = $input_data[$column]['new_name'];
+            } else {
+                $patient[$column] = $input_data[$column]['new'];
+                $edit_data['previous_value'] = $input_data[$column]['old'];
+                $edit_data['new_value'] = $input_data[$column]['new'];
+            }
 			array_push($edit_history,$edit_data);  
         	}
         }

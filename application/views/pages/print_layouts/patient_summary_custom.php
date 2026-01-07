@@ -5,7 +5,7 @@
 
 		<?php  
 			$patient = $patient_details[0];
-			$hospitals = $hospital_details[0];
+			$hospitals = $hospital_details;
 		?>
 
 		<script type="text/javascript">
@@ -65,11 +65,11 @@
 					<tr>
 						<td colspan="3"> 
 						<div style="float:left;text-align:left;left:auto;width:75%;">
-							<?php if ($hospitals->telehealth == "0") {?>
-							<font size="4"><?php echo $hospitals->hospital;?></font><br />
-								<?php if(!empty($hospitals->description)){ echo $hospitals->description."<br />"; }?>
-								<!--<?php echo $hospitals->place; ?>, 
-								<?php echo $hospitals->district; ?>-->
+							<?php if ($hospitals['telehealth'] == "0") {?>
+							<font size="4"><?php echo $hospitals['hospital'];?></font><br />
+								<?php if(!empty($hospitals['description'])){ echo $hospitals['description']."<br />"; }?>
+								<!--<?php echo $hospitals['place']; ?>, 
+								<?php echo $hospitals['district']; ?>-->
 							<br />
 							<?php } else {?>
 							<?php if(!!$patient->doctor_name) {?> 
@@ -78,12 +78,12 @@
 							<font size="4">Teleconsultation with Doctor</font><br />
 							<?php } ?>
 							
-									<?php echo "Facilitated by  ".$hospitals->hospital."<br />";?>
-								<?php if(!!$hospitals->description) echo $hospitals->description."<br />";?>
+									<?php echo "Facilitated by  ".$hospitals['hospital']."<br />";?>
+								<?php if(!!$hospitals['description']) echo $hospitals['description']."<br />";?>
 							<?php } ?>
 						</div>			
 						<div style="float:right;margin-right:10;margin-top:5px;">			
-							<img src="<?php echo base_url()."assets/logos/".$hospitals->logo;?>" width="65px" height="65px" />
+							<img src="<?php echo base_url()."assets/logos/".$hospitals['logo'];?>" width="65px" height="65px" />
 						</div>
 						</td>
 					</tr>
