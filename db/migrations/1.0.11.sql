@@ -7,3 +7,5 @@ INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function
 ALTER TABLE `supply_chain_party` ADD `is_external` SMALLINT(2) NOT NULL COMMENT '1=>internal 2=>external ' AFTER `vendor_id`;
 
 ALTER TABLE `inventory_summary` ADD PRIMARY KEY( `supply_chain_party_id`, `item_id`);
+
+ALTER TABLE update_patient_custom_form_fields ADD COLUMN div_name VARCHAR(100);
