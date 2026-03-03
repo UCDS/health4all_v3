@@ -1413,23 +1413,47 @@ class Register extends CI_Controller {
 		}
 	}
 
+	// public function submit_columns() 
+	// {
+	// 	$form_name = $this->input->post('form_name');
+	// 	$selected_columns = $this->input->post('selected_columns');
+	// 	$column_types = $this->input->post('column_types');
+	// 	if ($form_name && !empty($selected_columns)) 
+	// 	{
+	// 		$data = [
+	// 			'form_name' => $form_name,
+	// 			'selected_columns' => json_encode($selected_columns)
+	// 		];
+			
+	// 		$form_id = $this->register_model->save_sel_cols_update_patients($form_name, $selected_columns,$column_types);
+	// 		if ($form_id) 
+	// 		{
+	// 			echo json_encode(['status' => 'success', 'message' => 'Form Created Successfully!']);
+	// 		} else 	{
+	// 			echo json_encode(['status' => 'error', 'message' => 'Failed to save columns.']);
+	// 		}
+	// 	} else {
+	// 		echo json_encode(['status' => 'error', 'message' => 'Form name or columns not selected.']);
+	// 	}
+	// }
+	
 	public function submit_columns() 
 	{
 		$form_name = $this->input->post('form_name');
 		$selected_columns = $this->input->post('selected_columns');
 		$column_types = $this->input->post('column_types');
+		$div_names = $this->input->post('div_name');
+		$layout = $this->input->post('layout');
+
 		if ($form_name && !empty($selected_columns)) 
 		{
-			$data = [
-				'form_name' => $form_name,
-				'selected_columns' => json_encode($selected_columns)
-			];
-			
-			$form_id = $this->register_model->save_sel_cols_update_patients($form_name, $selected_columns,$column_types);
-			if ($form_id) 
-			{
+			$form_id = $this->register_model->save_sel_cols_update_patients(
+				$form_name, $selected_columns, $column_types, $div_names,$layout
+			);
+
+			if ($form_id) {
 				echo json_encode(['status' => 'success', 'message' => 'Form Created Successfully!']);
-			} else 	{
+			} else {
 				echo json_encode(['status' => 'error', 'message' => 'Failed to save columns.']);
 			}
 		} else {

@@ -77,462 +77,492 @@ pri.print();
         <input type="hidden" name="file_no" class="form-control" value="<?php echo $file_no ?>">
         <input type="hidden" name="visit_type_name" class="form-control" value="<?php echo $visit_type_name ?>">
         <div class="panel-body">
-        <?php if (!empty($saved_form_id)) { ?>
-                <!-- <div class="sortable-container" style="width: 100%; padding: 15px 0;"> --> <!-- If needed activate sortable container -->
-                <div class="" style="width: 100%; padding: 15px 0;">
-                    <?php 
-                        $counter = 1;
-                        $currentRowWidth = 0;
-                        echo '<div class="row">'; 
-                    ?>
-                    <?php foreach ($saved_form_id as $sfi) { 
-                        if ($sfi->no_of_cols == 1) {
-                            $col = '12';
-                        }
-                        if ($sfi->no_of_cols == 2) {
-                            $col = '6';
-                        }
-                        if ($sfi->no_of_cols == 3) {
-                            $col = '4';
-                        }
-                        if ($currentRowWidth + $col > 12) {
-                            echo '</div><div class="row">';
+            <?php if (!empty($saved_form_id)) { ?>
+
+            <?php
+            $grouped_fields = [];
+            foreach ($saved_form_id as $sfi) {
+                $divKey = !empty($sfi->div_name) ? $sfi->div_name : 'Default';
+                $grouped_fields[$divKey][] = $sfi;
+            }
+            ?>
+
+            <div style="width:100%; padding:15px 0;">
+
+                <?php
+                foreach ($grouped_fields as $divName => $fields) {
+                ?>
+                    <div class="panel panel-success mb-3">
+                        <div class="panel-heading">
+                            <strong><?php echo htmlspecialchars($divName); ?></strong>
+                        </div>
+
+                        <div class="card-body" style="margin:15px;">
+                            <div class="row">
+
+                            <?php
                             $currentRowWidth = 0;
-                        }
+                            $counter = 1;
 
-                        $currentRowWidth += $col;
-                    ?>
-                    <div class="col-md-<?php echo $col; ?> sortable-item" >
-                        <div class="form-group row myrow" style="padding-top:5px;padding-bottom:5px;">
-                            <input type="hidden" name="sequence[]" class="sequence-input" value="<?php echo $counter; ?>" data-counter="<?php echo $counter; ?>" />
-                            <!-- <label for="<?php echo $sfi->selected_columns; ?>" class="col-md-5 col-form-label">
-                                <?php echo str_replace('_', ' ', $sfi->selected_columns); ?>
-                            </label> -->
-                            <label for="<?php echo $sfi->label; ?>" class="col-md-5 col-form-label">
-                                <strong><?php echo $sfi->label; ?></strong>
-                            </label>
-                            <div class="col-md-12">
-                                <?php if($sfi->selected_columns=='patient_id')
-                                    {
-                                ?>
-                                    <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                    value="<?php echo $patient_id; ?>" class="form-control" readonly>
-                                <?php }else if($sfi->selected_columns=='visit_id')
-                                    {
-                                ?>
-                                    <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                    value="<?php echo $visit_id; ?>" class="form-control" readonly>
-                                <?php } else if($sfi->selected_columns=='district_id' || $sfi->selected_columns=='state_id' )
-                                    { 
-                                ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="district" class="form-control" <?php if((!empty($db_values[0]->district_id)) && $db_values[0]->district_id!='0') { echo "readonly"; } ?>>
-                                        <option value="#">Select Distrcit</option>
-                                        <?php foreach ($districts as $dis){ ?>
-                                            <option <?php if($db_values[0]->district_id==$dis->district_id){ echo "selected" ; } ?>
-                                                value="<?php echo $dis->district_id; ?>" data-state-id="<?php echo $dis->state_id; ?>"><?php echo $dis->district; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                <?php } else if($sfi->selected_columns=='department_id')
-                                    {  
-                                ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" <?php if(!empty($db_values[0]->department_id)) { echo "disabled"; } ?>>
-                                        <option value="#">Select Department</option>
-                                        <?php foreach ($all_departments as $ald){ ?>
-                                            <option <?php if($db_values[0]->department_id==$ald->department_id){ echo "selected" ; } ?>
-                                            value="<?php echo $ald->department_id; ?>"><?php echo $ald->department; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                <?php }else if($sfi->selected_columns == 'unit') 
-                                    {  
-                                ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" 
-                                        <?php if (!empty($db_values[0]->unit)) { echo "disabled"; } ?>>
-                                        <option value="#">Select Unit</option>
-                                        <?php foreach ($units as $unit) { ?>
-                                            <option <?php if($db_values[0]->unit == $unit->unit_id) { echo "selected"; } ?>
-                                                value="<?php echo $unit->unit_id; ?>">
-                                                <?php echo $unit->unit_name; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                <?php   } else if($sfi->selected_columns == 'area') 
-                                    {  
-                                ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" 
-                                        <?php if (!empty($db_values[0]->area)) { echo "disabled"; } ?>>
-                                        <option value="#">Select Area</option>
-                                        <?php foreach ($areas as $area) { ?>
-                                            <option <?php if($db_values[0]->area == $area->area_id) { echo "selected"; } ?>
-                                                value="<?php echo $area->area_id; ?>">
-                                                <?php echo $area->area_name; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                <?php  }  else if($sfi->selected_columns == 'ndps') {
-                                        $ndps_value = isset($db_values[0]->ndps) ? $db_values[0]->ndps : null;
-                                ?>
-                                    <div>
-                                    <label>
-                                        <input type="radio" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                            value="1" <?php if($ndps_value === '1' || $ndps_value === 1){ echo "checked"; } ?>>
-                                        Yes
+                            foreach ($fields as $sfi) {
+
+                                if ($divName === 'Default') {
+                                    if ($sfi->no_of_cols == 1) $col = 12;
+                                    if ($sfi->no_of_cols == 2) $col = 6;
+                                    if ($sfi->no_of_cols == 3) $col = 4;
+                                } 
+                                else {
+                                    if ($sfi->div_column_count == 1) $col = 12;
+                                    if ($sfi->div_column_count == 2) $col = 6;
+                                    if ($sfi->div_column_count == 3) $col = 4;
+                                }
+                                if ($currentRowWidth + $col > 12) {
+                                    echo '</div><div class="row">';
+                                    $currentRowWidth = 0;
+                                }
+                                $currentRowWidth += $col;
+                            ?>
+                            <div class="col-md-<?php echo $col; ?> sortable-item">
+                                <div class="form-group row myrow" style="padding-top:5px;padding-bottom:5px;">
+
+                                    <input type="hidden" name="sequence[]" value="<?php echo $counter++; ?>">
+
+                                    <label class="col-md-12 col-form-label">
+                                        <strong><?php echo $sfi->label; ?></strong>
                                     </label>
-                                    &nbsp;&nbsp;
-                                    <label>
-                                        <input type="radio" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                            value="0" <?php if($ndps_value === '0' || $ndps_value === 0){ echo "checked"; } ?>>
-                                        No
-                                    </label>
-                                </div>
-                                <?php } else if($sfi->selected_columns=='priority_type_id')
-                                    {  
-                                ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="prority_type" class="form-control mydeptunit" <?php if(!empty($db_values[0]->priority_type_id)) { echo "readonly"; } ?>>
-                                        <option value="#">Select Priority</option>
-                                        <?php foreach ($priority_types as $pts){ ?>
-                                            <option <?php if($db_values[0]->priority_type_id==$pts->priority_type_id){ echo "selected" ; } ?>
-                                            value="<?php echo $pts->priority_type_id; ?>"><?php echo $pts->priority_type; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                <?php } else if($sfi->selected_columns=='route_secondary_id')
-                                    {  
-                                ?>
-                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="route_secondary" class="form-control mydeptunit" <?php if(!empty($db_values[0]->route_secondary_id)) { echo "readonly"; } ?>>
-                                        <option value="#">Select Route Secondary</option>
-                                        <?php foreach ($route_secondary as $rs){ ?>
-                                            <option <?php if($db_values[0]->route_secondary_id==$rs->id){ echo "selected" ; } ?>
-                                            value="<?php echo $rs->id; ?>"><?php echo $rs->route_secondary; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                <?php } else if($sfi->selected_columns=='outcome')
-                                    {
-                                ?>
-                                    <label><input type="radio" <?php if($db_values[0]->outcome=='Discharge'){ echo 'checked'; } ?> value="Discharge" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;Discharge</label>&nbsp;
-                                    <label><input type="radio" <?php if($db_values[0]->outcome=='LAMA'){ echo 'checked'; } ?> value="LAMA" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;LAMA</label>&nbsp;
-                                    <label><input type="radio" <?php if($db_values[0]->outcome=='Absconded'){ echo 'checked'; } ?> value="Absconded" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;Absconded</label>&nbsp;
-                                    <label><input type="radio" <?php if($db_values[0]->outcome=='Death'){ echo 'checked'; } ?> value="Death" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;Death</label>
 
-                                <?php } else if (strpos($sfi->selected_columns, 'date') !== false) 
-                                            { 
-                                                 $column_name = $sfi->selected_columns;
-                                                 $value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
-                                    ?>
-                                    <input type="date" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='0000-00-00') { echo "readonly"; } ?>>
-                                <?php } else if (strpos($sfi->selected_columns, 'time') !== false && $sfi->selected_columns !== 'appointment_time') { 
-                                        $column_name = $sfi->selected_columns;
-                                        $value = (isset($db_values[0]->$column_name) && $db_values[0]->$column_name != '00:00:00') 
-                                            ? $db_values[0]->$column_name 
-                                            : '';
-                                    ?>
-                                    <input type="time" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
-                                <?php }else if ($sfi->selected_columns == 'appointment_time') { 
-                                        $column_name = $sfi->selected_columns;
-                                        $value = (isset($db_values[0]->$column_name) && $db_values[0]->$column_name != '0000-00-00 00:00:00') 
-                                            ? $db_values[0]->$column_name 
-                                            : '';
-                                    ?>
-                                    <input type="datetime-local" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
-                                <?php } elseif ($sfi->selected_columns == 'note' || $sfi->selected_columns == 'advise') {
-                                        $column_name = $sfi->selected_columns;
-                                        $raw_value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
-                                        $formatted_text = '';
+                                            <div class="col-md-12">
+                                                <?php if($sfi->selected_columns=='patient_id')
+                                                    {
+                                                ?>
+                                                    <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                    value="<?php echo $patient_id; ?>" class="form-control" readonly>
+                                                <?php }else if($sfi->selected_columns=='visit_id')
+                                                    {
+                                                ?>
+                                                    <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                    value="<?php echo $visit_id; ?>" class="form-control" readonly>
+                                                <?php } else if($sfi->selected_columns=='district_id' || $sfi->selected_columns=='state_id' )
+                                                    { 
+                                                ?>
+                                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="district" class="form-control" <?php if((!empty($db_values[0]->district_id)) && $db_values[0]->district_id!='0') { echo "disabled"; } ?>>
+                                                        <option value="#">Select Distrcit</option>
+                                                        <?php foreach ($districts as $dis){ ?>
+                                                            <option <?php if($db_values[0]->district_id==$dis->district_id){ echo "selected" ; } ?>
+                                                                value="<?php echo $dis->district_id; ?>" data-state-id="<?php echo $dis->state_id; ?>"><?php echo $dis->district; ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                <?php } else if($sfi->selected_columns=='department_id')
+                                                    {  
+                                                ?>
+                                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" <?php if(!empty($db_values[0]->department_id)) { echo "disabled"; } ?>>
+                                                        <option value="#">Select Department</option>
+                                                        <?php foreach ($all_departments as $ald){ ?>
+                                                            <option <?php if($db_values[0]->department_id==$ald->department_id){ echo "selected" ; } ?>
+                                                            value="<?php echo $ald->department_id; ?>"><?php echo $ald->department; ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                <?php }else if($sfi->selected_columns == 'unit') 
+                                                    {  
+                                                ?>
+                                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" 
+                                                        <?php if (!empty($db_values[0]->unit)) { echo "disabled"; } ?>>
+                                                        <option value="#">Select Unit</option>
+                                                        <?php foreach ($units as $unit) { ?>
+                                                            <option <?php if($db_values[0]->unit == $unit->unit_id) { echo "selected"; } ?>
+                                                                value="<?php echo $unit->unit_id; ?>">
+                                                                <?php echo $unit->unit_name; ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                <?php   } else if($sfi->selected_columns == 'area') 
+                                                    {  
+                                                ?>
+                                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" class="form-control mydeptunit" 
+                                                        <?php if (!empty($db_values[0]->area)) { echo "disabled"; } ?>>
+                                                        <option value="#">Select Area</option>
+                                                        <?php foreach ($areas as $area) { ?>
+                                                            <option <?php if($db_values[0]->area == $area->area_id) { echo "selected"; } ?>
+                                                                value="<?php echo $area->area_id; ?>">
+                                                                <?php echo $area->area_name; ?>
+                                                            </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                <?php  }  else if($sfi->selected_columns == 'ndps') {
+                                                        $ndps_value = isset($db_values[0]->ndps) ? $db_values[0]->ndps : null;
+                                                ?>
+                                                    <div>
+                                                    <label>
+                                                        <input type="radio" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                            value="1" <?php if($ndps_value === '1' || $ndps_value === 1){ echo "checked"; } ?>>
+                                                        Yes
+                                                    </label>
+                                                    &nbsp;&nbsp;
+                                                    <label>
+                                                        <input type="radio" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                            value="0" <?php if($ndps_value === '0' || $ndps_value === 0){ echo "checked"; } ?>>
+                                                        No
+                                                    </label>
+                                                </div>
+                                                <?php } else if($sfi->selected_columns=='priority_type_id')
+                                                    {  
+                                                ?>
+                                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="prority_type" class="form-control mydeptunit" <?php if(!empty($db_values[0]->priority_type_id)) { echo "disabled"; } ?>>
+                                                        <option value="#">Select Priority</option>
+                                                        <?php foreach ($priority_types as $pts){ ?>
+                                                            <option <?php if($db_values[0]->priority_type_id==$pts->priority_type_id){ echo "selected" ; } ?>
+                                                            value="<?php echo $pts->priority_type_id; ?>"><?php echo $pts->priority_type; ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                <?php } else if($sfi->selected_columns=='route_secondary_id')
+                                                    {  
+                                                ?>
+                                                    <select name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" id="route_secondary" class="form-control mydeptunit" <?php if(!empty($db_values[0]->route_secondary_id)) { echo "disabled"; } ?>>
+                                                        <option value="#">Select Route Secondary</option>
+                                                        <?php foreach ($route_secondary as $rs){ ?>
+                                                            <option <?php if($db_values[0]->route_secondary_id==$rs->id){ echo "selected" ; } ?>
+                                                            value="<?php echo $rs->id; ?>"><?php echo $rs->route_secondary; ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                <?php } else if($sfi->selected_columns=='outcome')
+                                                    {
+                                                ?>
+                                                    <label><input type="radio" <?php if($db_values[0]->outcome=='Discharge'){ echo 'checked'; } ?> value="Discharge" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;Discharge</label>&nbsp;
+                                                    <label><input type="radio" <?php if($db_values[0]->outcome=='LAMA'){ echo 'checked'; } ?> value="LAMA" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;LAMA</label>&nbsp;
+                                                    <label><input type="radio" <?php if($db_values[0]->outcome=='Absconded'){ echo 'checked'; } ?> value="Absconded" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;Absconded</label>&nbsp;
+                                                    <label><input type="radio" <?php if($db_values[0]->outcome=='Death'){ echo 'checked'; } ?> value="Death" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>">&nbsp;Death</label>
 
-                                        if (!empty($raw_value) || $raw_value === '0') {
-                                            $doc = new DOMDocument();
-                                            libxml_use_internal_errors(true);
-                                            $doc->loadHTML('<div>' . $raw_value . '</div>');
-                                            libxml_clear_errors();
-                                            $items = [];
-                                            $lis = $doc->getElementsByTagName('li');
-                                            foreach ($lis as $li) {
-                                                $items[] = '. ' . trim($li->textContent);
-                                            }
-                                            if (empty($items)) {
-                                                $paragraphs = $doc->getElementsByTagName('p');
-                                                foreach ($paragraphs as $p) {
-                                                    $items[] = trim($p->textContent);
-                                                }
-                                            }
-                                            $formatted_text = implode("\n", $items);
-                                        }
-                                    ?>
-                                    <div class="mb-2">
-                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="ckeditor" > Ckeditor</label>
+                                                <?php } else if (strpos($sfi->selected_columns, 'date') !== false) 
+                                                            { 
+                                                                $column_name = $sfi->selected_columns;
+                                                                $value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
+                                                    ?>
+                                                    <input type="date" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if($db_values[0]->$column_name!='0000-00-00') { echo "readonly"; } ?>>
+                                                <?php } else if (strpos($sfi->selected_columns, 'time') !== false && $sfi->selected_columns !== 'appointment_time') { 
+                                                        $column_name = $sfi->selected_columns;
+                                                        $value = (isset($db_values[0]->$column_name) && $db_values[0]->$column_name != '00:00:00') 
+                                                            ? $db_values[0]->$column_name 
+                                                            : '';
+                                                    ?>
+                                                    <input type="time" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
+                                                <?php }else if ($sfi->selected_columns == 'appointment_time') { 
+                                                        $column_name = $sfi->selected_columns;
+                                                        $value = (isset($db_values[0]->$column_name) && $db_values[0]->$column_name != '0000-00-00 00:00:00') 
+                                                            ? $db_values[0]->$column_name 
+                                                            : '';
+                                                    ?>
+                                                    <input type="datetime-local" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                        value="<?php echo $value; ?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" autocomplete="off" <?php if(!empty($value)) { echo "readonly"; }?>>
+                                                <?php } elseif ($sfi->selected_columns == 'note' || $sfi->selected_columns == 'advise') {
+                                                        $column_name = $sfi->selected_columns;
+                                                        $raw_value = isset($db_values[0]->$column_name) ? $db_values[0]->$column_name : '';
+                                                        $formatted_text = '';
+
+                                                        if (!empty($raw_value) || $raw_value === '0') {
+                                                            $doc = new DOMDocument();
+                                                            libxml_use_internal_errors(true);
+                                                            $doc->loadHTML('<div>' . $raw_value . '</div>');
+                                                            libxml_clear_errors();
+                                                            $items = [];
+                                                            $lis = $doc->getElementsByTagName('li');
+                                                            foreach ($lis as $li) {
+                                                                $items[] = '. ' . trim($li->textContent);
+                                                            }
+                                                            if (empty($items)) {
+                                                                $paragraphs = $doc->getElementsByTagName('p');
+                                                                foreach ($paragraphs as $p) {
+                                                                    $items[] = trim($p->textContent);
+                                                                }
+                                                            }
+                                                            $formatted_text = implode("\n", $items);
+                                                        }
+                                                    ?>
+                                                    <div class="mb-2">
+                                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="ckeditor" > Ckeditor</label>
+                                                    </div>
+                                                    <div class="input_container <?php echo $column_name; ?>">
+                                                    <textarea class="form-control" rows="5" cols="10"
+                                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" <?php if(!empty($formatted_text) || (!empty($raw_value))){ echo 'readonly'; } ?>>
+                                                        <?php if(empty($formatted_text)){ echo $raw_value; }else{ echo htmlspecialchars($formatted_text); }?>
+                                                    </textarea>
+                                                    <!-- <input type="hidden"
+                                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
+                                                        value="<?php echo htmlspecialchars($raw_value); ?>" /> -->
+                                                    </div>
+                                                <?php } else {  $column_name = $sfi->selected_columns; if($sfi->text_box==0) { ?>
+                                                    <!-- <div class="mb-2">
+                                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="text" <?php echo $sfi->text_box == 0 ? 'checked' : ''; ?>> Textbox</label>
+                                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="textarea" <?php echo $sfi->text_box != 0 ? 'checked' : ''; ?>> Textarea</label>
+                                                    </div> -->
+                                                    <!-- <div class="input_container <?php echo $column_name; ?>"> -->
+                                                    <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
+                                                        value="<?php if(!empty($db_values[0]->$column_name) || $db_values[0]->$column_name!='0') { echo $db_values[0]->$column_name; }?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" 
+                                                            autocomplete="off" <?php if(!empty($db_values[0]->$column_name)) { echo "readonly"; } ?>>
+                                                        <!-- </div> -->
+                                                <?php }else{ if(empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0' || $db_values[0]->$column_name === ''){ ?>  
+                                                    <div class="mb-2">
+                                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="text" <?php echo $sfi->text_box == 0 ? 'checked' : ''; ?>> Textbox</label>
+                                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="textarea" <?php echo $sfi->text_box != 0 ? 'checked' : ''; ?>> Textarea</label>
+                                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="ckeditor" > Ckeditor</label>
+                                                    </div>
+                                                    <?php } ?>
+                                                    <div class="input_container <?php echo $column_name; ?>">
+                                                    <textarea class="form-control" rows="5" cols="10"
+                                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
+                                                        <?php if (!empty($db_values[0]->$column_name)) echo "readonly"; ?>><?php
+                                                        echo (!empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0') ? $db_values[0]->$column_name : '';
+                                                    ?></textarea>
+                                                    </div>
+                                                <?php } } ?>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="input_container <?php echo $column_name; ?>">
-                                    <textarea class="form-control" rows="5" cols="10"
-                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" <?php if(!empty($formatted_text) || (!empty($raw_value))){ echo 'readonly'; } ?>>
-                                        <?php if(empty($formatted_text)){ echo $raw_value; }else{ echo htmlspecialchars($formatted_text); }?>
-                                    </textarea>
-                                    <!-- <input type="hidden"
-                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
-                                        value="<?php echo htmlspecialchars($raw_value); ?>" /> -->
-                                    </div>
-                                <?php } else {  $column_name = $sfi->selected_columns; if($sfi->text_box==0) { ?>
-                                    <!-- <div class="mb-2">
-                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="text" <?php echo $sfi->text_box == 0 ? 'checked' : ''; ?>> Textbox</label>
-                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="textarea" <?php echo $sfi->text_box != 0 ? 'checked' : ''; ?>> Textarea</label>
-                                    </div> -->
-                                    <!-- <div class="input_container <?php echo $column_name; ?>"> -->
-                                    <input type="text" name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>" 
-                                        value="<?php if(!empty($db_values[0]->$column_name) || $db_values[0]->$column_name!='0') { echo $db_values[0]->$column_name; }?>" class="form-control" id="<?php echo $sfi->selected_columns; ?>" 
-                                            autocomplete="off" <?php if(!empty($db_values[0]->$column_name)) { echo "readonly"; } ?>>
-                                        <!-- </div> -->
-                                <?php }else{ if(empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0' || $db_values[0]->$column_name === ''){ ?>  
-                                    <div class="mb-2">
-                                        <label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="text" <?php echo $sfi->text_box == 0 ? 'checked' : ''; ?>> Textbox</label>
-                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="textarea" <?php echo $sfi->text_box != 0 ? 'checked' : ''; ?>> Textarea</label>
-                                        &nbsp;&nbsp;<label><input type="checkbox" name="input_type_<?php echo $column_name; ?>" value="ckeditor" > Ckeditor</label>
-                                    </div>
-                                    <?php } ?>
-                                    <div class="input_container <?php echo $column_name; ?>">
-                                    <textarea class="form-control" rows="5" cols="10"
-                                        name="<?php echo $sfi->selected_columns . '.' . $sfi->table_name; ?>"
-                                        <?php if (!empty($db_values[0]->$column_name)) echo "readonly"; ?>><?php
-                                        echo (!empty($db_values[0]->$column_name) || $db_values[0]->$column_name === '0') ? $db_values[0]->$column_name : '';
-                                    ?></textarea>
-                                    </div>
-                                <?php } } ?>
+                                    <?php } // end field loop ?>
+
                             </div>
                         </div>
                     </div>
-                    <script>
-                        document.querySelectorAll('input[type="checkbox"][name^="input_type_"]').forEach(function(checkbox) {
-                            checkbox.addEventListener('change', function () {
-                                const columnClass = this.name.replace('input_type_', '');
-                                const checkboxes = document.querySelectorAll('input[name="' + this.name + '"]');
 
-                                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+                <?php } ?>
 
-                                if (checkedBoxes.length === 0) {
-                                    alert('At least one input type must be selected.');
-                                    this.checked = true;
-                                    return;
-                                }
+            </div>
 
-                                checkboxes.forEach(cb => {
-                                    if (cb !== this) cb.checked = false;
-                                });
-
-                                const container = document.querySelector('.input_container.' + columnClass);
-                                if (!container) return;
-
-                                const selectedType = this.value;
-                                const existingInput = container.querySelector('input, textarea');
-                                let currentValue = existingInput ? existingInput.value : '';
-                                const isReadonly = existingInput && existingInput.hasAttribute('readonly');
-                                const isDisabled = existingInput && existingInput.hasAttribute('disabled');
-                                const nameAttr = existingInput ? existingInput.getAttribute('name') : columnClass;
-
-                                let html = '';
-
-                                if (selectedType === 'text') {
-                                    html = `<input type="text"
-                                                name="${nameAttr}"
-                                                value="${currentValue.replace(/"/g, '&quot;')}"
-                                                class="form-control ${columnClass}"
-                                                autocomplete="off"
-                                                ${isReadonly ? 'readonly' : ''}
-                                                ${isDisabled ? 'disabled' : ''}>`;
-                                } else {
-                                    html = `<textarea class="form-control ${columnClass}" rows="5" cols="10"
-                                                name="${nameAttr}"
-                                                ${isReadonly ? 'readonly' : ''}
-                                                ${isDisabled ? 'disabled' : ''}>${currentValue}</textarea>`;
-                                }
-
-                                container.innerHTML = html;
-                            });
-                        });
-                    </script>
-                    <script>
-                        //const ckeditors = {};
-                        window.ckeditors = window.ckeditors || {};
-                        document.addEventListener('DOMContentLoaded', function() {
-                            document.querySelectorAll('input[type="checkbox"][name^="input_type_"]').forEach(function(checkbox) {
-                                checkbox.addEventListener('change', function () {
-                                    const columnClass = this.name.replace('input_type_', '');
-                                    const container = document.querySelector('.input_container.' + columnClass);
-
-                                    if (!container) return;
-                                    if (ckeditors[columnClass]) {
-                                        ckeditors[columnClass].destroy().catch(err => console.error(err));
-                                        delete ckeditors[columnClass];
-                                    }
-                                    if (this.value === 'ckeditor' && this.checked) {
-                                        setTimeout(() => {
-                                            const textarea = container.querySelector('textarea');
-                                            if (textarea) {
-                                                ClassicEditor
-                                                    .create(textarea, {
-                                                        toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
-                                                    })
-                                                    .then(editor => {
-                                                        ckeditors[columnClass] = editor;
-                                                    })
-                                                    .catch(error => {
-                                                        console.error('CKEditor error:', error);
-                                                    });
-                                            }
-                                        }, 10);
-                                    }
-                                });
-                            });
-                        });
-                    </script>
-                    <?php $counter++; } ?>
-                    <div class="row col-md-12" style="margin-left:5px;"><br/>
-                        <div class="row container col-md-4" id="state-container" style="display:none;">
-                            <label for="state" class="col-md-4 col-form-label">
-                                State
-                            </label>
-                            <div class="col-md-3">
-                                <select name="<?php echo 'state_code' . '.' . 'patient'; ?>" id="state" class="form-control" style="width:195px;">
-                                    <option value="#">Select State</option>
-                                    <?php foreach ($states as $sts){ ?>
-                                        <option value="<?php echo $sts->state_id; ?>"><?php echo $sts->state; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- <div class="col-md-4" style="margin-left:5px;">
-                            <div class="row container" id="area-container" >
-                                <label for="area_con" class="col-md-1 col-form-label">
-                                    Area
-                                </label>
-                                <div class="col-md-3">
-                                    <select name="<?php echo 'area' . '.' . 'patient_visit'; ?>" id="area_con" class="form-control"
-                                     style="width:195px;" <?php if (!empty($db_values[0]->area)) { echo 'disabled'; } ?>>>
-                                        <option value="#">Select Area</option>
-                                        <?php foreach($areas as $a){  ?>
-                                            <option  <?php if($db_values[0]->area==$a->area_id) { echo "selected"; } ?>
-                                            
-                                            value="<?php echo $a->area_id; ?>" data-department-id="<?php echo $a->department_id; ?>">
-                                                <?php echo $a->area_name; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- <div class="col-md-4">
-                            <div class="row container" id="unit-container">
-                                <label for="unit_con" class="col-md-1 col-form-label">
-                                    Unit
-                                </label>
-                                <div class="col-md-3">
-                                    <select name="<?php echo 'unit' . '.' . 'patient_visit'; ?>" id="unit_con" class="form-control" style="width:195px;">
-                                        <option value="#">Select Unit</option>
-                                        <?php foreach($units as $us){ ?>
-                                            <option <?php if($db_values[0]->unit==$us->unit_id) { echo "selected"; } ?>
-                                            
-                                            value="<?php echo $us->unit_id; ?>" data-department-id="<?php echo $us->department_id; ?>">
-                                                <?php echo $us->unit_name; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                </div>
-                            </div>
-                        </div> -->
-                    </div>
-                    <script>
-                        $(document).ready(function() {
-                            $('#state-container').hide();
-                           // $('#area-container').hide();
-                           // $('#unit-container').hide();
-                            var selectedDistrict = $('#district').val();
-                            if (selectedDistrict && selectedDistrict !== '#') {
-                                var state_id = $('#district').find('option:selected').data('state-id');
-                                $('#state-container').show();
-                                $('#state').val(state_id);
-                            }
-                            // var selectedDepartment = $('#department').val();
-                            // if (selectedDepartment && selectedDepartment !== '#') {
-                            //     $('#area-container').show();
-                            //     $('#unit-container').show();
-
-                            //     $('#area_con option').each(function() {
-                            //         var optionDepartmentId = $(this).data('department-id');
-                            //         if (optionDepartmentId == selectedDepartment) {
-                            //             $(this).show();
-                            //         } else {
-                            //             $(this).hide();
-                            //         }
-                            //     });
-
-                            //     $('#unit_con option').each(function() {
-                            //         var optionDepartmentId = $(this).data('department-id');
-                            //         if (optionDepartmentId == selectedDepartment) {
-                            //             $(this).show();
-                            //         } else {
-                            //             $(this).hide();
-                            //         }
-                            //     });
-                            // }
-
-                            $('#district').change(function() {
-                                var district_id = $(this).val();
-                                if (district_id !== '#') {
-                                    $('#state-container').show();
-                                    var state_id = $(this).find('option:selected').data('state-id');
-                                    $('#state').val(state_id);
-                                } else {
-                                    $('#state-container').hide();
-                                }
-                            });
-
-                            // $('#department').change(function() {
-                            //     var department_id = $(this).val();
-                                
-                            //     $('#area_con').val('');
-                            //     $('#unit_con').val('');
-                            //     $('#area-container').hide();
-                            //     $('#unit-container').hide();
-
-                            //     if (department_id !== '#') {
-                            //         $('#area-container').show();
-                            //         $('#unit-container').show();
-
-                            //         $('#area_con option').each(function() {
-                            //             var optionDepartmentId = $(this).data('department-id');
-                            //             if (optionDepartmentId == department_id) {
-                            //                 $(this).show();
-                            //             } else {
-                            //                 $(this).hide();
-                            //             }
-                            //         });
-
-                            //         $('#unit_con option').each(function() {
-                            //             var optionDepartmentId = $(this).data('department-id');
-                            //             if (optionDepartmentId == department_id) {
-                            //                 $(this).show();
-                            //             } else {
-                            //                 $(this).hide();
-                            //             }
-                            //         });
-                            //     } else {
-                            //         $('#area-container').hide();
-                            //         $('#unit-container').hide();
-                            //     }
-                            // });
-                            // $('#area_con').change(function() {
-                            //     var area_id = $(this).val();
-                            //     if (area_id !== '#') {
-                            //     }
-                            // });
-                            // $('#unit_con').change(function() {
-                            //     var unit_id = $(this).val();
-                            //     if (unit_id !== '#') {
-                            //     }
-                            // });
-                        });
-                        
-                    </script>
-                </div>
             <?php } ?>
+        </div>
+        <script>
+            document.querySelectorAll('input[type="checkbox"][name^="input_type_"]').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function () {
+                    const columnClass = this.name.replace('input_type_', '');
+                    const checkboxes = document.querySelectorAll('input[name="' + this.name + '"]');
+
+                    const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+                    if (checkedBoxes.length === 0) {
+                        alert('At least one input type must be selected.');
+                        this.checked = true;
+                        return;
+                    }
+
+                    checkboxes.forEach(cb => {
+                        if (cb !== this) cb.checked = false;
+                    });
+
+                    const container = document.querySelector('.input_container.' + columnClass);
+                    if (!container) return;
+
+                    const selectedType = this.value;
+                    const existingInput = container.querySelector('input, textarea');
+                    let currentValue = existingInput ? existingInput.value : '';
+                    const isReadonly = existingInput && existingInput.hasAttribute('readonly');
+                    const isDisabled = existingInput && existingInput.hasAttribute('disabled');
+                    const nameAttr = existingInput ? existingInput.getAttribute('name') : columnClass;
+
+                    let html = '';
+
+                    if (selectedType === 'text') {
+                        html = `<input type="text"
+                                    name="${nameAttr}"
+                                    value="${currentValue.replace(/"/g, '&quot;')}"
+                                    class="form-control ${columnClass}"
+                                    autocomplete="off"
+                                    ${isReadonly ? 'readonly' : ''}
+                                    ${isDisabled ? 'disabled' : ''}>`;
+                    } else {
+                        html = `<textarea class="form-control ${columnClass}" rows="5" cols="10"
+                                    name="${nameAttr}"
+                                    ${isReadonly ? 'readonly' : ''}
+                                    ${isDisabled ? 'disabled' : ''}>${currentValue}</textarea>`;
+                    }
+
+                    container.innerHTML = html;
+                });
+            });
+        </script>
+        <script>
+            //const ckeditors = {};
+            window.ckeditors = window.ckeditors || {};
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('input[type="checkbox"][name^="input_type_"]').forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        const columnClass = this.name.replace('input_type_', '');
+                        const container = document.querySelector('.input_container.' + columnClass);
+
+                        if (!container) return;
+                        if (ckeditors[columnClass]) {
+                            ckeditors[columnClass].destroy().catch(err => console.error(err));
+                            delete ckeditors[columnClass];
+                        }
+                        if (this.value === 'ckeditor' && this.checked) {
+                            setTimeout(() => {
+                                const textarea = container.querySelector('textarea');
+                                if (textarea) {
+                                    ClassicEditor
+                                        .create(textarea, {
+                                            toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+                                        })
+                                        .then(editor => {
+                                            ckeditors[columnClass] = editor;
+                                        })
+                                        .catch(error => {
+                                            console.error('CKEditor error:', error);
+                                        });
+                                }
+                            }, 10);
+                        }
+                    });
+                });
+            });
+        </script>
+        <div class="row col-md-12" style="margin-left:5px;"><br/>
+            <div class="row container col-md-4" id="state-container" style="display:none;">
+                <label for="state" class="col-md-4 col-form-label">
+                    State
+                </label>
+                <div class="col-md-3">
+                    <select name="<?php echo 'state_code' . '.' . 'patient'; ?>" id="state" class="form-control" style="width:195px;">
+                        <option value="#">Select State</option>
+                        <?php foreach ($states as $sts){ ?>
+                            <option value="<?php echo $sts->state_id; ?>"><?php echo $sts->state; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <!-- <div class="col-md-4" style="margin-left:5px;">
+                <div class="row container" id="area-container" >
+                    <label for="area_con" class="col-md-1 col-form-label">
+                        Area
+                    </label>
+                    <div class="col-md-3">
+                        <select name="<?php echo 'area' . '.' . 'patient_visit'; ?>" id="area_con" class="form-control"
+                            style="width:195px;" <?php if (!empty($db_values[0]->area)) { echo 'disabled'; } ?>>>
+                            <option value="#">Select Area</option>
+                            <?php foreach($areas as $a){  ?>
+                                <option  <?php if($db_values[0]->area==$a->area_id) { echo "selected"; } ?>
+                                
+                                value="<?php echo $a->area_id; ?>" data-department-id="<?php echo $a->department_id; ?>">
+                                    <?php echo $a->area_name; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="col-md-4">
+                <div class="row container" id="unit-container">
+                    <label for="unit_con" class="col-md-1 col-form-label">
+                        Unit
+                    </label>
+                    <div class="col-md-3">
+                        <select name="<?php echo 'unit' . '.' . 'patient_visit'; ?>" id="unit_con" class="form-control" style="width:195px;">
+                            <option value="#">Select Unit</option>
+                            <?php foreach($units as $us){ ?>
+                                <option <?php if($db_values[0]->unit==$us->unit_id) { echo "selected"; } ?>
+                                
+                                value="<?php echo $us->unit_id; ?>" data-department-id="<?php echo $us->department_id; ?>">
+                                    <?php echo $us->unit_name; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <script>
+            $(document).ready(function() {
+                $('#state-container').hide();
+                // $('#area-container').hide();
+                // $('#unit-container').hide();
+                var selectedDistrict = $('#district').val();
+                if (selectedDistrict && selectedDistrict !== '#') {
+                    var state_id = $('#district').find('option:selected').data('state-id');
+                    $('#state-container').show();
+                    $('#state').val(state_id);
+                }
+                // var selectedDepartment = $('#department').val();
+                // if (selectedDepartment && selectedDepartment !== '#') {
+                //     $('#area-container').show();
+                //     $('#unit-container').show();
+
+                //     $('#area_con option').each(function() {
+                //         var optionDepartmentId = $(this).data('department-id');
+                //         if (optionDepartmentId == selectedDepartment) {
+                //             $(this).show();
+                //         } else {
+                //             $(this).hide();
+                //         }
+                //     });
+
+                //     $('#unit_con option').each(function() {
+                //         var optionDepartmentId = $(this).data('department-id');
+                //         if (optionDepartmentId == selectedDepartment) {
+                //             $(this).show();
+                //         } else {
+                //             $(this).hide();
+                //         }
+                //     });
+                // }
+
+                $('#district').change(function() {
+                    var district_id = $(this).val();
+                    if (district_id !== '#') {
+                        $('#state-container').show();
+                        var state_id = $(this).find('option:selected').data('state-id');
+                        $('#state').val(state_id);
+                    } else {
+                        $('#state-container').hide();
+                    }
+                });
+
+                // $('#department').change(function() {
+                //     var department_id = $(this).val();
+                    
+                //     $('#area_con').val('');
+                //     $('#unit_con').val('');
+                //     $('#area-container').hide();
+                //     $('#unit-container').hide();
+
+                //     if (department_id !== '#') {
+                //         $('#area-container').show();
+                //         $('#unit-container').show();
+
+                //         $('#area_con option').each(function() {
+                //             var optionDepartmentId = $(this).data('department-id');
+                //             if (optionDepartmentId == department_id) {
+                //                 $(this).show();
+                //             } else {
+                //                 $(this).hide();
+                //             }
+                //         });
+
+                //         $('#unit_con option').each(function() {
+                //             var optionDepartmentId = $(this).data('department-id');
+                //             if (optionDepartmentId == department_id) {
+                //                 $(this).show();
+                //             } else {
+                //                 $(this).hide();
+                //             }
+                //         });
+                //     } else {
+                //         $('#area-container').hide();
+                //         $('#unit-container').hide();
+                //     }
+                // });
+                // $('#area_con').change(function() {
+                //     var area_id = $(this).val();
+                //     if (area_id !== '#') {
+                //     }
+                // });
+                // $('#unit_con').change(function() {
+                //     var unit_id = $(this).val();
+                //     if (unit_id !== '#') {
+                //     }
+                // });
+            });
+            
+        </script>
+    </div>
         </div>
         <iframe id="ifmcontentstoprint" style="height: 0px; width: 0px; position: absolute;" class="sr-only"></iframe>
         <div class="sr-only" id="print-div"> 

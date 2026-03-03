@@ -422,7 +422,7 @@ function update_patient(){
     {
         $this->load->model('patient_model');
         $clinical_note = $this->input->post('clinicalNote');
-        $note_id = $this->input->post('noteId');
+        $note_id = $this->input->post('note_id');
         $this->patient_model->get_update_clinical_note_edits($clinical_note, $note_id);
         echo json_encode("success");
     }

@@ -572,7 +572,8 @@ function submitUpdations()
     
     if ($('#advise_update').is(':checked')){
   		isUpdate = true;
-  		if($('#advise_update_new_value').val() == $('#advise_update_old_value').text())
+  		//if($('#advise_update_new_value').val() == $('#advise_update_old_value').text())
+      if (adviseEditor.getData().trim() == $('#advise_update_old_value').text())
       {
           bootbox.alert({
               title: "<b>Advise Update</b>",	
@@ -583,8 +584,16 @@ function submitUpdations()
               });
               return;  			 
   		}  else {  		
-  			postData["advise"] = {"old":$('#advise_update_old_value').text(),"new":$('#advise_update_new_value').val()};
-  			updateAlert = updateAlert + "<br> <b>Advise Update</b>: " + $('#advise_update_old_value').text() + " -> " + $('#advise_update_new_value').val();
+  			let newAdvise = adviseEditor.getData().trim();
+        postData["advise"] = {
+          "old": $('#advise_update_old_value').html(),
+          "new": newAdvise
+        };
+        updateAlert = updateAlert +
+          "<br> <b>Advise Update</b>: " +
+          $('#advise_update_old_value').text() +
+          " -> " +
+          adviseEditor.getData();
   		}	
   	}
 
@@ -1090,7 +1099,8 @@ bootbox.confirm({
         <td>Past History</td>
         <td class="old-value-container" id="past_history_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="past_history_update" name="past_history_update" value="past_history_update"></td>
-        <td><input type="text" class="form-control" id="past_history_update_new_value" name="past_history_update_new_value" placeholder="" value="" disabled></td>
+        <!-- <td><input type="text" class="form-control" id="past_history_update_new_value" name="past_history_update_new_value" placeholder="" value="" disabled></td> -->
+        <td><textarea class="form-control" id="past_history_update_new_value" name="past_history_update_new_value" placeholder="" value="" disabled></textarea></td>
       </tr>
       
       
@@ -1098,7 +1108,8 @@ bootbox.confirm({
         <td>Family history</td>
         <td class="old-value-container"  id="family_history_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="family_history_update" name="family_history_update" value="family_history_update"></td>
-        <td><input type="text" class="form-control" id="family_history_update_new_value" name="family_history_update_new_value" placeholder="" value="" disabled></td>
+        <!-- <td><input type="text" class="form-control" id="family_history_update_new_value" name="family_history_update_new_value" placeholder="" value="" disabled></td> -->
+        <td><textarea class="form-control" id="family_history_update_new_value" name="family_history_update_new_value" placeholder="" value="" disabled></textarea></td>
       </tr>
       
       <tr>
@@ -1171,35 +1182,40 @@ bootbox.confirm({
         <td>clinical findings</td>
         <td class="old-value-container" id="clinical_finding_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="clinical_finding_update" name="clinical_finding_update" value="clinical_finding_update"></td>
-        <td><input type="text" class="form-control" id="clinical_finding_update_new_value" name="clinical_finding_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="clinical_finding_update_new_value" name="clinical_finding_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="clinical_finding_update_new_value" name="clinical_finding_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
         <td>cvs</td>
         <td class="old-value-container" id="cvs_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="cvs_update" name="cvs_update" value="cvs_update"></td>
-        <td><input type="text" class="form-control" id="cvs_update_new_value" name="cvs_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="cvs_update_new_value" name="cvs_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="cvs_update_new_value" name="cvs_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
         <td>rs</td>
         <td class="old-value-container" id="rs_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="rs_update" name="rs_update" value="rs_update"></td>
-        <td><input type="text" class="form-control" id="rs_update_new_value" name="rs_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="rs_update_new_value" name="rs_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="rs_update_new_value" name="rs_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
         <td>pa</td>
         <td class="old-value-container" id="pa_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="pa_update" name="pa_update" value="pa_update"></td>
-        <td><input type="text" class="form-control" id="pa_update_new_value" name="pa_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="pa_update_new_value" name="pa_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="pa_update_new_value" name="pa_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
         <td>cns</td>
         <td class="old-value-container" id="cns_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="cns_update" name="cns_update" value="cns_update"></td>
-        <td><input type="text" class="form-control" id="cns_update_new_value" name="cns_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="cns_update_new_value" name="cns_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="cns_update_new_value" name="cns_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
@@ -1220,21 +1236,43 @@ bootbox.confirm({
         <td>Final Diagnosis</td>
         <td class="old-value-container" id="fd_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="fd_update" name="fd_update" value="fd_update"></td>
-        <td><input type="text" class="form-control" id="fd_update_new_value" name="fd_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="fd_update_new_value" name="fd_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="fd_update_new_value" name="fd_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
         <td>Decision</td>
         <td class="old-value-container" id="decision_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="decision_update" name="decision_update" value="decision_update"></td>
-        <td><input type="text" class="form-control" id="decision_update_new_value" name="decision_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="decision_update_new_value" name="decision_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="decision_update_new_value" name="decision_update_new_value" placeholder="" value=""  disabled></textarea></td>
       </tr>
 
       <tr>
         <td>Advise</td>
         <td class="old-value-container" id="advise_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="advise_update" name="advise_update" value="advise_update"></td>
-        <td><input type="text" class="form-control" id="advise_update_new_value" name="advise_update_new_value" placeholder="" value=""  disabled></td>
+        <!-- <td><input type="text" class="form-control" id="advise_update_new_value" name="advise_update_new_value" placeholder="" value=""  disabled></td> -->
+        <td><textarea class="form-control" id="advise_update_new_value" name="advise_update_new_value" placeholder="" value=""  disabled></textarea></td>
+        <script>
+          let adviseEditor;
+            ClassicEditor
+              .create(document.querySelector('#advise_update_new_value'), {
+                toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+              })
+              .then(editor => {
+                adviseEditor = editor;
+                editor.enableReadOnlyMode('init');
+              });
+
+            document.getElementById('advise_update').addEventListener('change', function () {
+              if (this.checked) {
+                adviseEditor.disableReadOnlyMode('init');
+              } else {
+                adviseEditor.enableReadOnlyMode('init');
+              }
+            });
+        </script>
       </tr>
 
       <tr>
@@ -1274,7 +1312,7 @@ bootbox.confirm({
         <td class="old-value-container" id="icdcode_update_old_value"></td>
         <td><input type="checkbox" class="form-check-input"  id="icdcode_update" name="icdcode_update" value="icdcode_update"></td>
         <td>
-          <select name="icdcode_update_new_value" id="icdcode_update_new_value" class="form-control"  style="width:200px!important;" disabled>
+          <select name="icdcode_update_new_value" id="icdcode_update_new_value" class="form-control"  disabled>
               <option value=""> Choose Icd Code </option>
               <?php foreach($icd_codes as $icd) { ?>
                 <option value="<?php echo $icd->icd_code ?>"><?php echo $icd->code_title ?></option>
@@ -1353,99 +1391,140 @@ bootbox.confirm({
           <tr>
           <tr>
       </tbody>
-          <div class="modal fade" id="editClinicalNoteModal" tabindex="-1" role="dialog" aria-labelledby="editClinicalNoteModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
+          <div class="modal fade" id="editClinicalNoteModal" tabindex="-1" role="dialog"
+                  aria-labelledby="editClinicalNoteModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editClinicalNoteModalLabel">Edit Clinical Note</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-20px!important;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                      <h5 class="modal-title">Edit Clinical Note</h5>
+                      <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                      </button>
                     </div>
+
                     <div class="modal-body">
-                        <form id="updateClinicalNoteForm">
-                            <div class="form-group">
-                                <textarea class="form-control" id="clinical_note" name="clinical_note"></textarea>
-                            </div>
-                            <input type="hidden" id="noteIdInput" name="note_id">
-                        </form>
+                      <form id="updateClinicalNoteForm">
+                        <div class="form-group">
+                          <textarea class="form-control" id="clinical_note" name="clinical_note"></textarea>
+                        </div>
+                        <input type="hidden" id="noteIdInput" name="note_id">
+                      </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" id="updateBtn_one" class="btn btn-primary">Update</button>
-                    </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" id="updateBtn_one" class="btn btn-primary">Update</button>
                 </div>
+
+              </div>
             </div>
-        </div>
+          </div>
     </table>
     <script>
-      $(document).on("click",'#edit',function(){
-        var visit_id = $(this).attr("data-id");
-          if (visit_id !== '') {
-              $.ajax({
-                  type: "POST",
-                  url: "<?php echo base_url('patient/get_clinical_text_to_edit'); ?>",
-                  data: {visit_id: visit_id},
-                  dataType: 'json',
-                  success: function(response) {
-                    console.log(response);
-                      var tbody = $('#clinical-note-table-sort tbody');
-                      tbody.empty();
-                      for (var i = 0; i < response.length; i++) {
-                          var cNote = response[i]['c_note'];
-                          var row = '<tr>' +
-                                    '<td style="text-align:right;">' + (i + 1) + '</td>' +
-                                    '<td class="clinical-note-text">' + cNote + '</td>' +
-                                    '<td style="text-align:center;">' +
-                                    '<button type="button" class="btn btn-success edit-btn" data-id="' + response[i]['note_id'] + '">Edit</button>' +
-                                    '</td>' +
-                                    '</tr>';
-                          tbody.append(row);
-                      }
-                  },
-                  error: function(error) {
-                      console.error("Error fetching clinical notes:", error);
-                  }
-              });
-          }
+      $('#editClinicalNoteModal').modal({
+          backdrop: 'static',
+          keyboard: false,
+          show: false
+      });
+    </script>
+
+    <script>
+      let clinicalEditor;
+
+      ClassicEditor
+        .create(document.querySelector('#clinical_note'), {
+          toolbar: ['bold', 'italic', 'bulletedList', 'numberedList']
+        })
+        .then(editor => {
+          clinicalEditor = editor;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    </script>
+    <script>
+      $(document).on('click', '.edit-btn', function () {
+          const noteId = $(this).data('id');
+          const noteText = $(this)
+              .closest('tr')
+              .find('.clinical-note-text')
+              .html();
+          clinicalEditor.setData(noteText);
+          $('#noteIdInput').val(noteId);
+          $('#editClinicalNoteModal').modal('show');
       });
     </script>
     <script>
-        $(document).ready(function() {
-              $(document).on("click", ".edit-btn", function() {
-                var clinicalNote = $(this).closest("tr").find(".clinical-note-text").text().trim();
-                var noteId = $(this).data("id");
-                $("#clinical_note").val(clinicalNote);
-                $("#noteIdInput").val(noteId);
-                $("#editClinicalNoteModal").modal("show");
-            });
-            // form here 
-            $('#updateBtn_one').click(function(){
-                var clinicalNote = $('#clinical_note').val();
-                var noteId = $('#noteIdInput').val();
-                $.ajax({
-                    url: '<?php echo base_url()."patient/update_clinical_note_visits" ?>', 
-                    method: 'POST',
-                    data: { clinicalNote:clinicalNote,noteId:noteId },
-                    dataType: 'json',
-                    success: function(response) {
-                        if(response) {
-                            alert('Clinical note updated successfully');
-                        } else {
-                            console.log('Failed to update clinical note');
-                        }
-                        $('#editClinicalNoteModal').modal('hide');
-                        location.reload();
-                    },
-                    error: function(xhr, status, error) 
-                    {
-                        console.error('Error updating clinical note:', error);
-                        alert('An error occurred while updating clinical note');
-                    }
-                });
-            }); //till here
-        
-        });
+      $(document).on("click", "#edit", function () {
+          var visit_id = $(this).attr("data-id");
+          if (!visit_id) return;
+
+          $.ajax({
+              type: "POST",
+              url: "<?php echo base_url('patient/get_clinical_text_to_edit'); ?>",
+              data: { visit_id: visit_id },
+              dataType: 'json',
+              success: function (response) {
+
+                  var tbody = $('#clinical-note-table-sort tbody');
+                  tbody.empty();
+
+                  for (var i = 0; i < response.length; i++) {
+                      var row =
+                        '<tr>' +
+                          '<td style="text-align:right;">' + (i + 1) + '</td>' +
+                          '<td class="clinical-note-text">' + response[i].c_note + '</td>' +
+                          '<td style="text-align:center;">' +
+                            '<button type="button" class="btn btn-success edit-btn" ' +
+                              'data-id="' + response[i].note_id + '">Edit</button>' +
+                          '</td>' +
+                        '</tr>';
+
+                      tbody.append(row);
+                  }
+              },
+              error: function (error) {
+                  console.error("Error fetching clinical notes:", error);
+              }
+          });
+      });
+    </script>
+    <script>
+      $('#updateBtn_one').on('click', function () {
+          var clinical_note = clinicalEditor.getData().trim();
+          var note_id = $('#noteIdInput').val();
+          if (!note_id) {
+              alert('Note ID missing');
+              return;
+          }
+          if (!clinical_note) {
+              alert('Clinical note cannot be empty');
+              return;
+          }
+          $.ajax({
+              type: "POST",
+              url: "<?php echo base_url('patient/update_clinical_note_visits'); ?>",
+              data: {
+                  note_id: note_id,
+                  clinicalNote: clinical_note
+              },
+              success: function (response) {
+
+                  $('#editClinicalNoteModal').modal('hide');
+                  $('.edit-btn[data-id="' + note_id + '"]')
+                      .closest('tr')
+                      .find('.clinical-note-text')
+                      .html(clinical_note);
+                  alert('Updated successfully');
+                  location.reload();
+              },
+              error: function (error) {
+                  console.error("Update failed:", error);
+                  alert('Update failed');
+              }
+          });
+      });
     </script>
   </div>
 </div>

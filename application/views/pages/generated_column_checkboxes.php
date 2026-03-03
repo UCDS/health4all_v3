@@ -161,68 +161,95 @@ display: inline-grid;
 	$page_no = 1;	
 	
 	?>
-	<div class="row col-md-offset-2" style="text-align:justify;margin-bottom:100px;">
-    <h2><?php echo $title; ?></h2><br/>
-    <?php if (isset($columns) && !empty($columns)): ?>
-        <form id="columnsForm" method="POST">
-            <input type="hidden" name="form_id" value="<?php echo $form_id; ?>">
-            <div class="col-md-12">
-                <?php 
-                $exclude_columns = ['gestation_type','gestation','insert_by_user_id','update_by_user_id','insert_datetime','update_datetime',
-                                        'hospital_id','add_by','add_time','update_by','update_time','country_code','state_code'];
-                foreach ($columns as $table => $columns_array): ?>
-                    <div class="table-container">
-                        <h3>Table: <?php echo ucfirst($table); ?></h3>
-                        <div class="checkbox-group">
-                            <?php if (!empty($columns_array)): ?>
-                                <?php 
-                                $filtered_columns = array_filter($columns_array, function($column) use ($exclude_columns) {
-                                    return !in_array($column, $exclude_columns);
-                                });
+    <form id="columnsForm" method="POST">
+        <input type="hidden" name="form_name" value="<?php echo $form_id; ?>">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p>
+                        <span style="color:blue;">Note</span> : Please use this generate div, when you think to store data in blocks
+                    </p>
+                </div>
 
-                                $filtered_datatypes = [];
-                                if (!empty($datatype[$table])) {
-                                    foreach ($columns_array as $index => $column_name) {
-                                        if (!in_array($column_name, $exclude_columns)) {
-                                            $filtered_datatypes[] = $datatype[$table][$index];
-                                        }
-                                    }
-                                }
-                                ?>
-                                
-                                <?php foreach (array_values($filtered_columns) as $i => $column): ?>
-                                    <label>
-                                        <input type="checkbox" 
-                                            name="selected_columns[<?php echo $table; ?>][]" 
-                                            value="<?php echo $column.'.'.$table; ?>" 
-                                            class="column-checkbox">
-                                        <?php echo $column; ?>
-                                    </label>
-                                    
-                                    <input type="hidden" 
-                                        name="column_types[<?php echo $table; ?>][]" 
-                                        value="<?php echo (in_array(strtolower($filtered_datatypes[$i]), ['varchar', 'text']) ? 1 : 0); ?>" 
-                                        readonly 
-                                        class="datatype-input">
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <p>No columns found for this table.</p>
-                            <?php endif; ?>
+                <div class="col-md-3">
+                    <button id="generateDivBtn" class="btn btn-success btn-block" type="button">
+                        Generate Div
+                    </button>
+                </div>
+
+                <div class="col-md-3">
+                    <button id="defaultModeBtn" class="btn btn-info btn-block" type="button" style="display:none;">
+                        Default Mode
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="defaultCheckboxes">
+            <div class="row col-md-offset-2" style="text-align:justify;margin-bottom:100px;">
+                <h2><?php echo $title; ?></h2><br/>
+                <?php if (isset($columns) && !empty($columns)): ?>
+
+                        <div class="col-md-12">
+                            <?php 
+                            $exclude_columns = ['gestation_type','gestation','insert_by_user_id','update_by_user_id','insert_datetime','update_datetime',
+                                                    'hospital_id','add_by','add_time','update_by','update_time','country_code','state_code'];
+                            foreach ($columns as $table => $columns_array): ?>
+                                <div class="table-container">
+                                    <h3>Table: <?php echo ucfirst($table); ?></h3>
+                                    <div class="checkbox-group">
+                                        <?php if (!empty($columns_array)): ?>
+                                            <?php 
+                                            $filtered_columns = array_filter($columns_array, function($column) use ($exclude_columns) {
+                                                return !in_array($column, $exclude_columns);
+                                            });
+
+                                            $filtered_datatypes = [];
+                                            if (!empty($datatype[$table])) {
+                                                foreach ($columns_array as $index => $column_name) {
+                                                    if (!in_array($column_name, $exclude_columns)) {
+                                                        $filtered_datatypes[] = $datatype[$table][$index];
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            
+                                            <?php foreach (array_values($filtered_columns) as $i => $column): ?>
+                                                <label>
+                                                    <input type="checkbox" 
+                                                        name="selected_columns[<?php echo $table; ?>][]" 
+                                                        value="<?php echo $column.'.'.$table; ?>" 
+                                                        class="column-checkbox">
+                                                    <?php echo $column; ?>
+                                                </label>
+                                                
+                                                <input type="hidden" 
+                                                    name="column_types[<?php echo $table; ?>][]" 
+                                                    value="<?php echo (in_array(strtolower($filtered_datatypes[$i]), ['varchar', 'text']) ? 1 : 0); ?>" 
+                                                    readonly 
+                                                    class="datatype-input">
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <p>No columns found for this table.</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                        <div class="col-md-6"></div>
+                        
+                <?php else: ?>
+                    <p>No columns found.</p>
+                <?php endif; ?>
             </div>
-            <div class="col-md-6"></div>
-            <div class="col-md-4"><br/><br/>
-                <input type="submit" class="btn btn-primary" name="submit" value="Submit" style="padding-top:7px;padding-bottom:7px;">
-            </div>
-            <div class="col-md-2"></div>
-        </form>
-    <?php else: ?>
-        <p>No columns found.</p>
-    <?php endif; ?>
-</div>
-<script>
+        </div>
+        <div id="divContainer" style="display:none;"></div>
+        <div class="col-md-6"></div>
+        <div class="col-md-4" style="margin-bottom:30px;margin-top:10px;">
+            <input type="submit" class="btn btn-primary" name="submit" value="Submit">
+        </div>
+        <div class="col-md-2"></div>
+    </form>
+<!-- <script>
 	$(document).ready(function() {
 		$("#columnsForm").on("submit", function(event) {
 			event.preventDefault();
@@ -260,4 +287,154 @@ display: inline-grid;
 			});
 		});
 	});
+</script> -->
+<script>
+    let divCount = 0;
+
+    $(document).ready(function() {
+
+        $("#generateDivBtn").click(function() {
+            $("#defaultCheckboxes").hide();
+            $("#divContainer").show();
+            $("#defaultModeBtn").show();
+            divCount++;
+            createDiv(divCount);
+        });
+
+        $("#defaultModeBtn").click(function() {
+            $("#defaultCheckboxes").show();
+            $("#divContainer").hide();
+            $("#defaultModeBtn").hide();
+            $("#divContainer").html("");
+            divCount = 0;
+        });
+
+        function createDiv(divNumber) {
+            let html = `
+                <div class="generatedDiv col-md-offset-2" data-div="${divNumber}" style="border:1px solid #ccc; padding:15px; margin-top:20px;">
+                    <h4>Div ${divNumber}</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label><b>Name:</b>
+                                <input type="text" name="div_name[]" class="form-control" required autocomplete="off">
+                            </label>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label><b>Column Layout:</b></label><br>
+
+                            <div class="d-flex gap-2">
+                                <label class="mb-0">
+                                    <input type="radio" name="layout[${divNumber}]" value="1" class="layout-radio" data-div="${divNumber}" checked>
+                                    1
+                                </label>
+
+                                <label class="mb-0">
+                                    <input type="radio" name="layout[${divNumber}]" value="2" class="layout-radio" data-div="${divNumber}">
+                                    2
+                                </label>
+
+                                <label class="mb-0">
+                                    <input type="radio" name="layout[${divNumber}]" value="3" class="layout-radio" data-div="${divNumber}">
+                                    3
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ====== END ADDED ====== -->
+
+                    <!-- ====== UPDATED: Added id and row class ====== -->
+                    <div class="checkbox-group row" id="checkboxGroup_${divNumber}" style="padding:20px;">
+                        <?php foreach ($columns as $table => $columns_array): ?>
+                            <div class="table-container">
+                                <h5>Table: <b><?php echo ucfirst($table); ?></b></h5>
+                                <div class="checkbox-group">
+                                    <?php foreach ($columns_array as $column): ?>
+                                        <?php if (!in_array($column, $exclude_columns)): ?>
+                                            <label>
+                                                <input type="checkbox" class="column-checkbox" 
+                                                    name="selected_columns[${divNumber}][]" 
+                                                    value="<?php echo $column.'.'.$table; ?>">
+                                                <?php echo $column; ?>
+                                            </label>
+
+                                            <input type="hidden" 
+                                                name="column_types[${divNumber}][]" 
+                                                value="<?php echo (in_array(strtolower($datatype[$table][array_search($column,$columns_array)]), ['varchar','text']) ? 1 : 0); ?>">
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            `;
+
+            $("#divContainer").append(html);
+        }
+        // Submit
+        $("#columnsForm").on("submit", function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '<?php echo base_url('register/submit_columns'); ?>',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(res) {
+                    if (res.status === 'success') {
+                        alert(res.message);
+                        window.location.href = '<?php echo base_url('user_panel/add_patient_visit_custom'); ?>';
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        });
+
+        $(document).on('change', '.layout-radio', function () {
+            let divNumber = $(this).data('div');
+            let layout = $(this).val();
+            let colClass = 'col-md-12';
+
+            if (layout == 2) colClass = 'col-md-6';
+            if (layout == 3) colClass = 'col-md-4';
+
+            $('#checkboxGroup_' + divNumber + ' .checkbox-item')
+                .removeClass('col-md-12 col-md-6 col-md-4')
+                .addClass(colClass);
+        });
+
+        // Prevent duplicate column selection across divs
+        $(document).on('change', '.column-checkbox', function () {
+            if ($(this).is(':checked')) {
+                let currentDiv = $(this).closest('.generatedDiv').data('div');
+                let columnValue = $(this).val();
+                let alreadyFound = false;
+                $('.generatedDiv').each(function () {
+                    let divNo = $(this).data('div');
+
+                    if (divNo != currentDiv) {
+                        $(this).find('.column-checkbox:checked').each(function () {
+                            if ($(this).val() === columnValue) {
+                                alreadyFound = true;
+                                let divName = $(this).closest('.generatedDiv').find('input[name="div_name[]"]').val();
+                                alert("Field already selected in (" + divName + ")");
+                                return false;
+                            }
+                        });
+
+                        if (alreadyFound) return false;
+                    }
+                });
+                if (alreadyFound) {
+                    $(this).prop('checked', false);
+                }
+            }
+        });
+    });
 </script>
