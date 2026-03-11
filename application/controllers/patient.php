@@ -95,32 +95,33 @@ class Patient extends CI_Controller {
     }
     
     
-    function update_patient_demographic_details(){
+    function update_patient_demographic_details()
+    {
     	$input_data = json_decode(trim(file_get_contents('php://input')), true);
     	$this->load->model('patient_model');
     	$result = $this->patient_model->update_patient_data($input_data);
-    	if ($result == 1) {
-    		header('Content-Type: application/json; charset=UTF-8');
-	    	header('HTTP/1.1 500 Internal Server Error');    
-	    	$result=array();    	
-		$result['Message'] = 'Patient ID is missing!';        
-		echo(json_encode($result));
-    	
-    	}  else if ($result == 2) {
-		header('Content-Type: application/json; charset=UTF-8');
-		header('HTTP/1.1 500 Internal Server Error');    
-	        $result=array();    	
-		$result['Message'] = 'Error in transaction!';        
-		echo(json_encode($result));
-	} else {
-		header('Content-Type: application/json; charset=UTF-8');
-		header('HTTP/1.1 200 OK');  
-	    	$result=array(); 
-	    	$result['Message'] = 'Patient data updated successfully!'; 
-	    	echo(json_encode($result));
-	}
-	    	
-    	
+    	if ($result == 1) 
+        {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 500 Internal Server Error');    
+            $result=array();    	
+            $result['Message'] = 'Patient ID is missing!';        
+            echo(json_encode($result));
+        }  else if ($result == 2) 
+        {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 500 Internal Server Error');    
+            $result=array();    	
+            $result['Message'] = 'Error in transaction!';        
+            echo(json_encode($result));
+        } else 
+        {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 200 OK');  
+            $result=array(); 
+            $result['Message'] = 'Patient data updated successfully!'; 
+            echo(json_encode($result));
+        }    	
     }
     function casesheet_mrd_status(){
         $this->data['userdata']=$this->session->userdata('hospital');

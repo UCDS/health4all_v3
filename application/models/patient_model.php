@@ -155,14 +155,15 @@ class patient_model extends CI_Model {
     }
     
     
-    function update_patient_data($input_data){
+    function update_patient_data($input_data)
+    {
         if(!array_key_exists('patient_id',$input_data)){
             return 1;
         }
          
         $patient_id  = $input_data['patient_id'];
         $staff_id = $this->session->userdata('logged_in')['staff_id'];
-	$edit_time = date("Y-m-d H:i:s");
+	    $edit_time = date("Y-m-d H:i:s");
         $table_name='patient';
         $edit_history = array();
         $patient = array();
@@ -191,28 +192,55 @@ class patient_model extends CI_Model {
         	}
         }
         //echo("<script>console.log('edit_history: " .json_encode($edit_history) . "');</script>");
-        $this->db->trans_start(); # Starting Transaction
+        $this->db->trans_start(); 
+	    $this->db->insert_batch('patient_info_edit_history', $edit_history); # Inserting data
+	    $this->db->where('patient_id', $patient_id);
+	    $this->db->update('patient', $patient); 
 
+	    $this->db->trans_complete(); 
 
-	$this->db->insert_batch('patient_info_edit_history', $edit_history); # Inserting data
+        if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                return 2;
+        } else {
+            $this->db->trans_commit();
 
+            $this->db->select('first_name,last_name,age_years,gender,address');
+            $this->db->where('patient_id', $patient_id);
+            $patient_row = $this->db->get('patient')->row();
 
-	$this->db->where('patient_id', $patient_id);
-	$this->db->update('patient', $patient); 
+            if($patient_row)
+            {
+                // Get existing details from patient_bed
+                // $this->db->select('details');
+                // $this->db->where('patient_id', $patient_id);
+                // $bed_row = $this->db->get('patient_bed')->row();
 
-	$this->db->trans_complete(); # Completing transaction
+                // $remaining_details = '';
+                // if ($bed_row && !empty($bed_row->details)) {
+                //     $remaining_details = preg_replace('/^\d+\s*\/\s*[MF]\s*/i', '', $bed_row->details);
+                // }
 
+                // $new_details = $patient_row->age_years.'/'.$patient_row->gender;
 
-	if ($this->db->trans_status() === FALSE) {
-    		# Something went wrong.
-    		$this->db->trans_rollback();
-    		return 2;
-	} else {
-		# Everything is Perfect. 
-	    	# Committing data to the database.
-	    	$this->db->trans_commit();
-	    	return 0;
-	}
+                // if($remaining_details != ''){
+                //     $new_details .= ' '.$remaining_details;
+                // }
+
+                // prepare update array
+                $bed_update = array(
+                    'patient_name' => $patient_row->first_name.' '.$patient_row->last_name,
+                    'age_gender'   => $patient_row->age_years.' / '.$patient_row->gender,
+                    'address'      => $patient_row->address,
+                    // 'details'      => $new_details
+                );
+
+                $this->db->where('patient_id', $patient_id);
+                $this->db->update('patient_bed', $bed_update);
+            }
+
+            return 0;
+        }
 
     }
     
