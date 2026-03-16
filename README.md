@@ -7,6 +7,17 @@ Softwares to be installed
     - Recommendation: SQLYog Community IDE [Instead of phpmyadmin if available and familiar for the programmer]
 
 
+## Getting Started with GitHub Codespaces (Recommended)
+
+1. **Create a Codespace:** Click on the **Code** button in your repository, select the **Codespaces** tab, and click **Create codespace on main**.
+2. **Wait for Setup:** The environment will automatically build the Docker containers and initialize the database using `db/health4all.sql`.
+3. **Access the App:** Once the setup is complete, VS Code will notify you that a port has been forwarded. Click **Open in Browser** (or navigate to the forwarded port 8080).
+4. **Login:** Use the following credentials:
+   - **Username:** `admin`
+   - **Password:** `password`
+
+## Getting Started (Local Development)
+
 Steps to be followed : 
     1. Create a Github account .
     2. Fork (health4all_v3) from https://github.com/UCDS/health4all_v3.
