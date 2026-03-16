@@ -117,8 +117,11 @@ class Hospital_beds_model extends CI_Model
 
         $hospital=$this->session->userdata('hospital');
 		$this->db->select("pb.id,pb.patient_id,pb.hospital_bed_id,pb.details,pb.created_time, pb.created_date,pb.reservation_details,hb.bed,
-        updated_by.first_name as updated_by_name, MAX(pv.admit_date) as max_admit_date,pb.patient_name,pb.age_gender,pb.address")
+        updated_by.first_name as updated_by_name, MAX(pv.admit_date) as max_admit_date,pb.address");
+        $this->db->select("CONCAT_WS(' ', p.first_name, p.last_name) AS patient_name", FALSE);
+        $this->db->select("CONCAT_WS(' / ', p.age_years, p.gender) AS age_gender,", FALSE)
 		->from("patient_bed as pb")
+        ->join("patient as p", "p.patient_id = pb.patient_id", "left")
 		->join("hospital_bed as hb", "hb.hospital_bed_id = pb.hospital_bed_id")
         ->join('staff as updated_by','updated_by.staff_id=pb.updated_by','left')
         ->join('patient_visit as pv', 'pv.patient_id = pb.patient_id AND pv.visit_type = "IP"', 'left')
@@ -366,9 +369,12 @@ class Hospital_beds_model extends CI_Model
     function get_all_avnall_beds()
     {
         $this->db->select("pb.id,pb.patient_id, pb.hospital_bed_id, pb.details,pb.reservation_details, pb.created_date, pb.created_time,
-        hba.bed,pb.patient_name,pb.age_gender,pb.address,hba.sequence,pt.priority_type_id,pt.color_code,pf.priority_type_id as followup_priority_type")
+        hba.bed,p.address,hba.sequence,pt.priority_type_id,pt.color_code,pf.priority_type_id as followup_priority_type");
+        $this->db->select("CONCAT_WS(' ', p.first_name, p.last_name) AS patient_name", FALSE);
+        $this->db->select("CONCAT_WS(' / ', p.age_years, p.gender) AS age_gender,", FALSE)
          ->from("patient_bed as pb")
          ->join("hospital_bed as hba", "hba.hospital_bed_id= pb.hospital_bed_id")
+         ->join("patient as p", "p.patient_id = pb.patient_id", "left")
          ->join("patient_followup as pf", "pf.patient_id= pb.patient_id",'left')
          ->join("priority_type as pt", "pt.priority_type_id= pf.priority_type_id",'left')
          ->order_by('hba.sequence', "ASC");
@@ -406,9 +412,12 @@ class Hospital_beds_model extends CI_Model
     {
             $hospital = $this->session->userdata('hospital');
             $this->db->select("pb.id, pb.patient_id, pb.hospital_bed_id, pb.details, pb.reservation_details,
-                   pb.created_date, pb.created_time, hba.bed, pb.patient_name, pb.age_gender, pb.address,
-                    updated_by.first_name as updated_by_name,hba.hospital_bed_id,hba.sequence")
+                   pb.created_date, pb.created_time, hba.bed, pb.address,
+                    updated_by.first_name as updated_by_name,hba.hospital_bed_id,hba.sequence");
+            $this->db->select("CONCAT_WS(' ', p.first_name, p.last_name) AS patient_name", FALSE);
+            $this->db->select("CONCAT_WS(' / ', p.age_years, p.gender) AS age_gender,", FALSE)
                     ->from("patient_bed as pb")
+                    ->join("patient as p", "p.patient_id = pb.patient_id", "left")
                     ->join('hospital_bed as hba', 'hba.hospital_bed_id = pb.hospital_bed_id','left')
                     ->join('staff as updated_by', 'updated_by.staff_id = pb.updated_by', 'left')
                     ->where('hba.hospital_id', $hospital['hospital_id'])
