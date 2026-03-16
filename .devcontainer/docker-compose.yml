@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/var/www/html
+    environment:
+      - DB_HOSTNAME=db
+      - DB_USERNAME=root
+      - DB_PASSWORD=rootpassword
+      - DB_DATABASE=health4all
+    ports:
+      - "8080:80"
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=health4all
+    volumes:
+      - ../db/health4all.sql:/docker-entrypoint-initdb.d/01-health4all.sql
+      - ./mysql-init:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"

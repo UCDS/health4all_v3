@@ -48,10 +48,10 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = '';
-$db['default']['database'] = 'health4all';
+$db['default']['hostname'] = getenv('DB_HOSTNAME') ? getenv('DB_HOSTNAME') : 'localhost';
+$db['default']['username'] = getenv('DB_USERNAME') ? getenv('DB_USERNAME') : 'root';
+$db['default']['password'] = getenv('DB_PASSWORD') ? getenv('DB_PASSWORD') : '';
+$db['default']['database'] = getenv('DB_DATABASE') ? getenv('DB_DATABASE') : 'health4all';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;

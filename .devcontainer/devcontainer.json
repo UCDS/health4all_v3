@@ -1,0 +1,17 @@
+{
+	"name": "Health4All Dev Environment",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/var/www/html",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"felixfbecker.php-debug",
+				"bmewburn.vscode-inteliphense-client",
+				"mtak37.mysql-syntax"
+			]
+		}
+	},
+	"forwardPorts": [8080, 3306],
+	"postCreateCommand": "apache2ctl -t"
+}
