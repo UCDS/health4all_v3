@@ -11,3 +11,9 @@ ALTER TABLE `inventory_summary` ADD PRIMARY KEY( `supply_chain_party_id`, `item_
 ALTER TABLE update_patient_custom_form_fields ADD COLUMN div_name VARCHAR(100);
 
 ALTER TABLE update_patient_custom_form_fields ADD COLUMN div_column_count INT(11);
+
+ALTER TABLE patient_bed DROP COLUMN patient_name;
+
+ALTER TABLE patient_bed DROP COLUMN age_gender;
+
+ALTER TABLE patient_bed DROP COLUMN address;
