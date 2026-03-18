@@ -117,7 +117,7 @@ class Hospital_beds_model extends CI_Model
 
         $hospital=$this->session->userdata('hospital');
 		$this->db->select("pb.id,pb.patient_id,pb.hospital_bed_id,pb.details,pb.created_time, pb.created_date,pb.reservation_details,hb.bed,
-        updated_by.first_name as updated_by_name, MAX(pv.admit_date) as max_admit_date,pb.address");
+        updated_by.first_name as updated_by_name, MAX(pv.admit_date) as max_admit_date,p.address");
         $this->db->select("CONCAT_WS(' ', p.first_name, p.last_name) AS patient_name", FALSE);
         $this->db->select("CONCAT_WS(' / ', p.age_years, p.gender) AS age_gender,", FALSE)
 		->from("patient_bed as pb")
@@ -412,7 +412,7 @@ class Hospital_beds_model extends CI_Model
     {
             $hospital = $this->session->userdata('hospital');
             $this->db->select("pb.id, pb.patient_id, pb.hospital_bed_id, pb.details, pb.reservation_details,
-                   pb.created_date, pb.created_time, hba.bed, pb.address,
+                   pb.created_date, pb.created_time, hba.bed, p.address,
                     updated_by.first_name as updated_by_name,hba.hospital_bed_id,hba.sequence");
             $this->db->select("CONCAT_WS(' ', p.first_name, p.last_name) AS patient_name", FALSE);
             $this->db->select("CONCAT_WS(' / ', p.age_years, p.gender) AS age_gender,", FALSE)

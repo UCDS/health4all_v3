@@ -355,7 +355,7 @@ class hospital_beds extends CI_Controller{
                                 'details' => $this->input->post('patient_details_store_' . $i),
                                 //'patient_name' => $this->input->post('patient_name_store_' . $i),
                                 //'age_gender' => $this->input->post('age_gender_store_' . $i),
-                                'address' => $this->input->post('address_store_' . $i),
+                                //'address' => $this->input->post('address_store_' . $i),
                                 'created_date' => date('Y-m-d'),
                                 'created_time' => date('H:i:s'),
                                 'updated_by' => $this->input->post('updated_by'),
