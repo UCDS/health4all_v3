@@ -272,9 +272,12 @@ class Hospital_beds_model extends CI_Model
         $bed_id = $this->input->post('bed_id');
         $hospital=$this->session->userdata('hospital');
         $this->db->select('pbp.id,pbp.hospital_bed_id,pbp.hospital_bed_parameter_id,pbp.bed_parameter_value,hbp.bed_parameter_label,
-        pbed.patient_name,pbed.age_gender,pbed.details,pbed.patient_id');
+        pbed.details,pbed.patient_id');
+        $this->db->select("CONCAT_WS(' ', p.first_name, p.last_name) AS patient_name", FALSE);
+        $this->db->select("CONCAT_WS(' / ', p.age_years, p.gender) AS age_gender,", FALSE);
         $this->db->from('patient_bed_parameter as pbp');
         $this->db->join("patient_bed as pbed", "pbed.hospital_bed_id = pbp.hospital_bed_id");
+        $this->db->join("patient as p", "p.patient_id = pbed.patient_id", "left");
         $this->db->join("hospital_bed_parameter as hbp", "hbp.hospital_bed_parameter_id = pbp.hospital_bed_parameter_id");
         $this->db->where('pbp.hospital_bed_id', $bed_id);
         $this->db->where('hbp.hospital_id', $hospital['hospital_id']);
