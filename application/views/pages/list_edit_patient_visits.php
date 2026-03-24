@@ -145,6 +145,10 @@ input[type=number] {
     border-color: #66afe9;
     outline: 0;	
 }
+.pagination > .active > a,
+.pagination > .active > span {
+    z-index: 1;        
+}
 </style>
 
 <style type="text/css">

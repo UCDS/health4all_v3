@@ -495,8 +495,22 @@ class patient_model extends CI_Model {
         return $result;
     }
 
-    function get_patient_edits_info()
+    function get_patient_edits_info($default_rowsperpage)
     {
+        if ($this->input->post('page_no')) {
+            $page_no = $this->input->post('page_no');
+        }
+        else{
+            $page_no = 1;
+        }
+        if($this->input->post('rows_per_page')) {
+            $rows_per_page = $this->input->post('rows_per_page');
+        }
+        else{
+            $rows_per_page = $default_rowsperpage;
+        }
+        $start = ($page_no -1 )  * $rows_per_page;
+
         $from_time = '00:00';	
 	    $to_time = '23:59';
         if($this->input->post('from_date') && $this->input->post('to_date')){
@@ -521,7 +535,12 @@ class patient_model extends CI_Model {
                 ->from('patient_info_edit_history')
                 ->join('patient','patient.patient_id=patient_info_edit_history.patient_id','left')
                 ->join('staff','staff.staff_id=patient_info_edit_history.edit_staff_id','left');
-                
+
+        if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
+
         $query = $this->db->get();
         $result = $query->result();
         return $result;
@@ -734,8 +753,22 @@ class patient_model extends CI_Model {
         return $result;
     }
 
-    function get_all_patient_visits_edits()
+    function get_all_patient_visits_edits($default_rowsperpage)
     {
+        if ($this->input->post('page_no')) {
+            $page_no = $this->input->post('page_no');
+        }
+        else{
+            $page_no = 1;
+        }
+        if($this->input->post('rows_per_page')) {
+            $rows_per_page = $this->input->post('rows_per_page');
+        }
+        else{
+            $rows_per_page = $default_rowsperpage;
+        }
+        $start = ($page_no -1 )  * $rows_per_page;
+
         $from_time = '00:00';	
 	    $to_time = '23:59';
         if($this->input->post('from_date') && $this->input->post('to_date')){
@@ -770,6 +803,10 @@ class patient_model extends CI_Model {
                 ->join('patient','patient.patient_id=patient_visits_edit_history.patient_id','left')
                 ->join('user','user.user_id=patient_visits_edit_history.edit_user_id','left');
         $this->db->order_by('patient_visits_edit_history.edit_date_time','DESC');
+        if ($default_rowsperpage !=0)
+		{
+			$this->db->limit($rows_per_page,$start);
+		}
         $query = $this->db->get();
         $result = $query->result();
         return $result;
