@@ -154,6 +154,10 @@ border-bottom: 1px solid rgba(0,0,0,0.05);
 .selectize-control {
 display: inline-grid;
 } 
+.pagination > .active > a,
+.pagination > .active > span {
+    z-index: 1;        /* higher than datepicker */
+}
 </style>
 
 	<?php 
