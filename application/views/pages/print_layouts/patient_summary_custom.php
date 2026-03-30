@@ -186,95 +186,94 @@
 					</td>
 				</tr>
 				</tbody>
-				<tbody height="10%">
-					<?php if (!empty($form_data)) : ?>
-					<?php	$form_data_keys = array_keys($form_data);
-					$total_data = count($form_data_keys);
-
-					// Define the keys to skip
-					$skip_keys = ['form_header', 'sequence', 'Search patient id', 'form_id', 'patient_id', 'visit_id', 'Form Header','address'];
-
-					// Re-adjust the loop to process keys individually to avoid unwanted skipping
-					for ($i = 0; $i < $total_data; $i++) {
-						$key = $form_data_keys[$i];
-						$value = $form_data[$key];
-						
-						// Check if the current key should be skipped. If so, continue to the next iteration.
-						if (in_array($key, $skip_keys)) {
-							continue;
-						}
-						// Initialize display variables for the current pair
-						$display_key1 = '';
-						$display_value1 = '';
-						$display_key2 = '';
-						$display_value2 = '';
-
-						// First element of the pair
-						$display_key1 = $key;
-						$display_value1 = $value;
-						if ($display_key1 === 'appointment_time' && !empty($display_value1)) {
-							$datetime = new DateTime($display_value1);
-							$display_value1 = $datetime->format('Y-m-d H:i'); // Format as 'YYYY-MM-DD HH:MM'
-						}
-						if (preg_match('/^Select/i', $display_value1)) {
-							$display_value1 = '';
-						}
-						$display_key1 = strtok($display_key1, ' DOT');
-						$display_key1 = ucfirst(str_replace('_', ' ', $display_key1));
-						if (stripos($display_key1, 'ndps') !== false) {
-							$display_value1 = ($display_value1 == '1' || $display_value1 === 1) ? 'Yes' : 'No';
-							$display_key1 = 'NDPS';
-						}
-
-						// Check for a second element in the pair
-						if ($i + 1 < $total_data) {
-							$key2 = $form_data_keys[$i + 1];
-							if (!in_array($key2, $skip_keys)) {
-								$value2 = $form_data[$key2];
-								$display_key2 = $key2;
-								$display_value2 = $value2;
-
-								if (preg_match('/^Select/i', $display_value2)) {
-									$display_value2 = '';
-								}
-								$display_key2 = strtok($display_key2, ' DOT');
-								$display_key2 = ucfirst(str_replace('_', ' ', $display_key2));
-								if (stripos($display_key2, 'ndps') !== false) {
-									$display_value2 = ($display_value2 == '1' || $display_value2 === 1) ? 'Yes' : 'No';
-									$display_key2 = 'NDPS';
-								}
-								// Increment the main loop counter to skip the next iteration
-								$i++;
+				<tbody>
+					<?php
+						$form_data = $this->session->userdata('form_data');
+						$divData   = $this->session->userdata('divData');
+						$layoutMap = [];
+						if (!empty($divData)) {
+							foreach ($divData as $div) {
+								$layoutMap[$div['div_name']] = $div['layout'];
 							}
 						}
 
-						// Display the data in table rows
-						?>
-						<!-- old one with coming for 2 rows -->
-						<!-- <tr width="90%">
-							<td><strong><?php echo $display_key1; ?></strong></td>
-							<td><?php echo htmlspecialchars($display_value1); ?></td>
-							<?php if (!empty($display_key2)) : ?>
-								<td><strong><?php echo $display_key2; ?></strong></td>
-								<td><?php echo htmlspecialchars($display_value2); ?></td>
-							<?php endif; ?>
-						</tr> -->
-						<tr width="90%">
-							<td><strong><?php echo $display_key1; ?></strong></td>
-							<td><?php echo htmlspecialchars($display_value1); ?></td>
-						</tr>
-						<tr width="90%">
-							<?php if (!empty($display_key2)) : ?>
-								<td><strong><?php echo $display_key2; ?></strong></td>
-								<td><?php echo htmlspecialchars($display_value2); ?></td>
-							<?php endif; ?>
-						</tr>
-					<?php } else: ?>
+						$skip_keys = ['form_header', 'sequence', 'Search patient id', 'form_id', 'patient_id', 'visit_id','address'];
+
+						$grouped = [];
+
+						if (!empty($form_data)) {
+							foreach ($form_data as $divName => $fields) {
+
+								if (in_array($divName, ['form_header','patient_id','visit_id'])) continue;
+
+								if (!is_array($fields)) continue;
+
+								foreach ($fields as $key => $value) {
+
+									if (in_array($key, $skip_keys)) continue;
+
+									$grouped[$divName][$key] = $value;
+								}
+							}
+						}
+					?>
+					<?php if (!empty($grouped)) : ?>
+					<?php foreach ($grouped as $divName => $fields) : 
+
+						$columns = isset($layoutMap[$divName]) ? $layoutMap[$divName] : 1;
+
+
+						if ($columns == 1) $width = "100%";
+						elseif ($columns == 2) $width = "50%";
+						elseif ($columns == 3) $width = "33.33%";
+						else $width = "100%";
+
+					?>
+					<tr>
+						<td colspan="3" style="background:#d9edf7;text-align:center;">
+							<strong><?php $cleanName = preg_replace('/_\d+$/', '', $divName); echo str_replace('_',' ', $cleanName); ?></strong>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="3">
+							<div style="display:flex; flex-wrap:wrap; width:100%;">
+
+							<?php foreach ($fields as $key => $value):
+
+								$label = ucfirst(str_replace('_',' ', $key));
+
+								if ($key == 'appointment_time' && !empty($value)) {
+									$value = (new DateTime($value))->format('Y-m-d H:i');
+								}
+
+								if (preg_match('/^Select/i', $value)) {
+									$value = '';
+								}
+
+								if (stripos($key, 'ndps') !== false) {
+									$value = ($value == '1') ? 'Yes' : 'No';
+									$label = 'NDPS';
+								}
+							?>
+
+								<div style="width:<?php echo $width; ?>; padding:5px; box-sizing:border-box;">
+									<strong><?php echo $label; ?>:</strong>
+									<?php echo htmlspecialchars($value); ?>
+								</div>
+
+							<?php endforeach; ?>
+
+							</div>
+						</td>
+					</tr>
+					<?php endforeach; ?>
+					<?php else: ?>
 						<tr>
-							<td colspan="4">No form data available</td>
+							<td colspan="3">No form data available</td>
 						</tr>
 					<?php endif; ?>
-				</tbody>
+					</tbody>
 					<style>
 						.print-element p, .print-element ul, .print-element ol {
 							margin: 0;
@@ -285,11 +284,8 @@
 					<br />
 					<br />
 				</tbody>
-
-
-				
 		</table>
-<p>Note: This is a Healthcare IT System generated document and does not need a signature. <br>Report generated on <?php echo date("j-M-Y h:i A"); ?>.</p>
+		<p>Note: This is a Healthcare IT System generated document and does not need a signature. <br>Report generated on <?php echo date("j-M-Y h:i A"); ?>.</p>
 <style>
      
 	 .btns {

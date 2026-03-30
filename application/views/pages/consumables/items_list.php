@@ -284,7 +284,23 @@ function fnExcelReport() {
 							 <input class="form-control" type="text" value="<?= $item_id_input; ?>" placeholder="Item ID" name="item_id" id="item_id" size="15" />
 							</div>
 						</div>
-						
+
+						<div class = "col-md-4">
+							<div class="form-group">
+							<label for="generic_name_matching">Generic Name Matching: </label>
+							 <input class="form-control" type="text" value="<?php echo $this->input->post('generic_name_matching') ?>" 
+							 		placeholder="Generic Name Matching" name="generic_name_matching" autocomplete="off" />
+							</div>
+						</div>
+
+						<div class = "col-md-4">
+							<div class="form-group">
+							<label for="item_name_matching">Item Name Matching: </label>
+							 <input class="form-control" type="text" value="<?php echo $this->input->post('item_name_matching') ?>" 
+							 		placeholder="Item Name Matching" name="item_name_matching" autocomplete="off"/>
+							</div>
+						</div>
+					
 						<div class = "col-md-4">
 							<div class="form-group">
 							<!--Input field Item Type-->
