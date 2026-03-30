@@ -1571,13 +1571,16 @@ class Register extends CI_Controller {
 	public function store_form_data()
 	{
 		$formData = $this->input->post('formData');
+		$divData  = $this->input->post('divData');
 		$fff = $this->session->set_userdata('form_data', $formData);
+		$this->session->set_userdata('divData', $divData);
 		echo json_encode(['status' => 'success']);
 	}
 	
 	public function print_custom_layout() 
 	{
 		$formData = $this->session->userdata('form_data');
+		$divData  = $this->session->userdata('divData');
 		$data['form_data'] = $formData;
 
 		$userdata=$this->session->userdata('logged_in');

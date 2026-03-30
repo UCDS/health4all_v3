@@ -84,6 +84,11 @@ class Generic_model extends CI_Model {
 			$this->db->where('generic_item.generic_item_id', $this->input->post('generic_item_id'));
 
 		}else{
+
+			if ($this->input->post('generic_name_matching')) {
+				$this->db->like('generic_item.generic_name', $this->input->post('generic_name_matching'));
+			}
+
 			if($this->input->post('item_type')){
 				$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
 			}
@@ -117,6 +122,11 @@ class Generic_model extends CI_Model {
 			$this->db->where('generic_item.generic_item_id', $this->input->post('generic_item_id'));
 
 		}else{
+			
+			if ($this->input->post('generic_name_matching')) {
+				$this->db->like('generic_item.generic_name', $this->input->post('generic_name_matching'));
+			}
+
 			if($this->input->post('item_type')){
 				$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
 			}

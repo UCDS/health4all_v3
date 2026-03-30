@@ -89,6 +89,17 @@ class Item_model extends CI_Model {
 			$this->db->where('item.item_id', $this->input->post('item_id'));
 
 		}else{
+
+			// Generic Name Search
+			if ($this->input->post('generic_name_matching')) {
+				$this->db->like('generic_item.generic_name', $this->input->post('generic_name_matching'));
+			}
+
+			// Item Name Search
+			if ($this->input->post('item_name_matching')) {
+				$this->db->like('item.item_name', $this->input->post('item_name_matching'));
+			}
+
 			if($this->input->post('item_type')){
 				$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
 			}
@@ -124,6 +135,17 @@ class Item_model extends CI_Model {
 			$this->db->where('item.item_id', $this->input->post('item_id'));
 
 		}else{
+
+			// Generic Name Search
+			if ($this->input->post('generic_name_matching')) {
+				$this->db->like('generic_item.generic_name', $this->input->post('generic_name_matching'));
+			}
+
+			// Item Name Search
+			if ($this->input->post('item_name_matching')) {
+				$this->db->like('item.item_name', $this->input->post('item_name_matching'));
+			}
+			
 			if($this->input->post('item_type')){
 				$this->db->where('item_type.item_type_id', $this->input->post('item_type'));
 			}

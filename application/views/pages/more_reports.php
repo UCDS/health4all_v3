@@ -318,15 +318,35 @@ foreach($this->data['functions'] as $function){
 }
 ?>
 <!--sanitation tab ends-->
-
+<?php
+	$order = [
+		'edit_demographic',
+		'edit_patient_visits',
+		'login_report',
+		'list_patient_edits',
+		'list_edit_patient_visits',
+		'list_patient_visit_duplicate',
+		'list_blood_donor_details_edit',
+		'list_patient_document_delete',
+		'delete_patient_visit_duplicate',
+		'delete_patient_followup',
+		'helpline_receiver',
+		'dashboard'
+	];
+?>
 <?php 
 foreach($this->data['functions'] as $function){
-			if($function->user_function=="login_report" || $function->user_function=="helpline_receiver" || $function->user_function=="dashboard" 
-			 || $function->user_function=="edit_demographic" || $function->user_function=="delete_patient_visit_duplicate" 
-			 || $function->user_function=="list_patient_visit_duplicate" || $function->user_function=="list_patient_edits" 
-			 || $function->user_function=="edit_patient_visits" || $function->user_function=="list_edit_patient_visits"
-			 || $function->user_function=="delete_patient_followup"
-			 || $function->user_function=="list_blood_donor_details_edit" || $function->user_function=="list_patient_document_delete" )
+			if( $function->user_function=="edit_demographic" ||
+				$function->user_function=="edit_patient_visits" ||
+				$function->user_function=="login_report" || 
+				$function->user_function=="list_patient_edits" ||
+				$function->user_function=="list_edit_patient_visits" ||
+				$function->user_function=="list_patient_visit_duplicate" ||
+				$function->user_function=="list_blood_donor_details_edit" ||
+				$function->user_function=="list_patient_document_delete" ||
+				$function->user_function=="delete_patient_visit_duplicate" ||  
+				$function->user_function=="delete_patient_followup" ||
+				$function->user_function=="helpline_receiver" || $function->user_function=="dashboard" )
 			 {
 				$admin=1;
 				?>
@@ -340,15 +360,9 @@ foreach($this->data['functions'] as $function){
 if($admin==1) { ?>
 <div class="panel_accordion" style="padding-right:18px!important;">
 <?php
-foreach($this->data['functions'] as $function){
-
-if($function->user_function=="login_report" ){ ?>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/login_report";?>">Login Report</a></button>
-<?php		 }
-
-if($function->user_function=="helpline_receiver" ){ ?>
-				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
-<?php		 }
+ foreach($order as $funcName): ?>
+    <?php foreach($this->data['functions'] as $function): ?>
+        <?php if($function->user_function == $funcName): 
 
 if($function->user_function=="edit_demographic" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/edit_patient_demographic_details";?>">Edit patient details</a></button>
@@ -358,12 +372,8 @@ if($function->user_function=="edit_patient_visits"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/edit_patient_visits";?>">Edit patient visit</a></button>
 <?php		 }
 
-if($function->user_function=="delete_patient_visit_duplicate"){ ?>
-	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_visit_duplicate";?>">Delete patient visit duplicate</a></button>
-<?php		 }
-
-if($function->user_function=="delete_patient_followup"){ ?>
-	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_followup";?>">Delete Patient Followup</a></button>
+if($function->user_function=="login_report" ){ ?>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."reports/login_report";?>">Login Report</a></button>
 <?php		 }
 
 if($function->user_function=="list_patient_edits"){ ?>
@@ -386,7 +396,24 @@ if($function->user_function=="list_patient_document_delete"){ ?>
 	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/list_patient_document_delete";?>">List patient document delete</a></button>
 <?php		 }
 
-		} ?>
-</div> <?php
+if($function->user_function=="delete_patient_visit_duplicate"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_visit_duplicate";?>">Delete patient visit duplicate</a></button>
+<?php		 }
+
+if($function->user_function=="delete_patient_followup"){ ?>
+	<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."patient/delete_patient_followup";?>">Delete Patient Followup</a></button>
+<?php		 }
+
+if($function->user_function=="helpline_receiver" ){ ?>
+				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
+<?php		 }
+
+	endif; ?>
+
+    <?php endforeach; ?>
+<?php endforeach; ?>
+
+</div>
+ <?php
 	}
 ?>

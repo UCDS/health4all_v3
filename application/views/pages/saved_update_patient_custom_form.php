@@ -92,9 +92,9 @@ pri.print();
                 <?php
                 foreach ($grouped_fields as $divName => $fields) {
                 ?>
-                    <div class="panel panel-success mb-3">
+                    <div class="panel panel-success mb-3 generatedDiv" data-div-name="<?php echo $divName; ?>" data-layout="<?php echo $fields[0]->div_column_count; ?>">
                         <div class="panel-heading">
-                            <strong><?php echo htmlspecialchars($divName); ?></strong>
+                            <strong><?php echo htmlspecialchars(preg_replace('/_\d+$/', '', $divName)); ?></strong>
                         </div>
 
                         <div class="card-body" style="margin:15px;">
@@ -593,6 +593,7 @@ pri.print();
                         //var label = $(this).find('label').text().trim();
                         // var field = $(this).find('input[type="text"], select, textarea, input[type="radio"]');
                         var label = $(this).find('label').first().text().trim();
+                        var parentDiv = $(this).closest('.generatedDiv').data('div-name');
                         var field = $(this).find('input[type="text"], input[type="radio"], input[type="date"], input[type="time"], input[type="datetime-local"], select, textarea');
                         var value = '';
                         if (field.is('input[type="radio"]')) {
@@ -621,7 +622,11 @@ pri.print();
                         }
                         label = label.replace(/[^a-zA-Z0-9]/g, '_');
                         //value = value.replace(/[^a-zA-Z0-9]/g, '_');
-                        formData[label] = value;
+                        if (!formData[parentDiv]) {
+                            formData[parentDiv] = {};
+                        }
+
+                        formData[parentDiv][label] = value;
                         
                     });
                     var patientId = $('#patient_id').val().trim();
@@ -661,11 +666,22 @@ pri.print();
                         unitValue = unitValue.replace(/[^a-zA-Z0-9]/g, '_');
                         formData[unitLabel] = unitValue;
                     }
+                    let divData = [];
+
+                    $('.generatedDiv').each(function () {
+                        let divName = $(this).data('div-name');
+                        let divNumber = $(this).data('layout');
+
+                        divData.push({
+                            div_name: divName,
+                            layout: divNumber
+                        });
+                    });
                     //console.log("Processed Form Data:", formData);
                     $.ajax({
                         url: "<?php echo site_url('register/store_form_data'); ?>", 
                         type: "POST",
-                        data: { formData: formData },
+                        data: { formData: formData, divData: divData },
                         dataType: 'json',
                         success: function(response) {
                             //console.log("Server Response:", response);

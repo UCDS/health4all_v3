@@ -299,6 +299,7 @@ display: inline-grid;
             $("#defaultModeBtn").show();
             divCount++;
             createDiv(divCount);
+            toggleRemoveButtons();
         });
 
         $("#defaultModeBtn").click(function() {
@@ -313,6 +314,9 @@ display: inline-grid;
             let html = `
                 <div class="generatedDiv col-md-offset-2" data-div="${divNumber}" style="border:1px solid #ccc; padding:15px; margin-top:20px;">
                     <h4>Div ${divNumber}</h4>
+                    <button type="button" class="btn btn-danger btn-sm removeDiv" data-div="${divNumber}" style="float:right;">
+                        Remove
+                    </button>
                     <div class="row">
                         <div class="col-md-3">
                             <label><b>Name:</b>
@@ -373,8 +377,68 @@ display: inline-grid;
             $("#divContainer").append(html);
         }
         // Submit
+        function toggleRemoveButtons() {
+            let totalDivs = $('.generatedDiv').length;
+
+            if (totalDivs <= 1) {
+                $('.removeDiv').hide(); 
+            } else {
+                $('.removeDiv').show();
+            }
+        }
+
+        $(document).on('click', '.removeDiv', function () {
+            let divNo = $(this).data('div');
+
+            if (confirm("Are you sure you want to remove this div?")) {
+                $('.generatedDiv[data-div="' + divNo + '"]').remove();
+                renumberDivs(); 
+                toggleRemoveButtons();
+            }
+        });
+
+        function renumberDivs() {
+            $('.generatedDiv').each(function (index) {
+
+                let newNumber = index + 1;
+
+                $(this).attr('data-div', newNumber);
+
+                $(this).find('h4').contents().first()[0].textContent = 'Div ' + newNumber + ' ';
+
+                $(this).find('.removeDiv').attr('data-div', newNumber);
+
+                $(this).find('.layout-radio').each(function () {
+                    $(this).attr('name', 'layout[' + newNumber + ']');
+                    $(this).attr('data-div', newNumber);
+                });
+
+                $(this).find('.checkbox-group.row').attr('id', 'checkboxGroup_' + newNumber);
+
+                $(this).find('.column-checkbox').attr('name', 'selected_columns[' + newNumber + '][]');
+
+                $(this).find('input[type="hidden"]').each(function () {
+                    if ($(this).attr('name') && $(this).attr('name').includes('column_types')) {
+                        $(this).attr('name', 'column_types[' + newNumber + '][]');
+                    }
+                });
+
+            });
+        }
+
         $("#columnsForm").on("submit", function(event) {
             event.preventDefault();
+
+            $('.generatedDiv').each(function () {
+                let divNo = $(this).data('div');
+                let input = $(this).find('input[name="div_name[]"]');
+
+                let currentVal = input.val().trim();
+
+                if (currentVal !== "") {
+                    input.val(currentVal + '_' + divNo); // 👉 div_one → div_one_1
+                }
+            });
             var formData = $(this).serialize();
 
             $.ajax({

@@ -250,15 +250,23 @@ function fnExcelReport() {
 				<?php echo form_open('consumables/generic_item/generic_items_list', array('class' => 'form-group', 'role' => 'form', 'id' => 'generic_items_search')); ?>
 				<div class="container">
 					<div class="row">
-						<div class = "col-md-4">
+						<div class = "col-md-3">
 							<div class="form-group">
 							<!--Input field From date-->
 							<label for="generic_item_id" >Generic Item ID: </label>
 							 <input class="form-control" type="text" value="<?= $generic_item_id_input; ?>" placeholder="Generic Item ID" name="generic_item_id" id="generic_item_id" size="15" />
 							</div>
 						</div>
-						
-						<div class = "col-md-4">
+
+						<div class = "col-md-3">
+							<div class="form-group">
+							<label for="generic_name_matching" >Generic Name Matching: </label>
+							 <input class="form-control" type="text" value="<?php echo $this->input->post('generic_name_matching'); ?>" 
+							 		placeholder="Generic Name Matching" name="generic_name_matching" autocomplete="off"/>
+							</div>
+						</div>
+
+						<div class = "col-md-3">
 							<div class="form-group">
 							<!--Input field Item Type-->
 								<label for="item_type" >Item Type</label>
@@ -295,7 +303,7 @@ function fnExcelReport() {
 							</div>
 						</div> -->
 						
-						<div class = "col-md-4">
+						<div class = "col-md-3">
 							<div class="form-group">
 							<!--Input field From date-->
 							<label for="drug_type" >Drug Type</label>

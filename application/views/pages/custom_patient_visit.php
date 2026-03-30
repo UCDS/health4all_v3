@@ -482,6 +482,7 @@ echo "</select></li>";
 								: '<td><input type="number" placeholder="Enter Sequence" class="form-control sequence-input" data-id="' + data.main_id + '" value="' + sequenceValue + '"></td>';
 
 							var selectedColumnsColumn = data.selected_columns || '';
+							var divname = data.div_name || '';
 
 							var editButton = labelValue !== '' 
 								? '<td>' + 
@@ -492,6 +493,7 @@ echo "</select></li>";
 							rows += '<tr class="sortable-row" data-id="' + data.main_id + '">' +
 										'<td>' + data.table_name + '</td>' +
 										'<td>' + selectedColumnsColumn + '</td>' +
+										'<td>' + divname.replace(/_\d+$/, '') + '</td>'+
 										'<td>' + data.text_box + '</td>' +
 										labelColumn +
 										sequenceColumn +
@@ -524,11 +526,11 @@ echo "</select></li>";
 						}
 
 						if (allValidData) {
-							$('#dataModal .table th').eq(3).text('Label');
-							$('#dataModal .table th').eq(4).text('Seq ID');
+							$('#dataModal .table th').eq(4).text('Label');
+							$('#dataModal .table th').eq(5).text('Seq ID');
 						} else {
-							$('#dataModal .table th').eq(3).text('Add Label');
-							$('#dataModal .table th').eq(4).text('Seq ID');
+							$('#dataModal .table th').eq(4).text('Add Label');
+							$('#dataModal .table th').eq(5).text('Seq ID');
 						}
 
 						$('#dataModal').modal('show');
@@ -570,7 +572,7 @@ echo "</select></li>";
 					if (sequenceInput.length) {
 						sequenceInput.val(sequence);
 					} else {
-						$(this).find('td').eq(4).text(sequence);
+						$(this).find('td').eq(5).text(sequence);
 					}
 					sequence++;
 				});
@@ -585,7 +587,7 @@ echo "</select></li>";
 				var label = row.find('td').eq(3).text();
 				
 				row.find('td').eq(1).html('<input type="text" class="form-control selected-columns-input" value="' + selectedColumns + '" data-id="' + main_id + '">');
-				row.find('td').eq(3).html('<input type="text" class="form-control label-input" value="' + label + '" data-id="' + main_id + '">');
+				row.find('td').eq(4).html('<input type="text" class="form-control label-input" value="' + label + '" data-id="' + main_id + '">');
 				
 				$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fa fa-check"></i>').removeClass('edit-row').addClass('save-row');
 				row.find('td:last').addClass('icon-container').append('<i class="fa fa-times cancel-column" title="Cancel" style="cursor:pointer;"></i>');
@@ -641,9 +643,9 @@ echo "</select></li>";
 				$('#dataBody tr.sortable-row').each(function() {
 					var id = $(this).data('id');
 					var labelInput = $(this).find('.label-input');
-					var label = labelInput.length ? labelInput.val() : $(this).find('td').eq(3).text().trim();
+					var label = labelInput.length ? labelInput.val() : $(this).find('td').eq(4).text().trim();
 					var sequenceInput = $(this).find('.sequence-input');
-					var sequence = sequenceInput.length ? sequenceInput.val() : $(this).find('td').eq(4).text().trim();
+					var sequence = sequenceInput.length ? sequenceInput.val() : $(this).find('td').eq(5).text().trim();
 
 					updates.push({
 						id: id,
@@ -699,6 +701,7 @@ echo "</select></li>";
 					<tr>
 					<th>Table Name</th>
 					<th>Field Name</th>
+					<th>Div Name</th>
 					<th>Textbox</th>
 					<th>Add Label</th>
 					<th>Sequence </th>
