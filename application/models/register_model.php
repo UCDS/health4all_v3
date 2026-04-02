@@ -1196,7 +1196,7 @@ class Register_model extends CI_Model{
 		dose,
 		last_dispensed_date,
 		last_dispensed_quantity,
-		death_status,death_date")->from("patient_followup");
+		death_status,death_date,nxt_followup_date,followup_type")->from("patient_followup");
 		$this->db->join('icd_code','patient_followup.icd_code=icd_code.icd_code','left');
 		$this->db->where('hospital_id',$hospital['hospital_id']);
 		$resource=$this->db->get();
@@ -1384,6 +1384,9 @@ class Register_model extends CI_Model{
 		$this->db->set('update_time', date("Y-m-d H:i:s"));
 		$this->db->set('latitude', $this->input->post('input_latitude'));
 		$this->db->set('longitude', $this->input->post('input_longitude'));
+
+		$this->db->set('nxt_followup_date', $this->input->post('nxt_followup_date'));
+		$this->db->set('followup_type', $this->input->post('followup_type'));
 		
 		//Newly added on 12-01-2024
 		$this->db->set('ndps', $this->input->post('ndps_status'));

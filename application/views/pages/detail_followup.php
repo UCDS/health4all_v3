@@ -574,6 +574,29 @@ $patient = $patients[0];
 						</div> 
 						</div>
 						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="Inputfoolowupdate">Next Followup Date</label>
+								<input type="date" class="form-control" name="nxt_followup_date" value="<?php if($patient_followup) echo $patient_followup->nxt_followup_date;  ?>">
+						</div>
+						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+						<div class="form-group">
+								<label for="Inputfollowuptypes">Select Followup Type</label>
+								<select name="followup_type" class="form-control">
+									<option value="">Select Followup Type</option>
+									<?php foreach($followups as $followup): ?>
+										<option value="<?php echo $followup->id; ?>" 
+											<?php if($patient_followup->followup_type == $followup->id) { echo "selected"; } ?>>
+											<?php echo $followup->type_name; ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+						</div>
+						</div>
+
 						<script>
 							ClassicEditor
 								.create( document.querySelector( '#input_note' ), {

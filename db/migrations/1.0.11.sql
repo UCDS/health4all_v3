@@ -17,3 +17,16 @@ ALTER TABLE patient_bed DROP COLUMN patient_name;
 ALTER TABLE patient_bed DROP COLUMN age_gender;
 
 ALTER TABLE patient_bed DROP COLUMN address;
+
+CREATE TABLE `followup_types` (
+  `id` int(11) NOT NULL,
+  `type_name` varchar(255) NOT NULL,
+  `hospital_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE `followup_types` ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `followup_types` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `patient_followup` ADD `nxt_followup_date` DATE NOT NULL AFTER `death_status`, ADD `followup_type` INT NOT NULL AFTER `nxt_followup_date`;

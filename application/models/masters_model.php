@@ -3200,5 +3200,55 @@ else if($type=="dosage"){
 		$this->db->where('id', $main_id);
 		return $this->db->delete('update_patient_custom_form_fields'); // Adjust to your table name
 	}
+
+	public function insert_followup($data)
+    {
+        return $this->db->insert('followup_types', $data);
+    }
+
+    public function get_all_followups()
+	{
+		$hospital = $this->session->userdata('hospital');
+		return $this->db
+			->where('hospital_id', $hospital['hospital_id'])
+			->order_by('id', 'ASC')
+			->get('followup_types')
+			->result();
+	}
+
+    public function get_followup_by_id($id)
+	{
+		$hospital = $this->session->userdata('hospital');
+		return $this->db
+			->where('hospital_id', $hospital['hospital_id'])
+			->where('id', $id)
+			->get('followup_types')
+			->row();
+	}
+
+    public function update_followup($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('followup_types', $data);
+    }
+
+   	public function delete_followup($id)
+	{
+		$hospital = $this->session->userdata('hospital');
+		return $this->db
+			->where('hospital_id', $hospital['hospital_id'])
+			->where('id', $id)
+			->delete('followup_types');
+	}
+
+	public function check_duplicate_followup($type_name, $hospital_id)
+	{
+		return $this->db
+			->where('type_name', $type_name)
+			->where('hospital_id', $hospital_id)
+			->get('followup_types')
+			->row();
+	}
+
 }
 ?>
