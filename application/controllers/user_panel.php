@@ -1522,7 +1522,7 @@ class User_panel extends CI_Controller {
 						$this->data['rowsperpage'] = $default->value;
 						$this->data['upper_rowsperpage']= $default->upper_range;
 						$this->data['lower_rowsperpage']= $default->lower_range;	 
-
+						break;
 					}
 				}
 			if ($this->input->post()) 
@@ -1570,7 +1570,7 @@ class User_panel extends CI_Controller {
 						$this->data['rowsperpage'] = $default->value;
 						$this->data['upper_rowsperpage']= $default->upper_range;
 						$this->data['lower_rowsperpage']= $default->lower_range;	 
-
+						break;
 					}
 				}
 			
