@@ -4833,6 +4833,28 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$to_date=$from_date;
 			$this->db->where('patient_followup.death_date >=',$from_date); 
 		}
+
+		if($this->input->post('from_nxt_followup_date') && $this->input->post('to_nxt_followup_date'))
+		{
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_nxt_followup_date')));
+			$to_date   = date("Y-m-d", strtotime($this->input->post('to_nxt_followup_date')));   
+
+			$this->db->where('patient_followup.nxt_followup_date !=', '0000-00-00');
+    		$this->db->where('patient_followup.nxt_followup_date IS NOT NULL');
+			$this->db->where("(patient_followup.nxt_followup_date BETWEEN '$from_date' AND '$to_date')");         
+		}
+		else if($this->input->post('from_nxt_followup_date') || $this->input->post('to_nxt_followup_date'))
+		{
+			$this->input->post('from_nxt_followup_date') 
+				? $from_date = $this->input->post('from_nxt_followup_date') 
+				: $from_date = $this->input->post('to_nxt_followup_date');
+
+			$to_date = $from_date;
+			
+			$this->db->where('patient_followup.nxt_followup_date !=', '0000-00-00');
+    		$this->db->where('patient_followup.nxt_followup_date IS NOT NULL');
+			$this->db->where('patient_followup.nxt_followup_date >=', $from_date); 
+		}
 		
 		if ($this->input->post('from_date_1') && $this->input->post('to_date_1')) 
 		{

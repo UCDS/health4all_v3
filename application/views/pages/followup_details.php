@@ -555,7 +555,38 @@ function onchange_page_dropdown(dropdownobj){
 				return optionsHtml;
 			}
 		</script>
-		<!-- till here -->                      
+		<!-- till here -->       
+		 
+		<div class="col-md-5" id="nxt_followup_date" style=" margin-left: 35px">
+			<?php 
+				$from_nxt_followup_date = 0;
+				$to_nxt_followup_date = 0;
+
+				if($this->input->post('from_nxt_followup_date')) {
+					$from_nxt_followup_date = date("Y-m-d", strtotime($this->input->post('from_nxt_followup_date')));
+				} else {
+					$from_nxt_followup_date = date("Y-m-d");
+				}
+
+				if($this->input->post('to_nxt_followup_date')) {
+					$to_nxt_followup_date = date("Y-m-d", strtotime($this->input->post('to_nxt_followup_date')));
+				} else {
+					$to_nxt_followup_date = date("Y-m-d");
+				}
+			?>
+
+			Next Followup Date :
+			<input class="form-control" style="background-color:#EEEEEE" type="date"
+				value="<?php if($this->input->post('from_nxt_followup_date')) { echo date('Y-m-d', strtotime($from_nxt_followup_date)); } ?>"
+				name="from_nxt_followup_date"
+				max="<?php echo date('Y-m-d'); ?>" size="15" />
+
+			To
+			<input class="form-control" type="date" style="background-color:#EEEEEE"
+				value="<?php if($this->input->post('to_nxt_followup_date')) { echo date('Y-m-d', strtotime($to_nxt_followup_date)); } ?>"
+				name="to_nxt_followup_date"
+				max="<?php echo date('Y-m-d'); ?>" size="15" />
+		</div>
 					<br>
 					<label class="control-label" style="margin-left: 50px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 

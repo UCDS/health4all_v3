@@ -1216,6 +1216,7 @@ class Register extends CI_Controller {
 			$this->load->view('templates/header',$this->data);
 			$this->load->helper('form');
 			$this->load->library('form_validation');
+			$this->data['followups'] = $this->masters_model->get_all_followups();
 			
 			
 			

@@ -765,6 +765,11 @@
 				<a href="<?php echo base_url() . "user_panel/add_patient_visit_custom"; ?>"> Add / Update Visits Custom Form</a>
 			</li>
 
+			<li <?php if (preg_match("/user_panel\/add_followup_type/", current_url()) || preg_match("/user_panel\/update_followup_type/", current_url()))
+				echo 'class="active"'; ?>>
+				<a href="<?php echo base_url() . "user_panel/add_followup_type"; ?>"> Add / Update Followup types</a>
+			</li>
+
 			<li class="nav-divider"></li>
 
 			<li class="navbar-text">User</li>

@@ -1507,5 +1507,109 @@ class User_panel extends CI_Controller {
 			echo json_encode(['success' => false]);
 		}
 	}
+	
+    public function add_followup_type()
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Followup Types";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$hospital = $this->session->userdata('hospital');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+						break;
+					}
+				}
+			if ($this->input->post()) 
+			{
+				$type_name = trim($this->input->post('type_name'));
+				$exists = $this->masters_model->check_duplicate_followup($type_name, $hospital['hospital_id']);
+				if($exists){
+					$this->session->set_flashdata('danger', 'Followup type already exists!');
+					redirect('user_panel/add_followup_type');
+				}
+				$data = [
+					'type_name' => $this->input->post('type_name'),
+					'hospital_id' => $hospital['hospital_id'],
+				];
+
+				$this->masters_model->insert_followup($data);
+
+				$this->session->set_flashdata('success', 'Followup type added successfully!');
+				redirect('user_panel/add_followup_type');
+			}
+
+			$this->data['followups'] = $this->masters_model->get_all_followups();
+			$this->load->view('templates/header',$this->data);		
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/followup_view',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+    public function update_followup_type($id)
+	{
+		if($this->session->userdata('logged_in'))
+		{
+			$this->load->helper('form');
+			$this->data['title']="Followup Types";
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			$hospital = $this->session->userdata('hospital');
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+						$this->data['rowsperpage'] = $default->value;
+						$this->data['upper_rowsperpage']= $default->upper_range;
+						$this->data['lower_rowsperpage']= $default->lower_range;	 
+						break;
+					}
+				}
+			
+			if ($this->input->post()) 
+			{
+				$id = $this->input->post('id');
+				$type_name = trim($this->input->post('type_name'));
+				$exists = $this->masters_model->check_duplicate_followup($type_name, $hospital['hospital_id']);
+				if($exists){
+					$this->session->set_flashdata('danger', 'Followup type already exists!');
+					redirect('user_panel/add_followup_type');
+				}
+				$data = [
+					'type_name' => $this->input->post('type_name')
+				];
+				$this->masters_model->update_followup($id, $data);
+				$this->session->set_flashdata('success', 'Followup type updated successfully!');
+				redirect('user_panel/add_followup_type');
+			}
+			if($id !== null){
+				$this->data['edit'] = $this->masters_model->get_followup_by_id($id);
+			}
+			$this->data['followups'] = $this->masters_model->get_all_followups();
+			$this->load->view('templates/header',$this->data);		
+			$this->load->view('templates/leftnav',$this->data);
+			$this->load->view('pages/followup_view',$this->data);
+			$this->load->view('templates/footer');
+		}
+		else
+		{
+            show_404();
+        }
+	}
+
+    public function delete_followup_type($id)
+	{
+		$this->masters_model->delete_followup($id);
+		$this->session->set_flashdata('danger', 'Followup type deleted successfully!');
+		redirect('user_panel/add_followup_type');
+	}
 		
 }
