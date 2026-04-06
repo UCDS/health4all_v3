@@ -588,6 +588,19 @@ function onchange_page_dropdown(dropdownobj){
 				max="<?php echo date('Y-m-d'); ?>" size="15" />
 		</div>
 					<br>
+		<div class="col-md-3" id="followup_type" style=" margin-left: 35px">
+			Followup Type
+			<select name="followup_type" class="form-control">
+				<option value="">Select Followup</option>
+				<?php if (!empty($followups)) : ?>
+					<?php foreach ($followups as $row) : ?>
+						<option <?php if($row->id==$this->input->post('followup_type')){ echo "selected"; } ?> value="<?php echo $row->id; ?>">
+							<?php echo $row->type_name; ?>
+						</option>
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</select>
+		</div>
 					<label class="control-label" style="margin-left: 50px; margin-top: 10px;"> Rows per page : </label>
 						<input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
 			<center><input class="btn btn-sm btn-primary" type="submit" value="Submit" style="margin-top: 20px"/></center>
@@ -763,6 +776,7 @@ echo "</select></li>";
 		<th>Note</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
+		<th>Next Followup Date</th>
 		<th>Map link</th>
 		<th>NDPS</th>
 		<th>Volunteer</th>
@@ -804,6 +818,10 @@ echo "</select></li>";
 		<td><?php echo $followup->note;?></td>
 		<td><?php echo $followup->route_primary;?></td>
 		<td><?php echo $followup->route_secondary;?></td>
+		<td><?php if ($followup->nxt_followup_date != '0000-00-00') : ?>
+				<?php echo date('j M Y',strtotime($followup->nxt_followup_date)); ?>
+			<?php endif; ?>
+		</td>
 		<td>
 		<?php 
 		if($followup->map_link) { ?>

@@ -4914,6 +4914,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 			$this->db->where('state.state_id',$this->input->post('state'));
 		}
 
+		if($this->input->post('followup_type'))
+		{
+			$this->db->where('patient_followup.followup_type',$this->input->post('followup_type'));
+		}
+
         $this->db->select("patient_followup.patient_id,
         patient.insert_datetime,
         patient.first_name,
@@ -4948,6 +4953,8 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		state.state,district.state_id as state_id,
 		patient_followup.death_date,
 		patient_followup.death_status,
+		patient_followup.nxt_followup_date,
+		patient_followup.followup_type,
 		IF(patient.age_years IS NULL or patient.age_years = '', 0, patient.age_years) as age_years",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
