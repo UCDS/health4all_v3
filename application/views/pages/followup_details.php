@@ -377,6 +377,24 @@ function doPost(page_no){
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("from_nxt_followup_date").addEventListener("change", function() {
+    	document.getElementById("to_nxt_followup_date").min = this.value;
+		document.getElementById("to_nxt_followup_date").value = this.value;
+	});
+	document.getElementById("from_death_date").addEventListener("change", function() {
+    	document.getElementById("to_death_date").min = this.value;
+		document.getElementById("to_death_date").value = this.value;
+	});
+	document.getElementById("from_followup_date").addEventListener("change", function() {
+    	document.getElementById("to_followup_date").min = this.value;
+		document.getElementById("to_followup_date").value = this.value;
+	});
+});
+
+
+
 </script>
 
 
@@ -406,8 +424,8 @@ function onchange_page_dropdown(dropdownobj){
 			if($this->input->post('from_date_1')) $from_date_1=date("Y-m-d",strtotime($this->input->post('from_date_1'))); else $from_date_1 = date("Y-m-d");
 			if($this->input->post('to_date_1')) $to_date_1=date("Y-m-d",strtotime($this->input->post('to_date_1'))); else $to_date_1 = date("Y-m-d");
 		?>
-			Followup Add Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date_1')) { echo date("Y-m-d",strtotime($from_date_1)); } ?>" name="from_date_1" max="<?php echo date('Y-m-d'); ?>" size="15" />
-			To <input class="form-control" type="date" style = "background-color:#EEEEEE" value="<?php if($this->input->post('to_date_1')) { echo date("Y-m-d",strtotime($to_date_1)); } ?>" name="to_date_1" max="<?php echo date('Y-m-d'); ?>" size="15" />
+			Followup Add Date : <input class="form-control" id= "from_followup_date" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date_1')) { echo date("Y-m-d",strtotime($from_date_1)); } ?>" name="from_date_1" size="15" />
+			To <input class="form-control" type="date" id ="to_followup_date" style = "background-color:#EEEEEE" value="<?php if($this->input->post('to_date_1')) { echo date("Y-m-d",strtotime($to_date_1)); } ?>" name="to_date_1" size="15" />
 		</div>
 		
 		<div class="col-md-5" id="death_date">
@@ -416,8 +434,8 @@ function onchange_page_dropdown(dropdownobj){
 			if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
 			if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
 		?>
-			Death Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date')) { echo date("Y-m-d",strtotime($from_date)); }?>" name="from_date" max="<?php echo date('Y-m-d'); ?>" size="15" />
-			To <input class="form-control" style = "background-color:#EEEEEE" type="date"  name="to_date" id="" max="<?php echo date('Y-m-d'); ?>" value="<?php if($this->input->post('to_date')) { echo date("Y-m-d",strtotime($to_date)); } ?>" max="<?php echo date('Y-m-d'); ?>" size="15" />
+			Death Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" id="from_death_date" value="<?php if($this->input->post('from_date')) { echo date("Y-m-d",strtotime($from_date)); }?>" name="from_date" max="<?php echo date('Y-m-d'); ?>" size="15" />
+			To <input class="form-control" style = "background-color:#EEEEEE" type="date"  name="to_date" id="to_death_date" max="<?php echo date('Y-m-d'); ?>" value="<?php if($this->input->post('to_date')) { echo date("Y-m-d",strtotime($to_date)); } ?>" max="<?php echo date('Y-m-d'); ?>" size="15" />
 		</div>
 		</br></br>
 
@@ -578,14 +596,14 @@ function onchange_page_dropdown(dropdownobj){
 			Next Followup Date :
 			<input class="form-control" style="background-color:#EEEEEE" type="date"
 				value="<?php if($this->input->post('from_nxt_followup_date')) { echo date('Y-m-d', strtotime($from_nxt_followup_date)); } ?>"
-				name="from_nxt_followup_date"
-				max="<?php echo date('Y-m-d'); ?>" size="15" />
+				name="from_nxt_followup_date" id = "from_nxt_followup_date"
+				size="15" />
 
 			To
 			<input class="form-control" type="date" style="background-color:#EEEEEE"
 				value="<?php if($this->input->post('to_nxt_followup_date')) { echo date('Y-m-d', strtotime($to_nxt_followup_date)); } ?>"
-				name="to_nxt_followup_date"
-				max="<?php echo date('Y-m-d'); ?>" size="15" />
+				name="to_nxt_followup_date" id = "to_nxt_followup_date"
+				size="15" />
 		</div>
 					<br>
 		<div class="col-md-3" id="followup_type" style=" margin-left: 35px">
