@@ -282,6 +282,7 @@ class Reports extends CI_Controller {
 		$this->data['icd_blocks']=$this->masters_model->get_data('icd_blocks');      //retrives the values from the function icd_block  in master model
 		$this->data['all_districts']=$this->staff_model->get_district();   
 		$this->data['all_states']=$this->staff_model->get_states();
+		$this->data['followups'] = $this->masters_model->get_all_followups();
 		foreach($this->data['defaultsConfigs'] as $default){		 
 		 	if($default->default_id=='pagination'){
 		 			$this->data['rowsperpage'] = $default->value;
