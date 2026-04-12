@@ -378,19 +378,57 @@ function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("from_nxt_followup_date").addEventListener("change", function() {
-    	document.getElementById("to_nxt_followup_date").min = this.value;
-		document.getElementById("to_nxt_followup_date").value = this.value;
-	});
-	document.getElementById("from_death_date").addEventListener("change", function() {
-    	document.getElementById("to_death_date").min = this.value;
-		document.getElementById("to_death_date").value = this.value;
-	});
-	document.getElementById("from_followup_date").addEventListener("change", function() {
-    	document.getElementById("to_followup_date").min = this.value;
-		document.getElementById("to_followup_date").value = this.value;
-	});
+function handleDatePickerValueChange(sourceEl) {
+	const value = sourceEl.value;
+	let targetId;
+
+	switch (sourceEl.id) {
+		case "from_nxt_followup_date":
+			targetId = "to_nxt_followup_date";
+			break;
+		case "from_death_date":
+			targetId = "to_death_date";
+			break;
+		case "from_followup_date":
+			targetId = "to_followup_date";
+			break;
+	}
+
+	if (targetId) {
+		const target = document.getElementById(targetId);
+		if (target) {
+			target.min = value;
+
+			// Optional: only update if needed (better UX)
+			if (!target.value || target.value < value) {
+				target.value = value;
+			}
+		}
+	}
+}
+document.addEventListener("DOMContentLoaded", function () {
+
+const ids = [
+	"from_nxt_followup_date",
+	"from_death_date",
+	"from_followup_date"
+];
+
+ids.forEach(id => {
+	const el = document.getElementById(id);
+
+	if (el) {
+		// Attach event
+		el.addEventListener("change", function () {
+			handleDatePickerValueChange(this);
+		});
+
+		// 👇 Trigger manually if value already exists (set by PHP)
+		if (el.value) {
+			handleDatePickerValueChange(el);
+		}
+	}
+});
 });
 
 
