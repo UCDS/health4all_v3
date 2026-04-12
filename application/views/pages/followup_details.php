@@ -823,7 +823,7 @@ echo "</select></li>";
 		<th>Phone</th>
 		<!-- <th>Latitude</th>
 		<th>Longitude</th> -->
-		<th>ICD Code</th>
+		<th>ICD Code/Diagnosis</th>
 		<!-- <th>Diagnosis</th>
 		<th>Status Date</th>
 		<th>Last Visit Type</th>
@@ -865,7 +865,7 @@ echo "</select></li>";
 		<td><?php echo $followup->phone;?></td>
 		<!-- <td><?php echo $followup->latitude;?></td>
 		<td><?php echo $followup->longitude;?></td> -->
-		<td><?php echo $followup->icd_code." - ".$followup->code_title;?><br><?php echo $followup->diagnosis;?></td>
+		<td><?php echo $followup->icd_code." - ".$followup->code_title;?><br><br><?php echo $followup->diagnosis;?></td>
 		<!-- <td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
 		<td><?php echo $followup->last_visit_type?></td>
 		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	 -->
