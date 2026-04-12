@@ -786,19 +786,19 @@ echo "</select></li>";
 		<!-- <th>Latitude</th>
 		<th>Longitude</th> -->
 		<th>ICD Code</th>
-		<th>Diagnosis</th>
-		<!-- <th>Status Date</th>
+		<!-- <th>Diagnosis</th>
+		<th>Status Date</th>
 		<th>Last Visit Type</th>
 		<th>Last Visit Date</th>		 -->
 		<th>Priority</th>
 		<th>Note</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
-		<th>Next Followup Date</th>
+		<th>Followup Date & type</th>
 		<th>Map link</th>
 		<th>NDPS</th>
 		<th>Volunteer</th>
-		<th>Last update by & Time</th>					
+		<th>Update by</th>					
 		<?php if($this->input->post('life_status') == 2) { ?>
 			<th>Death Date</th>
 			<th>Death Place</th>
@@ -827,8 +827,7 @@ echo "</select></li>";
 		<td><?php echo $followup->phone;?></td>
 		<!-- <td><?php echo $followup->latitude;?></td>
 		<td><?php echo $followup->longitude;?></td> -->
-		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
-		<td><?php echo $followup->diagnosis;?></td>
+		<td><?php echo $followup->icd_code." - ".$followup->code_title;?><br><?php echo $followup->diagnosis;?></td>
 		<!-- <td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
 		<td><?php echo $followup->last_visit_type?></td>
 		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	 -->
@@ -838,7 +837,9 @@ echo "</select></li>";
 		<td><?php echo $followup->route_secondary;?></td>
 		<td><?php if ($followup->nxt_followup_date != '0000-00-00') : ?>
 				<?php echo date('j M Y',strtotime($followup->nxt_followup_date)); ?>
+				<br>
 			<?php endif; ?>
+			<?php echo $followup->followup_type_name; ?>
 		</td>
 		<td>
 		<?php 

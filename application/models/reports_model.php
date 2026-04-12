@@ -4955,9 +4955,11 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		patient_followup.death_status,
 		patient_followup.nxt_followup_date,
 		patient_followup.followup_type,
+		followup_types.type_name as followup_type_name,
 		IF(patient.age_years IS NULL or patient.age_years = '', 0, patient.age_years) as age_years",false)
         ->from('patient_followup')
         ->join('patient','patient_followup.patient_id=patient.patient_id','left')
+		->join('followup_types','patient_followup.followup_type=followup_types.id','left')
 		->join('priority_type','patient_followup.priority_type_id=priority_type.priority_type_id','left')
 		->join('staff','patient_followup.volunteer_id=staff.staff_id','left')
 		->join('staff as followup_update_by','patient_followup.update_by=followup_update_by.staff_id','left')
