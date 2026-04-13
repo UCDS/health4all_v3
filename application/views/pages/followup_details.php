@@ -377,6 +377,62 @@ function doPost(page_no){
 function onchange_page_dropdown(dropdownobj){
    doPost(dropdownobj.value);    
 }
+
+function handleDatePickerValueChange(sourceEl) {
+	const value = sourceEl.value;
+	let targetId;
+
+	switch (sourceEl.id) {
+		case "from_nxt_followup_date":
+			targetId = "to_nxt_followup_date";
+			break;
+		case "from_death_date":
+			targetId = "to_death_date";
+			break;
+		case "from_followup_date":
+			targetId = "to_followup_date";
+			break;
+	}
+
+	if (targetId) {
+		const target = document.getElementById(targetId);
+		if (target) {
+			target.min = value;
+
+			// Optional: only update if needed (better UX)
+			if (!target.value || target.value < value) {
+				target.value = value;
+			}
+		}
+	}
+}
+document.addEventListener("DOMContentLoaded", function () {
+
+const ids = [
+	"from_nxt_followup_date",
+	"from_death_date",
+	"from_followup_date"
+];
+
+ids.forEach(id => {
+	const el = document.getElementById(id);
+
+	if (el) {
+		// Attach event
+		el.addEventListener("change", function () {
+			handleDatePickerValueChange(this);
+		});
+
+		// 👇 Trigger manually if value already exists (set by PHP)
+		if (el.value) {
+			handleDatePickerValueChange(el);
+		}
+	}
+});
+});
+
+
+
 </script>
 
 
@@ -406,8 +462,8 @@ function onchange_page_dropdown(dropdownobj){
 			if($this->input->post('from_date_1')) $from_date_1=date("Y-m-d",strtotime($this->input->post('from_date_1'))); else $from_date_1 = date("Y-m-d");
 			if($this->input->post('to_date_1')) $to_date_1=date("Y-m-d",strtotime($this->input->post('to_date_1'))); else $to_date_1 = date("Y-m-d");
 		?>
-			Followup Add Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date_1')) { echo date("Y-m-d",strtotime($from_date_1)); } ?>" name="from_date_1" max="<?php echo date('Y-m-d'); ?>" size="15" />
-			To <input class="form-control" type="date" style = "background-color:#EEEEEE" value="<?php if($this->input->post('to_date_1')) { echo date("Y-m-d",strtotime($to_date_1)); } ?>" name="to_date_1" max="<?php echo date('Y-m-d'); ?>" size="15" />
+			Followup Add Date : <input class="form-control" id= "from_followup_date" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date_1')) { echo date("Y-m-d",strtotime($from_date_1)); } ?>" name="from_date_1" size="15" />
+			To <input class="form-control" type="date" id ="to_followup_date" style = "background-color:#EEEEEE" value="<?php if($this->input->post('to_date_1')) { echo date("Y-m-d",strtotime($to_date_1)); } ?>" name="to_date_1" size="15" />
 		</div>
 		
 		<div class="col-md-5" id="death_date">
@@ -416,8 +472,8 @@ function onchange_page_dropdown(dropdownobj){
 			if($this->input->post('from_date')) $from_date=date("Y-m-d",strtotime($this->input->post('from_date'))); else $from_date = date("Y-m-d");
 			if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
 		?>
-			Death Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" value="<?php if($this->input->post('from_date')) { echo date("Y-m-d",strtotime($from_date)); }?>" name="from_date" max="<?php echo date('Y-m-d'); ?>" size="15" />
-			To <input class="form-control" style = "background-color:#EEEEEE" type="date"  name="to_date" id="" max="<?php echo date('Y-m-d'); ?>" value="<?php if($this->input->post('to_date')) { echo date("Y-m-d",strtotime($to_date)); } ?>" max="<?php echo date('Y-m-d'); ?>" size="15" />
+			Death Date : <input class="form-control" style = "background-color:#EEEEEE" type="date" id="from_death_date" value="<?php if($this->input->post('from_date')) { echo date("Y-m-d",strtotime($from_date)); }?>" name="from_date" max="<?php echo date('Y-m-d'); ?>" size="15" />
+			To <input class="form-control" style = "background-color:#EEEEEE" type="date"  name="to_date" id="to_death_date" max="<?php echo date('Y-m-d'); ?>" value="<?php if($this->input->post('to_date')) { echo date("Y-m-d",strtotime($to_date)); } ?>" max="<?php echo date('Y-m-d'); ?>" size="15" />
 		</div>
 		</br></br>
 
@@ -578,14 +634,14 @@ function onchange_page_dropdown(dropdownobj){
 			Next Followup Date :
 			<input class="form-control" style="background-color:#EEEEEE" type="date"
 				value="<?php if($this->input->post('from_nxt_followup_date')) { echo date('Y-m-d', strtotime($from_nxt_followup_date)); } ?>"
-				name="from_nxt_followup_date"
-				max="<?php echo date('Y-m-d'); ?>" size="15" />
+				name="from_nxt_followup_date" id = "from_nxt_followup_date"
+				size="15" />
 
 			To
 			<input class="form-control" type="date" style="background-color:#EEEEEE"
 				value="<?php if($this->input->post('to_nxt_followup_date')) { echo date('Y-m-d', strtotime($to_nxt_followup_date)); } ?>"
-				name="to_nxt_followup_date"
-				max="<?php echo date('Y-m-d'); ?>" size="15" />
+				name="to_nxt_followup_date" id = "to_nxt_followup_date"
+				size="15" />
 		</div>
 					<br>
 		<div class="col-md-3" id="followup_type" style=" margin-left: 35px">
@@ -767,20 +823,20 @@ echo "</select></li>";
 		<th>Phone</th>
 		<!-- <th>Latitude</th>
 		<th>Longitude</th> -->
-		<th>ICD Code</th>
-		<th>Diagnosis</th>
-		<!-- <th>Status Date</th>
+		<th>ICD Code/Diagnosis</th>
+		<!-- <th>Diagnosis</th>
+		<th>Status Date</th>
 		<th>Last Visit Type</th>
 		<th>Last Visit Date</th>		 -->
 		<th>Priority</th>
 		<th>Note</th>
 		<th>Primary Route</th>
 		<th>Secondary Route</th>
-		<th>Next Followup Date</th>
+		<th>Followup Date & type</th>
 		<th>Map link</th>
 		<th>NDPS</th>
 		<th>Volunteer</th>
-		<th>Last update by & Time</th>					
+		<th>Update by</th>					
 		<?php if($this->input->post('life_status') == 2) { ?>
 			<th>Death Date</th>
 			<th>Death Place</th>
@@ -809,8 +865,7 @@ echo "</select></li>";
 		<td><?php echo $followup->phone;?></td>
 		<!-- <td><?php echo $followup->latitude;?></td>
 		<td><?php echo $followup->longitude;?></td> -->
-		<td><?php echo $followup->icd_code." - ".$followup->code_title;?></td>	
-		<td><?php echo $followup->diagnosis;?></td>
+		<td><?php echo $followup->icd_code." - ".$followup->code_title;?><br><br><?php echo $followup->diagnosis;?></td>
 		<!-- <td><?php echo date('j M Y',strtotime($followup->status_date));?></td>
 		<td><?php echo $followup->last_visit_type?></td>
 		<td><?php echo date('j M Y',strtotime($followup->last_visit_date));?></td>	 -->
@@ -820,7 +875,9 @@ echo "</select></li>";
 		<td><?php echo $followup->route_secondary;?></td>
 		<td><?php if ($followup->nxt_followup_date != '0000-00-00') : ?>
 				<?php echo date('j M Y',strtotime($followup->nxt_followup_date)); ?>
+				<br>
 			<?php endif; ?>
+			<?php echo $followup->followup_type_name; ?>
 		</td>
 		<td>
 		<?php 
