@@ -1611,5 +1611,349 @@ class User_panel extends CI_Controller {
 		$this->session->set_flashdata('danger', 'Followup type deleted successfully!');
 		redirect('user_panel/add_followup_type');
 	}
-		
+
+	public function the_duplicate_patient_visit()
+	{
+		if ($this->session->userdata('logged_in')) 
+		{
+			$this->load->helper('form');
+			$this->data['title'] = "Duplicate Patient Id";
+			$this->data['userdata'] = $this->session->userdata('logged_in');
+
+			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+			$hospital = $this->session->userdata('hospital');
+
+			foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+					$this->data['rowsperpage'] = $default->value;
+					$this->data['upper_rowsperpage']= $default->upper_range;
+					$this->data['lower_rowsperpage']= $default->lower_range;	 
+					break;
+				}
+			}
+
+			$this->load->view('templates/header', $this->data);
+			$this->load->view('pages/duplicate_patient_visit', $this->data);
+			$this->load->view('templates/footer');
+		} else {
+			show_404();
+		}
+	}
+
+	public function get_duplicate_patient_visit_ajax()
+	{
+		if ($this->session->userdata('logged_in')) {
+			$patient_id = $this->input->post('patient_id');
+			$page_no = $this->input->post('page_no') ?: 1;
+			$rows_per_page = 10;
+			$offset = ($page_no - 1) * $rows_per_page;
+
+			$this->load->model('reports_model');
+			$result = $this->reports_model->get_duplicate_patient_visit($patient_id, $rows_per_page, $offset);
+			$total_records = $this->reports_model->get_duplicate_patient_visit_count($patient_id);
+			$total_no_of_pages = ceil($total_records / $rows_per_page);
+
+			$patient_details = "";
+
+			if(!empty($result)){
+				$p = $result[0];
+
+				$patient_details .= "| <b>H4A Patient ID</b> : ".$p->patient_id." | ";
+
+				if(isset($p->patient_id_manual) && $p->patient_id_manual!=""){
+					$patient_details .= "<b>Manual Patient ID</b> : ".$p->patient_id_manual." | ";
+				}
+
+				$patient_details .= "<b>Patient</b> : ".$p->patient_name." | ";
+				$patient_details .= "<b>Age</b> : ".$p->age." | ";
+
+				if($p->gender != "0"){
+					$patient_details .= "<b>Gender</b> : ".$p->gender." | ";
+				}
+
+				$patient_details .= "<b>Phone</b> : ".$p->phone." | ";
+				$patient_details .= "<b>Address</b> : ".$p->address." | ";
+
+				if(isset($p->district)){
+					$patient_details .= "<b>District</b> : ".$p->district." | ";
+					$patient_details .= "<b>State</b> : ".$p->state." | ";
+				}
+
+				$patient_details .= "<b>Relative</b> : ".$p->parent_spouse." | ";
+			}
+
+			$table_data = "";
+			if(!empty($result)){
+				$i = $offset + 1;
+
+				foreach($result as $row){
+
+					$admit_date = !empty($row->admit_date) 
+						? date("d-M-Y", strtotime($row->admit_date)) 
+						: "-";
+					$appointment_date = !empty($row->appointment_time) 
+						? date("d M Y", strtotime($row->appointment_time)) 
+						: "-";
+					$outcome_date = (!empty($row->outcome_date) && $row->outcome_date != "0000-00-00")
+						? date("d-M-Y", strtotime($row->outcome_date)) 
+						: "-";
+					$table_data .= "<tr>
+						<td style='text-align:right;'>{$i}</td>
+						<td style='text-align:center;'>{$admit_date}</td>
+						<td style='text-align:center'>{$appointment_date}</td>
+						<td style='text-align:center'>{$row->hospital}</td>
+						<td style='text-align:center'>{$row->visit_type} #{$row->hosp_file_no}</td>
+						<td style='text-align:center'>{$row->department} -- {$row->unit_name}</td>
+						<td style='text-align:center'>{$row->visit_name}</td>
+						<td style='text-align:center'>{$outcome_date}</td>
+					</tr>";
+
+					$i++;
+				}
+			} else {
+				$table_data .= "<tr><td colspan='8' align='center'>No data found</td></tr>";
+			}
+
+			$pagination = "";
+
+			if($page_no > 1){
+				$prev = $page_no - 1;
+				$pagination .= "<li><a href='javascript:void(0)' onclick='doPost($prev)'>Previous</a></li>";
+			} else {
+				$pagination .= "<li class='disabled'><span>Previous</span></li>";
+			}
+
+			for($i = 1; $i <= $total_no_of_pages; $i++){
+				$active = ($i == $page_no) ? "class='active'" : "";
+				$pagination .= "<li $active><a href='javascript:void(0)' onclick='doPost($i)'>$i</a></li>";
+			}
+
+			if($page_no < $total_no_of_pages){
+				$next = $page_no + 1;
+				$pagination .= "<li><a href='javascript:void(0)' onclick='doPost($next)'>Next</a></li>";
+			} else {
+				$pagination .= "<li class='disabled'><span>Next</span></li>";
+			}
+
+			$pagination_info = "Page $page_no of $total_no_of_pages (Total $total_records)";
+
+			header('Content-Type: application/json');
+			echo json_encode([
+				'table_data' => $table_data,
+				'pagination' => $pagination,
+				'pagination_info' => $pagination_info,
+				'patient_details' => $patient_details
+			]);
+		} else {
+			show_404();
+		}
+	}
+
+	public function get_original_patient_visit_ajax()
+	{
+		if ($this->session->userdata('logged_in')) {
+
+			$patient_id = $this->input->post('patient_id');
+			$page_no = $this->input->post('page_no') ?: 1;
+			$rows_per_page = 10;
+			$offset = ($page_no - 1) * $rows_per_page;
+
+			$this->load->model('reports_model');
+
+			$result = $this->reports_model->get_original_patient_visit($patient_id, $rows_per_page, $offset);
+			$total_records = $this->reports_model->get_original_patient_visit_count($patient_id);
+
+			$total_no_of_pages = ceil($total_records / $rows_per_page);
+
+			$patient_details_original = "";
+
+			if(!empty($result)){
+				$p = $result[0];
+
+				$patient_details_original .= "| <b>H4A Patient ID</b> : ".$p->patient_id." | ";
+
+				if(isset($p->patient_id_manual) && $p->patient_id_manual!=""){
+					$patient_details_original .= "<b>Manual Patient ID</b> : ".$p->patient_id_manual." | ";
+				}
+
+				$patient_details_original .= "<b>Patient</b> : ".$p->patient_name." | ";
+				$patient_details_original .= "<b>Age</b> : ".$p->age." | ";
+
+				if($p->gender != "0"){
+					$patient_details_original .= "<b>Gender</b> : ".$p->gender." | ";
+				}
+
+				$patient_details_original .= "<b>Phone</b> : ".$p->phone." | ";
+				$patient_details_original .= "<b>Address</b> : ".$p->address." | ";
+
+				if(isset($p->district)){
+					$patient_details_original .= "<b>District</b> : ".$p->district." | ";
+					$patient_details_original .= "<b>State</b> : ".$p->state." | ";
+				}
+
+				$patient_details_original .= "<b>Relative</b> : ".$p->parent_spouse." | ";
+			}
+
+			$table_data = "";
+
+			if(!empty($result)){
+				$i = $offset + 1;
+				foreach($result as $row){
+					$admit_date = !empty($row->admit_date) 
+						? date("d-M-Y", strtotime($row->admit_date)) 
+						: "-";
+					$appointment_date = !empty($row->appointment_time) 
+						? date("d M Y", strtotime($row->appointment_time)) 
+						: "-";
+					$outcome_date = (!empty($row->outcome_date) && $row->outcome_date != "0000-00-00")
+						? date("d-M-Y", strtotime($row->outcome_date)) 
+						: "-";
+					$table_data .= "<tr>
+						<td style='text-align:right;'>{$i}</td>
+						<td style='text-align:center;'>{$admit_date}</td>
+						<td style='text-align:center'>{$appointment_date}</td>
+						<td style='text-align:center'>{$row->hospital}</td>
+						<td style='text-align:center'>{$row->visit_type} #{$row->hosp_file_no}</td>
+						<td style='text-align:center'>{$row->department} -- {$row->unit_name}</td>
+						<td style='text-align:center'>{$row->visit_name}</td>
+						<td style='text-align:center'>{$outcome_date}</td>
+					</tr>";
+					$i++;
+				}
+			} else {
+				$table_data .= "<tr><td colspan='8' align='center'>No data found</td></tr>";
+			}
+
+			// pagination (IMPORTANT: use doOriginalPost)
+			$pagination = "";
+
+			if($page_no > 1){
+				$prev = $page_no - 1;
+				$pagination .= "<li><a href='javascript:void(0)' onclick='doOriginalPost($prev)'>Previous</a></li>";
+			} else {
+				$pagination .= "<li class='disabled'><span>Previous</span></li>";
+			}
+
+			for($i = 1; $i <= $total_no_of_pages; $i++){
+				$active = ($i == $page_no) ? "class='active'" : "";
+				$pagination .= "<li $active><a href='javascript:void(0)' onclick='doOriginalPost($i)'>$i</a></li>";
+			}
+
+			if($page_no < $total_no_of_pages){
+				$next = $page_no + 1;
+				$pagination .= "<li><a href='javascript:void(0)' onclick='doOriginalPost($next)'>Next</a></li>";
+			} else {
+				$pagination .= "<li class='disabled'><span>Next</span></li>";
+			}
+
+			$pagination_info = "Page $page_no of $total_no_of_pages (Total $total_records)";
+
+			echo json_encode([
+				'table_data' => $table_data,
+				'pagination' => $pagination,
+				'pagination_info' => $pagination_info,
+				'patient_details_org' => $patient_details_original
+			]);
+
+		} else {
+			show_404();
+		}
+	}
+	public function merge_patient_ids()
+	{
+		if ($this->session->userdata('logged_in')) {
+
+			$duplicate_id = $this->input->post('duplicate_id');
+			$original_id  = $this->input->post('original_id');
+			$user         = $this->session->userdata('logged_in');
+
+			if($duplicate_id == $original_id){
+				echo json_encode(['status' => 'same']);
+				return;
+			}
+
+			$this->load->model('reports_model');
+
+			$response = $this->reports_model->merge_patient_ids(
+				$duplicate_id,
+				$original_id,
+				$user['user_id']
+			);
+
+			echo json_encode($response);
+
+		} else {
+			show_404();
+		}
+	}
+	public function get_merge_history_ajax()
+	{
+		if ($this->session->userdata('logged_in')) {
+
+			$page_no = $this->input->post('page_no') ?: 1;
+			$rows_per_page = 10;
+			$offset = ($page_no - 1) * $rows_per_page;
+
+			$this->load->model('reports_model');
+
+			$result = $this->reports_model->get_merge_history($rows_per_page, $offset);
+			$total_records = $this->reports_model->get_merge_history_count();
+
+			$total_no_of_pages = ceil($total_records / $rows_per_page);
+
+			$html = "";
+
+			if(!empty($result)){
+				$i = $offset + 1;
+
+				foreach($result as $row){
+					$date = date("d M Y ", strtotime($row->created_at));
+
+					$html .= "<tr>
+						<td style='text-align:right;'>{$i}</td>
+						<td style='text-align:center;'>{$row->original_patient_id}</td>
+						<td style='text-align:center;'>{$row->duplicate_patient_id}</td>
+						<td style='text-align:center;'>{$row->visit_id}</td>
+						<td style='text-align:center;'>{$date}</td>
+					</tr>";
+					$i++;
+				}
+			} else {
+				$html .= "<tr><td colspan='5' align='center'>No data</td></tr>";
+			}
+
+			// ✅ Pagination
+			$pagination = "";
+
+			if($page_no > 1){
+				$prev = $page_no - 1;
+				$pagination .= "<li><a href='javascript:void(0)' onclick='loadMergeHistory($prev)'>Previous</a></li>";
+			} else {
+				$pagination .= "<li class='disabled'><span>Previous</span></li>";
+			}
+
+			for($i = 1; $i <= $total_no_of_pages; $i++){
+				$active = ($i == $page_no) ? "class='active'" : "";
+				$pagination .= "<li $active><a href='javascript:void(0)' onclick='loadMergeHistory($i)'>$i</a></li>";
+			}
+
+			if($page_no < $total_no_of_pages){
+				$next = $page_no + 1;
+				$pagination .= "<li><a href='javascript:void(0)' onclick='loadMergeHistory($next)'>Next</a></li>";
+			} else {
+				$pagination .= "<li class='disabled'><span>Next</span></li>";
+			}
+
+			$pagination_info = "Page $page_no of $total_no_of_pages (Total $total_records)";
+
+			echo json_encode([
+				'table_data' => $html,
+				'pagination' => $pagination,
+				'pagination_info' => $pagination_info
+			]);
+
+		} else {
+			show_404();
+		}
+	}
 }

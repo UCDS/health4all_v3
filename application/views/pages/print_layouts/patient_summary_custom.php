@@ -1,3 +1,6 @@
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
@@ -9,15 +12,14 @@
 		?>
 
 		<script type="text/javascript">
-			$(function(){
-				var settings = {
-				barHeight: 20,
-				fontSize: 20
-				};
+			$(document).ready(function(){
 				$("#patient_barcode").barcode(
-					"<?php echo $patient->patient_id;?>",
+					<?php echo json_encode($patient->patient_id); ?>,
 					"code128",
-					settings
+					{
+						barHeight: 40,
+						barWidth: 2
+					}
 				);
 			});
 		</script>
@@ -151,13 +153,8 @@
 							
 						</div>							
 						<div style="float:right;">
-						
-						<span  id="patient_barcode"></span>
-						<div id="barcode"></div>
-						</div>
-						<div style="float:right;">
-						<b> Person ID: <?php echo $patient->patient_id ?></b>
-						</div>
+							<b> Person ID: <div id="patient_barcode"></div></b>
+						</div><br/>
 						<tbody height="10%">
 						<tr width="95%">
 								<td style="padding-top:20px"><b>Name: </b><?php echo $patient->first_name.' '.$patient->last_name; ?></td>

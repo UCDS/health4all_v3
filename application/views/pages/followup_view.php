@@ -349,12 +349,12 @@ echo "</select></li>";
 			<td style="text-align:center"><?php echo date("j M Y h:i A.", strtotime("$row->created_at")); ?></td>
 			<td style="text-align:center">
 				<a href="<?php echo base_url('user_panel/update_followup_type/'.$row->id); ?>">
-					<i class="fa fa-edit" style="color:blue;"></i>
+					<i class="fa fa-edit btn btn-success" style="color:white;"></i>
 				</a>
 
 				<a href="<?php echo base_url('user_panel/delete_followup_type/'.$row->id); ?>"
 				onclick="return confirm('Are you sure want to delete?')">
-					<i class="fa fa-trash" style="color:red;"></i>
+					<i class="fa fa-trash btn btn-danger" style="color:white;"></i>
 				</a>
 			</td>
 		</tr>

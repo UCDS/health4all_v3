@@ -5265,6 +5265,188 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		$resource=$this->db->get();
 		return $resource->result();
 	}
+	public function get_duplicate_patient_visit($patient_id, $limit, $offset)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("
+			patient_visit.visit_id,patient_visit.admit_date,patient_visit.appointment_time,
+			hospital.hospital,
+			patient.patient_id,department.department,unit.unit_name,visit_name.visit_name,
+			patient_visit.visit_type,patient_visit.hosp_file_no,patient_visit.outcome_date,
+			CONCAT_WS(' ', patient.first_name, patient.last_name) as patient_name,
+			patient.gender,
+			patient.age_years as age,
+			patient.patient_id_manual,patient.phone,patient.address,district.district,state.state
+		", FALSE);
+		
+		$this->db->from('patient_visit');
+		$this->db->join('patient', 'patient.patient_id = patient_visit.patient_id', 'left');
+		$this->db->join('district', 'district.district_id = patient.district_id', 'left');
+		$this->db->join('state', 'state.state_id = patient.state_code', 'left');
+		$this->db->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left');
+		$this->db->join('department','patient_visit.department_id=department.department_id','left');
+		$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+        $this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
+		$this->db->order_by('patient_visit.admit_date','DESC');
+
+		if(!empty($patient_id)){
+			$this->db->where('patient_visit.patient_id', $patient_id);
+			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		}
+		
+		$this->db->limit($limit, $offset);
+		return $this->db->get()->result();
+	}
+
+	public function get_duplicate_patient_visit_count($patient_id)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->from('patient_visit');
+		$this->db->join('patient', 'patient.patient_id = patient_visit.patient_id', 'left');
+		$this->db->join('district', 'district.district_id = patient.district_id', 'left');
+		$this->db->join('state', 'state.state_id = patient.state_code', 'left');
+		$this->db->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left');
+		$this->db->join('department','patient_visit.department_id=department.department_id','left');
+		$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+        $this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
+		$this->db->order_by('patient_visit.admit_date','DESC');
+
+		if(!empty($patient_id)){
+			$this->db->where('patient_visit.patient_id', $patient_id);
+			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		}
+
+		return $this->db->count_all_results();
+	}
+
+	public function get_original_patient_visit($patient_id, $limit, $offset)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->select("
+			patient_visit.visit_id,patient_visit.admit_date,patient_visit.appointment_time,
+			hospital.hospital,
+			patient.patient_id,department.department,unit.unit_name,visit_name.visit_name,
+			patient_visit.visit_type,patient_visit.hosp_file_no,patient_visit.outcome_date,
+			CONCAT_WS(' ', patient.first_name, patient.last_name) as patient_name,
+			patient.gender,
+			patient.age_years as age,
+			patient.patient_id_manual,patient.phone,patient.address,district.district,state.state
+		", FALSE);
+
+		$this->db->from('patient_visit');
+		$this->db->join('patient', 'patient.patient_id = patient_visit.patient_id', 'left');
+		$this->db->join('district', 'district.district_id = patient.district_id', 'left');
+		$this->db->join('state', 'state.state_id = patient.state_code', 'left');
+		$this->db->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left');
+		$this->db->join('department','patient_visit.department_id=department.department_id','left');
+		$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+        $this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
+		$this->db->order_by('patient_visit.admit_date','DESC');
+
+		if(!empty($patient_id)){
+			$this->db->where('patient.patient_id', $patient_id);
+			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		}
+
+		$this->db->limit($limit, $offset);
+
+		return $this->db->get()->result();
+	}
+
+	public function get_original_patient_visit_count($patient_id)
+	{
+		$hospital=$this->session->userdata('hospital');
+		$this->db->from('patient_visit');
+		$this->db->join('patient', 'patient.patient_id = patient_visit.patient_id', 'left');
+		$this->db->join('district', 'district.district_id = patient.district_id', 'left');
+		$this->db->join('state', 'state.state_id = patient.state_code', 'left');
+		$this->db->join('hospital','patient_visit.hospital_id=hospital.hospital_id','left');
+		$this->db->join('department','patient_visit.department_id=department.department_id','left');
+		$this->db->join('unit','patient_visit.unit=unit.unit_id','left');
+        $this->db->join('visit_name','patient_visit.visit_name_id=visit_name.visit_name_id','left');
+		$this->db->order_by('patient_visit.admit_date','DESC');
+
+		if(!empty($patient_id)){
+			$this->db->where('patient.patient_id', $patient_id);
+			$this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		}
+
+		return $this->db->count_all_results();
+	}
+
+	public function get_all_duplicate_visits($patient_id)
+	{
+		$this->db->select('visit_id');
+		$this->db->from('patient_visit');
+		$this->db->where('patient_id', $patient_id);
+
+		return $this->db->get()->result();
+	}
+
+	public function merge_patient_ids($duplicate_id, $original_id, $user_id)
+	{
+		$hospital = $this->session->userdata('hospital');
+
+		$this->db->trans_start();
+
+		$this->db->select('visit_id');
+		$this->db->from('patient_visit');
+		$this->db->where('patient_id', $duplicate_id);
+		$this->db->where('hospital_id', $hospital['hospital_id']);
+		$visits = $this->db->get()->result();
+
+		if(empty($visits)){
+			return ['status' => 'empty'];
+		}
+
+		foreach($visits as $visit){
+
+			$this->db->insert('patient_merge_archive', [
+				'original_patient_id'  => $original_id,
+				'duplicate_patient_id' => $duplicate_id,
+				'visit_id'             => $visit->visit_id,
+				'hospital_id'          => $hospital['hospital_id'],
+				'created_at'           => date('Y-m-d H:i:s'),
+				'created_by'           => $user_id
+			]);
+
+			$this->db->where('visit_id', $visit->visit_id);
+			$this->db->where('hospital_id', $hospital['hospital_id']);
+			$this->db->update('patient_visit', [
+				'patient_id' => $original_id
+			]);
+		}
+
+		$this->db->trans_complete();
+
+		if ($this->db->trans_status() === FALSE) {
+			return ['status' => 'error'];
+		}
+
+		return ['status' => 'success'];
+	}
+	public function get_merge_history($limit, $offset)
+	{
+		$hospital = $this->session->userdata('hospital');
+
+		$this->db->from('patient_merge_archive');
+		$this->db->where('hospital_id', $hospital['hospital_id']);
+		$this->db->order_by('id', 'DESC');
+		$this->db->limit($limit, $offset);
+
+		return $this->db->get()->result();
+	}
+
+	public function get_merge_history_count()
+	{
+		$hospital = $this->session->userdata('hospital');
+
+		$this->db->from('patient_merge_archive');
+		$this->db->where('hospital_id', $hospital['hospital_id']);
+
+		return $this->db->count_all_results();
+	}
+
 		
 }
 ?>
