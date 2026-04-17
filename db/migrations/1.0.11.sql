@@ -30,3 +30,16 @@ ALTER TABLE `followup_types` ADD PRIMARY KEY (`id`);
 ALTER TABLE `followup_types` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `patient_followup` ADD `nxt_followup_date` DATE NOT NULL AFTER `death_status`, ADD `followup_type` INT NOT NULL AFTER `nxt_followup_date`;
+
+INSERT INTO `user_function` (`user_function_id`, `user_function`, `user_function_display`, `description`) VALUES (NULL, 'duplicate_patient_id', 'duplicate_patient_id', '');
+
+CREATE TABLE patient_merge_archive (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    original_patient_id INT,
+    duplicate_patient_id INT,
+    visit_id INT,
+    created_at DATETIME,
+    created_by INT
+);
+
+ALTER TABLE patient_merge_archive ADD hospital_id INT

@@ -1340,6 +1340,14 @@ class Register_model extends CI_Model{
 			$followup_info['last_dispensed_quantity']= $this->input->post('last_dispensed_quantity');  
 		}
 
+		if($this->input->post('nxt_followup_date')){
+            $followup_info['nxt_followup_date'] = $this->input->post('nxt_followup_date');
+        }
+
+		if($this->input->post('followup_type')){
+            $followup_info['followup_type'] = $this->input->post('followup_type');
+        }
+
         $followup_info['add_by'] = $followup_info['update_by'] = $this->session->userdata('logged_in')['staff_id'];
 		$followup_info['add_time'] = $followup_info['update_time'] = date("Y-m-d H:i:s");
 	
@@ -2130,10 +2138,11 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 	public function get_saved_fields_data_up($saved_form_id)
 	{
 		$this->db->select('upcf.form_name,upcf.form_header,upcf.no_of_cols,upcff.selected_columns,upcff.table_name,upcf.id,upcff.label,
-		upcff.text_box,upcff.div_name, upcff.div_column_count');   
+		upcff.text_box,upcff.div_name, upcff.div_column_count,SUBSTRING_INDEX(upcff.div_name, "_", -1) as div_order', FALSE);   
 		$this->db->from('update_patient_custom_form as upcf');   
 		$this->db->join('update_patient_custom_form_fields as upcff','upcff.form_id = upcf.id','left');	
-		$this->db->where('upcff.form_id',$saved_form_id);	
+		$this->db->where('upcff.form_id',$saved_form_id);
+		$this->db->order_by('div_order', 'ASC');	
 		$this->db->order_by('upcff.sequence_id', 'ASC');
 		$query=$this->db->get();   
 		return $query->result();   

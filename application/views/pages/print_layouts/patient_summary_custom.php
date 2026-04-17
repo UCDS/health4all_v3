@@ -1,7 +1,13 @@
 <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/font-awesome.min.css" media="all">
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/qrcode.min.js"></script>  
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-barcode.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/jquery.ui.core.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/jquery.ui.widget.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/jquery.ui.mouse.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/jquery.ui.sortable.min.js"></script>
 
 		<?php  
 			$patient = $patient_details[0];
@@ -9,15 +15,14 @@
 		?>
 
 		<script type="text/javascript">
-			$(function(){
-				var settings = {
-				barHeight: 20,
-				fontSize: 20
-				};
+			$(document).ready(function(){
 				$("#patient_barcode").barcode(
-					"<?php echo $patient->patient_id;?>",
+					"<?php echo $patient->patient_id; ?>",
 					"code128",
-					settings
+					{
+						barHeight: 40,
+						barWidth: 2
+					}
 				);
 			});
 		</script>
@@ -150,13 +155,9 @@
 							?>
 							
 						</div>							
-						<div style="float:right;">
-						
-						<span  id="patient_barcode"></span>
-						<div id="barcode"></div>
-						</div>
-						<div style="float:right;">
-						<b> Person ID: <?php echo $patient->patient_id ?></b>
+						<div style="float:right; display:flex; align-items:center; gap:10px;">
+							<b>Person ID:</b>
+							<div id="patient_barcode"></div>
 						</div>
 						<tbody height="10%">
 						<tr width="95%">

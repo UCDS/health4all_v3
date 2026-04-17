@@ -3125,12 +3125,13 @@ else if($type=="dosage"){
 	function get_saved_custom_patient_visit()
 	{
 		$report_id = $this->input->post('report_id');
-		$this->db->select('upcf.id,upcff.selected_columns,upcff.table_name,upcff.id as main_id,upcff.label,upcff.sequence_id,upcff.text_box,
-		upcff.div_name,upcff.div_column_count');
+		$this->db->select('upcf.id,upcff.selected_columns,upcff.table_name,upcff.id as main_id,upcff.label,
+		upcff.sequence_id,upcff.text_box,
+		upcff.div_name,upcff.div_column_count,SUBSTRING_INDEX(upcff.div_name, "_", -1) as div_order', FALSE);
 		$this->db->from('update_patient_custom_form upcf');
 		$this->db->join('update_patient_custom_form_fields upcff','upcff.form_id=upcf.id','left');
 		$this->db->where('upcf.id', $report_id);
-		$this->db->order_by('upcff.div_name', 'ASC');
+		$this->db->order_by('div_order', 'ASC');
 		$this->db->order_by('upcff.sequence_id', 'ASC');
 		$res  = $this->db->get()->result_array();
 		return $res;
