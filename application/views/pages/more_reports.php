@@ -332,7 +332,7 @@ foreach($this->data['functions'] as $function){
 		'delete_patient_followup',
 		'helpline_receiver',
 		'dashboard',
-		'duplicate_patient_id'
+		'duplicate_patient_id_merge'
 	];
 ?>
 <?php 
@@ -348,7 +348,7 @@ foreach($this->data['functions'] as $function){
 				$function->user_function=="delete_patient_visit_duplicate" ||  
 				$function->user_function=="delete_patient_followup" ||
 				$function->user_function=="helpline_receiver" || $function->user_function=="dashboard" 
-				|| $function->user_function=="duplicate_patient_id"  )
+				|| $function->user_function=="duplicate_patient_id_merge"  )
 			 {
 				$admin=1;
 				?>
@@ -410,7 +410,7 @@ if($function->user_function=="helpline_receiver" ){ ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."helpline/helpline_receivers";?>">Helpline Reciever</a></button>
 <?php		 }
 
-if ($function->user_function == "duplicate_patient_id") { ?>
+if ($function->user_function == "duplicate_patient_id_merge") { ?>
 				<button class="col-xs-12 col-sm-4 col-md-4 col-lg-4"> <a class="anchor_style" href="<?php echo base_url()."user_panel/the_duplicate_patient_visit";?>">Duplicate Patient id</a></button>
 
 <?php 		 }	endif; ?>
