@@ -1,19 +1,6 @@
-<!-- <script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.ptTimeSelect.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.widgets.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.colsel.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.tablesorter.print.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery-ui.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>assets/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery-ui.css">
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/jquery.ptTimeSelect.css">
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/metallic.css" >
-<link rel="stylesheet" href="<?php echo base_url();?>assets/css/theme.default.css" > -->
-
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/ckeditor.js"></script>
-
+<script type="text/javascript" src="<?php echo base_url();?>assets/js/jquery.chained.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.core.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.widget.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/jquery.ui.mouse.min.js"></script>
