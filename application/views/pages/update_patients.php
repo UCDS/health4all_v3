@@ -3153,10 +3153,11 @@ function openSmsModal(){
 		<input type="hidden" name="summary_download_link" id="summary_download_link"  />			
 	</form>		
 	<?php }
-	else if(isset($patients)){
-		echo "No patients found with the given search terms";
-	}
-	?>
+	else if(isset($patients)){ ?>
+		<div class="alert alert-warning">
+			No patients found with the given search terms
+    	</div>
+	<?php } ?>
 	</div>
 	<br/>
 	<?php if(!!isset($previous_visits)){ ?>

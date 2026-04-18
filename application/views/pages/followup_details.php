@@ -876,6 +876,7 @@ echo "</select></li>";
 		<td><?php if ($followup->nxt_followup_date != '0000-00-00') : ?>
 				<?php echo date('j M Y',strtotime($followup->nxt_followup_date)); ?>
 				<br>
+				<br>
 			<?php endif; ?>
 			<?php echo $followup->followup_type_name; ?>
 		</td>

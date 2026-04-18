@@ -197,7 +197,7 @@ class Register extends CI_Controller {
 					// Get the inserted patient details from the function and store it in a variable to display
 					// in the views.
 					
-					$this->data['registered']=$this->register_model->register(); 
+					$this->data['registered']=$this->register_model->register($this->data['fields']); 
 					if(is_int($this->data['registered']) && $this->data['registered']==2){
 						//If register function returns value 2 then we are setting a duplicate ip no error.
 						$this->data['duplicate']=1;
@@ -946,8 +946,8 @@ class Register extends CI_Controller {
 
 				$this->data['patients']=$this->register_model->search();
 
-				$this->data['registered'] = $this->data['patients'][0];
 				if(count($this->data['patients'])>0){
+					$this->data['registered'] = $this->data['patients'][0];
 					$this->load->model('diagnostics_model');
 					$visit_id = $this->data['patients'][0]->visit_id;
 					if ($patient_id!=0 && $visit_id){
@@ -1003,6 +1003,9 @@ class Register extends CI_Controller {
 					//--- end  18_02_2023 --- //
 					$this->load->view('pages/update_patients',$this->data);
 			
+				}
+				else {
+					$this->load->view('pages/update_patients',$this->data);
 				}
 			}	
 		}
@@ -1264,26 +1267,7 @@ class Register extends CI_Controller {
 					else
 					$this->data['msg'] = '<b style="color:#ff4633;">Something went wrong try again</b>';
 			}
-			// $response = $this->input->post();
-			// $update_patients = array();
-			// $update_patients['patient_id'] = $response['patient_id']; 
-			// $update_patients['status_date'] = $response['status_date'];
-			// $update_patients['life_status'] = $response['life_status']; 
-			// $update_patients['icd_code'] = $response['icd_code']; 
-			// $update_patients['diagnosis'] = $response['diagnosis'];
-			// $update_patients['last_visit_type'] = $response['last_visit_type']; 
-			// $update_patients['last_visit_date'] = $response['last_visit_date'];
-			// $update_patients['priority_type'] = $response['priority_type']; 
-			// $update_patients['volunteer'] = $response['volunteer']; 
-			// $update_patients['input_note'] = $response['input_note'];
 			
-			// $this->data['update_patient'] = $this->register_model->insert_update_followup($update_patients);
-			//$this->data['add_followup'] = $this->register_model->insert_add_followup($update_patients);
-
-			
-			//if(!$this->data['followups']){
-			//$this->data['msg'] = "No patient record found. Register Patient and add for Followup";
-			//}
 			$this->load->view('pages/patient_followup',$this->data);
 			if($this->input->post('search_followup') || $this->input->post('healthforall_id')){
 				//priority_types$this->data['patients']=$this->register_model->get_patient_followup();

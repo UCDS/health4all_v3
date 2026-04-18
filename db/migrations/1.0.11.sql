@@ -42,4 +42,4 @@ CREATE TABLE patient_merge_archive (
     created_by INT
 );
 
-ALTER TABLE patient_merge_archive ADD hospital_id INT
+ALTER TABLE patient_merge_archive ADD hospital_id INT;

@@ -247,7 +247,7 @@ class Register_model extends CI_Model{
 		return $resource->result();
 	}
 	//register() function does the patient registration or updating the existing patient records.
-	function register(){
+	function register($form_fields){
 		//All the post variables are stored in local variables; 
 		//based on the field type we modify the data as required before storing in the variables.
 		$date=date("Y-m-d",strtotime($this->input->post('date')));
@@ -368,46 +368,58 @@ class Register_model extends CI_Model{
 			$hosp_file_no=++$result->count;
 		}
 		//Creating an array with the database column names as keys and the post values as values. 
-		$data=array(
-	        'first_name'=>$first_name,
-			'last_name'=>$last_name,
-			'age_years'=>$age_years,
-			'age_months'=>$age_months,
-			'age_days'=>$age_days,
-			'gender'=>$gender,
-			'spouse_name'=>$spouse_name,
-			'father_name'=>$father_name,
-			'mother_name'=>$mother_name,
-			'id_proof_type_id'=>$id_proof_type,
-			'id_proof_number'=>$id_proof_no,
-			'occupation_id'=>$occupation,
-			'education_level'=>$education_level,
-			'education_qualification'=>$education_qualification,
-			'blood_group'=>$blood_group,
-			'gestation'=>$gestation, 
-			'gestation_type'=>$gestation_type,
-			'hospital_type'=>$hospital_type,
-			'delivery_location_type'=>$delivery_location_type,
-			'delivery_mode'=>$delivery_mode,
-			'delivery_place'=>$delivery_place,
-			'delivery_plan'=>$delivery_plan,
-			'delivery_location'=>$delivery_location,
-			'congenital_anomalies'=>$congenital_anomalies,
-			'birth_weight'=>$birth_weight,
-			'dob'=>$dob,
-			'address'=>$address,
-			'place'=>$place,
-			'phone'=>$phone,
-			'alt_phone'=>$alt_phone,
-			'country_code'=>$country_code,
-			'state_code'=>$state_code,
-			'district_id'=>$district,
-			'identification_marks'=>$identification_marks,
+		$all_fields = [
+			'first_name' => $first_name,
+			'last_name' => $last_name,
+			'age_years' => $age_years,
+			'age_months' => $age_months,
+			'age_days' => $age_days,
+			'gender' => $gender,
+			'spouse_name' => $spouse_name,
+			'father_name' => $father_name,
+			'mother_name' => $mother_name,
+			'id_proof_type_id' => $id_proof_type,
+			'id_proof_number' => $id_proof_no,
+			'occupation_id' => $occupation,
+			'education_level' => $education_level,
+			'education_qualification' => $education_qualification,
+			'blood_group' => $blood_group,
+			'gestation' => $gestation,
+			'gestation_type' => $gestation_type,
+			'hospital_type' => $hospital_type,
+			'delivery_location_type' => $delivery_location_type,
+			'delivery_mode' => $delivery_mode,
+			'delivery_place' => $delivery_place,
+			'delivery_plan' => $delivery_plan,
+			'delivery_location' => $delivery_location,
+			'congenital_anomalies' => $congenital_anomalies,
+			'birth_weight' => $birth_weight,
+			'dob' => $dob,
+			'address' => $address,
+			'place' => $place,
+			'phone' => $phone,
+			'alt_phone' => $alt_phone,
+			'country_code' => $country_code,
+			'state_code' => $state_code,
+			'district_id' => $district,
+			'identification_marks' => $identification_marks
+		];
+		$allowed_fields = [];
+		foreach ($form_fields as $field) {
+    		$allowed_fields[] = $field->field_name;
+		}
 
-			'insert_by_user_id'=>$user_id,
-			'insert_datetime'=>date("Y-m-d H:i:s")
-		);		
-        	if($form_type != "IP"){
+		$data = [];
+
+		foreach ($all_fields as $key => $value) {
+			if (in_array($key, $allowed_fields)) {
+				$data[$key] = $value;
+			}
+		}
+		$data['insert_by_user_id']=$user_id;
+		$data['insert_datetime']=date("Y-m-d H:i:s");
+			
+        if($form_type != "IP"){
 			if($this->input->post('patient_id_manual')) $patient_id_manual=$this->input->post('patient_id_manual'); else $patient_id_manual="";
 			$data['patient_id_manual'] = $patient_id_manual;
 		}
@@ -1258,6 +1270,7 @@ class Register_model extends CI_Model{
 		->join('user','user.staff_id=staff.staff_id')
 		->join('user_hospital_link','user.user_id=user_hospital_link.user_id');
 		$this->db->where('user_hospital_link.hospital_id',$hospital['hospital_id']);
+		$this->db->where('user.active',1);
 		$this->db->order_by('first_name,last_name','ASC');
 		$query = $this->db->get();
         	$result = $query->result();
@@ -1514,9 +1527,12 @@ class Register_model extends CI_Model{
 			}
 			if($this->input->post('search_phone')){
 			    $search_phone_withoutzero = ltrim($this->input->post('search_phone'), '0');
-			    $this->db->where("(patient.phone='0".$search_phone_withoutzero."' OR patient.phone='".$search_phone_withoutzero."')");
+			    $this->db->where("(patient.phone='0".$search_phone_withoutzero."' 
+    OR patient.phone='".$search_phone_withoutzero."' 
+    OR patient.alt_phone='0".$search_phone_withoutzero."' 
+    OR patient.alt_phone='".$search_phone_withoutzero."')");
 				
-							}
+			}
 			if($this->input->post('selected_patient')){
 				$this->db->where('patient_visit.visit_id',$this->input->post('selected_patient'));
 			}
