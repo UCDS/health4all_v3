@@ -418,6 +418,28 @@ class Register_model extends CI_Model{
 		}
 		$data['insert_by_user_id']=$user_id;
 		$data['insert_datetime']=date("Y-m-d H:i:s");
+                //Handling special cases
+		if (in_array('age', $allowed_fields)) {
+			$data['age_years']=$age_years;
+			$data['age_months']=$age_months;
+			$data['age_days']=$age_days;
+		}
+				
+		if (in_array('district', $allowed_fields)) {
+			$data['district_id'] = $district;
+		}	
+		if (in_array('state_code', $allowed_fields)) {
+			$data['state_code'] = $state_code;
+		}
+		if (in_array('id_proof_type', $allowed_fields)) {
+			$data['id_proof_type_id'] = $id_proof_type;
+		}
+		if (in_array('id_proof_no', $allowed_fields)) {
+			$data['id_proof_number'] = $id_proof_no;
+		}
+		if (in_array('occupation', $allowed_fields)) {
+			$data['occupation_id'] = $occupation;
+		}
 			
         if($form_type != "IP"){
 			if($this->input->post('patient_id_manual')) $patient_id_manual=$this->input->post('patient_id_manual'); else $patient_id_manual="";
