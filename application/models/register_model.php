@@ -1683,6 +1683,7 @@ class Register_model extends CI_Model{
 		->join('hospital as mainhospital','patient_visit.hospital_id=mainhospital.hospital_id','left')
 		->join('staff','patient_visit.signed_consultation = staff.staff_id','left')
 		//->order_by('name','ASC');
+		->order_by('patient.patient_id')
 		->order_by('patient_visit.admit_date','DESC');
 		$query=$this->db->get();
 		
