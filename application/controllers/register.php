@@ -947,7 +947,7 @@ class Register extends CI_Controller {
 				$this->data['patients']=$this->register_model->search();
 
 				if(count($this->data['patients'])>0){
-					$this->data['registered'] = $this->data['patients'][0];
+					//$this->data['registered'] = $this->data['patients'][0];
 					$this->load->model('diagnostics_model');
 					$visit_id = $this->data['patients'][0]->visit_id;
 					if ($patient_id!=0 && $visit_id){

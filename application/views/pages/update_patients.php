@@ -583,78 +583,96 @@ function openSmsModal(){
 
         $patient_hospital_id = $patients[0]->hospital_id;
 
-		if(isset($patients) && count($patients)>1){ ?>
-		<?php  echo "| <b>H4A Patient ID</b> : ".$patients[0]->patient_id." | ";
-			if(isset($patients[0]->patient_id_manual) and $patients[0]->patient_id_manual!="")
-			{
-				echo "<b>Manual Patient ID</b> : ".$patients[0]->patient_id_manual." | ";
-			}
-				echo "<b>Patient</b> : ".$patients[0]->first_name.' '.$patients[0]->last_name." | ";
-				echo "<b>Age</b> : ".$patients[0]->age_years."Y ".$patients[0]->age_months."M ".$patients[0]->age_days."D"." | ";
-			if ($patients[0]->gender!="0"){							 
-				echo "<b>Gender</b> : ".$patients[0]->gender." | ";			 
-			}
-				echo "<b>Phone</b> : ".$patients[0]->phone." | ";
-				echo "<b>Address</b> : ".$patients[0]->address. " | ";
-			if(isset($patients[0]->district))
-			{
-				echo "<b>District</b> : ".$patients[0]->district." | ";
-				echo "<b>State</b> : ".$patients[0]->state." | ";
-			}
-				echo "<b>Relative</b> : ".$patients[0]->parent_spouse." | ";
-		?>
-		<br/>
-		<caption><h4 style="text-align:center!important;color:#429ada;"><b>Select Visit</b></h4></caption>
-	<table class="table table-hover table-striped" id="table-sort">
-	<thead>
-		<!-- <th style="text-align:center">#</th>
-		<th style="text-align:center">IP/OP No.</th>
-		<th style="text-align:center">Patient</th>
-		<th style="text-align:center">Admit Date</th>
-		<th style="text-align:center">Department</th>
-		<th style="text-align:center">Phone</th>
-		<th style="text-align:center">Parent/Spouse</th> -->
-		<th style="text-align:center">#</th>
-		<th style="text-align:center">Visit Creation Date</th>
-		<th style="text-align:center">Appointment Date</th>
-		<th style="text-align:center">Hospital</th>
-		<th style="text-align:center">OP/IP No</th>
-		<th style="text-align:center">Department -- Unit Name</th>
-		<th style="text-align:center">Visit Name</th>
-		<th style="text-align:center">Discharge Date</th>
-	</thead>
-	<tbody>
-	<?php 
-	$i=1;
-	foreach($patients as $p){ 
-		$age="";
-		if($p->age_years!=0) $age.=$p->age_years."Y ";
-		if($p->age_months!=0) $age.=$p->age_months."M ";
-		if($p->age_days!=0) $age.=$p->age_days."D ";
-		if($p->age_days==0 && $p->age_months == 0 && $p->age_years == 0) $age.="0D ";
-	?>
-	<tr onclick="validateAndSubmit(<?php echo $p->visit_id; ?>, <?php echo $p->hospital_id; ?>)" style="cursor:pointer">		<td>
-			
-			<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$p->visit_id));?>
-			<input type="text" class="sr-only" hidden value="<?php echo $p->visit_id;?>" form="select_patient_<?php echo $p->visit_id;?>" name="selected_patient" />
-			<input type="text" class="sr-only" hidden value="<?php echo $p->patient_id;?>" name="patient_id" />
-			<input type="text" class="sr-only" hidden value="<?php echo $p->hospital_id;?>" name="hospital_id" />
-			</form>
-			<?php echo $i++;?>
-		</td>
-		<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
-		<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
-		<td style="text-align:center"><?php echo $p->hospital; ?></td>
-		<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
-		<td style="text-align:center"><?php echo $p->department;?> -- <?php echo $p->unit_name;?></td>
-		<td style="text-align:center"><?php echo $p->visit_name;?></td>
-		<td style="text-align:center"><?php if($p->outcome_date =="0000-00-00" || $p->outcome_date==" "){ echo " "; }else{ echo date("d-M-Y",strtotime($p->outcome_date)); } ?></td>
-	</tr>
-	<?php
-	}
-	?>
-	</tbody>
-	</table>
+				if(isset($patients) && count($patients)>1){
+		echo("<script>console.log('PHP: patient before : ". $patients[0]->patient_id ." ');</script>");
+		$prev = $patients[0]; $i = 1;
+		 for($j=0; $j < count($patients) ; $j++){
+		 	$p = $patients[$j];
+			 if($j == 0 || $p->patient_id != $prev->patient_id){
+				$i = 1; 
+				
+				if ($j != 0){ ?>
+			        	</tbody>
+								</table>
+
+						 </div> </div><?php } ?>
+			        <div class="panel panel-default">
+						<div class="panel-heading">
+							<h4><b>Search Results</b></h4>
+							<?php
+								echo("<script>console.log('PHP: patient after : $p->name');</script>");?>
+
+							<?php  echo "| <b>H4A Patient ID</b> : ".$p->patient_id." | ";
+							if(isset($p->patient_id_manual) and $p->patient_id_manual!="")
+							 {
+							 	echo "<b>Manual Patient ID</b> : ".$p->patient_id_manual." | ";
+							 }
+							 echo "<b>Patient</b> : ".$p->name." | ";
+							 echo "<b>Age</b> : ".$p->age_years."Y ".$p->age_months."M ".$p->age_days."D"." | ";
+							 if ($p->gender!="0"){							 
+							 	echo "<b>Gender</b> : ".$p->gender." | ";			 
+							 }
+							 echo "<b>Phone</b> : ".$p->phone." | ";
+							 echo "<b>Address</b> : ".$p->address. " | ";
+							 if(isset($p->district))
+							 {
+							 	echo "<b>District</b> : ".$p->district." | ";
+							 	echo "<b>State</b> : ".$p->state." | ";
+							 }
+							
+							 echo "<b>Relative</b> : ".$p->parent_spouse." | ";
+							
+							?>
+							<br/>
+							<?php 
+							if (!isset($p->visit_id)){
+							 	echo("<script>console.log('PHP: inside if');</script>");
+							 	continue;
+							 }
+							?>
+							<table class="table table-striped table-hover">
+								<caption><h4><b>Visit History</b></h4></caption>
+									<thead>
+										<tr>
+											<th style="text-align:center">#</th>
+											<th style="text-align:center">Visit Date</th>
+											<th style="text-align:center">Hospital</th>
+											<th style="text-align:center">OP/IP No</th>
+											<th style="text-align:center">Department -- Unit Name</th>
+											<th style="text-align:center">Visit Name</th>
+											<th style="text-align:center">Discharge Date</th>
+											<th style="text-align:center">Appointment Date</th>
+										</tr>
+									</thead>
+									</div>
+									<div class="panel-body">
+									<tbody><?php } ?>
+										<tr onclick="validateAndSubmit(<?php echo $p->visit_id; ?>, <?php echo $p->hospital_id; ?>)" style="cursor:pointer">
+													<?php
+													//echo("<script>console.log('PHP: Form ID : $form_id');</script>");?>
+
+											<td>
+												<?php echo form_open('register/update_patients',array('role'=>'form','id'=>'select_patient_'.$p->visit_id));?>
+												<input type="text" class="sr-only" hidden value="<?php echo $p->visit_id;?>" form="select_patient_<?php echo $p->visit_id;?>" name="selected_patient" />
+												<input type="text" class="sr-only" hidden value="<?php echo $p->patient_id;?>" name="patient_id" />
+												<input type="text" class="sr-only" hidden value="<?php echo $p->hospital_id;?>" name="hospital_id" />
+												</form>
+												<?php echo $i++;?>	
+											</td>
+											<td style="text-align:center"><?php echo date("d-M-Y",strtotime($p->admit_date));?></td>
+											<td style="text-align:center"><?php echo $p->hospital; ?></td>
+											<td style="text-align:center"><?php echo $p->visit_type." #".$p->hosp_file_no; ?></td>
+											<td style="text-align:center"><?php echo $p->department;?> -- <?php echo $p->unit_name;?></td>
+											<td style="text-align:center"><?php echo $p->visit_name;?></td>
+											<td style="text-align:center"><?php if($p->outcome_date =="0000-00-00" || $p->outcome_date==" "){ echo " "; }else{ echo date("d-M-Y",strtotime($p->outcome_date)); } ?></td>
+											<td style="text-align:center"><?php if(isset($p->appointment_time) && $p->appointment_time!="") {echo date("j M Y", strtotime("$p->appointment_time"));} ?></td>
+										</tr>
+										<?php $prev = $p;
+										} ?>
+										</tbody>
+								</table>
+								</div>
+				</div>
 	<script>
 		const loggedInHospitalId = <?php echo json_encode($current_hospital_id); ?>;
 		const accessibleHospitalIds = <?php echo json_encode(isset($hospital_ids_by_user[$logged_user_id]) ? $hospital_ids_by_user[$logged_user_id] : []); ?>;
