@@ -3211,9 +3211,17 @@ else if($type=="dosage"){
 	{
 		$hospital = $this->session->userdata('hospital');
 		return $this->db
-			->where('hospital_id', $hospital['hospital_id'])
+			->select('
+				followup_types.*,
+				s1.first_name as created_by_name,
+				s2.first_name as updated_by_name
+			')
+			->from('followup_types')
+			->join('staff as s1', 's1.staff_id = followup_types.created_by', 'left')
+			->join('staff as s2', 's2.staff_id = followup_types.updated_by', 'left')
+			->where('followup_types.hospital_id', $hospital['hospital_id'])
 			->order_by('id', 'ASC')
-			->get('followup_types')
+			->get()
 			->result();
 	}
 

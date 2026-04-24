@@ -337,7 +337,10 @@ echo "</select></li>";
 			<tr>
 				<th style="text-align:center">ID</th>
 				<th style="text-align:center">Type Name</th>
-				<th style="text-align:center">created on</th>
+				<th style="text-align:center">Created On</th>
+				<th style="text-align:center">Created By</th>
+				<th style="text-align:center">Updated On</th>
+				<th style="text-align:center">Updated By</th>
 				<th style="text-align:center">Action</th>
 			</tr>
 		</thead>
@@ -347,6 +350,9 @@ echo "</select></li>";
 			<td style="text-align:right" ><?php echo $row->id; ?></td>
 			<td style="text-align:center"><?php echo $row->type_name; ?></td>
 			<td style="text-align:center"><?php echo date("j M Y h:i A.", strtotime("$row->created_at")); ?></td>
+			<td style="text-align:center"><?php echo $row->created_by_name; ?></td>
+			<td style="text-align:center"><?php if($row->updated_date_time!=NULL){ echo date("j M Y h:i A.", strtotime("$row->updated_date_time")); }?></td>
+			<td style="text-align:center"><?php if($row->updated_by!=0){ echo $row->updated_by_name; }?></td>
 			<td style="text-align:center">
 				<a href="<?php echo base_url('user_panel/update_followup_type/'.$row->id); ?>">
 					<i class="fa fa-edit btn btn-success" style="color:white;"></i>

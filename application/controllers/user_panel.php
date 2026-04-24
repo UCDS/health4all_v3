@@ -1516,6 +1516,7 @@ class User_panel extends CI_Controller {
 			$this->data['title']="Followup Types";
 			$this->data['userdata']=$this->session->userdata('logged_in');
 			$hospital = $this->session->userdata('hospital');
+			$user_data=$this->session->userdata('logged_in');
 			$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
 			foreach($this->data['defaultsConfigs'] as $default){		 
 				if($default->default_id=='pagination'){
@@ -1536,6 +1537,7 @@ class User_panel extends CI_Controller {
 				$data = [
 					'type_name' => $this->input->post('type_name'),
 					'hospital_id' => $hospital['hospital_id'],
+					'created_by' => $user_data['staff_id'],
 				];
 
 				$this->masters_model->insert_followup($data);
@@ -1578,13 +1580,16 @@ class User_panel extends CI_Controller {
 			{
 				$id = $this->input->post('id');
 				$type_name = trim($this->input->post('type_name'));
+				$user_data=$this->session->userdata('logged_in');
 				$exists = $this->masters_model->check_duplicate_followup($type_name, $hospital['hospital_id']);
 				if($exists){
 					$this->session->set_flashdata('danger', 'Followup type already exists!');
 					redirect('user_panel/add_followup_type');
 				}
 				$data = [
-					'type_name' => $this->input->post('type_name')
+					'type_name' => $this->input->post('type_name'),
+					'updated_by' => $user_data['staff_id'],
+					'updated_date_time' => date('Y-m-d H:i:s'),
 				];
 				$this->masters_model->update_followup($id, $data);
 				$this->session->set_flashdata('success', 'Followup type updated successfully!');

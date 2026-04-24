@@ -790,7 +790,7 @@ class patient_model extends CI_Model {
 
         $this->db->select('patient_visits_edit_history.patient_id,patient_visits_edit_history.table_name,patient_visits_edit_history.visit_id,
         patient_visits_edit_history.field_name,patient_visits_edit_history.previous_value,patient_visits_edit_history.new_value,
-        patient_visits_edit_history.edit_date_time,user.username,patient.first_name,
+        patient_visits_edit_history.edit_date_time,user.username,patient.first_name,staff.first_name as staff_name,
         (SELECT department FROM department WHERE patient_visits_edit_history.field_name="department_id"
         AND patient_visits_edit_history.new_value = department.department_id) as dname,
         (SELECT unit_name FROM unit WHERE patient_visits_edit_history.field_name="unit"
@@ -801,7 +801,8 @@ class patient_model extends CI_Model {
         AND patient_visits_edit_history.new_value = visit_name.visit_name_id) as vname')
                 ->from('patient_visits_edit_history')
                 ->join('patient','patient.patient_id=patient_visits_edit_history.patient_id','left')
-                ->join('user','user.user_id=patient_visits_edit_history.edit_user_id','left');
+                ->join('user','user.user_id=patient_visits_edit_history.edit_user_id','left')
+                ->join('staff','staff.staff_id=user.staff_id','left');
         $this->db->order_by('patient_visits_edit_history.edit_date_time','DESC');
         if ($default_rowsperpage !=0)
 		{

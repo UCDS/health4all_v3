@@ -43,3 +43,7 @@ CREATE TABLE patient_merge_archive (
 );
 
 ALTER TABLE patient_merge_archive ADD hospital_id INT;
+
+ALTER TABLE `followup_types` ADD `created_by` INT NOT NULL AFTER `created_at`;
+
+ALTER TABLE `followup_types` ADD `updated_by` INT NOT NULL AFTER `created_by`, ADD `updated_date_time` DATETIME NULL DEFAULT NULL AFTER `updated_by`;
