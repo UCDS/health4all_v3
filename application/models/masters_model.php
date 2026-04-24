@@ -3212,7 +3212,8 @@ else if($type=="dosage"){
 		$hospital = $this->session->userdata('hospital');
 		return $this->db
 			->select('
-				followup_types.*,
+				followup_types.type_name,followup_types.hospital_id,followup_types.created_at,followup_types.created_by,followup_types.updated_by,
+				followup_types.updated_date_time,
 				s1.first_name as created_by_name,
 				s2.first_name as updated_by_name
 			')
