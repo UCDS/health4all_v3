@@ -364,7 +364,7 @@ echo "</select></li>";
 			?>
 		</td>	
 		<td style="text-align:left"><?php echo date("d-M-Y",strtotime($pve->edit_date_time));?></td>
-		<td style="text-align:left"><?php echo $pve->username; ?> </td>
+		<td style="text-align:left"><?php echo $pve->staff_name; ?> </td>
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>
