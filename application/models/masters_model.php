@@ -701,7 +701,6 @@ function update_data($type){
 		
 	}
 	else if($type=="user"){
-		
 		if(trim($this->input->post('password'))!=""){
 			$password=$this->input->post('password');
 		}
@@ -709,6 +708,7 @@ function update_data($type){
 			$data=array(
 			'username'=>$this->input->post('username'),
 			'password'=>md5($password),
+			'active' =>$this->input->post('active'),
 			'staff_id'=>$this->input->post('staff')
 			);
 		else
