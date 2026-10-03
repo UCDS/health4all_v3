@@ -4163,6 +4163,68 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 		$resource=$this->db->get();
 		return $resource->result();
         }
+
+		function get_procedure_summary_report(){	
+			$hospital=$this->session->userdata('hospital');
+			$from_time = '00:00';	
+			$to_time = '23:59';
+			   if($this->input->post('from_date') && $this->input->post('to_date')){
+			   $from_date=date("Y-m-d",strtotime($this->input->post('from_date')));
+			   $to_date=date("Y-m-d",strtotime($this->input->post('to_date')));
+		   }
+		   else if($this->input->post('from_date') || $this->input->post('to_date')){
+			   $this->input->post('from_date')?$from_date=$this->input->post('from_date'):$from_date=$this->input->post('to_date');
+			   $to_date=$from_date;
+		   }
+		   else{
+			   $from_date=date("Y-m-d");
+			   $to_date=$from_date;
+		   }
+				  
+				   
+		   if($this->input->post('visit_type')){
+				if($this->input->post('visit_type')!="All"){      
+					$this->db->where("patient_visit.visit_type",$this->input->post('visit_type'));
+				}
+			} else {
+				$this->db->where("patient_visit.visit_type","OP");
+			}			   
+				  
+			if($this->input->post('unit')){
+				$this->db->where('patient_visit.unit',$this->input->post('unit'));
+			}
+			
+			if($this->input->post('area')){
+				$this->db->where('patient_visit.area',$this->input->post('area'));
+			}
+		   
+		   if($this->input->post('department')){
+			$this->db->where('patient_visit.department_id',$this->input->post('department'));
+			}
+
+			if($this->input->post('visit_name')){
+				$this->db->where('patient_visit.visit_name_id',$this->input->post('visit_name'));
+			}
+			if($this->input->post('patient_id')){
+				$this->db->where('patient_visit.patient_id',$this->input->post('patient_id'));
+			}
+			if($this->input->post('procedure')){
+				$this->db->where('procedure.procedure_id',$this->input->post('procedure'));
+			}
+		   $from_timestamp = $from_date." ".$from_time;
+		   $to_timestamp = $to_date." ".$to_time;
+		   $this->db->where("(procedure_datetime BETWEEN '$from_timestamp' AND '$to_timestamp')");
+		   
+		   $this->db->select("department.department,procedure.procedure_name,procedure.procedure_id,count(*) as total_procedures")	
+		   ->join('procedure','procedure.procedure_id = patient_procedure.procedure_id')
+		   ->join('patient_visit','patient_visit.visit_id = patient_procedure.visit_id')
+		   ->join('department','patient_visit.department_id = department.department_id','left');
+		   $this->db->from('patient_procedure');
+		   $this->db->group_by('patient_visit.department_id,procedure.procedure_id');
+		   $this->db->where('patient_visit.hospital_id',$hospital['hospital_id']);
+		   $resource=$this->db->get();
+		   return $resource->result();
+		   }
         
 	function get_transfers_summary(){
 		$hospital=$this->session->userdata('hospital');

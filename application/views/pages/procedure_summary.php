@@ -28,7 +28,7 @@ $('#to_date').Zebra_DatePicker({
     format: 'd-m-Y',
     direction: [true, todayString]
 });
-        var options = {
+			var options = {
 			widthFixed : true,
 			showProcessing: true,
 			headerTemplate : '{content} {icon}', // Add icon for jui theme; new in v2.7!
@@ -125,26 +125,60 @@ input[type=number] {
 	<?php $userdata=$this->session->userdata('hospital'); ?>
 	<div class="row">
 		<h4><b>Login Activities</b></h4>	
-		<?php echo form_open("reports/login_report",array('role'=>'form','class'=>'form-custom')); ?>
+		<?php echo form_open("reports/procedure_summary",array('role'=>'form','class'=>'form-custom')); ?>
                 <b>Trend:  </b>
-				<label><input type ="radio" name="trend_type" class ="form-control" value="Day" checked > Daily</label>
-                <label><input type="radio" name="trend_type" class ="form-control" value="Month" <?php if($this->input->post('trend_type') == "Month") echo " checked "; ?> > Monthly </label>
-                <label><input type="radio" name="trend_type" class ="form-control" value="Year" <?php if($this->input->post('trend_type') == "Year") echo " checked "; ?> > Yearly </label><br/>
-            <select name="hospital" id="hospital" class="form-control">
-				<option value="">Hospital</option>
+				<label><input type="radio" name="visit_type" class ="form-control" value="All" checked  > All </label>
+				<label><input type ="radio" name="visit_type" class ="form-control" value="OP" <?php if($this->input->post('visit_type') == "OP") echo " checked "; ?> > OP</label>
+                <label><input type="radio" name="visit_type" class ="form-control" value="IP" <?php if($this->input->post('visit_type') == "IP") echo " checked "; ?> > IP </label><br/>
+                From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
+                To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
+				<select name="department" id="department" class="form-control">
+				<option value="">Department</option>
 				<?php 
-				foreach($hospitals as $hosp) {
-					$selected = '';
-					if ($this->input->post('hospital') && $this->input->post('hospital') == $hosp->hospital_id) {
-						$selected = 'selected';
-					} 
-					echo "<option value='" . $hosp->hospital_id . "' $selected>" . $hosp->hospital_short_name . "</option>";
+				foreach($all_departments as $dept){
+				echo "<option value='".$dept->department_id."'";
+				if($this->input->post('department') && $this->input->post('department') == $dept->department_id) echo " selected ";
+				echo ">".$dept->department."</option>";
 				}
 				?>
 			</select>
-                From Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($from_date)); ?>" name="from_date" id="from_date" size="15" />
-                To Date : <input class="form-control" type="text" value="<?php echo date("d-M-Y",strtotime($to_date)); ?>" name="to_date" id="to_date" size="15" />
-               Rows per page (For Detail) : <input type="number" class="rows_per_page form-custom form-control" name="rows_per_page" id="rows_per_page" min=<?php echo $lower_rowsperpage; ?> max= <?php echo $upper_rowsperpage; ?> step="1" value= <?php if($this->input->post('rows_per_page')) { echo $this->input->post('rows_per_page'); }else{echo $rowsperpage;}  ?> onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" /> 
+			<select name="unit" id="unit" class="form-control" >
+				<option value="">Unit</option>
+				<?php 
+				foreach($units as $unit){
+				echo "<option value='".$unit->unit_id."' class='".$unit->department_id."'";
+				if($this->input->post('unit') == $unit->unit_id) echo " selected ";
+				echo ">".$unit->unit_name."</option>";
+				}
+				?>
+			</select>
+			<select name="area" id="area" class="form-control" >
+				<option value="">Area</option>
+				<?php 
+				foreach($areas as $area){
+				echo "<option value='".$area->area_id."' class='".$area->department_id."'";
+				if($this->input->post('area') == $area->area_id) echo " selected ";
+				echo ">".$area->area_name."</option>";
+				}
+				?>
+			</select>
+			<select name="visit_name" id="visit_name" class="form-control" >
+				<option value="">Visit Type</option>
+				<?php 
+				foreach($visit_names as $v){
+				echo "<option value='".$v->visit_name_id."'";
+				if($this->input->post('visit_name') == $v->visit_name_id)  echo " selected ";
+				echo ">".$v->visit_name."</option>";
+				}
+				?>
+			</select>
+			<select class="form-control" name="procedure" id="procedure">
+							<option value="" selected>Procedure</option>
+									<?php foreach($procedures as $procedure){ ?>
+											<option value="<?php echo $procedure->procedure_id;?>" <?php if ($procedure->procedure_id == $this->input->post('procedure')) echo "selected" ?>><?php echo $procedure->procedure_name; ?></option>
+									<?php } ?>
+						</select>
+			H4All ID : <input type="number" class="form-custom form-control" placeholder="Health4All ID" name="patient_id" id="h4allid" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" value="<?php if($this->input->post('patient_id')) { echo $this->input->post('patient_id'); } ?>"   />  			
                 <input class="btn btn-sm btn-primary" type="submit" value="Submit" />
 	</form>
 	<br />
@@ -153,95 +187,39 @@ input[type=number] {
 	<table class="table table-bordered table-striped" id="table-sort">
 	<thead>
 	<tr>
-		<th style="text-align:center" rowspan="2">Date</th>
-		<th style="text-align:center" rowspan="1" colspan="3">Login Attempts</th>
-	</tr>
-	<tr>
-		<th style="text-align:center">Success</th>
-                <th style="text-align: center">Fail</th>            
-                <th style="text-align: center">Total</th>
+		<th style="text-align:center">Department</th>
+		<th style="text-align:center">Procedure</th>
+		<th style="text-align:center">#</th>
 	</tr>
 	</thead>
 	<tbody>
 	<?php 
-        // Simple total
-	$total_success=0;
-	$total_fail=0;
+
 	$total=0;
-	$hospital=-1;
         if($this->input->post('rows_per_page')){
         	$rowsperpage = $this->input->post('rows_per_page');
         }
-        if($this->input->post('hospital')){
-        	$hospital = $this->input->post('hospital');
-        }
-	foreach($report as $s){
-		if($this->input->post('trend_type')){
-			$trend_type=$this->input->post('trend_type');
-			if($trend_type == "Month"){
-				$date = date("M, Y",strtotime($s->date));
-			
-			}
-			else if($trend_type == "Year"){
-				$date = date("Y",strtotime($s->date));
-			}
-			else{
-				$date = date("d-M-Y",strtotime($s->date));
-				$trend_type="Date";
-				
-			}
-		}
-		else{
-			$date = date("d-M-Y",strtotime($s->date));
-			$trend_type="Date";
-		}
-		$datefilter = date("d-m-Y",strtotime($s->date));
-		
+		foreach($report as $s){
 	?>
 	<tr>
-		<td><?php echo $date;?></td>
-		<?php if ($s->no_of_success > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo $s->no_of_success;?> </td>
-		<?php } else { ?>
-			<td class="text-right"><?php echo $s->no_of_success;?></td>
-		<?php }  ?>
-		
-		<?php if ($s->no_of_un_success > 0) { ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/0/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo $s->no_of_un_success;?> </td>
-		<?php } else { ?>
-			<td class="text-right"><?php echo $s->no_of_un_success;?></td>
-		<?php }  ?>
-		<td class="text-right"><a href="<?php echo base_url()."reports/login_activity_detail/$trend_type/$datefilter/-1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo $s->total;?> </td>
+		<td><?php echo $s->department;?></td>
+		<td><?php echo $s->procedure_name;?></td>
+		<td style="text-align:right"><?php echo $s->total_procedures;?></td>		
 	</tr>
 	<?php
-	$total_success += $s->no_of_success;
-        $total_fail += $s->no_of_un_success;
-	$total += $s->total;       
+		$total += $s->total_procedures;
+          
 	}
 	?>
 	</tbody>
         <tbody class="tablesorter-no-sort">
 	<tr>
 		<th>Total </th>
-		
-		<?php if ($total_success > 0) { ?>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo number_format($total_success);?></th>
-		<?php } else { ?>
-			<td class="text-right"><?php echo $total_success;?></td>
-		<?php }  ?>
-		
-		<?php if ($total_fail > 0) { ?>
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/0/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo number_format($total_fail);?></th>
-		<?php } else { ?>
-			<td class="text-right"><?php echo $total_fail;?></td>
-		<?php }  ?>
-		
-		
-		<th class="text-right" ><a href="<?php echo base_url()."reports/login_activity_detail/-1/-1/-1/$from_date/$to_date/$rowsperpage/$hospital/";?>"><?php echo number_format($total);?></th>
+		<th colspan="2" style="text-align:right"><?php echo $total;?></th>
 	</tr>
         </tbody>
 	</table>
 	<?php } else { ?>
-	No Activities found.
+	No Procedure found.
 	<?php } ?>
 	</div>
