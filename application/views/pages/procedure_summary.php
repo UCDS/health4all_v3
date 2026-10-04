@@ -167,6 +167,7 @@ input[type=number] {
 				<?php 
 				foreach($visit_names as $v){
 				echo "<option value='".$v->visit_name_id."'";
+				
 				if($this->input->post('visit_name') == $v->visit_name_id)  echo " selected ";
 				echo ">".$v->visit_name."</option>";
 				}
@@ -188,6 +189,7 @@ input[type=number] {
 	<thead>
 	<tr>
 		<th style="text-align:center">Department</th>
+		<th style="text-align:center">Visit Type</th>
 		<th style="text-align:center">Procedure</th>
 		<th style="text-align:center">#</th>
 	</tr>
@@ -203,6 +205,7 @@ input[type=number] {
 	?>
 	<tr>
 		<td><?php echo $s->department;?></td>
+		<td><?php echo $s->visit_name;?></td>
 		<td><?php echo $s->procedure_name;?></td>
 		<td style="text-align:right"><?php echo $s->total_procedures;?></td>		
 	</tr>
@@ -215,7 +218,7 @@ input[type=number] {
         <tbody class="tablesorter-no-sort">
 	<tr>
 		<th>Total </th>
-		<th colspan="2" style="text-align:right"><?php echo $total;?></th>
+		<th colspan="3" style="text-align:right"><?php echo $total;?></th>
 	</tr>
         </tbody>
 	</table>
