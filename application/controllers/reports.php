@@ -796,7 +796,8 @@ class Reports extends CI_Controller {
 				|| $function->user_function=="list_edit_patient_visits" || $function->user_function=="delete_patient_followup"
 				|| $function->user_function=="followup_summary_route"
 				|| $function->user_function=="followup_summary_death_icdcode" 
-				|| $function->user_function=="followup_summary_death_routes" || $function->user_function=="list_blood_donor_details_edit"){
+				|| $function->user_function=="followup_summary_death_routes" || $function->user_function=="list_blood_donor_details_edit"
+				|| $function->user_function=="Procedures"){
 				$access=1;
 				break;
 			}
@@ -1948,7 +1949,56 @@ class Reports extends CI_Controller {
 		
 	}
 	
-	
+	public function procedure_summary()
+	{ 
+		if($this->session->userdata('logged_in'))
+		{                          //Checking for user login
+			$this->data['userdata']=$this->session->userdata('logged_in');
+			$access=0;
+			foreach($this->data['functions'] as $function){              
+				if($function->user_function=="Procedures"){
+					$access=1;
+					break;
+				}
+			}
+			if($access==1){                                      
+				$this->data['title']="Procedure Summary";                      
+				$this->data['defaultsConfigs'] = $this->masters_model->get_data("defaults");
+				foreach($this->data['defaultsConfigs'] as $default){		 
+				if($default->default_id=='pagination'){
+				$this->data['rowsperpage'] = $default->value;
+				$this->data['upper_rowsperpage']= $default->upper_range;
+				$this->data['lower_rowsperpage']= $default->lower_range;	 
+				break;
+
+				}
+				}
+				$this->load->view('templates/header',$this->data);
+				$this->load->helper('form');
+				$this->load->library('form_validation');
+				$userdata = $this->session->userdata('logged_in');
+				$user_id = $userdata['user_id'];
+				$this->data['all_departments']=$this->staff_model->get_department();
+				$this->data['units']=$this->staff_model->get_unit();
+				$this->data['areas']=$this->staff_model->get_area();
+				$this->data['visit_names']=$this->staff_model->get_visit_name();
+				$this->data['procedures'] = $this->masters_model->get_data("procedure");
+				//echo("<script>console.log('hospitals: " .json_encode( $this->data['hospitals']) . "');</script>");
+				$this->data['report']=$this->reports_model->get_procedure_summary_report(); //This method gets data from the Database, and puts the data in report variable.
+				//Report variable stores all the data returned by reports_model which is passed to the view.
+				$this->load->view('pages/procedure_summary',$this->data);
+				$this->load->view('templates/footer');
+			}
+			else{
+				show_404();
+			}
+		}
+		else{
+			show_404();
+		}
+	}	
+    
+
     public function outcome_summary(){
         if($this->session->userdata('logged_in')){
                 $this->data['userdata']=$this->session->userdata('logged_in');
