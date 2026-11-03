@@ -56,4 +56,4 @@ ALTER TABLE `patient_clinical_notes` ADD `add_to_summary` BOOLEAN NOT NULL DEFAU
 
 ALTER TABLE `procedure` ADD `hospital_id` INT NOT NULL AFTER `procedure_type_id`;
 
-ALTER TABLE `patient_procedure` ADD `procedure_done_by` TEXT NULL AFTER `post_procedure`;
+ALTER TABLE `patient_procedure` ADD `procedure_done_by` VARCHAR(250) NULL AFTER `post_procedure`;

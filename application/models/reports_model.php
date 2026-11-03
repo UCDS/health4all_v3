@@ -4358,7 +4358,7 @@ function get_icd_detail_count($icdchapter,$icdblock,$icd_10,$department,$unit,$a
 					   
 			$this->db->select("patient.patient_id,visit_type,patient.address, hosp_file_no, CONCAT(IF(patient.first_name=NULL,'',patient.first_name),' ',IF(patient.last_name=NULL,'',patient.last_name)) name,
 		patient.gender, IF(patient.gender='F' AND (father_name IS NULL OR father_name = ''),spouse_name, father_name) parent_spouse, age_years, age_months, age_days,
-		patient.place, patient.phone,procedure.procedure_name,patient_followup.diagnosis,department.department,visit_name.visit_name,patient_procedure.procedure_datetime",false)
+		patient.place, patient.phone,procedure.procedure_name,patient_followup.diagnosis,department.department,visit_name.visit_name,patient_procedure.procedure_datetime,patient_procedure.procedure_done_by",false)
 			->join('procedure','procedure.procedure_id = patient_procedure.procedure_id')
 			->join('patient_visit','patient_visit.visit_id = patient_procedure.visit_id')
 			->join('patient','patient_visit.patient_id = patient.patient_id')

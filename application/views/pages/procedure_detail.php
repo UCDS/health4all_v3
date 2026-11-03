@@ -386,7 +386,8 @@ echo "</select></li>";
 		<th>Visit Type</th>
 		<th>Procedure</th>
 		<th>Diagnosis</th>
-		<th>Procedure Date & Time</th>	
+		<th>Procedure Date & Time</th>
+		<th>Done by</th>		
 	</thead>
 	<tbody>
 	<?php 
@@ -413,7 +414,8 @@ echo "</select></li>";
 		<td><?php echo $s->visit_name;?></td>
 		<td><?php echo $s->procedure_name;?></td>
 		<td><?php echo $s->diagnosis;?></td>
-		<td><?php if(!!$s->procedure_datetime) echo date("d-M-Y h:i A",strtotime($s->procedure_datetime));?></td>	
+		<td><?php if(!!$s->procedure_datetime) echo date("d-M-Y h:i A",strtotime($s->procedure_datetime));?></td>
+		<td><?php echo $s->procedure_done_by;?></td>	
 	</tr>
 	<?php $sno++;}	?>
 	</tbody>

@@ -2219,9 +2219,7 @@ function openSmsModal(){
 						$('.post_procedure_notes:not(#procedure-prototype .post_procedure_notes)').each(function() {
 							initializeClassicEditor(this);
 						});
-						$('.procedure_done_by:not(#procedure-prototype .procedure_done_by)').each(function() {
-							initializeClassicEditor(this);
-						});
+						
 						$(document).on('click', '.add-procedure', function() {
 
 							// Always clone the clean prototype
@@ -2253,7 +2251,7 @@ function openSmsModal(){
 
 							// Initialize CKEditor only on this new block
 							$newProcedure.find(
-								'.procedure_note, .procedure_findings, .post_procedure_notes, .procedure_done_by'
+								'.procedure_note, .procedure_findings, .post_procedure_notes'
 							).each(function() {
 								initializeClassicEditor(this);
 							});
@@ -2498,14 +2496,16 @@ function openSmsModal(){
 		</div>
 	</div>
 
+
 	<div class="row alt">
 		<div class="col-md-2">
 			<label class="control-label">Done by</label>
 		</div>
 
-		<div class="col-md-8">
-			<textarea class="form-control procedure_done_by"
-					  name="procedure_done_by[]"></textarea>
+		<div class="col-md-5">
+			<input type="text"
+				   class="form-control"
+				   name="procedure_done_by[]">
 		</div>
 	</div>
 
@@ -2650,25 +2650,9 @@ function openSmsModal(){
 				<div class="col-md-2">
 					<label class="control-label">Done by</label>
 				</div>
-				<div class="col-md-8">
-					<?php if ($f->edit == 0 || !empty($patient_procedure->procedure_done_by)) { ?>
-
-						<div class="form-control procedure_done_by_readonly procedure-text-area-readonly">
-							<?php echo $patient_procedure->procedure_done_by; ?>
-						</div>
-
-						<input type="hidden"
-							name="procedure_done_by[]"
-							value="<?php echo htmlspecialchars($patient_procedure->procedure_done_by, ENT_QUOTES, 'UTF-8'); ?>">
-
-					<?php } else { ?>
-
-						<textarea class="form-control procedure_done_by"
-								name="procedure_done_by[]"><?php echo $patient_procedure->procedure_done_by; ?></textarea>
-
-					<?php } ?>
+				<div class="col-md-5">
+					<input type="text" class="form-control" name="procedure_done_by[]" value="<?php echo $patient_procedure->procedure_done_by;?>" <?php if($f->edit==0 || !empty($patient_procedure->procedure_done_by)) echo ' readonly'; ?> />
 				</div>
-				
 			</div>
 
 			<div class="text-left procedure-close-container" style="margin-top:15px;">
