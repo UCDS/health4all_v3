@@ -2504,6 +2504,7 @@ function openSmsModal(){
 
 		<div class="col-md-5">
 			<input type="text"
+			style="width: 100%;"
 				   class="form-control"
 				   name="procedure_done_by[]">
 		</div>
@@ -2651,7 +2652,7 @@ function openSmsModal(){
 					<label class="control-label">Done by</label>
 				</div>
 				<div class="col-md-5">
-					<input type="text" class="form-control" name="procedure_done_by[]" value="<?php echo $patient_procedure->procedure_done_by;?>" <?php if($f->edit==0 || !empty($patient_procedure->procedure_done_by)) echo ' readonly'; ?> />
+					<input type="text" style="width:100%" class="form-control" name="procedure_done_by[]" value="<?php echo $patient_procedure->procedure_done_by;?>" <?php if($f->edit==0 || !empty($patient_procedure->procedure_done_by)) echo ' readonly'; ?> />
 				</div>
 			</div>
 
