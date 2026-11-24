@@ -605,9 +605,24 @@ class Indent_report_model extends CI_Model
 		return $resource->result();
 	} //ending of get data method.
 
-	function get_item_inventory_detail($item_id=NULL,$scp_id=NULL)
+	function get_item_inventory_detail($item_id = NULL, $scp_id = NULL, $from_date = NULL, $to_date = NULL)
 	{
-	    $hospital=$this->session->userdata('hospital');                                             
+	    $hospital=$this->session->userdata('hospital');   
+		if (!empty($from_date) && !empty($to_date)) {
+        	$from_date = date("Y-m-d", strtotime($from_date));
+        	$to_date = date("Y-m-d", strtotime($to_date));
+    	} else if ($this->input->post('from_date') && $this->input->post('to_date')) {
+        	$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+       	 	$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+    	} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+        	$from_date = $this->input->post('from_date') ? $this->input->post('from_date') : $this->input->post('to_date');
+        	$from_date = date("Y-m-d", strtotime($from_date));
+        	$to_date = $from_date;
+    	} else {
+        	$from_date = date("Y-m-d");
+        	$to_date = $from_date;
+    	}
+
 		if ($this->input->post('from_date') && $this->input->post('to_date')) {
 			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
 			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
@@ -666,7 +681,7 @@ class Indent_report_model extends CI_Model
 		
 	}
 
-	function get_item_closing_balance($item, $scp, $redir)
+	function get_item_closing_balance($item, $scp, $redir, $explicit_from_date = NULL)
 	{
 		//print_r($item.' '.$scp.' '.$redir);
 		if($this->input->post('from_date'))
@@ -680,6 +695,13 @@ class Indent_report_model extends CI_Model
 		{
 			$scp = $this->input->post('scp_id');
 			$item = $this->input->post('item');
+		}
+		 if (!empty($explicit_from_date)) {
+			$from_date = date("Y-m-d", strtotime($explicit_from_date));
+		} else if ($this->input->post('from_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+		} else {
+			$from_date = date("Y-m-d");
 		}
 
 		$this->db->select("inventory_id,supply_chain_party_id,inward_outward,item_id,quantity,date_time,inward_outward_type,
