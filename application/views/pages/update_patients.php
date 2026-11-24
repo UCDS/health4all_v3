@@ -2219,6 +2219,7 @@ function openSmsModal(){
 						$('.post_procedure_notes:not(#procedure-prototype .post_procedure_notes)').each(function() {
 							initializeClassicEditor(this);
 						});
+						
 						$(document).on('click', '.add-procedure', function() {
 
 							// Always clone the clean prototype
@@ -2495,6 +2496,20 @@ function openSmsModal(){
 		</div>
 	</div>
 
+
+	<div class="row alt">
+		<div class="col-md-2">
+			<label class="control-label">Done by</label>
+		</div>
+
+		<div class="col-md-5">
+			<input type="text"
+			style="width: 100%;"
+				   class="form-control"
+				   name="procedure_done_by[]">
+		</div>
+	</div>
+
 	<div class="text-right procedure-close-container"
 		 style="margin-top:15px;">
 
@@ -2629,8 +2644,40 @@ function openSmsModal(){
 
 					<?php } ?>
 				</div>
+				
 			</div>
+			
+			<div class="row alt">
+				<div class="col-md-2">
+					<label class="control-label">Done by</label>
+				</div>
+				<div class="col-md-5">
+					<input type="text" style="width:100%" class="form-control" name="procedure_done_by[]" value="<?php echo $patient_procedure->procedure_done_by;?>" <?php if($f->edit==0 || !empty($patient_procedure->procedure_done_by)) echo ' readonly'; ?> />
+				</div>
 			</div>
+
+			<div class="text-left procedure-close-container" style="margin-top:15px;">
+
+		 <button type="button" 
+			id="printProcedure<?php echo htmlspecialchars(!empty($patient_procedure->patient_procedure_id) ? $patient_procedure->patient_procedure_id : '', ENT_QUOTES, 'UTF-8'); ?>" 
+			data-procedure-name="<?php echo htmlspecialchars(!empty($patient_procedure->procedure_name) ? $patient_procedure->procedure_name : '', ENT_QUOTES, 'UTF-8'); ?>" 
+			data-procedure-note="<?php echo htmlspecialchars(!empty($patient_procedure->procedure_note) ? $patient_procedure->procedure_note : '', ENT_QUOTES, 'UTF-8'); ?>" 
+			data-procedure-findings="<?php echo htmlspecialchars(!empty($patient_procedure->procedure_findings) ? $patient_procedure->procedure_findings : '', ENT_QUOTES, 'UTF-8'); ?>" 
+			data-post-procedure="<?php echo htmlspecialchars(!empty($patient_procedure->post_procedure) ? $patient_procedure->post_procedure : '', ENT_QUOTES, 'UTF-8'); ?>" 
+			data-duration="<?php echo htmlspecialchars(!empty($patient_procedure->procedure_duration) ? $patient_procedure->procedure_duration : '', ENT_QUOTES, 'UTF-8'); ?>"  
+			data-procedure-time="<?php 
+				echo (!empty($patient_procedure->procedure_datetime) && strtotime($patient_procedure->procedure_datetime)) 
+					? date('d-M-Y g:i A', strtotime($patient_procedure->procedure_datetime)) 
+					: ''; 
+			?>"
+			class="btn btn-sm btn-primary" 
+			onclick="printProcedure(this)">
+			Print
+		</button>
+
+	</div>
+			</div>
+			
 			<?php } ?>
 			
 			
@@ -4343,12 +4390,6 @@ function openSmsModal(){
 	        		label.css({display: 'block'});
 	        	}
 	        	element.parent().append( label ); 
-				/*if( ["age_years", "age_months", "age_days", "sbp", "dbp"].indexOf(element.attr( "name" )) > -1 ) {
-					// this would append the label after all your checkboxes/labels (so the error-label will be the last element in <div class="controls"> )
-					element.parent().append( label ); 
-				} else {
-					label.insertAfter( element ); // standard behaviour
-				}*/
 			}
 	        /*ignore: ".date_custom",
 	        submitHandler: function (form) {
@@ -4910,8 +4951,11 @@ function openSmsModal(){
 }
 </style>
 <div class="sr-only" id="print-div-doctor-notes" style="width:100%;height:100%;"> 
-			<?php $this->load->view('pages/print_layouts/patient_doctor_notes');?>
-		</div>
+	<?php $this->load->view('pages/print_layouts/patient_doctor_notes');?>
+</div>
+<div class="sr-only" id="print-div-patient-procedure" style="width:100%;height:100%;"> 
+    <?php $this->load->view('pages/print_layouts/patient_procedure'); ?>
+</div>
 <script>
 	function printDoctorNotes(button) {
 	// 1. Extract values from the clicked button's dataset
@@ -4924,6 +4968,65 @@ function openSmsModal(){
 
 	// 3. Trigger print
 	printDiv('print-div-doctor-notes');
+}
+
+function printProcedure(button) {
+    // 1. Extract values from dataset (converts data-kebab-case to camelCase)
+    const { 
+        procedureName,
+        procedureNote,
+        procedureFindings,
+        postProcedure,
+        duration,
+        procedureTime 
+    } = button.dataset;
+
+    // Helper: strip trailing blank tags/nbsp and remove all HTML tags to check if it's truly empty
+    const cleanContent = (html) => {
+        if (!html) return '';
+        return html
+            .replace(/(<p>(&nbsp;|\s)*<\/p>\s*)+$/gi, '')
+            .trim();
+    };
+
+    // Helper: check if HTML content has actual text/content (not just empty tags like <p><br></p>)
+    const hasContent = (html) => {
+        if (!html) return false;
+        const textOnly = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, '').trim();
+        return textOnly.length > 0;
+    };
+
+    // 2. Inject notes & toggle wrappers based on content presence
+    const noteEl = document.getElementById('printProcedureNote');
+    const noteWrapper = document.getElementById('wrapperPrintProcedureNote');
+    const cleanedNote = cleanContent(procedureNote);
+    if (noteEl) noteEl.innerHTML = cleanedNote;
+    if (noteWrapper) noteWrapper.style.display = hasContent(cleanedNote) ? 'block' : 'none';
+
+    const findingsEl = document.getElementById('printProcedureFindings');
+    const findingsWrapper = document.getElementById('wrapperPrintProcedureFindings');
+    const cleanedFindings = cleanContent(procedureFindings);
+    if (findingsEl) findingsEl.innerHTML = cleanedFindings;
+    if (findingsWrapper) findingsWrapper.style.display = hasContent(cleanedFindings) ? 'block' : 'none';
+
+    const postNotesEl = document.getElementById('printPostProcedureNotes');
+    const postNotesWrapper = document.getElementById('wrapperPrintPostProcedureNotes');
+    const cleanedPost = cleanContent(postProcedure);
+    if (postNotesEl) postNotesEl.innerHTML = cleanedPost;
+    if (postNotesWrapper) postNotesWrapper.style.display = hasContent(cleanedPost) ? 'block' : 'none';
+
+    // 3. Metadata fields
+    const printProcedureNameEl = document.getElementById('printProcedureName');
+    if (printProcedureNameEl) printProcedureNameEl.textContent = procedureName || '';
+
+    const durationEl = document.getElementById('printProcedureDuration');
+    if (durationEl) durationEl.textContent = duration ? `${duration} mins` : '';
+
+    const timeEl = document.getElementById('printProcedureTime');
+    if (timeEl) timeEl.textContent = procedureTime || '';
+
+    // 4. Trigger print
+    printDiv('print-div-patient-procedure');
 }
 $(function(){
 	$('[data-toggle="tooltip"]').tooltip();

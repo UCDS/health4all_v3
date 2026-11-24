@@ -12,7 +12,22 @@ This view is called in reports.php ip_op_trends method-->
 <script type="text/javascript" src="<?php echo base_url();?>assets/js/export_to_excell.js"></script>
 <script type="text/javascript">
 $(function(){
-	$("#from_date,#to_date").Zebra_DatePicker();
+	var today = new Date();
+
+var todayString =
+    String(today.getDate()).padStart(2, '0') + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    today.getFullYear();
+
+$('#from_date').Zebra_DatePicker({
+    direction: false,
+    pair: $('#to_date')
+});
+
+$('#to_date').Zebra_DatePicker({
+    format: 'd-m-Y',
+    direction: [true, todayString]
+});
         var options = {
 			widthFixed : true,
 			showProcessing: true,

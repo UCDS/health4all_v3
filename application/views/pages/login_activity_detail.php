@@ -223,7 +223,7 @@ display: inline-grid;
 	$page_no = 1;
 	?>
 
-<h4><b><?php echo $title; ?></b></h4>
+
 
 	<?php 
 		$from_date=0;$to_date=0;
@@ -231,6 +231,7 @@ display: inline-grid;
 		if($this->input->post('to_date')) $to_date=date("Y-m-d",strtotime($this->input->post('to_date'))); else $to_date = date("Y-m-d");
 		?>
 		<div class="row">
+		<h4><b><?php echo $title; ?></b></h4>
 			<?php echo form_open("reports/login_activity_detail",array( 'id'    => 'loginActivityForm', 'role'=>'form','class'=>'form-custom')); ?>
 					<!-- <b>Trend:  </b>
 					<label><input type ="radio" name="trend_type" class ="form-control"  

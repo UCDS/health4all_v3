@@ -55,3 +55,5 @@ ADD UNIQUE KEY uk_patient_hospital (patient_id, hospital_id);
 ALTER TABLE `patient_clinical_notes` ADD `add_to_summary` BOOLEAN NOT NULL DEFAULT FALSE AFTER `user_id`;
 
 ALTER TABLE `procedure` ADD `hospital_id` INT NOT NULL AFTER `procedure_type_id`;
+
+ALTER TABLE `patient_procedure` ADD `procedure_done_by` VARCHAR(250) NULL AFTER `post_procedure`;

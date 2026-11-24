@@ -683,6 +683,7 @@ class Register_model extends CI_Model{
 		$procedure_notes       = $this->input->post('procedure_note');
 		$procedure_findings    = $this->input->post('procedure_findings');
 		$post_procedure_notes  = $this->input->post('post_procedure_notes');
+		$procedure_done_by     = $this->input->post('procedure_done_by');
 
 		$visit_id = $this->input->post('visit_id');
 
@@ -712,7 +713,8 @@ class Register_model extends CI_Model{
 					'procedure_duration'  => isset($procedure_durations[$i]) ? $procedure_durations[$i] : '',
 					'procedure_note'      => isset($procedure_notes[$i]) ? $procedure_notes[$i] : '',
 					'procedure_findings'  => isset($procedure_findings[$i]) ? $procedure_findings[$i] : '',
-					'post_procedure'      => isset($post_procedure_notes[$i]) ? $post_procedure_notes[$i] : ''
+					'post_procedure'      => isset($post_procedure_notes[$i]) ? $post_procedure_notes[$i] : '',
+					'procedure_done_by'      => isset($procedure_done_by[$i]) ? $procedure_done_by[$i] : ''
 				);
 
 				$current_proc_id = isset($patient_procedure_ids[$i]) ? (int)$patient_procedure_ids[$i] : -1;
@@ -2074,6 +2076,7 @@ hospital,department.department,unit.unit_id,unit.unit_name,area.area_id,area.are
 			patient_procedure.procedure_duration,
 			patient_procedure.procedure_note,
 			patient_procedure.procedure_findings,
+			patient_procedure.procedure_done_by,
 			patient_procedure.post_procedure,
 			procedure.procedure_name')
 			->from('patient_procedure')
