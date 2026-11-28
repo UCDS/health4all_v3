@@ -842,8 +842,8 @@ class Indent_reports extends CI_Controller
 			$this->data['redirect_from_date'] = $from_date;
 			$this->data['redirect_to_date'] = $to_date;
 			$this->data['mode'] = 'search';
-			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_summary($item, $scp);
-			$closing_balance = $this->indent_report_model->get_item_closing_balance($item, $scp, $redir);
+			$this->data['search_inventory_summary'] = $this->indent_report_model->get_item_summary($item, $scp,$from_date, $to_date,$date_specific=1);
+			$closing_balance = $this->indent_report_model->get_item_closing_balance($item, $scp, $redir,$from_date);
 			foreach ($closing_balance as $cb) 
 			{
 				if ($cb->inward_outward == "outward") {

@@ -215,23 +215,24 @@ class Indent_report_model extends CI_Model
 		$final_result = $this->get_inward_outward_summary($records, "item");
 		return $final_result;
 	}
-	function get_item_summary($item_id, $scp_id)
+	function get_item_summary($item_id, $scp_id,$from_date = NULL, $to_date = NULL,$date_specific=0)
 	{
-		// if ($this->input->post('from_date') && $this->input->post('to_date')) 
-		// {
-		// 	$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
-		// 	$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
-		// } 
-		// else if ($this->input->post('from_date') || $this->input->post('to_date')) 
-		// {
-		// 	$this->input->post('from_date') ? $from_date = $this->input->post('from_date') : $from_date = $this->input->post('to_date');
-		// 	$to_date = $from_date;
-		// } 
-		// else if ($from_date == '0' && $to_date == '0') 
-		// {
-		// 	$from_date = date("Y-m-d");
-		// 	$to_date = $from_date;
-		// }
+		
+
+		if (!empty($from_date) && !empty($to_date)) {
+			$from_date = date("Y-m-d", strtotime($from_date));
+			$to_date = date("Y-m-d", strtotime($to_date));
+		} else if ($this->input->post('from_date') && $this->input->post('to_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+			$to_date = date("Y-m-d", strtotime($this->input->post('to_date')));
+		} else if ($this->input->post('from_date') || $this->input->post('to_date')) {
+			$from_date = $this->input->post('from_date') ? $this->input->post('from_date') : $this->input->post('to_date');
+			$from_date = date("Y-m-d", strtotime($from_date));
+			$to_date = $from_date;
+		} else {
+			$from_date = date("Y-m-d");
+			$to_date = $from_date;
+		}
 
 		$hospital=$this->session->userdata('hospital');                                                //Storing user data who logged into the hospital into a var:hospital
 		$this->db->select("item.item_name, item.item_id, item_type.item_type, scp_from.supply_chain_party_name from_party, 
@@ -256,6 +257,11 @@ class Indent_report_model extends CI_Model
 		$this->db->group_by('indent_item.indent_id');
 
 		$this->db->order_by('indent.indent_date','ASC');
+
+		if ($date_specific == 1) {
+			$this->db->where("DATE(inventory.date_time) BETWEEN ".$this->db->escape($from_date)." AND ".$this->db->escape($to_date));
+
+		}
 		if($this->input->post('generic_item')){
             $this->db->where('item.generic_item_id', $this->input->post('generic_item'));
         }
@@ -666,13 +672,21 @@ class Indent_report_model extends CI_Model
 		
 	}
 
-	function get_item_closing_balance($item, $scp, $redir)
+	function get_item_closing_balance($item, $scp, $redir,$explicit_from_date = NULL)
 	{
 		//print_r($item.' '.$scp.' '.$redir);
 		if($this->input->post('from_date'))
 		{
 			$from_date = date("Y-m-d",strtotime($this->input->post('from_date')));
 		}else{
+			$from_date = date("Y-m-d");
+		}
+
+		if (!empty($explicit_from_date)) {
+			$from_date = date("Y-m-d", strtotime($explicit_from_date));
+		} else if ($this->input->post('from_date')) {
+			$from_date = date("Y-m-d", strtotime($this->input->post('from_date')));
+		} else {
 			$from_date = date("Y-m-d");
 		}
 
